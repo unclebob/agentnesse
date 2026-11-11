@@ -3,7 +3,6 @@
 package fitnesse.testsystems.slim.tables;
 
 import fitnesse.slim.MethodExecutionResult;
-import fitnesse.slim.SlimExpressionEvaluator;
 import fitnesse.slim.SlimSymbol;
 import fitnesse.slim.converters.StringConverter;
 import fitnesse.slim.instructions.AssignInstruction;
@@ -212,32 +211,6 @@ public abstract class SlimTable {
     this.customComparatorRegistry = customComparatorRegistry;
   }
 
-  private String getSlimExpressionResult(String variableNameWithDollar) {
-    SlimExpressionEvaluator evaluator = new SlimExpressionEvaluator();
-    String expr = variableNameWithDollar.substring(2, variableNameWithDollar.length() - 1);
-    Map<String, MethodExecutionResult> symbols = new HashMap<>();
-
-    for (Map.Entry<String, String> symbol : testContext.getSymbols().entrySet()) {
-      if (symbol.getValue().startsWith("!{")) {
-        symbol.setValue(HtmlValueOfSymbol(symbol.getValue()));
-      }
-      symbols.put(symbol.getKey(), new MethodExecutionResult(symbol.getValue(), Object.class));
-    }
-    evaluator.setContext(expr, symbols);
-
-    Object value;
-    try {
-      value = evaluator.evaluate(expr);
-    } catch (IllegalArgumentException e) {
-      value = e.getMessage();
-    }
-    return String.valueOf(value);
-  }
-
-  private String HtmlValueOfSymbol(String symbol) {
-    return new WikiSymbolTranslateUtil().getHtmlFor(symbol);
-  }
-
   /**
    * SlimExpectation base class for row based expectations.
    */
@@ -319,16 +292,6 @@ public abstract class SlimTable {
 
     //TODO: This is only implemented in the SlimServer but not in the Slim Client so it can't work properly :(
     // Should be removed. Would this breaks other SLIM Client implementations .Net ... ?
-    @Override
-    protected String getSymbolValueImpl(SymbolMatcher symbolMatcher) {
-      String symbolName = symbolMatcher.getSymbolName();
-      if (symbolName.endsWith("`")) {
-        String symbolNameWithDollar = symbolName.startsWith("$`") ? symbolName : "$" + symbolName;
-        return getSlimExpressionResult(symbolNameWithDollar);
-      }
-      return super.getSymbolValueImpl(symbolMatcher);
-    }
-
     @Override
     protected String getSymbolValue(String symbolName) {
       return getSymbol(symbolName);

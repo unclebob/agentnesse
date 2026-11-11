@@ -21,30 +21,17 @@ public class VariableStore {
     if (nameWithDollar == null || !nameWithDollar.startsWith("$"))
       return null;
 
-    if (nameWithDollar.startsWith("$`") && nameWithDollar.endsWith("`")) {
-      String expr = nameWithDollar.substring(2, nameWithDollar.length() - 1);
-      return evaluate(expr);
-    } else {
-      String name = nameWithDollar.substring(1);
-      if (!variables.containsKey(name)) {
-        return null;
-      }
-      return variables.get(name).getObject();
+    String name = nameWithDollar.substring(1);
+    if (!variables.containsKey(name)) {
+      return null;
     }
+    return variables.get(name).getObject();
   }
 
   private boolean containsValueFor(String nameWithDollar) {
-    boolean result = false;
-    if (nameWithDollar != null) {
-      if (nameWithDollar.startsWith("$`") && nameWithDollar.endsWith("`")) {
-        result = true;
-      } else if (nameWithDollar.startsWith("$")) {
-        if (variables.containsKey(nameWithDollar.substring(1))) {
-          result = true;
-        }
-      }
-    }
-    return result;
+    return nameWithDollar != null
+      && nameWithDollar.startsWith("$")
+      && variables.containsKey(nameWithDollar.substring(1));
   }
 
   public Object[] replaceSymbols(Object[] args) {
@@ -92,31 +79,10 @@ public class VariableStore {
   }
 
   private String getStoreSymbolValue(String symbolName) {
-    if (symbolName.startsWith("`") && symbolName.endsWith("`")) {
-      Object value = getStored("$" + symbolName);
-      return String.valueOf(value);
-    } else if (variables.containsKey(symbolName)) {
+    if (variables.containsKey(symbolName)) {
       Object value = variables.get(symbolName);
       return String.valueOf(value);
     }
     return null;
-  }
-
-  private Object evaluate(String expr) {
-    SlimExpressionEvaluator evaluator = getEvaluatorForExpression(expr);
-
-    Object value = null;
-    try {
-      value = evaluator.evaluate(expr);
-    } catch (IllegalArgumentException e) {
-      value = e.getMessage();
-    }
-    return value;
-  }
-
-  protected SlimExpressionEvaluator getEvaluatorForExpression(String expr) {
-    SlimExpressionEvaluator evaluator = new SlimExpressionEvaluator();
-    evaluator.setContext(expr, variables);
-    return evaluator;
   }
 }

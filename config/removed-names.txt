@@ -3,3 +3,6 @@
 # Phase 1 patterns are added in the commits that delete the names.
 
 import fit.
+
+nashorn
+Jsr223

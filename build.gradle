@@ -81,7 +81,6 @@ dependencies {
   implementation "org.json:json:20260814"
   implementation "com.googlecode.java-diff-utils:diffutils:1.3.0"
   implementation "org.apache.commons:commons-text:1.15.0"
-  implementation "org.openjdk.nashorn:nashorn-core:15.7"
   implementation "org.codehaus.groovy:groovy-xml:3.0.25"
 
   compileOnly gradleApi()
@@ -278,7 +277,6 @@ def coverageFloors = [
   'fitnesse/testrunner': [line: 0.94, branch: 0.85],
   'fitnesse/testrunner/run': [line: 0.82, branch: 0.81],
   'fitnesse/testsystems': [line: 0.88, branch: 0.80],
-  'fitnesse/testsystems/example': [line: 0.00],
   'fitnesse/testsystems/slim': [line: 0.87, branch: 0.84],
   'fitnesse/testsystems/slim/results': [line: 0.84, branch: 0.74],
   'fitnesse/testsystems/slim/tables': [line: 0.87, branch: 0.86],

@@ -31,11 +31,11 @@ public class SlimExecutionContextTest {
   }
 
   @Test
-  public void shouldEvaluateExpressions() {
+  public void leavesExpressionTextAlone() {
     SlimExecutionContext context = new SlimExecutionContext(new DefaultInteraction());
     context.setVariable("first", "var1");
 
-    assertArrayEquals(new Object[] {"test", "VAR1", 3, "bar"}, context.replaceSymbols(new Object[] {
-      "test", "$`first.toUpperCase()`", "$`1+2`", "bar"}));
+    assertArrayEquals(new Object[] {"test", "$`first.toUpperCase()`", "$`1+2`", "bar"},
+      context.replaceSymbols(new Object[] {"test", "$`first.toUpperCase()`", "$`1+2`", "bar"}));
   }
 }
