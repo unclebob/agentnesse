@@ -28,6 +28,7 @@ plugins {
   id "groovy"
   id "io.miret.etienne.sass" version "1.6.1"
   id "info.solidsoft.pitest" version "1.19.0"
+  id 'jacoco'
 }
 
 group = 'org.fitnesse'
@@ -224,7 +225,147 @@ task copyRuntimeLibs(type: Copy) {
 test {
   dependsOn copyRuntimeLibs
   maxParallelForks 1
+  finalizedBy jacocoTestReport
 }
+
+jacoco {
+  toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    csv.required = true
+    xml.required = true
+    html.required = true
+  }
+}
+
+// Per-package line and branch floors. A floor may rise and must not fall.
+// A deleted package drops its entry. Values are the baseline, truncated down
+// to two decimal places so a one-line swing does not fail the build.
+def coverageFloors = [
+  'eg': [line: 0.50],
+  'eg/bowling': [line: 0.98, branch: 0.97],
+  'eg/bowling/fixtures': [line: 0.47, branch: 0.42],
+  'eg/employeePayroll': [line: 0.00],
+  'eg/triviaGameExample': [line: 0.00, branch: 0.00],
+  'eg/triviaGameExample/fitnesseFixtures': [line: 0.00, branch: 0.00],
+  'fit': [line: 0.74, branch: 0.71],
+  'fit/decorator': [line: 1.00, branch: 1.00],
+  'fit/decorator/exceptions': [line: 1.00],
+  'fit/decorator/performance': [line: 1.00, branch: 1.00],
+  'fit/decorator/util': [line: 0.97, branch: 0.92],
+  'fit/exception': [line: 0.92],
+  'fit/testFxtr': [line: 0.25],
+  'fitnesse': [line: 0.85, branch: 0.80],
+  'fitnesse/authentication': [line: 0.82, branch: 0.73],
+  'fitnesse/components': [line: 0.89, branch: 0.86],
+  'fitnesse/fixtures': [line: 0.18, branch: 0.16],
+  'fitnesse/html': [line: 0.85, branch: 0.78],
+  'fitnesse/html/template': [line: 0.96, branch: 0.79],
+  'fitnesse/http': [line: 0.89, branch: 0.80],
+  'fitnesse/junit': [line: 0.79, branch: 0.66],
+  'fitnesse/logging': [line: 1.00, branch: 0.90],
+  'fitnesse/plugins': [line: 0.93, branch: 0.94],
+  'fitnesse/reporting': [line: 0.95, branch: 0.90],
+  'fitnesse/reporting/history': [line: 0.89, branch: 0.81],
+  'fitnesse/responders': [line: 0.94, branch: 0.84],
+  'fitnesse/responders/account': [line: 0.98, branch: 0.85],
+  'fitnesse/responders/editing': [line: 0.95, branch: 0.86],
+  'fitnesse/responders/files': [line: 0.79, branch: 0.79],
+  'fitnesse/responders/refactoring': [line: 0.85, branch: 0.75],
+  'fitnesse/responders/run': [line: 0.77, branch: 0.75],
+  'fitnesse/responders/search': [line: 0.91, branch: 0.82],
+  'fitnesse/responders/testHistory': [line: 0.72, branch: 0.71],
+  'fitnesse/responders/versions': [line: 0.88, branch: 0.64],
+  'fitnesse/slim': [line: 0.79, branch: 0.77],
+  'fitnesse/slim/converters': [line: 0.94, branch: 0.95],
+  'fitnesse/slim/converters/beans': [line: 0.73, branch: 0.83],
+  'fitnesse/slim/fixtureInteraction': [line: 0.78, branch: 0.67],
+  'fitnesse/slim/instructions': [line: 0.68, branch: 0.45],
+  'fitnesse/slim/protocol': [line: 0.98, branch: 0.92],
+  'fitnesse/slim/test': [line: 0.58, branch: 0.50],
+  'fitnesse/slim/test/library': [line: 0.00],
+  'fitnesse/slim/test/statementexecutorconsumer': [line: 0.95, branch: 0.64],
+  'fitnesse/socketservice': [line: 0.57, branch: 0.46],
+  'fitnesse/testrunner': [line: 0.94, branch: 0.85],
+  'fitnesse/testrunner/run': [line: 0.82, branch: 0.81],
+  'fitnesse/testsystems': [line: 0.88, branch: 0.80],
+  'fitnesse/testsystems/example': [line: 0.00],
+  'fitnesse/testsystems/fit': [line: 0.86, branch: 0.80],
+  'fitnesse/testsystems/slim': [line: 0.87, branch: 0.84],
+  'fitnesse/testsystems/slim/results': [line: 0.84, branch: 0.74],
+  'fitnesse/testsystems/slim/tables': [line: 0.87, branch: 0.86],
+  'fitnesse/testutil': [line: 0.59, branch: 0.62],
+  'fitnesse/updates': [line: 0.95, branch: 0.87],
+  'fitnesse/util': [line: 0.90, branch: 0.88],
+  'fitnesse/util/partitioner': [line: 0.98, branch: 0.97],
+  'fitnesse/wiki': [line: 0.93, branch: 0.89],
+  'fitnesse/wiki/fs': [line: 0.83, branch: 0.84],
+  'fitnesse/wiki/refactoring': [line: 0.96, branch: 0.81],
+  'fitnesse/wiki/search': [line: 0.97, branch: 0.90],
+  'fitnesse/wikitext': [line: 0.93, branch: 0.71],
+  'fitnesse/wikitext/parser': [line: 0.95, branch: 0.86],
+  'fitnesse/wikitext/parser/decorator': [line: 0.92, branch: 0.84],
+  'fitnesse/wikitext/shared': [line: 0.87, branch: 0.87],
+  'fitnesseMain': [line: 0.68, branch: 0.72],
+  'fitnesseMain/ant': [line: 0.00, branch: 0.00],
+  'util': [line: 0.91, branch: 0.91],
+]
+
+jacocoTestCoverageVerification {
+  dependsOn test
+  violationRules {
+    coverageFloors.each { pkg, floors ->
+      rule {
+        element = 'PACKAGE'
+        includes = [pkg]
+        limit {
+          counter = 'LINE'
+          value = 'COVEREDRATIO'
+          minimum = floors.line
+        }
+        if (floors.branch != null) {
+          limit {
+            counter = 'BRANCH'
+            value = 'COVEREDRATIO'
+            minimum = floors.branch
+          }
+        }
+      }
+    }
+  }
+}
+
+def removedNamePatterns = file('config/removed-names.txt').exists() ?
+  file('config/removed-names.txt').readLines().findAll { it.trim() && !it.trim().startsWith('#') } :
+  []
+
+task verifyRemoved {
+  group = 'verification'
+  description = 'Fail the build if a deleted name comes back in Java source.'
+  doLast {
+    def roots = [file('src'), file('test')]
+    def failures = []
+    roots.each { root ->
+      if (!root.exists()) return
+      fileTree(dir: root, include: '**/*.java').each { javaFile ->
+        def text = javaFile.getText('UTF-8')
+        removedNamePatterns.each { pattern ->
+          if (text.contains(pattern)) {
+            failures << "${javaFile}: contains '${pattern}'"
+          }
+        }
+      }
+    }
+    if (!failures.isEmpty()) {
+      throw new GradleException("Removed names reappeared:\n" + failures.join('\n'))
+    }
+  }
+}
+
+check.dependsOn jacocoTestCoverageVerification, verifyRemoved
 
 pitest {
   targetClasses = ['fit.*', 'fitnesse.*']

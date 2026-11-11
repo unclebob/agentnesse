@@ -1,0 +1,3 @@
+# Forbidden substrings in Java sources. One pattern per line.
+# Lines starting with # are comments. Later phases append patterns here.
+# Phase 1 patterns are added in the commits that delete the names.
