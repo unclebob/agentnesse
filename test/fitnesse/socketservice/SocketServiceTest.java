@@ -76,6 +76,23 @@ public class SocketServiceTest {
   }
 
   @Test
+  public void keepsAcceptingAfterAServeFailure() throws Exception {
+    final int[] calls = {0};
+    ss = createSocketService(new SocketServer() {
+      @Override
+      public void serve(Socket s) throws IOException {
+        calls[0]++;
+        s.close();
+        throw new IOException("boom");
+      }
+    });
+    connect(PORT_NUMBER);
+    connect(PORT_NUMBER);
+    ss.close();
+    assertEquals(2, calls[0]);
+  }
+
+  @Test
   public void testReceiveMessage() throws Exception {
     ss = createSocketService(new EchoService());
     Socket s = new Socket("localhost", PORT_NUMBER);

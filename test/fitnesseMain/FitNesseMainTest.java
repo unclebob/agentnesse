@@ -154,6 +154,41 @@ public class FitNesseMainTest {
   }
 
   @Test
+  public void commandExitCodeIsTheNumberOfFailingTests() throws Exception {
+    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestFail.wiki",
+      "!define TEST_SYSTEM {slim}\n" +
+        "|script|fitnesse.fixtures.EchoFixture|\n" +
+        "|check|echo|hello|goodbye|\n");
+
+    int exitCode = launch(new String[]{"-o", "-r", TEST_FITNESSE_ROOT, "-c", "TestFail?test&format=text"});
+    assertEquals(1, exitCode);
+  }
+
+  @Test
+  public void passingCommandCanWriteResultsToAFile() throws Exception {
+    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestPass.wiki",
+      "!define TEST_SYSTEM {slim}\n" +
+        "|script|fitnesse.fixtures.EchoFixture|\n" +
+        "|check|echo|hello|hello|\n");
+    File output = new File(TEST_FITNESSE_ROOT, "results.txt");
+
+    int exitCode = launch(new String[]{
+      "-o", "-r", TEST_FITNESSE_ROOT, "-c", "TestPass?test&format=text", "-b", output.getPath()});
+
+    assertEquals(0, exitCode);
+    assertThat(FileUtil.getFileContent(output), containsString("0 Failures"));
+  }
+
+  @Test
+  public void occupiedPortReturnsExitCodeOne() throws Exception {
+    try (ServerSocket socket = new ServerSocket(0)) {
+      int exitCode = launch(new String[]{
+        "-o", "-r", TEST_FITNESSE_ROOT, "-p", Integer.toString(socket.getLocalPort())});
+      assertEquals(1, exitCode);
+    }
+  }
+
+  @Test
   public void systemPropertiesTakePrecedenceOverConfiguredProperties() throws Exception {
     final String configFileName = "systemPropertiesTakePrecedenceOverConfiguredProperties.properties";
     String themeKey = ConfigurationParameter.THEME.getKey();
@@ -174,11 +209,15 @@ public class FitNesseMainTest {
     PrintStream err = System.err;
     ByteArrayOutputStream outputBytes = new ByteArrayOutputStream();
     System.setErr(new PrintStream(outputBytes));
-    Arguments arguments = new Arguments(args);
-    Integer exitCode = new FitNesseMain().launchFitNesse(arguments);
+    Integer exitCode = launch(args);
     assertThat(exitCode, is(0));
     System.setErr(err);
     return outputBytes.toString();
+  }
+
+  private int launch(String... args) throws Exception {
+    Integer exitCode = new FitNesseMain().launchFitNesse(new Arguments(args));
+    return exitCode == null ? 0 : exitCode;
   }
 
   private Answer<FitNesseContext> fitNesseContextWith(final FitNesse fitNesse) {
