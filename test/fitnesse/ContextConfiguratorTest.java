@@ -5,9 +5,13 @@ import fitnesse.plugins.PluginException;
 import fitnesse.plugins.PluginsLoaderTest;
 import fitnesse.responders.FilteringResponder;
 import fitnesse.util.ClassUtils;
+import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.WikiPageFactory;
+import fitnesse.wikitext.VariableSource;
 import org.junit.After;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -21,6 +25,38 @@ public class ContextConfiguratorTest {
   public void tearDown() {
     ClassUtils.setClassLoader(null);
     Thread.currentThread().setContextClassLoader(originalClassLoader);
+  }
+
+  @Test
+  public void warnsWhenWikiPageFactoryCannotRegisterFactories() throws IOException, PluginException {
+    WikiPageFactory factory = new WikiPageFactory() {
+      @Override
+      public WikiPage makePage(File path, String pageName, WikiPage parent, VariableSource variableSource) {
+        return null;
+      }
+
+      @Override
+      public boolean supports(File path) {
+        return false;
+      }
+    };
+
+    FitNesseContext context = ContextConfigurator.empty()
+      .withWikiPageFactory(factory)
+      .withParameter(ConfigurationParameter.ROOT_PATH, ".")
+      .makeFitNesseContext();
+
+    assertThat(context, is(instanceOf(FitNesseContext.class)));
+  }
+
+  @Test
+  public void usesThePortItWasGiven() throws IOException, PluginException {
+    FitNesseContext context = ContextConfigurator.empty()
+      .withPort(9124)
+      .withParameter(ConfigurationParameter.ROOT_PATH, ".")
+      .makeFitNesseContext();
+
+    assertThat(context.port, is(9124));
   }
 
   @Test

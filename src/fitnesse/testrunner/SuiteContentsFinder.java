@@ -29,16 +29,7 @@ public class SuiteContentsFinder {
   }
 
   public List<WikiPage> getAllPagesToRunForThisSuite() {
-    List<WikiPage> testPageList = new LinkedList<>();
-    String content = pageToRun.getHtml();
-    if (SuiteSpecificationRunner.isASuiteSpecificationsPage(content)) {
-      SuiteSpecificationRunner runner = new SuiteSpecificationRunner(wikiRootPage);
-      if (runner.getPageListFromPageContent(content))
-        testPageList = runner.testPages();
-    } else {
-      testPageList = getAllTestPagesUnder();
-    }
-    return testPageList;
+    return getAllTestPagesUnder();
   }
 
   private List<WikiPage> getAllTestPagesUnder() {

@@ -3,18 +3,13 @@ package fitnesse.junit;
 import fitnesse.ConfigurationParameter;
 import fitnesse.ContextConfigurator;
 import fitnesse.FitNesseContext;
-import fitnesse.slim.instructions.SystemExitSecurityManager;
 import fitnesse.testrunner.MultipleTestsRunner;
 import fitnesse.testrunner.SuiteContentsFinder;
-import fitnesse.testrunner.run.FileBasedTestRunFactory;
-import fitnesse.testrunner.run.PartitioningTestRunFactory;
 import fitnesse.testrunner.run.TestRun;
 import fitnesse.testsystems.ConsoleExecutionLogListener;
 import fitnesse.testsystems.TestExecutionException;
 import fitnesse.testsystems.TestSummary;
 import fitnesse.wiki.WikiPage;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
@@ -29,9 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static fitnesse.junit.JUnitHelper.createTestRunner;
 import static fitnesse.junit.JUnitHelper.getSuiteRootPage;
@@ -62,16 +55,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
 
   /**
-   * The <code>PreventSystemExit</code> annotation specifies whether the {@link SystemExitSecurityManager} must be to prevent {@link System#exit(int)} calls. Default is false
-   */
-  @Retention(RetentionPolicy.RUNTIME)
-  @Target(ElementType.TYPE)
-  public @interface PreventSystemExit {
-
-    boolean value() default true;
-  }
-
-  /**
    * The <code>SuiteFilter</code> annotation specifies the suite filter of the Fitnesse suite
    * to be run, e.g.: fasttests
    */
@@ -92,37 +75,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   public @interface ExcludeSuiteFilter {
 
     String value();
-    String systemProperty() default "";
-  }
-  /**
-   * The <code>Partition</code> annotation specifies the full test run should be split in a number of parts.
-   * Each part will be run separately, combining the results of all parts gives the full result.
-   * This annotation dictates the number of partitions to create, and which of those should be run when the current
-   * test is executed. The default is no partition: indicating the full test run should NOT be split but run as-is.
-   */
-  @Retention(RetentionPolicy.RUNTIME)
-  @Target(ElementType.TYPE)
-  public @interface Partition {
-
-    /** @return number of partitions to create.*/
-    int count() default 0;
-    /** @return zero based partition to run.*/
-    int index() default -1;
-    String countSystemProperty() default "";
-    String indexSystemProperty() default "";
-  }
-  /**
-   * The <code>PartitionFile</code> annotation specifies the file containing a definition of how to divide the pages
-   * in a run in multiple partitions.
-   * @see Partition
-   * The default is no partition file: indicating partitions should be calculated dynamically.
-   */
-  @Retention(RetentionPolicy.RUNTIME)
-  @Target(ElementType.TYPE)
-  public @interface PartitionFile {
-
-    /** @return filename containing definition.*/
-    String value() default "";
     String systemProperty() default "";
   }
   /**
@@ -194,10 +146,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   private String suiteFilter;
   private boolean suiteFilterAndStrategy;
   private String excludeSuiteFilter;
-  private Pair<Integer, Integer> partition;
-  private String partitionFile;
   private boolean debugMode;
-  private boolean preventSystemExit;
   private FitNesseContext context;
   private DescriptionFactory descriptionFactory;
   private TestRun testRun;
@@ -246,28 +195,11 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     }
 
     try {
-      this.partition = getPartition(suiteClass);
-    } catch (Exception e) {
-      errors.add(e);
-    }
-
-    try {
-      this.partitionFile = getPartitionFile(suiteClass);
-    } catch (Exception e) {
-      errors.add(e);
-    }
-
-    try {
       this.debugMode = useDebugMode(suiteClass);
     } catch (Exception e) {
       errors.add(e);
     }
 
-    try {
-      this.preventSystemExit = shouldPreventSystemExit(suiteClass);
-    } catch (Exception e) {
-      errors.add(e);
-    }
     try {
       this.context = createContext(suiteClass);
     } catch (Exception e) {
@@ -361,14 +293,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     return debugModeAnnotation.value();
   }
 
-  protected boolean shouldPreventSystemExit(Class<?> klass) throws Exception {
-    PreventSystemExit preventSystemExitAnnotation = klass.getAnnotation(PreventSystemExit.class);
-    if (null == preventSystemExitAnnotation) {
-      return true;
-    }
-    return preventSystemExitAnnotation.value();
-  }
-
   protected String getFitNesseDir(Class<?> klass)
           throws InitializationError {
     FitnesseDir fitnesseDirAnnotation = klass.getAnnotation(FitnesseDir.class);
@@ -390,45 +314,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   protected String getFitNesseRoot(Class<?> klass) {
     FitnesseDir fitnesseDirAnnotation = klass.getAnnotation(FitnesseDir.class);
     return fitnesseDirAnnotation.fitNesseRoot();
-  }
-
-  protected ImmutablePair<Integer, Integer> getPartition(Class<?> klass)
-        throws InitializationError {
-    Partition partAnnotation = klass.getAnnotation(Partition.class);
-    if (partAnnotation == null) {
-      return new ImmutablePair<>(1, 0);
-    }
-    if (partAnnotation.count() > 0 && partAnnotation.index() >= 0) {
-      return new ImmutablePair<>(partAnnotation.count(), partAnnotation.index());
-    } else {
-      String countSystemProperty = partAnnotation.countSystemProperty();
-      String indexSystemProperty = partAnnotation.indexSystemProperty();
-      if (!"".equals(countSystemProperty) && !"".equals(indexSystemProperty)) {
-        int count = Integer.parseInt(System.getProperty(countSystemProperty));
-        int index = Integer.parseInt(System.getProperty(indexSystemProperty));
-        return new ImmutablePair<>(count, index);
-      }
-    }
-    throw new InitializationError(
-      "In annotation @Partition you have to specify: " +
-        "either 'count' or 'countSystemProperty' and " +
-        "either 'index' or 'indexSystemProperty'");
-  }
-
-  protected String getPartitionFile(Class<?> klass)
-    throws Exception {
-    PartitionFile partFileAnnotation = klass.getAnnotation(PartitionFile.class);
-    if (partFileAnnotation == null) {
-      return null;
-    }
-    if (!"".equals(partFileAnnotation.value())) {
-      return partFileAnnotation.value();
-    }
-    if (!"".equals(partFileAnnotation.systemProperty())) {
-      return System.getProperty(partFileAnnotation.systemProperty());
-    }
-    throw new InitializationError(
-      "In annotation @PartitionFile you have to specify either 'value' or 'systemProperty'");
   }
 
   public int getPort(Class<?> klass) {
@@ -492,7 +377,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     MultipleTestsRunner testRunner = createTestRunner(run, context, debugMode);
     addTestSystemListeners(notifier, testRunner, suiteClass, getDescriptionFactory());
     addExecutionLogListener(notifier, testRunner, suiteClass);
-    System.setProperty(SystemExitSecurityManager.PREVENT_SYSTEM_EXIT, String.valueOf(preventSystemExit));
     try {
       executeTests(testRunner);
     } catch (AssertionError | Exception e) {
@@ -515,9 +399,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
 
   protected List<WikiPage> initChildren() {
-    Map<String, String> customProperties = createCustomProperties();
-
-    WikiPage suiteRoot = getSuiteRootPage(suiteName, context, customProperties);
+    WikiPage suiteRoot = getSuiteRootPage(suiteName, context, Collections.emptyMap());
     if (suiteRoot == null) {
       throw new IllegalArgumentException("No page " + this.suiteName);
     }
@@ -529,19 +411,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
       children = Collections.singletonList(suiteRoot);
     }
     return children;
-  }
-
-  protected Map<String, String> createCustomProperties() {
-    Map<String, String> customProperties = new HashMap<>();
-    Integer partitionCount = partition.getLeft();
-    if (partitionCount > 1) {
-      customProperties.put(PartitioningTestRunFactory.PARTITION_COUNT_ARG, partitionCount.toString());
-      customProperties.put(PartitioningTestRunFactory.PARTITION_INDEX_ARG, partition.getRight().toString());
-    }
-    if (partitionFile != null) {
-      customProperties.put(FileBasedTestRunFactory.PARTITION_FILE_ARG, partitionFile);
-    }
-    return customProperties;
   }
 
   private fitnesse.testrunner.SuiteFilter getSuiteFilter() {

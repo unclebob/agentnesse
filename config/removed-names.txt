@@ -6,3 +6,7 @@ import fit.
 
 nashorn
 Jsr223
+
+SystemExitSecurityManager
+PartitioningTestRunFactory
+SuiteSpecificationRunner

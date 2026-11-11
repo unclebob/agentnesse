@@ -7,7 +7,6 @@ import fitnesse.components.Logger;
 import fitnesse.html.template.PageFactory;
 import fitnesse.reporting.FormatterFactory;
 import fitnesse.responders.ResponderFactory;
-import fitnesse.testrunner.run.FileBasedTestRunFactory;
 import fitnesse.testrunner.run.TestRunFactoryRegistry;
 import fitnesse.testsystems.TestSystemFactory;
 import fitnesse.testsystems.TestSystemListener;
@@ -90,7 +89,6 @@ public class FitNesseContext {
     fitNesse = new FitNesse(this);
     pageFactory = new PageFactory(this);
     testRunFactoryRegistry = new TestRunFactoryRegistry(this);
-    testRunFactoryRegistry.addFactory(new FileBasedTestRunFactory(this));
   }
 
   public WikiPage getRootPage() {

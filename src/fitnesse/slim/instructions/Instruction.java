@@ -1,7 +1,6 @@
 package fitnesse.slim.instructions;
 
 import fitnesse.slim.SlimException;
-import fitnesse.slim.instructions.SystemExitSecurityManager.SystemExitException;
 
 public abstract class Instruction {
   public static final Instruction NOOP_INSTRUCTION = new Instruction("NOOP") {
@@ -23,18 +22,11 @@ public abstract class Instruction {
 
   public final InstructionResult execute(InstructionExecutor executor) {
     
-    InstructionResult result;
     try {
-      SystemExitSecurityManager.activateIfWanted();
-      result = executeInternal(executor);
+      return executeInternal(executor);
     } catch (SlimException e) {
-      result = new InstructionResult.Error(getId(), e);
-    } catch (SystemExitException e) {
-      result = new InstructionResult.Error(getId(), e);
-    } finally {
-      SystemExitSecurityManager.restoreOriginalSecurityManager();
+      return new InstructionResult.Error(getId(), e);
     }
-    return result;
   }
 
   protected abstract InstructionResult executeInternal(InstructionExecutor executor) throws SlimException;

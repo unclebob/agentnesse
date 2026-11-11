@@ -98,17 +98,16 @@ public class SuiteContentsFinderTest {
 
 
   @Test
-  public void shouldTellIfItIsASpecificationsSuite() {
-    WikiPageUtil.addPage(root, PathParser.parse("SuiteSetUp"), "suite set up");
-    WikiPageUtil.addPage(root, PathParser.parse("SuiteTearDown"), "suite tear down");
+  public void suiteTableDoesNotReplaceChildTests() {
     setUpForGetAllTestPages();
     String content = "|Suite|\n|Title|Test|\n|Content|.|\n";
     suite.commit(new PageData(suite.getData(), content));
     SuiteContentsFinder finder = new SuiteContentsFinder(suite, null, root);
     List<WikiPage> testPages = finder.getAllPagesToRunForThisSuite();
-    assertEquals(2, testPages.size());
-    assertEquals(testPage, testPages.get(0));
-    assertEquals(testPage2, testPages.get(1));
+    assertEquals(3, testPages.size());
+    assertTrue(testPages.contains(testPage));
+    assertTrue(testPages.contains(testPage2));
+    assertTrue(testPages.contains(testChildPage));
   }
 
   @Test

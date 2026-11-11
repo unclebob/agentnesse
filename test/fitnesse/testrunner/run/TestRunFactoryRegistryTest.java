@@ -64,11 +64,6 @@ public class TestRunFactoryRegistryTest {
       public TestRun createRun(List<WikiPage> pages) {
         return provider.apply(pages).get();
       }
-
-      @Override
-      public PagePositions findPagePositions(List<WikiPage> pages) {
-        return null;
-      }
     };
     registry.addFactory(factory);
   }

@@ -8,7 +8,7 @@ import fitnesse.http.SimpleResponse;
 import fitnesse.testrunner.MultipleTestsRunner;
 import fitnesse.testrunner.SuiteContentsFinder;
 import fitnesse.testrunner.SuiteFilter;
-import fitnesse.testrunner.run.PartitioningTestRunFactory;
+import fitnesse.testrunner.run.PagesByTestSystemTestRunFactory;
 import fitnesse.testrunner.run.TestRun;
 import fitnesse.testsystems.Descriptor;
 import fitnesse.testsystems.TestExecutionException;
@@ -30,7 +30,7 @@ public class InstructionResponder implements Responder {
     SuiteContentsFinder suiteTestFinder = new SuiteContentsFinder(suite, SuiteFilter.MATCH_ALL, root);
     List<WikiPage> pages = suiteTestFinder.getAllPagesToRunForThisSuite();
 
-    TestRun run = new PartitioningTestRunFactory().createRun(pages);
+    TestRun run = new PagesByTestSystemTestRunFactory().createRun(pages);
     StringBuilder result = new StringBuilder();
     MultipleTestsRunner runner = new MultipleTestsRunner(run, new InstructionTestSystemFactory(result));
     try {
