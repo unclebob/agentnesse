@@ -74,6 +74,18 @@ public class CachedInteractionTest {
   }
 
   @Test
+  public void doesNotReuseConstructorChosenForDifferentArguments() throws NoSuchMethodException {
+    Object[] doubleArgs = new Object[] {"1", "2.0d"};
+    Object[] textArgs = new Object[] {"1", "not-a-number"};
+
+    interaction.getConstructor(Testee.class, doubleArgs);
+    interaction.getConstructor(Testee.class, textArgs);
+
+    verify(interaction, times(1)).handleConstructorCacheMiss(eq(Testee.class), eq(doubleArgs));
+    verify(interaction, times(1)).handleConstructorCacheMiss(eq(Testee.class), eq(textArgs));
+  }
+
+  @Test
   public void canFindConstructorWithArgs() throws NoSuchMethodException {
     Constructor<?> constructor2 = interaction.getConstructor(SlimTable.class, new Object[3]);
 

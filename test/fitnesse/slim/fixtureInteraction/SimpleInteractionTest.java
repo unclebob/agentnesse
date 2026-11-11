@@ -74,6 +74,22 @@ public class SimpleInteractionTest {
   }
 
   @Test
+  public void choosesDoubleConstructorRegardlessOfReflectionOrder() throws Throwable {
+    Constructor<?> floatCtor = Testee.class.getConstructor(int.class, float.class);
+    Constructor<?> doubleCtor = Testee.class.getConstructor(int.class, double.class);
+    SimpleInteraction interaction = new SimpleInteraction();
+
+    assertSame(doubleCtor, interaction.selectConstructor(
+      new Constructor<?>[] {floatCtor, doubleCtor}, new Object[] {"1", "2.0d"}));
+    assertSame(doubleCtor, interaction.selectConstructor(
+      new Constructor<?>[] {doubleCtor, floatCtor}, new Object[] {"1", "2.0d"}));
+    assertSame(doubleCtor, interaction.selectConstructor(
+      new Constructor<?>[] {floatCtor, doubleCtor}, new Object[] {"1", "2.0f"}));
+    assertSame(doubleCtor, interaction.selectConstructor(
+      new Constructor<?>[] {doubleCtor, floatCtor}, new Object[] {"1", "2.0f"}));
+  }
+
+  @Test
   public void canExecuteConstructorWhenFloatArgType() throws Throwable {
     //given
     SimpleInteraction defaultInteraction = new SimpleInteraction();

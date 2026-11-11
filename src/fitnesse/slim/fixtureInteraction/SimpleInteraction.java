@@ -127,36 +127,54 @@ private List<String> pathsCache = new ArrayList<>();
    * arguments number
    */
   protected Constructor<?> getConstructor(Class<?> clazz, Object... args) {
-    /*in case no constructor has the args types, then return the first constructor which
-     * matches as args number, and not as args types
-     */
-    Constructor<?> defaultConstructor = null;
-    Constructor<?> constructorSelectedByType = null;
-    int diffCounter = 0;
+    return selectConstructor(clazz.getConstructors(), args);
+  }
 
-    for (Constructor<?> constructor : clazz.getConstructors()) {
-      int currentDiffCounter;
+  /**
+   * Pick a constructor for {@code args}. A constructor whose parameters accept
+   * the converted values outranks a same-arity fallback. Among type matches,
+   * the one that converts more arguments wins. Ties use the parameter type
+   * names, so the result does not depend on {@link Class#getConstructors()} order.
+   */
+  Constructor<?> selectConstructor(Constructor<?>[] constructors, Object[] args) {
+    Constructor<?> bestByType = null;
+    int bestDiff = -1;
+    Constructor<?> bestByArity = null;
+
+    for (Constructor<?> constructor : constructors) {
       Class<?>[] constructorArgs = constructor.getParameterTypes();
-      if (constructorArgs.length == args.length) {
-        if (defaultConstructor == null) {
-          defaultConstructor = constructor;
-        }
+      if (constructorArgs.length != args.length) {
+        continue;
+      }
+      if (bestByArity == null || signatureComesFirst(constructor, bestByArity)) {
+        bestByArity = constructor;
+      }
 
-        final Object[] convertedArgs = getConvertedConstructorArgsTypes(constructor, args);
-        final boolean matchedConstructorArgsTypes = hasConstructorArgsTypes(constructorArgs, convertedArgs);
-        if (matchedConstructorArgsTypes) {
-          //the constructor with most conversion changes should be more eligible for picking-up
-          currentDiffCounter = getConstructorArgsConvertionDiff(args, convertedArgs);
-          //pick-up the constructor with the most explicit args types
-          if (currentDiffCounter >= diffCounter) {
-            diffCounter = currentDiffCounter;
-            constructorSelectedByType = constructor;
-          }
-        }
+      Object[] convertedArgs = getConvertedConstructorArgsTypes(constructor, args);
+      if (!hasConstructorArgsTypes(constructorArgs, convertedArgs)) {
+        continue;
+      }
+      int diff = getConstructorArgsConvertionDiff(args, convertedArgs);
+      if (bestByType == null || diff > bestDiff || (diff == bestDiff && signatureComesFirst(constructor, bestByType))) {
+        bestDiff = diff;
+        bestByType = constructor;
       }
     }
 
-    return constructorSelectedByType == null ? defaultConstructor : constructorSelectedByType;
+    return bestByType != null ? bestByType : bestByArity;
+  }
+
+  private static boolean signatureComesFirst(Constructor<?> candidate, Constructor<?> incumbent) {
+    Class<?>[] left = candidate.getParameterTypes();
+    Class<?>[] right = incumbent.getParameterTypes();
+    int shared = Math.min(left.length, right.length);
+    for (int i = 0; i < shared; i++) {
+      int compared = left[i].getName().compareTo(right[i].getName());
+      if (compared != 0) {
+        return compared < 0;
+      }
+    }
+    return left.length < right.length;
   }
 
   private boolean hasConstructorArgsTypes(final Class<?>[] constructorArgs, final Object[] convertedArgs) {

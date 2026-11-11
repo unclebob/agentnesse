@@ -30,7 +30,16 @@ public class CachedInteraction extends SimpleInteraction {
   }
 
   protected String getConstructorKey(Class<?> clazz, Object[] args) {
-    return clazz.getName()+ "_" + args.length;
+    StringBuilder key = new StringBuilder(clazz.getName());
+    for (Object arg : args) {
+      key.append('\n');
+      if (arg == null) {
+        key.append("null");
+      } else {
+        key.append(arg.getClass().getName()).append('\0').append(arg);
+      }
+    }
+    return key.toString();
   }
 
   @Override
