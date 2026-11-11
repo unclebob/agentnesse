@@ -1,4 +1,4 @@
-|baseline: eg.Division                                           |
+|baseline: fitnesse.slim.test.Division                                           |
 |numerator|denominator|quotient?|# Explication                   |
 |10       |2          |5.0      |S1 Base scenario                |
 |20       |4          |         |S2 Same result as base - correct|
@@ -9,7 +9,7 @@
 |         |           |         |S9 Correct but useless duplicate|
 
 
-|baseline: eg.Division                                           |
+|baseline: fitnesse.slim.test.Division                                           |
 |numerator|denominator|quotient?|# Explication                   |
 |10       |2          |4<_<6    |S1 Base scenario                |
 |20       |4          |         |S2 Same result as base - correct|

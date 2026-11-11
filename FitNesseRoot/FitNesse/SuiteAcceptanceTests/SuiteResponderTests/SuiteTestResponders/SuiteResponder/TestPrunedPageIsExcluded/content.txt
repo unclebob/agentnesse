@@ -14,10 +14,14 @@ Create two sub pages: 1 is tested, 2 is pruned/ignored
 
 |script|Page Builder|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page|!-SuitePage.TestPageOne-!|
 
 |script|Page Builder|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |attributes|Prune=true|
 |page|!-SuitePage.TestPageTwo-!|
 

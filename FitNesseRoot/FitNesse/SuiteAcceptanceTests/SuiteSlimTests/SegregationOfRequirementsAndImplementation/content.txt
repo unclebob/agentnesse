@@ -20,7 +20,7 @@ Now we define a second technical solution using a FitNesse scenario
 
 Generate an instance of the class used by the scenario:
 | Library | 
-| eg.Division|
+| fitnesse.slim.test.Division|
 
 
 

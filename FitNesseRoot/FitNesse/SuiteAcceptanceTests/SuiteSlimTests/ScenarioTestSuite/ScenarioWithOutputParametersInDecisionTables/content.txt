@@ -11,7 +11,7 @@ See below a sample of a division scenario with output parameter "my result"
 
 Get the Division implementation from the eg package
 |Library    |
-|eg.Division|
+|fitnesse.slim.test.Division|
 
 
 

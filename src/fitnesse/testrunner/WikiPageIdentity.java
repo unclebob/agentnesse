@@ -38,7 +38,7 @@ public class WikiPageIdentity {
   private String getTestSystem() {
     String testSystemName = getVariable(TEST_SYSTEM);
     if (testSystemName == null)
-      return "fit";
+      return "slim";
     return testSystemName;
   }
 

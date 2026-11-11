@@ -22,18 +22,26 @@ Create two sub pages
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage1-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage2-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage3-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage4-!                    |
 
 Now run the suite page, indicating that you want to split in 3 parts and run the first.
@@ -87,18 +95,26 @@ Create two sub pages
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage1-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage2-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage3-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage4-!                    |
 
 Now run the suite page, indicating that you want to split in 3 parts and run the 2nd.

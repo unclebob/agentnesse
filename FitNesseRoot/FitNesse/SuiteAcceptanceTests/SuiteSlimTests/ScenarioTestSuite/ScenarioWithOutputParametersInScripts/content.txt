@@ -16,7 +16,7 @@ See below a sample of a division scenario with output parameter "quotient"
 
 Get the Division implementation from the eg package
 |Library|
-|eg.Division|
+|fitnesse.slim.test.Division|
 
 The recommended syntax to call the scnario from a script is as below
 

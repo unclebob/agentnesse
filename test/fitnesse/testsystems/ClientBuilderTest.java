@@ -44,7 +44,7 @@ public class ClientBuilderTest {
     WikiPageDescriptor descriptor = new WikiPageDescriptor(testPage, false, false, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
     String testSystemName = clientBuilder.getTestSystemName();
-    assertEquals("fit:" + MOCK_TEST_RUNNER, testSystemName);
+    assertEquals("slim:" + MOCK_TEST_RUNNER, testSystemName);
   }
 
   @Test

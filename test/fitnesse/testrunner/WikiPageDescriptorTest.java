@@ -44,11 +44,11 @@ public class WikiPageDescriptorTest {
 
 
   @Test
-  public void buildTestSystemTypeIsFit() throws Exception {
+  public void buildTestSystemTypeIsSlimByDefault() throws Exception {
     WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"), "");
     WikiPageDescriptor wikiPageDescriptor = new WikiPageDescriptor(testPage, false, false, "");
     String testSystemType = wikiPageDescriptor.getTestSystemType();
-    assertEquals("fit", testSystemType);
+    assertEquals("slim", testSystemType);
   }
 
   private WikiPage makeTestPage(String pageText) {

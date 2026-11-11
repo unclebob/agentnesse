@@ -9,7 +9,7 @@ If a decision table is implemented with a scenario you can specify constructor a
 |$quotient= | quotient|
 
 |library|
-|eg.Division|
+|fitnesse.slim.test.Division|
 
 !3 Calling a Scenario with Constructor Parameters
 

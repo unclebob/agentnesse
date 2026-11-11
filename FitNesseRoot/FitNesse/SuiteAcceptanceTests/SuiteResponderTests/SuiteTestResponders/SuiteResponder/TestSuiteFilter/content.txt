@@ -12,11 +12,15 @@ Create two sub pages
 
 |script    |Page Builder                               |
 |line      |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |attributes|Suites=good                                |
 |page      |!-SuitePage.TestPageOne-!                  |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPageTwo-!                  |
 
 Now run the suite page.
@@ -65,11 +69,15 @@ Create two sub pages
 
 |script    |Page Builder                               |
 |line      |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |attributes|Suites=good                                |
 |page      |!-SuitePage.TestPageOne-!                  |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPageTwo-!                  |
 
 Now run the suite page.
@@ -119,11 +127,15 @@ Create two sub pages
 
 |script    |Page Builder                               |
 |line      |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |attributes|Suites=good                                |
 |page      |!-SuitePage.TestPageOne-!                  |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPageTwo-!                  |
 
 Now run the suite page.

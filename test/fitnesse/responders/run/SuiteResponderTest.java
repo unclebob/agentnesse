@@ -49,8 +49,8 @@ public class SuiteResponderTest {
   private WikiPage root;
   private WikiPage suite;
   private FitNesseContext context;
-  private final String fitPassFixture = "|!-fitnesse.testutil.PassFixture-!|\n";
-  private final String fitFailFixture = "|!-fitnesse.testutil.FailFixture-!|\n";
+  private final String fitPassFixture = "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
+  private final String fitFailFixture = "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
   private final String simpleSlimDecisionTable = "!define TEST_SYSTEM {slim}\n" +
     "|!-DT:fitnesse.slim.test.TestSlim-!|\n" +
     "|string|get string arg?|\n" +
@@ -117,7 +117,7 @@ public class SuiteResponderTest {
     assertSubString("1 right", results);
     assertSubString("name=\"TestOne1\"", results);
     assertSubString(" href=\"SuitePage.TestOne\"", results);
-    assertSubString("PassFixture", results);
+    assertSubString("EchoFixture", results);
   }
 
   @Test
@@ -135,7 +135,7 @@ public class SuiteResponderTest {
 
   @Test
   public void testWithTwoTests() throws Exception {
-    addTestToSuite("TestTwo", "|!-fitnesse.testutil.FailFixture-!|\n\n|!-fitnesse.testutil.FailFixture-!|\n");
+    addTestToSuite("TestTwo", fitFailFixture + "\n" + fitFailFixture);
     String results = runSuite();
 
     assertSubString("href=\\\"#TestOne1\\\"", results);
@@ -144,8 +144,8 @@ public class SuiteResponderTest {
     assertSubString("2 wrong", results);
     assertSubString("name=\"TestOne1\"", results);
     assertSubString("name=\"TestTwo2\"", results);
-    assertSubString("PassFixture", results);
-    assertSubString("FailFixture", results);
+    assertSubString("EchoFixture", results);
+    assertSubString("bad", results);
 
     assertSubString("RerunLastFailures", results);
     assertSubString("Rerun Failed", results);
@@ -170,9 +170,7 @@ public class SuiteResponderTest {
 
   @Test
   public void testWithPrunedPage() throws Exception {
-    WikiPage pageTwo = addTestToSuite("TestTwo",
-      "|!-fitnesse.testutil.FailFixture-!|\n\n|!-fitnesse.testutil.FailFixture-!|\n"
-    );
+    WikiPage pageTwo = addTestToSuite("TestTwo", fitFailFixture + "\n" + fitFailFixture);
     PageData data = pageTwo.getData();
     data.setAttribute("Prune");
     pageTwo.commit(data);
@@ -184,8 +182,8 @@ public class SuiteResponderTest {
     assertSubString("0 wrong", results);
     assertSubString("name=\"TestOne1\"", results);
     assertNotSubString("id=\"TestTwo2\"", results);
-    assertSubString("PassFixture", results);
-    assertNotSubString("FailFixture", results);
+    assertSubString("EchoFixture", results);
+    assertNotSubString("bad", results);
 
     File rerunPage = responder.getRerunPageFile();
     assertFalse(rerunPage.exists());
@@ -388,10 +386,10 @@ public class SuiteResponderTest {
   public void testCanMixSlimAndFitTests() throws Exception {
     addTestToSuite("SlimTest", simpleSlimDecisionTable);
     String results = runSuite();
-    assertHasRegexp("<td>fitnesse.testutil.PassFixture</td>", results);
+    assertHasRegexp("EchoFixture", results);
     assertHasRegexp("<td><span class=\"pass\">wow</span></td>", results);
-    assertHasRegexp("<h3>fit:fit.FitServer</h3>", results);
     assertHasRegexp("<h3>slim:in-process", results);
+    assertNotSubString("fit:fit.FitServer", results);
   }
 
   @Test
@@ -566,8 +564,8 @@ public class SuiteResponderTest {
     String results = runSuite();
 
     assertHasRegexp("<executionLog>", results);
-    assertHasRegexp("<testSystem>fit:fit.FitServer</testSystem>", results);
     assertHasRegexp("<testSystem>slim:in-process</testSystem>", results);
+    assertNotSubString("fit:fit.FitServer", results);
     assertHasRegexp("<exitCode>0</exitCode>", results);
     assertHasRegexp("<stdOut>.*</stdOut>", results);
     assertHasRegexp("<stdErr>.*</stdErr>", results);
@@ -598,7 +596,7 @@ public class SuiteResponderTest {
 
   @Test
   public void testGetRerunPageName_ReplacesPeriod() throws Exception {
-    addTestToSuite("TestTwo", "|!-fitnesse.testutil.FailFixture-!|\n\n|!-fitnesse.testutil.FailFixture-!|\n");
+    addTestToSuite("TestTwo", fitFailFixture + "\n" + fitFailFixture);
     request.setResource("SuitePage.TestTwo");
     responder.makeResponse(context, request);
 

@@ -48,7 +48,7 @@ public class PagePositionsTest {
 
     PagePositions poss = new PagePositions();
     WikiPageIdentity identity = new WikiPageIdentity(p);
-    assertEquals("fit", poss.formatDimension(identity));
+    assertEquals("slim", poss.formatDimension(identity));
     assertEquals("1", poss.formatDimension(1));
     assertEquals("b", poss.formatDimension("b"));
     assertEquals("null", poss.formatDimension(null));

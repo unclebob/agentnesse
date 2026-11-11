@@ -7,6 +7,8 @@ Create a simple test page
 |script|Page Builder|
 |line|${SUT_PATH}|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page|!-TestPage-!|
 
 Now run the test page.

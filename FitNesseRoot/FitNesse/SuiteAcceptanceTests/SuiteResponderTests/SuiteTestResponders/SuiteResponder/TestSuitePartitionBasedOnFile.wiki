@@ -19,11 +19,11 @@ Add some files
 |file section file adder                                                                                                                                                                                     |
 |path         |type|content                                                                                                                                                                           |valid?|
 |partition.tsv|file|!-Page	Partition	Test System	Order
-SuitePage.TestPage1	2	fit	99
-SuitePage.TestPage2	2	fit	0
-SuitePage.TestPage3	0	fit	0
-SuitePage.TestPage4	1	fit	0
-SuitePage.TestPage5	1	fit	1
+SuitePage.TestPage1	2	slim	99
+SuitePage.TestPage2	2	slim	0
+SuitePage.TestPage3	0	slim	0
+SuitePage.TestPage4	1	slim	0
+SuitePage.TestPage5	1	slim	1
 -!|true  |
 
 Create a Suite page
@@ -36,14 +36,20 @@ Create two sub pages
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage1-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage2-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage3-!                    |
 
 |script|Page Builder                  |
@@ -52,10 +58,14 @@ Create two sub pages
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage6-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage7-!                    |
 
 |Response Requester.                                                                                    |

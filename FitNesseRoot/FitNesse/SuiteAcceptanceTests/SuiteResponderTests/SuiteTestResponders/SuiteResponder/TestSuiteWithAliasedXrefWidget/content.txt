@@ -11,6 +11,8 @@ Create a hierarchy of pages
 |script|Page Builder|
 |line|${SUT_PATH}|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page|!-TopPage.TestPage-!|
 
 Create a Suite page that mentions the test page in a !-!see-! widget

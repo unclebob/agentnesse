@@ -245,19 +245,6 @@ jacocoTestReport {
 // A deleted package drops its entry. Values are the baseline, truncated down
 // to two decimal places so a one-line swing does not fail the build.
 def coverageFloors = [
-  'eg': [line: 0.50],
-  'eg/bowling': [line: 0.98, branch: 0.97],
-  'eg/bowling/fixtures': [line: 0.47, branch: 0.42],
-  'eg/employeePayroll': [line: 0.00],
-  'eg/triviaGameExample': [line: 0.00, branch: 0.00],
-  'eg/triviaGameExample/fitnesseFixtures': [line: 0.00, branch: 0.00],
-  'fit': [line: 0.74, branch: 0.71],
-  'fit/decorator': [line: 1.00, branch: 1.00],
-  'fit/decorator/exceptions': [line: 1.00],
-  'fit/decorator/performance': [line: 1.00, branch: 1.00],
-  'fit/decorator/util': [line: 0.97, branch: 0.92],
-  'fit/exception': [line: 0.92],
-  'fit/testFxtr': [line: 0.25],
   'fitnesse': [line: 0.85, branch: 0.80],
   'fitnesse/authentication': [line: 0.82, branch: 0.73],
   'fitnesse/components': [line: 0.89, branch: 0.86],
@@ -293,7 +280,6 @@ def coverageFloors = [
   'fitnesse/testrunner/run': [line: 0.82, branch: 0.81],
   'fitnesse/testsystems': [line: 0.88, branch: 0.80],
   'fitnesse/testsystems/example': [line: 0.00],
-  'fitnesse/testsystems/fit': [line: 0.86, branch: 0.80],
   'fitnesse/testsystems/slim': [line: 0.87, branch: 0.84],
   'fitnesse/testsystems/slim/results': [line: 0.84, branch: 0.74],
   'fitnesse/testsystems/slim/tables': [line: 0.87, branch: 0.86],

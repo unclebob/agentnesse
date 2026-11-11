@@ -11,7 +11,7 @@ print quotient  = ${quotient}
 print quotient2 = ${quotient2}
 print quotient4 = ${quotient4}
 
-|eg.Division|
+|fitnesse.slim.test.Division|
 |# Test Description | numerator | denominator | quotient? |
 | Expected result is calculated with expression | ${numerator} | ${denominator} | ${= %3.0f : ${numerator} / ${denominator} =}.0 |
 | Expected result is in variable | ${numerator} | ${denominator} | ${quotient} |

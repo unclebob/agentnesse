@@ -10,6 +10,8 @@ Create a simple test page
 
 !|script|Page Builder|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page|!-SuitePage.TestPage-!|
 
 Now run the suite page.

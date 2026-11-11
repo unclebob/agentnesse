@@ -12,7 +12,7 @@ See also: >TestPage.
 -!|
 |and Test content is|!-
 #
-|baseline: eg.Division                                           |
+|baseline: fitnesse.slim.test.Division                                           |
 |numerator|denominator|quotient?|# Explication                   |
 |10       |2          |5.0      |S1 Base scenario                |
 |20       |4          |         |S2 Same result as base - correct|
@@ -29,7 +29,7 @@ Then the base scenario must ignore them already
 
 !define SLIM_DT_BASELINE (true)
 
-|eg.Division                                                    |
+|fitnesse.slim.test.Division                                                    |
 |numerator|denominator|quotient?|# Explication                  |
 |10       |2.5        |         |S1 Base scenario - ignore      |
 |20       |4          |5.0      |S2  correct result             |

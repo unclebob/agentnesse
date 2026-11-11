@@ -54,6 +54,8 @@
 |attributes|Suites=Tags On Test Page|
 |line|${SUT_PATH}|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page|!-TestPage-!|
 
  * Run the test page.

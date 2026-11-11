@@ -636,21 +636,18 @@ public class TestResponderTest {
     results = sender.sentData();
 
     assertHasRegexp("<executionLog>", results);
-    assertHasRegexp("<testSystem>fit:fit.FitServer</testSystem>", results);
+    assertHasRegexp("<testSystem>slim:", results);
     assertHasRegexp("<exitCode>0</exitCode>", results);
     assertHasRegexp("<stdOut>Output of TestPage.*</stdOut>", results);
-    assertHasRegexp("<stdErr></stdErr>", results);
+    assertHasRegexp("<stdErr>", results);
   }
 
   private String errorWritingTable(String message) {
-    return "\n|!-fitnesse.testutil.ErrorWritingFixture-!|\n" +
-      "|" + message + "|\n\n";
-
+    return "\n!define TEST_SYSTEM {slim}\n|script|fitnesse.testutil.ErrorWritingFixture|\n|write|!-" + message + "-!|\n\n";
   }
 
   private String outputWritingTable(String message) {
-    return "\n|!-fitnesse.testutil.OutputWritingFixture-!|\n" +
-      "|" + message + "|\n\n";
+    return "\n!define TEST_SYSTEM {slim}\n|script|fitnesse.testutil.OutputWritingFixture|\n|write|!-" + message + "-!|\n\n";
   }
 
   private String classpathWidgets() {
@@ -658,19 +655,19 @@ public class TestResponderTest {
   }
 
   private String crashFixtureTable() {
-    return "|!-fitnesse.testutil.CrashFixture-!|\n";
+    return "!define TEST_SYSTEM {slim}\n|fitnesse.testutil.CrashFixture|\n";
   }
 
   private String passFixtureTable() {
-    return "|!-fitnesse.testutil.PassFixture-!|\n";
+    return "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
   }
 
   private String failFixtureTable() {
-    return "|!-fitnesse.testutil.FailFixture-!|\n";
+    return "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
   }
 
   private String errorFixtureTable() {
-    return "|!-fitnesse.testutil.ErrorFixture-!|\n";
+    return "!define TEST_SYSTEM {slim}\n|script|fitnesse.testutil.ErrorFixture|\n|error|\n";
   }
 
   class XmlChecker {
@@ -697,7 +694,7 @@ public class TestResponderTest {
       assertNull(tags);
 
       String content = XmlUtil.getTextValue(result, "content");
-      assertSubString("PassFixture", content);
+      assertSubString("EchoFixture", content);
       String relativePageName = XmlUtil.getTextValue(result, "relativePageName");
       assertEquals("TestPage", relativePageName);
     }

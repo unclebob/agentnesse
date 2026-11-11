@@ -12,11 +12,15 @@ Create two sub pages
 
 |script|Page Builder|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |attributes|Suites=good!COMMA!better|
 |page|!-SuitePage.TestPageOne-!|
 
 |script|Page Builder|
 |line|!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |attributes|Suites=good|
 |page|!-SuitePage.TestPageTwo-!|
 

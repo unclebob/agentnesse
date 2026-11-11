@@ -16,14 +16,20 @@ Create two sub pages
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage1-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage2-!                    |
 
 |script|Page Builder                               |
 |line  |!-|!-fitnesse.testutil.PassFixture-!-!!-|-!|
+|line|!-|!-ok?-!-!!-|-!|
+|line|!-|!-true-!-!!-|-!|
 |page  |!-SuitePage.TestPage3-!                    |
 
 |script|Page Builder                  |
@@ -44,8 +50,8 @@ The suite should report all !-TestPages-! in tab-separate format.
 |type    |pattern                                  |matches?|
 |headers |Content-Type: text/tab-separated-values  |true    |
 |contents|!-Page\tPartition\tTest System\tOrder\n-!|true    |
-|contents|!-SuitePage\.TestPage1\t0\tfit\t0\n-!    |true    |
-|contents|!-SuitePage\.TestPage2\t0\tfit\t1\n-!    |true    |
-|contents|!-SuitePage\.TestPage3\t1\tfit\t0\n-!    |true    |
+|contents|!-SuitePage\.TestPage1\t0\tslim\t0\n-!    |true    |
+|contents|!-SuitePage\.TestPage2\t0\tslim\t1\n-!    |true    |
+|contents|!-SuitePage\.TestPage3\t1\tslim\t0\n-!    |true    |
 |contents|!-SuitePage\.TestPage4\t2\tslim\t0\n-!   |true    |
 

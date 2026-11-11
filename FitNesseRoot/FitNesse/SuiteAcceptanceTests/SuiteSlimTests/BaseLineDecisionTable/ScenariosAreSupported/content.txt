@@ -8,7 +8,7 @@
 
 Get the Division implementation from the eg package
 |Library    |
-|eg.Division|
+|fitnesse.slim.test.Division|
 
 
 

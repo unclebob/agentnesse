@@ -15,7 +15,7 @@ Using a output column in a decision table which is not defined by the scenarion 
 
 Get the Division implementation from the eg package
 |Library    |
-|eg.Division|
+|fitnesse.slim.test.Division|
 
 |my division                               |
 |numerator|denominator|my result2?|missing?|

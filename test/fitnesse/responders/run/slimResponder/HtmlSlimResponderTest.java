@@ -325,8 +325,8 @@ public class HtmlSlimResponderTest {
   @Test
   public void checkTestClassPrecededByDefine() throws Exception {
     getResultsForPageContents("!define PI {3.141592}\n" + "!path classes\n"
-        + "!path fitnesse.jar\n" + "|fitnesse.testutil.PassFixture|\n");
-    assertTestResultsContain("PassFixture");
+        + "!path fitnesse.jar\n" + "|fitnesse.fixtures.EchoFixture|\n|echo|\n|hi|\n");
+    assertTestResultsContain("EchoFixture");
   }
 
   @Test

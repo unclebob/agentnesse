@@ -50,28 +50,22 @@ public class PagesByTestSystemTest {
 
     PagesByTestSystem pagesByTestSystem = new PagesByTestSystem(testPages);
     Collection<WikiPageIdentity> descriptors = pagesByTestSystem.identities();
-    WikiPageIdentity fitDescriptor = new WikiPageIdentity(testPage);
     WikiPageIdentity slimDescriptor = new WikiPageIdentity(slimPage);
 
-    assertTrue(descriptors.contains(fitDescriptor));
+    assertEquals(slimDescriptor, new WikiPageIdentity(testPage));
     assertTrue(descriptors.contains(slimDescriptor));
+    assertEquals(1, descriptors.size());
 
-    List<TestPage> fitList = pagesByTestSystem.testPagesForIdentity(fitDescriptor);
     List<TestPage> slimList = pagesByTestSystem.testPagesForIdentity(slimDescriptor);
 
-    assertEquals(3, fitList.size());
-    assertEquals(3, slimList.size());
-
-    Assert.assertEquals(setUp, ((WikiTestPage) fitList.get(0)).getSourcePage());
-    assertEquals(testPage, ((WikiTestPage) fitList.get(1)).getSourcePage());
-    assertEquals(tearDown, ((WikiTestPage) fitList.get(2)).getSourcePage());
-
+    assertEquals(4, slimList.size());
     assertEquals(setUp, ((WikiTestPage) slimList.get(0)).getSourcePage());
     assertEquals(slimPage, ((WikiTestPage) slimList.get(1)).getSourcePage());
-    assertEquals(tearDown, ((WikiTestPage) slimList.get(2)).getSourcePage());
+    assertEquals(testPage, ((WikiTestPage) slimList.get(2)).getSourcePage());
+    assertEquals(tearDown, ((WikiTestPage) slimList.get(3)).getSourcePage());
 
-    assertEquals(6, pagesByTestSystem.totalTestsToRun());
-    assertEquals(6, pagesByTestSystem.testsToRun().size());
+    assertEquals(4, pagesByTestSystem.totalTestsToRun());
+    assertEquals(4, pagesByTestSystem.testsToRun().size());
   }
 
   @Test

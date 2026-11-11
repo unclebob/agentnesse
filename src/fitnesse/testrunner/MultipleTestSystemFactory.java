@@ -6,10 +6,6 @@ import java.util.Map;
 import fitnesse.testsystems.Descriptor;
 import fitnesse.testsystems.TestSystem;
 import fitnesse.testsystems.TestSystemFactory;
-import fitnesse.testsystems.fit.CommandRunningFitClient;
-import fitnesse.testsystems.fit.FitClientBuilder;
-import fitnesse.testsystems.fit.FitTestSystem;
-import fitnesse.testsystems.fit.InProcessFitClientBuilder;
 import fitnesse.testsystems.slim.CustomComparatorRegistry;
 import fitnesse.testsystems.slim.HtmlSlimTestSystem;
 import fitnesse.testsystems.slim.InProcessSlimClientBuilder;
@@ -24,11 +20,7 @@ public class MultipleTestSystemFactory implements TestSystemFactory, TestSystemF
 
   public MultipleTestSystemFactory(SlimTableFactory slimTableFactory, CustomComparatorRegistry customComparatorRegistry, ClassLoader classLoader) {
     registerTestSystemFactory("slim", new HtmlSlimTestSystemFactory(slimTableFactory, customComparatorRegistry));
-    registerTestSystemFactory("fit", new FitTestSystemFactory());
-
-    // This is basically the legacy: we want to be able to run slim and fit both in process and out of process.
     registerInProcessTestSystemFactory("slim", new InProcessHtmlSlimTestSystemFactory(slimTableFactory, customComparatorRegistry, classLoader));
-    registerInProcessTestSystemFactory("fit", new InProcessFitTestSystemFactory(classLoader));
   }
 
   @Override
@@ -99,31 +91,4 @@ public class MultipleTestSystemFactory implements TestSystemFactory, TestSystemF
     }
   }
 
-  static class FitTestSystemFactory implements TestSystemFactory {
-
-    @Override
-    public FitTestSystem create(Descriptor descriptor) {
-      FitClientBuilder clientBuilder = new FitClientBuilder(descriptor);
-      CommandRunningFitClient fitClient = clientBuilder.build();
-
-      return new FitTestSystem(clientBuilder.getTestSystemName(), fitClient);
-    }
-  }
-
-  static class InProcessFitTestSystemFactory implements TestSystemFactory {
-
-    private final ClassLoader classLoader;
-
-    public InProcessFitTestSystemFactory(ClassLoader classLoader) {
-      this.classLoader = classLoader;
-    }
-
-    @Override
-    public FitTestSystem create(Descriptor descriptor) {
-      InProcessFitClientBuilder clientBuilder = new InProcessFitClientBuilder(descriptor, classLoader);
-      CommandRunningFitClient fitClient = clientBuilder.build();
-
-      return new FitTestSystem(clientBuilder.getTestSystemName(), fitClient);
-    }
-  }
 }

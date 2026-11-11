@@ -34,7 +34,7 @@ beat Bill with a noodle
 
 Use the Division class from the eg library to implement the scenario
 |Library|
-|eg.Division|
+|fitnesse.slim.test.Division|
 
 !4 Test the scenario with a decision table
 | my division |

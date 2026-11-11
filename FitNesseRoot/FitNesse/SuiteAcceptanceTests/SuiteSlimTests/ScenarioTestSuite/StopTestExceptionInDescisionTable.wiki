@@ -19,7 +19,7 @@ A !-StopTestException-! should cause the rest of the table to be skipped.
 
 Get the Division implementation from the eg package
 |Library    |
-|eg.Division|
+|fitnesse.slim.test.Division|
 
 |my division                      |
 |numerator|denominator|my result3?|

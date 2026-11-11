@@ -32,7 +32,7 @@ public class WikiPageDescriptor implements Descriptor {
   public String getTestSystem() {
     String testSystemName = getVariable(WikiPageIdentity.TEST_SYSTEM);
     if (testSystemName == null)
-      return "fit";
+      return "slim";
     return testSystemName;
   }
 
