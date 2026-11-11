@@ -6,7 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Properties;
 
-import fit.Fixture;
 import fitnesse.authentication.Authenticator;
 import fitnesse.responders.editing.SaveRecorder;
 import fitnesse.testutil.FitNesseUtil;
@@ -14,7 +13,7 @@ import util.FileUtil;
 
 import static fitnesse.fixtures.FitnesseFixtureContext.context;
 
-public class SetUp extends Fixture {
+public class SetUp {
   public SetUp() throws Exception {
     this(new Properties());
   }

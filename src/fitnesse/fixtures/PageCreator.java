@@ -4,10 +4,9 @@ package fitnesse.fixtures;
 
 import java.util.StringTokenizer;
 
-import fit.ColumnFixture;
 import fitnesse.wiki.*;
 
-public class PageCreator extends ColumnFixture {
+public class PageCreator {
   public String pageName;
   public String pageContents;
   public String pageAttributes;

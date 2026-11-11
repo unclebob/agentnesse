@@ -1,39 +1,6 @@
 !2 This page tests table coloring.
  * Test pages that use the Slim test system should have table row coloring to better highlight test flow.
 
-!3 Test Fit test system does not include coloring.
- * First create the test page.
-|Page creator.|
-|Page name.|Page contents.|Page attributes.|valid?|
-|!-FitTestPage-!|!-!define TEST_SYSTEM {fit}
-|Import|
-|fit.Fixture|
-
-|fitnesse.fixtures.ColumnFixtureTestFixture|
-|input|=output?|
-|1|one|
-
-|fitnesse.fixtures.PrimeNumberRowFixture|
-|prime|
-|2|
-
-| script: echo fixture |
-| check | echo | Hello | Hello |
-
-|fitnesse.fixtures.TearDown|-!||true|
-|!-PageHeader-!|header||true|
-|!-PageFooter-!|footer||true|
-
- * Then request the page.
-|Response Requester.|
-|uri|valid?|
-|!-FitTestPage-!|true|
- * Ensure that the table have no markup coloring class entries.
-|Response Examiner.|
-|type|pattern|matches?|wrapped html?|
-|contents|!-.*slimRowTitle.*-!|false||
-|contents|!-.*slimRowColor.*-!|false||
-----
 !3 Test Slim test system static page does NOT include coloring.
  * First create the test page.
 |Page creator.|

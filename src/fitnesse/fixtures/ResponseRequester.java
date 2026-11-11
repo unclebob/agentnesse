@@ -2,7 +2,6 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.fixtures;
 
-import fit.ColumnFixture;
 import fitnesse.FitNesseExpediter;
 import fitnesse.html.HtmlUtil;
 import fitnesse.http.MockRequest;
@@ -12,7 +11,7 @@ import fitnesse.util.SerialExecutorService;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPagePath;
 
-public class ResponseRequester extends ColumnFixture {
+public class ResponseRequester {
   public String uri;
   public String username;
   public String password;
@@ -23,7 +22,6 @@ public class ResponseRequester extends ColumnFixture {
     return status() == 200;
   }
 
-  @Override
   public void execute() throws Exception {
     setRequest(new MockRequest());
 

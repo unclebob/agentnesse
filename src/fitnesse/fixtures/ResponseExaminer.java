@@ -2,14 +2,13 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.fixtures;
 
-import fit.ColumnFixture;
 import fitnesse.html.HtmlUtil;
 
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ResponseExaminer extends ColumnFixture {
+public class ResponseExaminer {
   public String type;
   public String pattern;
   public String line;

@@ -2,15 +2,13 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.fixtures;
 
-import fit.Fixture;
-
 import java.io.File;
 
 import static fitnesse.fixtures.FitnesseFixtureContext.*;
 import fitnesse.util.Clock;
 import util.FileUtil;
 
-public class TearDown extends Fixture {
+public class TearDown {
   public TearDown() throws Exception {
     context.fitNesse.stop();
     authenticator = null;

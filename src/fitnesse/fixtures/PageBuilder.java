@@ -6,10 +6,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.StringTokenizer;
 
-import fit.Fixture;
 import fitnesse.wiki.*;
 
-public class PageBuilder extends Fixture {
+public class PageBuilder {
   private PrintWriter writer;
   private StringWriter stringWriter;
   private String pageAttributes = null;
