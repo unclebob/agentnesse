@@ -2,7 +2,6 @@ package fitnesse.markdown;
 
 import org.commonmark.node.Heading;
 import org.commonmark.node.Node;
-import org.commonmark.node.Text;
 import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlWriter;
@@ -33,7 +32,7 @@ final class HeadingRenderer implements NodeRenderer {
     Heading heading = (Heading) node;
     String tag = "h" + heading.getLevel();
     Map<String, String> attributes = new LinkedHashMap<>();
-    attributes.put("id", anchor(plainText(heading)));
+    attributes.put("id", anchor(PlainText.of(heading)));
     writer.line();
     writer.tag(tag, attributes);
     renderChildren(heading);
@@ -62,22 +61,5 @@ final class HeadingRenderer implements NodeRenderer {
       suffix++;
     }
     return id;
-  }
-
-  private static String plainText(Node node) {
-    StringBuilder text = new StringBuilder();
-    collect(node, text);
-    return text.toString();
-  }
-
-  private static void collect(Node node, StringBuilder text) {
-    if (node instanceof Text) {
-      text.append(((Text) node).getLiteral());
-    }
-    Node child = node.getFirstChild();
-    while (child != null) {
-      collect(child, text);
-      child = child.getNext();
-    }
   }
 }

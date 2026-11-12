@@ -16,6 +16,14 @@ public class MarkdownRenderTest {
   }
 
   @Test
+  public void aSlimTableKeepsItsNameAndGainsATypeClass() throws Exception {
+    assertGolden("decision-table");
+    assertGolden("bare-decision");
+    assertGolden("script-table");
+    assertGolden("query-table");
+  }
+
+  @Test
   public void aWikiWordBecomesALinkAndAMissingPageOffersToCreateIt() throws Exception {
     assertGolden("wiki-word");
     String linked = MarkdownRenderer.render("Open FrontPage.\n", word -> "FrontPage".equals(word));

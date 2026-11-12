@@ -27,6 +27,7 @@ public final class MarkdownRenderer {
       .extensions(EXTENSIONS)
       .nodeRendererFactory(context -> new WikiWordNodeRenderer(context, pageExists))
       .nodeRendererFactory(context -> new HeadingRenderer(context, headingIds))
+      .attributeProviderFactory(context -> new SlimTableAttributes())
       .build();
     return html.render(parser.parse(markdown == null ? "" : markdown));
   }
