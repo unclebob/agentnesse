@@ -14,6 +14,7 @@ public class MarkdownRenderTest {
   public void aHeadingRendersAsHtml() throws Exception {
     assertGolden("heading");
     assertGolden("headings");
+    assertGolden("slug");
   }
 
   @Test

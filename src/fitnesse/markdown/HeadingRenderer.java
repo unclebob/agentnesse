@@ -50,12 +50,11 @@ final class HeadingRenderer implements NodeRenderer {
   }
 
   private String anchor(String text) {
-    String slug = text.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
-    if (slug.isEmpty()) {
-      slug = "section";
-    }
+    String slug = text.toLowerCase(Locale.ROOT)
+      .replaceAll("[^\\p{L}\\p{N} -]", "")
+      .replace(" ", "-");
     String id = slug;
-    int suffix = 2;
+    int suffix = 1;
     while (!usedIds.add(id)) {
       id = slug + "-" + suffix;
       suffix++;
