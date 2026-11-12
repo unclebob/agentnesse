@@ -124,8 +124,8 @@ public class FitNesseMainTest {
     try (ServerSocket all = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "0.0.0.0")))) {
       assertTrue(all.getInetAddress().isAnyLocalAddress());
     }
-    try (ServerSocket specific = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "127.0.0.2")))) {
-      assertEquals("127.0.0.2", specific.getInetAddress().getHostAddress());
+    try (ServerSocket specific = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "127.0.0.1")))) {
+      assertEquals("127.0.0.1", specific.getInetAddress().getHostAddress());
     }
   }
 
