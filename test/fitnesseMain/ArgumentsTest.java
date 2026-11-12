@@ -38,7 +38,7 @@ public class ArgumentsTest {
   @Test
   public void argumentsCanBeRepresentedByProperties() throws IOException {
     Arguments args = new Arguments("-v", "-p", "81", "-d", "directory", "-r", "root", "-b", "someFile.txt",
-              "-l", "myLogDirectory", "-o", "-f", "fitnesse.properties", "-i", "-c", "SomeCommand", "-lh", "-w", "42");
+              "-l", "myLogDirectory", "-f", "fitnesse.properties", "-c", "SomeCommand", "-lh", "-w", "42");
     Properties properties = args.update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
 
     assertEquals("verbose", properties.getProperty("LogLevel"));
@@ -47,9 +47,7 @@ public class ArgumentsTest {
     assertEquals("root", properties.getProperty("FitNesseRoot"));
     assertEquals("someFile.txt", properties.getProperty("RedirectOutput"));
     assertEquals("myLogDirectory", properties.getProperty("LogDirectory"));
-    assertEquals("true", properties.getProperty("OmittingUpdates"));
     assertEquals("fitnesse.properties", properties.getProperty("ConfigFile"));
-    assertEquals("true", properties.getProperty("InstallOnly"));
     assertEquals("SomeCommand", properties.getProperty("Command"));
     assertEquals("true", properties.getProperty("LocalhostOnly"));
     assertEquals("42", properties.getProperty("MaximumWorkers"));
@@ -66,8 +64,6 @@ public class ArgumentsTest {
     assertEquals("FitNesseRoot", properties.getProperty("FitNesseRoot"));
     assertNull(properties.getProperty("RedirectOutput"));
     assertNull(properties.getProperty("LogDirectory"));
-    assertNull(properties.getProperty("OmittingUpdates"));
-    assertNull(properties.getProperty("InstallOnly"));
     assertNull(properties.getProperty("Command"));
     assertNull(properties.getProperty("LocalhostOnly"));
     assertEquals("100", properties.getProperty("MaximumWorkers"));

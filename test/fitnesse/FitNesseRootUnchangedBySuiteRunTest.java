@@ -40,7 +40,7 @@ public class FitNesseRootUnchangedBySuiteRunTest {
       int exitCode;
       try {
         exitCode = new FitNesseMain().launchFitNesse(new Arguments(
-          "-o", "-c", "NoFilesLeftBehind?suite&format=text"));
+          "-c", "NoFilesLeftBehind?suite&format=text"));
       } finally {
         System.setOut(out);
         System.setErr(err);

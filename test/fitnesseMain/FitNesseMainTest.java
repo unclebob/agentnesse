@@ -55,21 +55,7 @@ public class FitNesseMainTest {
   }
 
   @Test
-  public void testInstallOnly() throws Exception {
-    final FitNesse fitNesse = mock(FitNesse.class);
-    context.withParameter(ConfigurationParameter.INSTALL_ONLY, "true");
-    // Avoid doing a real update...
-    context.withParameter(ConfigurationParameter.OMITTING_UPDATES, "true");
-
-    context = spy(context);
-    doAnswer(fitNesseContextWith(fitNesse)).when(context).makeFitNesseContext();
-    new FitNesseMain().launchFitNesse(context);
-    verify(fitNesse, never()).start(any());
-  }
-
-  @Test
   public void commandArgCallsExecuteSingleCommand() throws Exception {
-    context.withParameter(ConfigurationParameter.OMITTING_UPDATES, "true");
     context.withParameter(ConfigurationParameter.COMMAND, "command");
 
     FitNesse fitNesse = mock(FitNesse.class);
@@ -86,7 +72,7 @@ public class FitNesseMainTest {
 
   @Test
   public void testDirCreations() throws Exception {
-    runFitnesseMainWith("-o", "-c", "/root", "-r", TEST_FITNESSE_ROOT);
+    runFitnesseMainWith("-c", "/root", "-r", TEST_FITNESSE_ROOT);
 
     assertTrue(new File(TEST_FITNESSE_ROOT).exists());
     assertTrue(new File(TEST_FITNESSE_ROOT, "files").exists());
@@ -108,14 +94,14 @@ public class FitNesseMainTest {
 
   @Test
   public void canRunSingleCommand() throws Exception {
-    String response = runFitnesseMainWith("-o", "-c", "/root");
+    String response = runFitnesseMainWith("-c", "/root");
     assertThat(response, containsString("Executing command:"));
     assertThat(response, not(containsString("Starting FitNesse on port:")));
   }
 
   @Test(expected = Exception.class)
   public void runningCommandWithNonExistentAddressResultsInError() throws Exception {
-    String[] args = {"-o", "-c", "/FitNesse.NonExistentTestCase?test"};
+    String[] args = {"-c", "/FitNesse.NonExistentTestCase?test"};
     Arguments arguments = new Arguments(args);
     try {
       new FitNesseMain().launchFitNesse(arguments);
@@ -130,7 +116,7 @@ public class FitNesseMainTest {
     // create page to link to in test root
     FileUtil.createFile(TEST_FITNESSE_ROOT + "/LinkTarget.wiki", "Target for symbolic link unit test");
 
-    String response = runFitnesseMainWith("-o", "-r", TEST_FITNESSE_ROOT, "-c", "?responder=symlink&linkName=MyLink&linkPath=LinkTarget");
+    String response = runFitnesseMainWith("-r", TEST_FITNESSE_ROOT, "-c", "?responder=symlink&linkName=MyLink&linkPath=LinkTarget");
     assertThat(response, containsString("Executing command:"));
     assertThat(response, not(containsString("Starting FitNesse on port:")));
   }
@@ -166,7 +152,7 @@ public class FitNesseMainTest {
     try {
       try {
         exitCode = new FitNesseMain().launchFitNesse(new Arguments(
-          "-o", "-r", TEST_FITNESSE_ROOT, "-c", command));
+          "-r", TEST_FITNESSE_ROOT, "-c", command));
       } catch (Exception e) {
         exitCode = 1;
       }
@@ -185,7 +171,7 @@ public class FitNesseMainTest {
         "|script|fitnesse.fixtures.EchoFixture|\n" +
         "|check|echo|hello|goodbye|\n");
 
-    int exitCode = launch(new String[]{"-o", "-r", TEST_FITNESSE_ROOT, "-c", "TestFail?test&format=text"});
+    int exitCode = launch(new String[]{"-r", TEST_FITNESSE_ROOT, "-c", "TestFail?test&format=text"});
     assertEquals(1, exitCode);
   }
 
@@ -198,7 +184,7 @@ public class FitNesseMainTest {
     File output = new File(TEST_FITNESSE_ROOT, "results.txt");
 
     int exitCode = launch(new String[]{
-      "-o", "-r", TEST_FITNESSE_ROOT, "-c", "TestPass?test&format=text", "-b", output.getPath()});
+      "-r", TEST_FITNESSE_ROOT, "-c", "TestPass?test&format=text", "-b", output.getPath()});
 
     assertEquals(0, exitCode);
     assertThat(FileUtil.getFileContent(output), containsString("0 Failures"));
@@ -208,7 +194,7 @@ public class FitNesseMainTest {
   public void occupiedPortReturnsExitCodeOne() throws Exception {
     try (ServerSocket socket = new ServerSocket(0)) {
       int exitCode = launch(new String[]{
-        "-o", "-r", TEST_FITNESSE_ROOT, "-p", Integer.toString(socket.getLocalPort())});
+        "-r", TEST_FITNESSE_ROOT, "-p", Integer.toString(socket.getLocalPort())});
       assertEquals(1, exitCode);
     }
   }
@@ -222,7 +208,7 @@ public class FitNesseMainTest {
     System.setProperty(themeKey, "othertheme");
     try {
       // Checked via logging:
-      String output = runFitnesseMainWith("-o", "-c", "/root", "-f", configFileName);
+      String output = runFitnesseMainWith("-c", "/root", "-f", configFileName);
       assertThat(output, containsString("othertheme"));
     } finally {
       System.getProperties().remove(themeKey);

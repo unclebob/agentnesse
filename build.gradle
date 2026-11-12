@@ -276,7 +276,6 @@ def coverageFloors = [
   'fitnesse/testsystems/slim/results': [line: 0.84, branch: 0.74],
   'fitnesse/testsystems/slim/tables': [line: 0.87, branch: 0.86],
   'fitnesse/testutil': [line: 0.59, branch: 0.62],
-  'fitnesse/updates': [line: 0.95, branch: 0.87],
   'fitnesse/util': [line: 0.90, branch: 0.88],
   'fitnesse/wiki': [line: 0.93, branch: 0.89],
   'fitnesse/wiki/fs': [line: 0.83, branch: 0.84],
@@ -435,7 +434,7 @@ task acceptanceTest(type: JavaExec) {
   onlyIf { test.didWork }
   classpath = standaloneJar.outputs.files
   mainClass = "fitnesseMain.FitNesseMain"
-  args "-o", "-c", "FitNesse.SuiteAcceptanceTests?suite&format=text"
+  args "-c", "FitNesse.SuiteAcceptanceTests?suite&format=text"
 }
 
 check.dependsOn acceptanceTest

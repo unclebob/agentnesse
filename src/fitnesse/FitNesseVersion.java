@@ -55,23 +55,4 @@ public class FitNesseVersion {
     return version;
   }
 
-  static Long dateVersion(String fullTextVersion) {
-    try {
-      return Long.parseLong(fullTextVersion.substring(1, Math.min(9, fullTextVersion.length())));
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Unable to extract date version from " + fullTextVersion, e);
-    }
-  }
-
-  /**
-   * Compare this instance's version against the specified one.
-   * Note: the suffixes are ignored when comparing versions
-   * @param requiredVersion minimum required version
-   * @return true if this version is not younger than the specified one, suffix excluded
-   **/
-  public boolean isAtLeast(String requiredVersion) {
-    long thisVersion = dateVersion(version);
-    long otherVersion = dateVersion(requiredVersion);
-    return thisVersion >= otherVersion;
-  }
 }

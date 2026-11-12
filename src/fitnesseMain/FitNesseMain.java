@@ -4,10 +4,8 @@ import fitnesse.ConfigurationParameter;
 import fitnesse.ContextConfigurator;
 import fitnesse.FitNesse;
 import fitnesse.FitNesseContext;
-import fitnesse.Updater;
 import fitnesse.reporting.ExitCodeListener;
 import fitnesse.socketservice.PlainServerSocketFactory;
-import fitnesse.updates.WikiContentUpdater;
 import fitnesse.wiki.PathParser;
 
 import java.io.*;
@@ -78,19 +76,6 @@ public class FitNesseMain {
 
     logStartupInfo(context);
 
-    if (update(context)) {
-      LOG.info("**********************************************************");
-      LOG.info("Files have been updated to a new version.");
-      LOG.info("Please read the release notes on ");
-      LOG.info("http://localhost:" + context.port + "/FitNesse.ReleaseNotes");
-      LOG.info("to find out about the new features and fixes.");
-      LOG.info("**********************************************************");
-    }
-
-    if ("true".equalsIgnoreCase(contextConfigurator.get(INSTALL_ONLY))) {
-      return null;
-    }
-
     try {
       return launch(context, classLoader);
     } catch (BindException e) {
@@ -111,17 +96,8 @@ public class FitNesseMain {
     return path.exists() || path.mkdir();
   }
 
-  private boolean update(FitNesseContext context) throws IOException {
-    if (!"true".equalsIgnoreCase(context.getProperty(OMITTING_UPDATES.getKey()))) {
-      Updater updater = new WikiContentUpdater(context);
-      return updater.update();
-    }
-    return false;
-  }
-
   private Integer launch(FitNesseContext context, ClassLoader classLoader) throws Exception {
-    if (!"true".equalsIgnoreCase(context.getProperty(INSTALL_ONLY.getKey()))) {
-      String command = context.getProperty(COMMAND.getKey());
+    String command = context.getProperty(COMMAND.getKey());
       if (command != null) {
         String output = context.getProperty(OUTPUT.getKey());
         executeSingleCommand(context.fitNesse, command, output);
@@ -136,7 +112,6 @@ public class FitNesseMain {
         ServerSocket serverSocket = createServerSocket(context, classLoader);
         context.fitNesse.start(serverSocket);
       }
-    }
     return null;
   }
 

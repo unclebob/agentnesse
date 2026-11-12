@@ -11,14 +11,12 @@ import static fitnesse.ContextConfigurator.*;
 public class Arguments {
 
   private final CommandLine commandLine = new CommandLine(
-          "[-v][-p port][-d dir][-r root][-l logDir][-f config][-o][-i][-c command][-b output][-lh][-w workers]");
+          "[-v][-p port][-d dir][-r root][-l logDir][-f config][-c command][-b output][-lh][-w workers]");
 
   private final String rootPath;
   private final Integer port;
   private final String rootDirectory;
   private final String logDirectory;
-  private final boolean omitUpdate;
-  private final boolean installOnly;
   private final String command;
   private final String output;
   private final String configFile;
@@ -39,8 +37,6 @@ public class Arguments {
     this.output = commandLine.getOptionArgument("b", "output");
     this.configFile = commandLine.getOptionArgument("f", "config");
     this.verboseLogging = commandLine.hasOption("v");
-    this.omitUpdate = commandLine.hasOption("o");
-    this.installOnly = commandLine.hasOption("i");
     this.localhostOnly = commandLine.hasOption("lh");
     String maximumWorkers = commandLine.getOptionArgument("w", "workers");
     this.maximumWorkers = maximumWorkers != null ? Integer.valueOf(maximumWorkers) : null;
@@ -49,7 +45,7 @@ public class Arguments {
   static void printUsage() {
     ContextConfigurator defaults = ContextConfigurator.systemDefaults();
 
-    System.err.println("Usage: java -jar fitnesse.jar [-vpdrlfoicblh]");
+    System.err.println("Usage: java -jar fitnesse.jar [-vpdrlfcblh]");
     System.err.println("\t-p <port number> {" + DEFAULT_PORT + "}");
     System.err.println("\t-d <working directory> {" +
       defaults.get(ROOT_PATH) + "}");
@@ -58,8 +54,6 @@ public class Arguments {
     System.err.println("\t-l <log directory> {no logging}");
     System.err.println("\t-f <config properties file> {" +
       defaults.get(CONFIG_FILE) + "}");
-    System.err.println("\t-o omit updates");
-    System.err.println("\t-i Install only, then quit.");
     System.err.println("\t-c <command> execute single command.");
     System.err.println("\t-b <filename> redirect command output.");
     System.err.println("\t-v {off} Verbose logging");
@@ -91,10 +85,6 @@ public class Arguments {
       result = result.withParameter(OUTPUT, output);
     if (logDirectory != null)
       result = result.withParameter(LOG_DIRECTORY, logDirectory);
-    if (omitUpdate)
-      result = result.withParameter(OMITTING_UPDATES, "true");
-    if (installOnly)
-      result = result.withParameter(INSTALL_ONLY, "true");
     if (command != null)
       result = result.withParameter(COMMAND, command);
     if (localhostOnly)

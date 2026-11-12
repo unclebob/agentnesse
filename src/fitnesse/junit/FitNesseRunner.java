@@ -437,8 +437,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
       .updatedWith(ConfigurationParameter.makeProperties(
             ConfigurationParameter.PORT, port,
             ConfigurationParameter.ROOT_PATH, rootPath,
-            ConfigurationParameter.ROOT_DIRECTORY, fitNesseRoot,
-            ConfigurationParameter.OMITTING_UPDATES, true));
+            ConfigurationParameter.ROOT_DIRECTORY, fitNesseRoot));
   }
 
   private void executeTests(MultipleTestsRunner testRunner) throws IOException, TestExecutionException {

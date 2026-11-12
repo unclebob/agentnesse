@@ -82,3 +82,5 @@ ContentFilter
 CustomTableAliasPlugin
 CustomScriptTableRenderingPlugin
 PluginsClassLoaderFactory
+
+WikiContentUpdater
