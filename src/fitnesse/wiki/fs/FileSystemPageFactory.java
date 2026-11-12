@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import fitnesse.markdown.MarkdownPage;
 import fitnesse.markdown.MarkdownPageFactory;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.WikiPageFactoryRegistry;
+import fitnesse.wiki.WikiPageLoadException;
 import fitnesse.wikitext.VariableSource;
 
 /**
@@ -80,6 +82,7 @@ public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRe
 
   @Override // from WikiPageFactory
   public WikiPage makePage(File path, String pageName, WikiPage parent, VariableSource variableSource) {
+    rejectRootConflict(path);
     for (WikiPageFactory factory : wikiPageFactories) {
       if (factory.supports(path)) {
         return factory.makePage(path, pageName, parent, variableSource);
@@ -89,6 +92,15 @@ public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRe
     if (parent == null || (parent instanceof FileBasedWikiPage && isWikiWordDirectory(path)))
       return fallbackPageFactory.makePage(path, pageName, parent, variableSource);
     return null;
+  }
+
+  private void rejectRootConflict(File path) {
+    File content = new File(path, "content.txt");
+    File rootMarkdown = new File(path, MarkdownPage.ROOT_FILE);
+    if (fileSystem.exists(content) && !fileSystem.isDirectory(content)
+      && fileSystem.exists(rootMarkdown) && !fileSystem.isDirectory(rootMarkdown)) {
+      throw new WikiPageLoadException(content.getPath() + " and " + rootMarkdown.getPath() + " both exist");
+    }
   }
 
   private boolean isWikiWordDirectory(final File path) {

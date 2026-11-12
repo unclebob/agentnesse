@@ -44,8 +44,41 @@ public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
   @Override
   public WikiPage getChildPage(FileBasedWikiPage page, String childName) {
     File parent = page.getFileSystemPath();
-
+    rejectDuplicate(parent, childName);
     return makeChildPage(new File(parent, childName), childName, page);
+  }
+
+  private void rejectDuplicate(File parent, String childName) {
+    String base = pageBase(childName);
+    if (base == null) {
+      return;
+    }
+    File markdown = new File(parent, base + ".md");
+    File wiki = new File(parent, base + ".wiki");
+    File content = new File(new File(parent, base), "content.txt");
+    if (isFile(markdown) && isFile(wiki)) {
+      throw new WikiPageLoadException(markdown.getPath() + " and " + wiki.getPath() + " both exist");
+    }
+    if (isFile(markdown) && isFile(content)) {
+      throw new WikiPageLoadException(markdown.getPath() + " and " + content.getPath() + " both exist");
+    }
+  }
+
+  private String pageBase(String childName) {
+    if (childName.endsWith(".md")) {
+      return childName.substring(0, childName.length() - 3);
+    }
+    if (childName.endsWith(".wiki")) {
+      return childName.substring(0, childName.length() - 5);
+    }
+    if (childName.indexOf('.') >= 0) {
+      return null;
+    }
+    return childName;
+  }
+
+  private boolean isFile(File path) {
+    return fileSystem.exists(path) && !fileSystem.isDirectory(path);
   }
 
   public FileSystem fileSystem() {

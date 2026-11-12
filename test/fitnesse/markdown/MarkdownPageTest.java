@@ -3,6 +3,7 @@ package fitnesse.markdown;
 import fitnesse.components.TraversalListener;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
+import fitnesse.wiki.WikiPageLoadException;
 import fitnesse.wiki.PrunedPagePruningStrategy;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
@@ -165,14 +166,38 @@ public class MarkdownPageTest {
   }
 
   @Test
-  public void anOldRootWinsWhenBothFormatsArePresent() throws Exception {
+  public void markdownBesideAnOldPageNamesBothFiles() throws Exception {
+    fileSystem.makeFile(new File("root/Notes.md"), "new\n");
+    fileSystem.makeFile(new File("root/Notes/content.txt"), "old\n");
+    fileSystem.makeFile(new File("root/Other.md"), "new\n");
+    fileSystem.makeFile(new File("root/Other.wiki"), "old\n");
+
+    assertBothFormats("Notes", "Notes.md", "content.txt");
+    assertBothFormats("Other", "Other.md", "Other.wiki");
+  }
+
+  @Test
+  public void aRootWithBothContentAndRootMarkdownNamesBothFiles() throws Exception {
     fileSystem.makeFile(new File("both/content.txt"), "old");
     fileSystem.makeFile(new File("both/_root.md"), "# new\n");
-    WikiPage both = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
-      .makePage(new File("both"), "both", null, new SystemVariableSource());
+    try {
+      new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
+        .makePage(new File("both"), "both", null, new SystemVariableSource());
+      fail("both formats");
+    } catch (WikiPageLoadException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("content.txt"));
+      assertTrue(e.getMessage(), e.getMessage().contains("_root.md"));
+    }
+  }
 
-    assertEquals(FileSystemPage.class, both.getClass());
-    assertEquals("old", both.getData().getContent());
+  private void assertBothFormats(String pageName, String markdown, String old) {
+    try {
+      root.getChildPage(pageName);
+      fail(pageName);
+    } catch (WikiPageLoadException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains(markdown));
+      assertTrue(e.getMessage(), e.getMessage().contains(old));
+    }
   }
 
   @Test
