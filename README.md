@@ -1,123 +1,49 @@
-# [FitNesse](https://fitnesse.org/)  [![maven central](https://maven-badges.herokuapp.com/maven-central/org.fitnesse/fitnesse/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.fitnesse/fitnesse) [![SonarQube Tech Debt](https://img.shields.io/sonar/http/nemo.sonarqube.org/org.fitnesse:fitnesse/tech_debt.svg)](http://nemo.sonarqube.org/dashboard/index?id=org.fitnesse%3Afitnesse)
+# AgentNesse
 
-Welcome to FitNesse, the fully integrated stand-alone acceptance testing framework and wiki.
+AgentNesse is a fork of [FitNesse](https://github.com/unclebob/fitnesse). It is for AI agents that write and run acceptance tests. The mission is a minimal, agent-friendly acceptance-testing system.
 
-To get started, check out the [FitNesse website](https://fitnesse.org/)!
+FitNesse accumulated a wiki, two test systems, page history, its own version store, plugins, and authentication. An agent does not need that. It needs pages it can read and write, Slim tables it can fill in, and a run whose result it can read. AgentNesse is that, and nothing else.
 
+This tree is early and under active rework, phase by phase. What you find here is not the finished tool. Features below marked planned are not built yet.
 
+## Direction
 
-## Quick start
+Slim only. Fit is gone.
 
-* [A One-Minute Description of FitNesse](https://fitnesse.org/FitNesse/UserGuide/OneMinuteDescription.html)
-* [Download FitNesse](https://fitnesse.org/FitNesseDownload.html) and [Plugins](https://fitnesse.org/PlugIns.html)
-* [The FitNesse User Guide](https://fitnesse.org/FitNesse/UserGuide.html)
+No test history. A run returns its results. Nothing is kept afterward.
 
+No page versions inside the tool. Pages are written in place. Git is the history. (Planned. The zip and in-memory version controllers are still in this tree.)
 
+Pages are Markdown files with front matter. (Planned. Pages are still FitNesse wiki text.)
 
-## Bug tracker
+Slim tables are bare GitHub-flavored Markdown tables. The table type is the name in the first header cell, for example `decision:Division`. A name with no prefix is a decision table. (Planned.)
 
-Have a bug or a feature request? [Please open a new issue](https://github.com/unclebob/fitnesse/issues).
+Commands that are not tables go in fenced `agentnesse` blocks. (Planned.)
 
+Run results are JSON. A JUnit XML file is written from that JSON, for CI. (Planned. HTTP `format=xml` and `format=junit` are already gone. The `fitnesse.junit` runner still writes JUnit XML on its own, and it does not read test history.)
 
-## Edge builds
+A command line runs a page or a suite and exits with the failure count. (The current entry point does this. A thinner agent CLI is planned.)
 
-The latest stable build of FitNesse can be [downloaded here](https://github.com/unclebob/fitnesse/actions) by clicking the latest workflow and clicking the `libs` artifact.
+A thin MCP server lists pages, runs a page or suite (with tags, and a rerun of failures), and returns the JSON results. (Planned.)
 
-**Note**: the `libs` artifact contains 2 jars. `fitnesse.jar` is for use in Maven or Ivy. Users who just want to run FitNesse by itself should use `fitnesse-standalone.jar` instead of `fitnesse.jar`.
+No plugins. No authentication. One author. (Planned. Plugins and authentication are still in this tree.)
 
-## Developers
+## Build and run
 
-Issues and pull requests are administered at [GitHub](https://github.com/unclebob/fitnesse/issues).
-
-### Building
-
-A proper internet connection is sufficient to build FitNesse. The build process will bootstrap itself by downloading [Gradle](http://gradle.org) and from there will download the dependencies required to build and test FitNesse.
-
-To build and run all tests, run the command
+Build and test:
 
 ```
-$ ./gradlew
+./gradlew build
 ```
 
-which builds the `all` target.
-
-NB. On windows call `gradlew.bat` instead of `./gradlew`.
-
-### Running
-
-To start the FitNesse wiki locally, for example to browse the local version of the User Guide
+Start the wiki on port 8001:
 
 ```
-$ ./gradlew run
+./gradlew run
 ```
 
-### Testing
+On Windows, use `gradlew.bat` instead of `./gradlew`.
 
-To run the unit tests:
+## Credit and license
 
-```
-$ ./gradlew test
-```
-
-To run the acceptance tests:
-
-```
-$ ./gradlew acceptanceTest
-```
-
-
-
-### Working with Eclipse and IntelliJ
-
-There are a few things to keep in mind when working from an IDE:
-
-1. The Gradle build  does some extra things apart from compiling the code.
-    * It sets the FitNesse version in a META-INF/FitNesseVersion.txt
-    * It copies the dependencies to the lib folder so they can be used by the acceptance tests.
-
-   Perform a
-   ```
-   $ ./gradlew copyRuntimeLibs
-   ```
-   to execute the copy action. In your IDE it is possible to define "post-compilation" steps. If
-   you set the "post-compile" target from the build file, you won't have any trouble with
-   cleaning, building and executing tests from your IDE.
-
-
-#### Import FitNesse in Eclipse
-
-1. Clone the FitNesse Git repository from https://github.com/unclebob/fitnesse.
-2. Import FitNesse via _File_ -> _Import..._ -> _Gradle Project_.
-3. Select the just cloned project folder. Follow the wizard.
-4. Ensure the project properties have a Java 11 compiler or newer set.
-
-#### Import FitNesse in IntelliJ IDEA (2025.1)
-
-1. Create a new project from https://github.com/unclebob/fitnesse (i.e. from the menu select _File_ -> _New_ -> _Project from Version Control..._,
-   ensure the 'Version control' selectbox contains 'Git', enter the project's URL and press 'Clone').
-2. Ensure the project structure is set to use Java 11 SDK or newer.
-3. Open the Gradle pane Tool Window (little elephant icon on the right side of the screen). Its 'Tasks' folder contains
-   the various gradle tasks defined for the project.
-4. To launch the wiki: open 'Tasks/other' and look for the cog-icon 'run', right-click and select either 'Run' or 'Debug'
-5. Wiki should now be accessible by opening http://localhost:8001 in your browser.
-
-
-
-
-
-### Working with VSCode and Docker Dev Container
-
-For this option, nothing other than VSCode and Docker needs to be installed.
-
-1. Clone the FitNesse Git repository from https://github.com/unclebob/fitnesse.
-2. Open the fitnesse folder in VSCode
-3. Wait for the popup `Folder contains a Dev Container configuration file. Reopen folder to develop in a container (learn more).`
-4. Click the button `Reopen in Container`
-5. Wait until init routines are finished
-6. Use _Run & Debug_ or _Gradle_ buttons in the left toolbar
-
-
-
-### The release process
-
-FitNesse releases are created using https://github.com/fitnesse/fitnesse-release
+AgentNesse is derived from FitNesse, originally at <https://github.com/unclebob/fitnesse>. The license is unchanged: Common Public License 1.0, in `LICENSE.txt`.
