@@ -800,7 +800,7 @@ public final class WikiToMarkdown {
       }
       String inner = text.substring(i + 2, end);
       if (looksLikeWiki(inner)) {
-        String converted = new Body(List.of(), "").convert(inner).strip();
+        String converted = new Body(new ArrayList<>(), "").convert(inner).strip();
         if (converted.contains("```")) {
           converted = "\n" + converted + "\n";
         }
