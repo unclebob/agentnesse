@@ -30,6 +30,8 @@ No plugins. No authentication. One author. (Planned. Plugins and authentication 
 
 ## Build and run
 
+AgentNesse requires Java 21. That is the version the project compiles for, and the version the wiki and the Slim server run on.
+
 Build and test:
 
 ```

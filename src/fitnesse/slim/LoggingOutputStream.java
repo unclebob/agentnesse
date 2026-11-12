@@ -10,11 +10,9 @@ import java.io.PrintStream;
  * An OutputStream that writes contents to a Logger upon each call to flush()
  */
 class LoggingOutputStream extends ByteArrayOutputStream {
-  // PrintStream.println on Java 17+ writes the text and its newline in one
-  // flush. Java 11 flushes the text, then the newline by itself. That lone
-  // newline is discarded below. A flush that does not end in the line
-  // separator, such as print("Hello"), must keep every character.
-  private static final boolean PRINTLN_BUNDLES_NEWLINE = Runtime.version().feature() >= 17;
+  // PrintStream.println writes the text and its newline in one flush.
+  // Drop that trailing separator only. A flush that does not end in the
+  // line separator, such as print("Hello"), must keep every character.
 
   private String lineSeparator;
 
@@ -51,7 +49,7 @@ class LoggingOutputStream extends ByteArrayOutputStream {
       record = this.toString();
       super.reset();
     }
-    record = logicalRecord(record, PRINTLN_BUNDLES_NEWLINE, lineSeparator);
+    record = logicalRecord(record, lineSeparator);
     if (record == null) {
       return;
     }
@@ -66,11 +64,11 @@ class LoggingOutputStream extends ByteArrayOutputStream {
    * @return the text to log, or null when this flush is only an empty buffer
    *         or the newline PrintStream.println adds on its own.
    */
-  static String logicalRecord(String record, boolean printlnBundlesNewline, String lineSeparator) {
+  static String logicalRecord(String record, String lineSeparator) {
     if (record.isEmpty() || record.equals(lineSeparator)) {
       return null;
     }
-    if (printlnBundlesNewline && record.endsWith(lineSeparator)) {
+    if (record.endsWith(lineSeparator)) {
       record = record.substring(0, record.length() - lineSeparator.length());
       if (record.isEmpty() || record.equals(lineSeparator)) {
         return null;

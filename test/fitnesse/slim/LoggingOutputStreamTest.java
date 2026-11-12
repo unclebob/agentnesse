@@ -13,27 +13,17 @@ import static org.junit.Assert.assertNull;
 
 public class LoggingOutputStreamTest {
   @Test
-  public void keepsEveryCharacterWhenPrintlnFlushesItsNewlineSeparately() {
-    assertEquals("Hello", LoggingOutputStream.logicalRecord("Hello", false, "\n"));
-    assertEquals(" ", LoggingOutputStream.logicalRecord(" ", false, "\n"));
-    assertNull(LoggingOutputStream.logicalRecord("", false, "\n"));
-    assertNull(LoggingOutputStream.logicalRecord("\n", false, "\n"));
-    assertEquals("Hello World\nThe weather is nice!\n",
-      LoggingOutputStream.logicalRecord("Hello World\nThe weather is nice!\n", false, "\n"));
-  }
-
-  @Test
   public void dropsOnlyTheNewlineThatPrintlnBundlesWithTheLine() {
-    assertEquals("Hello", LoggingOutputStream.logicalRecord("Hello", true, "\n"));
-    assertEquals("Hello", LoggingOutputStream.logicalRecord("Hello\n", true, "\n"));
-    assertEquals(" ", LoggingOutputStream.logicalRecord(" ", true, "\n"));
-    assertNull(LoggingOutputStream.logicalRecord("", true, "\n"));
-    assertNull(LoggingOutputStream.logicalRecord("\n", true, "\n"));
-    assertNull(LoggingOutputStream.logicalRecord("\n\n", true, "\n"));
+    assertEquals("Hello", LoggingOutputStream.logicalRecord("Hello", "\n"));
+    assertEquals("Hello", LoggingOutputStream.logicalRecord("Hello\n", "\n"));
+    assertEquals(" ", LoggingOutputStream.logicalRecord(" ", "\n"));
+    assertNull(LoggingOutputStream.logicalRecord("", "\n"));
+    assertNull(LoggingOutputStream.logicalRecord("\n", "\n"));
+    assertNull(LoggingOutputStream.logicalRecord("\n\n", "\n"));
     assertEquals("Hello World\n\nThe weather is nice!",
-      LoggingOutputStream.logicalRecord("Hello World\n\nThe weather is nice!\n", true, "\n"));
+      LoggingOutputStream.logicalRecord("Hello World\n\nThe weather is nice!\n", "\n"));
     assertEquals("Hello World\nThe weather is nice!\n",
-      LoggingOutputStream.logicalRecord("Hello World\nThe weather is nice!\n\n", true, "\n"));
+      LoggingOutputStream.logicalRecord("Hello World\nThe weather is nice!\n\n", "\n"));
   }
 
   @Test
