@@ -5,13 +5,25 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class IntConverterTest extends AbstractConverterTest<Integer, IntConverter> {
+public class IntConverterTest extends IntConverterTestSupport {
 
   public IntConverterTest() {
     super(new IntConverter());
   }
 
-  protected IntConverterTest(IntConverter intConverter) {
+  @Test
+  public void fromString_should_return_null_object_when_value_is_not_defined() {
+    String value = "";
+
+    Integer current = converter.fromString(value);
+
+    assertNull(current);
+  }
+}
+
+abstract class IntConverterTestSupport extends AbstractConverterTest<Integer, IntConverter> {
+
+  protected IntConverterTestSupport(IntConverter intConverter) {
     super(intConverter);
   }
 
@@ -51,5 +63,4 @@ public class IntConverterTest extends AbstractConverterTest<Integer, IntConverte
     }
     assertEquals("message:<<Can't convert foo to integer.>>", errorMessage);
   }
-
 }

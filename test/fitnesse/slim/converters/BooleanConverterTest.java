@@ -5,13 +5,25 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class BooleanConverterTest extends AbstractConverterTest<Boolean, BooleanConverter> {
+public class BooleanConverterTest extends BooleanConverterTestSupport {
 
   public BooleanConverterTest() {
     super(new BooleanConverter());
   }
 
-  protected BooleanConverterTest(BooleanConverter booleanConverter) {
+  @Test
+  public void fromString_should_return_null_object_when_value_is_not_defined() {
+    String value = "";
+
+    Boolean current = converter.fromString(value);
+
+    assertNull(current);
+  }
+}
+
+abstract class BooleanConverterTestSupport extends AbstractConverterTest<Boolean, BooleanConverter> {
+
+  protected BooleanConverterTestSupport(BooleanConverter booleanConverter) {
     super(booleanConverter);
   }
 

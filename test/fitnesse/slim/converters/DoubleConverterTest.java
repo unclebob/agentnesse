@@ -3,15 +3,28 @@ package fitnesse.slim.converters;
 import fitnesse.slim.SlimError;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class DoubleConverterTest extends AbstractConverterTest<Double, DoubleConverter> {
+public class DoubleConverterTest extends DoubleConverterTestSupport {
 
   public DoubleConverterTest() {
     super(new DoubleConverter());
   }
 
-  protected DoubleConverterTest(DoubleConverter doubleConverter) {
+  @Test
+  public void fromString_should_return_null_object_when_value_is_not_defined() {
+    String value = "";
+
+    Double current = converter.fromString(value);
+
+    assertNull(current);
+  }
+}
+
+abstract class DoubleConverterTestSupport extends AbstractConverterTest<Double, DoubleConverter> {
+
+  protected DoubleConverterTestSupport(DoubleConverter doubleConverter) {
     super(doubleConverter);
   }
 
@@ -50,5 +63,4 @@ public class DoubleConverterTest extends AbstractConverterTest<Double, DoubleCon
     }
     assertEquals("message:<<Can't convert foo to double.>>", errorMessage);
   }
-
 }

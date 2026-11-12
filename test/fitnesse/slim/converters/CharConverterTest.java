@@ -2,15 +2,28 @@ package fitnesse.slim.converters;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class CharConverterTest extends AbstractConverterTest<Character, CharConverter> {
+public class CharConverterTest extends CharConverterTestSupport {
 
   public CharConverterTest() {
     super(new CharConverter());
   }
 
-  protected CharConverterTest(CharConverter charConverter) {
+  @Test
+  public void fromString_should_return_null_object_when_value_is_not_defined() {
+    String value = "";
+
+    Character current = converter.fromString(value);
+
+    assertNull(current);
+  }
+}
+
+abstract class CharConverterTestSupport extends AbstractConverterTest<Character, CharConverter> {
+
+  protected CharConverterTestSupport(CharConverter charConverter) {
     super(charConverter);
   }
 
