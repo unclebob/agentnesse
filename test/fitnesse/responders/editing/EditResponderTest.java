@@ -49,7 +49,8 @@ public class EditResponderTest {
     assertSubString("child content with &lt;html&gt;", body);
     assertSubString("name=\"responder\"", body);
     assertSubString("name=\"" + EditResponder.HELP_TEXT + "\"", body);
-    assertSubString("select id=\"" + EditResponder.TEMPLATE_MAP + "\"", body);
+    assertNotSubString("templateMap", body);
+    assertNotSubString("TemplateInserter.js", body);
 
     assertSubString("type=\"submit\"", body);
     assertSubString("textarea", body);
@@ -92,39 +93,6 @@ public class EditResponderTest {
 
     String body = response.getContent();
     assertSubString("name=\"redirect\" value=\"http://fitnesse.org:8080/SomePage?boom\"", body);
-  }
-
-  @Test
-  public void testTemplateListPopulates() throws Exception {
-    WikiPageUtil.addPage(root, PathParser.parse("TemplateLibrary"), "template library");
-
-    WikiPageUtil.addPage(root, PathParser.parse("TemplateLibrary.TemplateOne"), "template 1");
-    WikiPageUtil.addPage(root, PathParser.parse("TemplateLibrary.TemplateTwo"), "template 2");
-    WikiPageUtil.addPage(root, PathParser.parse("ChildPage"), "child content with <html>");
-
-    SimpleResponse response = makeResponse();
-    assertEquals(200, response.getStatus());
-
-    String body = response.getContent();
-    assertSubString("<html>", body);
-    assertSubString("<form", body);
-    assertSubString("method=\"post\"", body);
-    assertSubString("child content with &lt;html&gt;", body);
-    assertSubString("name=\"responder\"", body);
-    assertSubString("name=\"" + EditResponder.HELP_TEXT + "\"", body);
-    assertSubString("select id=\"" + EditResponder.TEMPLATE_MAP + "\"", body);
-    assertSubString("option value=\"" + ".TemplateLibrary.TemplateOne" + "\"", body);
-    assertSubString("option value=\"" + ".TemplateLibrary.TemplateTwo" + "\"", body);
-
-    assertSubString("type=\"submit\"", body);
-    assertSubString("textarea", body);
-  }
-
-  @Test
-  public void testTemplateInserterScriptsExists() throws Exception {
-    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-    String body = response.getContent();
-    assertMatches("TemplateInserter.js", body);
   }
 
   @Test

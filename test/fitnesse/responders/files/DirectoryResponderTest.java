@@ -3,6 +3,7 @@
 package fitnesse.responders.files;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static util.RegexTestCase.assertHasRegexp;
 
 import fitnesse.FitNesseContext;
@@ -50,8 +51,12 @@ public class DirectoryResponderTest {
     Responder responder = new FileResponder();
     response = (SimpleResponse) responder.makeResponse(context, request);
 
-    assertHasRegexp("Upload", response.getContent());
-    assertHasRegexp("Create", response.getContent());
+    String content = response.getContent();
+    assertHasRegexp("testFile2", content);
+    assertFalse(content.contains("Upload"));
+    assertFalse(content.contains("Create"));
+    assertFalse(content.contains("renameConfirmation"));
+    assertFalse(content.contains("deleteConfirmation"));
   }
 
   @Test

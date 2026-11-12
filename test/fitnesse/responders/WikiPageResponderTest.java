@@ -52,7 +52,7 @@ public class WikiPageResponderTest {
     assertSubString("<html>", body);
     assertSubString("<body", body);
     assertSubString("child content", body);
-    assertSubString("href=\"ChildPage?whereUsed\"", body);
+    assertNotSubString("whereUsed", body);
     assertSubString("Cache-Control: max-age=0", response.makeHttpHeaders());
     assertSubString("<span class=\"tag\">Wiki Page tags</span>", body);
   }

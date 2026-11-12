@@ -22,7 +22,6 @@ public class AddChildPageResponder implements Responder {
   private String pageType;
   private String helpText;
   private String suites;
-  private WikiPage pageTemplate;
   private String user;
 
   @Override
@@ -46,17 +45,13 @@ public class AddChildPageResponder implements Responder {
     WikiPagePath currentPagePath = PathParser.parse(request.getResource());
     PageCrawler pageCrawler = context.getRootPage().getPageCrawler();
     currentPage = pageCrawler.getPage(currentPagePath);
-    if (request.hasInput(NewPageResponder.PAGE_TEMPLATE)) {
-      pageTemplate = pageCrawler.getPage(PathParser.parse(request.getInput(NewPageResponder.PAGE_TEMPLATE)));
-    } else {
-      pageType = request.getInput(EditResponder.PAGE_TYPE);
-    }
+    pageType = request.getInput(EditResponder.PAGE_TYPE);
     childContent = request.getInput(EditResponder.CONTENT_INPUT_NAME);
     helpText = request.getInput(EditResponder.HELP_TEXT);
     suites = request.getInput(EditResponder.SUITES);
     if (childContent == null)
       childContent = "!contents\n";
-    if (pageTemplate == null && pageType == null)
+    if (pageType == null)
       pageType = "Default";
   }
 
@@ -85,9 +80,7 @@ public class AddChildPageResponder implements Responder {
 
   private void setAttributes(WikiPage childPage) {
     PageData childPageData = childPage.getData();
-    if (pageTemplate != null) {
-      childPageData.setProperties(pageTemplate.getData().getProperties());
-    } else if (pageType.equals("Static")) {
+    if (pageType.equals("Static")) {
       childPageData.getProperties().remove("Test");
       childPageData.getProperties().remove("Suite");
     } else if ("Test".equals(pageType) || "Suite".equals(pageType)) {

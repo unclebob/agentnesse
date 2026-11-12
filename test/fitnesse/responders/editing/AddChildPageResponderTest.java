@@ -183,30 +183,6 @@ public class AddChildPageResponderTest {
     assertTrue(isSuite());
   }
 
-  @Test
-  public void createNewPageBasedOnTemplate() throws Exception {
-    final String newContent = "To be saved data";
-    final String dummyKey = "DummyKey";
-
-    WikiPage template = WikiPageUtil.addPage(root, PathParser.parse("TemplatePage"), "Template data");
-    PageData templateData = template.getData();
-    templateData.setAttribute(dummyKey, "true");
-    template.commit(templateData);
-
-    request.setResource("");
-    request.addInput(EditResponder.PAGE_NAME, "TestChildPage");
-    request.addInput(EditResponder.CONTENT_INPUT_NAME, newContent);
-    request.addInput(NewPageResponder.PAGE_TEMPLATE, ".TemplatePage");
-
-    responder.makeResponse(context, request);
-
-    WikiPage newPage = root.getChildPage("TestChildPage");
-    assertNotNull(newPage);
-    assertTrue(newPage.getData().hasAttribute(dummyKey));
-    assertEquals("true", newPage.getData().getAttribute(dummyKey));
-    assertEquals(newContent, newPage.getData().getContent());
-  }
-
   private boolean isTest() {
     return childPageData.hasAttribute("Test");
   }

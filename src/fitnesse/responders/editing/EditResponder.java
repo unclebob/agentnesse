@@ -25,7 +25,6 @@ public class EditResponder implements Responder {
   public static final String SUITES = "suites";
   public static final String PAGE_TYPE = "pageType";
   public static final String PAGE_NAME = "pageName";
-  public static final String TEMPLATE_MAP = "templateMap";
 
   protected String content;
   protected WikiPage page;
@@ -100,7 +99,6 @@ public class EditResponder implements Responder {
     }
 
     html.put(HELP_TEXT, pageData.getAttribute(PageData.PropertyHELP));
-    html.put(TEMPLATE_MAP, TemplateUtil.getTemplateMap(page));
     html.put("suites", pageData.getAttribute(PageData.PropertySUITES));
     html.put(CONTENT_INPUT_NAME, HtmlUtil.escapeHTML(firstTimeForNewPage ? defaultNewPageContent : content));
   }

@@ -30,21 +30,6 @@ public class SyntaxTreeV2 implements SyntaxTree {
     return new WikiTranslator(parsingPage.getPage()).translateTree(tree);
   }
 
-  public void findWhereUsed(Consumer<String> takeWhere) {
-    tree.walkPreOrder(node -> {
-      if (node.isType(WikiWord.symbolType)) {
-        takeWhere.accept(node.getContent());
-      }
-      else if (node.isType(Alias.symbolType)) {
-        String linkText = node.childAt(1).childAt(0).getContent();
-        if (linkText.contains("?")) {
-          linkText = linkText.substring(0, linkText.indexOf('?'));
-        }
-        takeWhere.accept(linkText);
-      }
-    });
-  }
-
   public void findReferences(Function<String, Optional<String>> changeReference) {
     tree.walkPreOrder(node -> {
         if (node.isType(WikiWord.symbolType)) {

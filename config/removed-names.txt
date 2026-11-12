@@ -95,3 +95,20 @@ SaveRecorder
 
 class SymbolicPage
 SymbolicLinkResponder
+
+PageDataWikiPageResponder
+TemplateUtil
+SearchReplaceResponder
+ContentReplacingSearchObserver
+MethodReplacingSearchObserver
+LazyPageTreeResponder
+class PageNode
+findWhereUsed
+WhereUsedResponder
+WhereUsedPageFinder
+UploadResponder
+CreateDirectoryResponder
+DeleteFileResponder
+RenameFileResponder
+DeleteConfirmationResponder
+RenameFileConfirmationResponder

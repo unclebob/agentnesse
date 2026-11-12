@@ -1,14 +1,9 @@
 package fitnesse.responders;
 
-import fitnesse.responders.editing.TemplateUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
 
 // Work in progress, WikiPage, versions, directory should each have specific actions instances.
 public class WikiPageActions {
@@ -36,30 +31,12 @@ public class WikiPageActions {
     return hasAction("Edit");
   }
 
-  public Map<String, String> getNewPageTemplates() {
-    if (isWithEdit()) {
-      Map<String, String> templates = TemplateUtil.getTemplatePageMap(page);
-      for (Iterator<String> iter = templates.keySet().iterator(); iter.hasNext(); ) {
-        String name = iter.next();
-        if (!name.endsWith("Page")) {
-          iter.remove();
-        }
-      }
-      return templates;
-    }
-    return Collections.emptyMap();
-  }
-
   public boolean isWithProperties() {
     return hasAction("Properties");
   }
 
   public boolean isWithRefactor() {
     return hasAction("Refactor");
-  }
-
-  public boolean isWithWhereUsed() {
-    return hasAction("WhereUsed");
   }
 
   public boolean isWithSearch() {

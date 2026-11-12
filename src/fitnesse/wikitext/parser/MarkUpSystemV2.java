@@ -6,7 +6,6 @@ import fitnesse.wikitext.SyntaxTree;
 import fitnesse.wikitext.MarkUpSystem;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class MarkUpSystemV2 implements MarkUpSystem {
@@ -22,13 +21,6 @@ public class MarkUpSystemV2 implements MarkUpSystem {
     SyntaxTreeV2 tree = new SyntaxTreeV2(SymbolProvider.variableDefinitionSymbolProvider);
     tree.parse(variableValue, page);
     return tree.translateToHtml();
-  }
-
-  @Override
-  public void findWhereUsed(SourcePage page, Consumer<String> takeWhereUsed) {
-    SyntaxTreeV2 syntaxTree = new SyntaxTreeV2(SymbolProvider.refactoringProvider);
-    syntaxTree.parse(page.getContent(), new ParsingPage(page));
-    syntaxTree.findWhereUsed(takeWhereUsed);
   }
 
   @Override

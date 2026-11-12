@@ -35,7 +35,6 @@ public class RefactorPageResponderTest extends ResponderTestCase {
     assertEquals(200, response.getStatus());
 
     String content = response.getContent();
-    assertSubString("Replace", content);
     assertSubString("Delete Page", content);
     assertSubString("Rename Page", content);
     assertSubString("Move Page", content);
@@ -47,7 +46,8 @@ public class RefactorPageResponderTest extends ResponderTestCase {
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
 
     String content = response.getContent();
-    assertSubString("<div id=\"configPath\" data-path=\"ROOT\"></div>", content);
+    assertSubString("name=\"newLocation\"", content);
+    assertSubString("Page path under ROOT", content);
   }
 
   @Test
@@ -58,6 +58,7 @@ public class RefactorPageResponderTest extends ResponderTestCase {
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
 
     String content = response.getContent();
-    assertSubString("<div id=\"configPath\" data-path=\"SomeStartPath\"></div>", content);
+    assertSubString("name=\"newLocation\"", content);
+    assertSubString("Page path under SomeStartPath", content);
   }
 }

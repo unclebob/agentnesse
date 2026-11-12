@@ -99,7 +99,7 @@ public class HtmlUtilTest {
     assertSubString("<a class=\"nav-link text-secondary\" href=\"" + pageName + "?edit\" accesskey=\"e\">Edit</a>", html);
     assertSubString("<a class=\"dropdown-item\" href=\"" + pageName + "?properties\" accesskey=\"p\">Properties</a>", html);
     assertSubString("<a class=\"dropdown-item\" href=\"" + pageName + "?refactor&amp;type=rename\">Rename</a>", html);
-    assertSubString("<a class=\"dropdown-item\" href=\"" + pageName + "?whereUsed\" accesskey=\"w\">Where Used</a>", html);
+    assertSubString("<a class=\"dropdown-item\" href=\"" + pageName + "?refactor&amp;type=move\">Move</a>", html);
     assertSubString("<a class=\"dropdown-item\" href=\"/files\" accesskey=\"f\">Files</a>", html);
     assertSubString("<a class=\"dropdown-item\" href=\"?search\" accesskey=\"s\">Search</a>", html);
     assertSubString("<a class=\"dropdown-item\" href=\"/FitNesse.UserGuide\" accesskey=\"\">User Guide</a>", html);
