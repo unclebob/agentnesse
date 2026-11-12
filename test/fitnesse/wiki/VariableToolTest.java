@@ -29,7 +29,6 @@ package fitnesse.wiki;
 import java.io.IOException;
 import java.util.Properties;
 
-import fitnesse.plugins.PluginException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertThat;
 public class VariableToolTest {
 
   @Test
-  public void replacesVariablesFromPropertiesFile() throws IOException, PluginException {
+  public void replacesVariablesFromPropertiesFile() throws IOException {
     Properties properties = new Properties();
     properties.setProperty("replaceMe", "replacedValue");
     SystemVariableSource variableSource = new SystemVariableSource(properties);

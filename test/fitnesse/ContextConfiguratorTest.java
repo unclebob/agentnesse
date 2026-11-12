@@ -1,9 +1,5 @@
 package fitnesse;
 
-import fitnesse.http.MockRequest;
-import fitnesse.plugins.PluginException;
-import fitnesse.plugins.PluginsLoaderTest;
-import fitnesse.responders.FilteringResponder;
 import fitnesse.util.ClassUtils;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
@@ -16,6 +12,7 @@ import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -29,7 +26,7 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void warnsWhenWikiPageFactoryCannotRegisterFactories() throws IOException, PluginException {
+  public void warnsWhenWikiPageFactoryCannotRegisterFactories() throws IOException {
     WikiPageFactory factory = new WikiPageFactory() {
       @Override
       public WikiPage makePage(File path, String pageName, WikiPage parent, VariableSource variableSource) {
@@ -51,7 +48,7 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void recordsRootPathAsAWikiVariable() throws IOException, PluginException {
+  public void recordsRootPathAsAWikiVariable() throws IOException {
     FitNesseContext context = ContextConfigurator.empty()
       .withRootPath("/tmp/wiki-root")
       .withPort(9125)
@@ -61,7 +58,7 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void omitsRootPathVariableWhenRootPathIsNull() throws IOException, PluginException {
+  public void omitsRootPathVariableWhenRootPathIsNull() throws IOException {
     FitNesseContext context = ContextConfigurator.empty()
       .withRootPath(null)
       .withPort(9125)
@@ -71,7 +68,7 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void usesThePortItWasGiven() throws IOException, PluginException {
+  public void usesThePortItWasGiven() throws IOException {
     FitNesseContext context = ContextConfigurator.empty()
       .withPort(9124)
       .withParameter(ConfigurationParameter.ROOT_PATH, ".")
@@ -81,7 +78,7 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void canSetContextRoot() throws IOException, PluginException {
+  public void canSetContextRoot() throws IOException {
     ContextConfigurator configurator = ContextConfigurator.empty();
 
     configurator.withParameter(ConfigurationParameter.ROOT_PATH, ".");
@@ -93,7 +90,7 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void shouldSetTrailingSlashOnContextRoot() throws IOException, PluginException {
+  public void shouldSetTrailingSlashOnContextRoot() throws IOException {
     ContextConfigurator configurator = ContextConfigurator.empty();
 
     configurator.withParameter(ConfigurationParameter.ROOT_PATH, ".");
@@ -105,7 +102,17 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void bootstrapIsDefaultTheme() throws IOException, PluginException {
+  public void createsALoggerWhenALogDirectoryIsConfigured() throws IOException {
+    FitNesseContext context = ContextConfigurator.empty()
+      .withParameter(ConfigurationParameter.LOG_DIRECTORY, "build/test-logs")
+      .withPort(9126)
+      .makeFitNesseContext();
+
+    assertThat(context.logger, is(notNullValue()));
+  }
+
+  @Test
+  public void bootstrapIsDefaultTheme() throws IOException {
     String theme = ContextConfigurator
       .empty()
       .makeFitNesseContext()
@@ -115,7 +122,7 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void themeCanBeSetViaProperties() throws IOException, PluginException {
+  public void themeCanBeSetViaProperties() throws IOException {
     String theme = ContextConfigurator
       .empty()
       .withParameter(ConfigurationParameter.THEME, "othertheme")
@@ -123,43 +130,6 @@ public class ContextConfiguratorTest {
       .theme;
 
     assertThat(theme, is("othertheme"));
-  }
-
-  @Test
-  public void themeCanBeSetByPlugin() throws IOException, PluginException {
-    String theme = ContextConfigurator
-      .empty()
-      .withClassLoader(PluginsLoaderTest.createClassLoaderWithTestPlugin())
-      .makeFitNesseContext()
-      .theme;
-
-    assertThat(theme, is("dummy-theme"));
-  }
-
-  @Test
-  public void themeInPropertiesBeatsOneInPlugin() throws IOException, PluginException {
-    String theme = ContextConfigurator
-      .empty()
-      .withParameter(ConfigurationParameter.THEME, "othertheme")
-      .withClassLoader(PluginsLoaderTest.createClassLoaderWithTestPlugin())
-      .makeFitNesseContext()
-      .theme;
-
-    assertThat(theme, is("othertheme"));
-  }
-
-  @Test
-  public void contentFilterIsAppliedWhenSavingPages() throws Exception {
-    FitNesseContext context = ContextConfigurator
-      .empty()
-      .withParameter(ConfigurationParameter.CONTENT_FILTER, PluginsLoaderTest.TestContentFilter.class.getName())
-      .withClassLoader(getClass().getClassLoader())
-      .makeFitNesseContext();
-
-    MockRequest request = new MockRequest();
-    request.addInput("responder", "saveData");
-
-    assertThat(context.responderFactory.makeResponder(request), instanceOf(FilteringResponder.class));
   }
 
 }

@@ -5,7 +5,6 @@ package fitnesse.testutil;
 import fitnesse.ContextConfigurator;
 import fitnesse.FitNesse;
 import fitnesse.FitNesseContext;
-import fitnesse.plugins.PluginException;
 import fitnesse.socketservice.PlainServerSocketFactory;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.fs.FileSystem;
@@ -78,7 +77,7 @@ public class FitNesseUtil {
               .withVersionsController(new WikiFiles())
               .updatedWith(properties)
               .makeFitNesseContext();
-    } catch (IOException | PluginException e) {
+    } catch (IOException e) {
       throw new IllegalStateException(e);
     }
 

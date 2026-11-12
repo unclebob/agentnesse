@@ -378,18 +378,6 @@ public class SuiteResponderTest {
   }
 
   @Test
-  public void loadsCustomFormatters() throws Exception {
-
-    context.formatterFactory.registerFormatter(FooFormatter.class);
-    FooFormatter.initialized = false;
-
-    addTestToSuite("SlimTestOne", simpleSlimDecisionTable);
-    runSuite();
-
-    assertTrue(FooFormatter.initialized);
-  }
-
-  @Test
   public void testGetRerunPageName_withRerunPrefix() throws Exception {
     String rerunPageName = "RerunLastFailures_SuitePage";
     suite = WikiPageUtil.addPage(root, PathParser.parse(rerunPageName), "This is a rerun page\n");

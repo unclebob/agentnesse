@@ -72,3 +72,13 @@ SslClientSocketFactory
 SslServerSocketFactory
 SslParameters
 SLIM_SSL
+
+PluginsLoader
+PluginFeatureFactory
+PluginsClassLoaderFactory
+ContentFilterResponder
+ContentFilter
+
+CustomTableAliasPlugin
+CustomScriptTableRenderingPlugin
+PluginsClassLoaderFactory

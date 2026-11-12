@@ -49,4 +49,11 @@ public class ConfigurationParameterTest {
     assertThat(properties.getProperty("unitTestProperty"), is("found"));
   }
 
+  @Test
+  public void missingConfigurationFileYieldsEmptyProperties() {
+    Properties properties = ConfigurationParameter.loadProperties(new File("no-such-configuration.properties"));
+
+    assertThat(properties.isEmpty(), is(true));
+  }
+
 }

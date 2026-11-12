@@ -8,7 +8,6 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 
 import fitnesse.ContextConfigurator;
-import fitnesse.plugins.PluginException;
 import org.junit.Test;
 
 public class ArgumentsTest {
@@ -37,7 +36,7 @@ public class ArgumentsTest {
   }
 
   @Test
-  public void argumentsCanBeRepresentedByProperties() throws IOException, PluginException {
+  public void argumentsCanBeRepresentedByProperties() throws IOException {
     Arguments args = new Arguments("-v", "-p", "81", "-d", "directory", "-r", "root", "-b", "someFile.txt",
               "-l", "myLogDirectory", "-o", "-f", "fitnesse.properties", "-i", "-c", "SomeCommand", "-lh", "-w", "42");
     Properties properties = args.update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
@@ -57,7 +56,7 @@ public class ArgumentsTest {
   }
 
   @Test
-  public void defaultArgumentsAsProperties() throws IOException, PluginException {
+  public void defaultArgumentsAsProperties() throws IOException {
     Arguments args = new Arguments();
     Properties properties = args.update(ContextConfigurator.empty()).makeFitNesseContext().getProperties();
 

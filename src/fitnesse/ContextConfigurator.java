@@ -1,12 +1,7 @@
 package fitnesse;
 
-import fitnesse.components.ComponentFactory;
 import fitnesse.components.Logger;
-import fitnesse.plugins.PluginException;
-import fitnesse.plugins.PluginsLoader;
 import fitnesse.reporting.FormatterFactory;
-import fitnesse.responders.editing.ContentFilter;
-import fitnesse.responders.editing.ContentFilterResponder;
 import fitnesse.testrunner.MultipleTestSystemFactory;
 import fitnesse.testsystems.TestSystemListener;
 import fitnesse.testsystems.slim.CustomComparatorRegistry;
@@ -14,11 +9,8 @@ import fitnesse.testsystems.slim.tables.SlimTableFactory;
 import fitnesse.util.ClassUtils;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPageFactory;
-import fitnesse.wiki.WikiPageFactoryRegistry;
 import fitnesse.wiki.fs.FileSystemPageFactory;
 import fitnesse.wiki.fs.WikiFiles;
-import fitnesse.wikitext.MarkUpSystems;
-import fitnesse.wikitext.parser.SymbolProvider;
 import fitnesse.wikitext.parser.decorator.SlimTableDefaultColoring;
 
 import java.io.IOException;
@@ -30,16 +22,12 @@ import static fitnesse.ConfigurationParameter.CONTEXT_ROOT;
 import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
 import static fitnesse.ConfigurationParameter.THEME;
-import static fitnesse.ConfigurationParameter.WIKI_PAGE_FACTORY_CLASS;
-
 /**
  * Set up a context for running a FitNesse Instance.
  *
  * Please call this only once: some features are registered on (static) factories.
  */
 public class ContextConfigurator {
-  private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(ContextConfigurator.class.getName());
-
   private static final String DEFAULT_PATH = ".";
   public static final String DEFAULT_ROOT = "FitNesseRoot";
   public static final String DEFAULT_CONTEXT_ROOT = "/";
@@ -91,13 +79,11 @@ public class ContextConfigurator {
     return this;
   }
 
-  public FitNesseContext makeFitNesseContext() throws IOException, PluginException {
+  public FitNesseContext makeFitNesseContext() throws IOException {
 
     // BIG WARNING: We're setting a static variable here!
     ClassUtils.setClassLoader(classLoader);
     Thread.currentThread().setContextClassLoader(classLoader);
-
-    ComponentFactory componentFactory = new ComponentFactory(properties, classLoader);
 
     port = getPort();
 
@@ -106,27 +92,22 @@ public class ContextConfigurator {
     updateFitNesseProperties(version);
 
     if (wikiPageFactory == null) {
-      wikiPageFactory = componentFactory.createComponent(WIKI_PAGE_FACTORY_CLASS, FileSystemPageFactory.class);
+      wikiPageFactory = new FileSystemPageFactory();
     }
 
     if (versionsController == null) {
       versionsController = new WikiFiles();
     }
 
-    PluginsLoader pluginsLoader = new PluginsLoader(componentFactory, classLoader);
-
-    if (logger == null) {
-      logger = pluginsLoader.makeLogger(get(LOG_DIRECTORY));
+    if (get(LOG_DIRECTORY) != null) {
+      logger = new Logger(get(LOG_DIRECTORY));
     }
 
     SystemVariableSource variableSource = new SystemVariableSource(properties);
 
     String theme = variableSource.getProperty(THEME.getKey());
     if (theme == null) {
-      theme = pluginsLoader.getDefaultTheme();
-      if (theme == null) {
-        theme = DEFAULT_THEME;
-      }
+      theme = DEFAULT_THEME;
     }
 
     SlimTableFactory slimTableFactory = new SlimTableFactory();
@@ -134,7 +115,7 @@ public class ContextConfigurator {
 
     MultipleTestSystemFactory testSystemFactory = new MultipleTestSystemFactory(slimTableFactory, customComparatorRegistry, classLoader);
 
-    FormatterFactory formatterFactory = new FormatterFactory(componentFactory);
+    FormatterFactory formatterFactory = new FormatterFactory();
 
     FitNesseContext context = new FitNesseContext(version,
           wikiPageFactory,
@@ -152,33 +133,8 @@ public class ContextConfigurator {
           variableSource,
           theme);
 
-    SymbolProvider wikiParsingProvider = SymbolProvider.wikiParsingProvider;
-    SymbolProvider noLinksTableParsingProvider = SymbolProvider.noLinksTableParsingProvider;
-
     SlimTableDefaultColoring.createInstanceIfNeeded(slimTableFactory);
     SlimTableDefaultColoring.install();
-
-    pluginsLoader.loadResponders(context.responderFactory);
-
-    if (wikiPageFactory instanceof WikiPageFactoryRegistry) {
-      pluginsLoader.loadWikiPageFactories((WikiPageFactoryRegistry) wikiPageFactory);
-    } else {
-      LOG.warning("Wiki page factory does not implement interface WikiPageFactoryRegistrar, configured factories can not be loaded.");
-    }
-    pluginsLoader.loadTestSystems(testSystemFactory);
-    pluginsLoader.loadFormatters(formatterFactory);
-    pluginsLoader.loadSymbolTypes(wikiParsingProvider);
-    pluginsLoader.loadSymbolTypes(noLinksTableParsingProvider);
-    pluginsLoader.loadSlimTables(slimTableFactory);
-    pluginsLoader.loadCustomComparators(customComparatorRegistry);
-    pluginsLoader.loadTestRunFactories(context.testRunFactoryRegistry);
-    pluginsLoader.loadMarkupSystems(MarkUpSystems.STORE);
-
-    ContentFilter contentFilter = pluginsLoader.loadContentFilter();
-
-    // Need something like pre- and post- notifications to hook up this kind of functionality
-    if (contentFilter != null)
-      context.responderFactory.addFilter("saveData", new ContentFilterResponder(contentFilter));
 
     return context;
   }
