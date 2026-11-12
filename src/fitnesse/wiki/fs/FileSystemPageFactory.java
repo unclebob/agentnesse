@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import fitnesse.markdown.MarkdownPageFactory;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
@@ -59,6 +60,7 @@ public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRe
     registerWikiPageFactory(new WikiFilePageFactory());
     registerWikiPageFactory(new ChildWikiFilePageFactory());
     registerWikiPageFactory(new RootWikiFilePageFactory());
+    registerWikiPageFactory(new MarkdownPageFactory(fileSystem, versionsController));
   }
 
   @Override // from WikiPageFactoryRegistry

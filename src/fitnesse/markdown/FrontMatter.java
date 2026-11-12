@@ -199,25 +199,22 @@ public final class FrontMatter {
   }
 
   private static String helpOf(JSONObject json) {
-    if (!json.has("help") || json.isNull("help")) {
-      return null;
-    }
-    Object value = json.get("help");
-    if (!(value instanceof String)) {
-      throw new IllegalArgumentException("front matter help must be a string");
-    }
-    return (String) value;
+    return value(json, "help", String.class, null, "front matter help must be a string");
   }
 
   private static boolean pruneOf(JSONObject json) {
-    if (!json.has("prune") || json.isNull("prune")) {
-      return false;
+    return value(json, "prune", Boolean.class, false, "front matter prune must be a boolean");
+  }
+
+  private static <T> T value(JSONObject json, String key, Class<T> type, T fallback, String message) {
+    if (!json.has(key) || json.isNull(key)) {
+      return fallback;
     }
-    Object value = json.get("prune");
-    if (!(value instanceof Boolean)) {
-      throw new IllegalArgumentException("front matter prune must be a boolean");
+    Object found = json.get(key);
+    if (!type.isInstance(found)) {
+      throw new IllegalArgumentException(message);
     }
-    return (Boolean) value;
+    return type.cast(found);
   }
 
   private static String bodyAfter(String text, int end) {

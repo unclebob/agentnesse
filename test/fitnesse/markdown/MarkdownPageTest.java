@@ -1,0 +1,118 @@
+package fitnesse.markdown;
+
+import fitnesse.wiki.PageData;
+import fitnesse.wiki.SystemVariableSource;
+import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.fs.FileSystemPage;
+import fitnesse.wiki.fs.FileSystemPageFactory;
+import fitnesse.wiki.fs.MemoryFileSystem;
+import fitnesse.wiki.fs.WikiFilePage;
+import fitnesse.wiki.fs.WikiFiles;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class MarkdownPageTest {
+  private MemoryFileSystem fileSystem;
+  private WikiPage root;
+
+  @Before
+  public void setUp() throws Exception {
+    fileSystem = new MemoryFileSystem();
+    fileSystem.makeFile(new File("root/content.txt"), "");
+    root = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
+      .makePage(new File("root"), "root", null, new SystemVariableSource());
+  }
+
+  @Test
+  public void aMarkdownFileIsAPageWithItsFrontMatter() throws Exception {
+    fileSystem.makeFile(new File("root/SuiteDemo.md"), """
+      {
+        "type": "suite",
+        "tags": ["smoke", "slow"],
+        "help": "the suite",
+        "prune": true
+      }
+      # Suite
+      """);
+
+    WikiPage page = root.getChildPage("SuiteDemo");
+
+    assertEquals(MarkdownPage.class, page.getClass());
+    PageData data = page.getData();
+    assertEquals("# Suite\n", data.getContent());
+    assertTrue(data.hasAttribute("Suite"));
+    assertFalse(data.hasAttribute("Test"));
+    assertEquals("smoke, slow", data.getAttribute("Suites"));
+    assertEquals("the suite", data.getAttribute("Help"));
+    assertTrue(data.hasAttribute("Prune"));
+    assertEquals("SuiteDemo", page.getName());
+    assertEquals("# Suite\n", page.getHtml());
+    assertNull(page.getVariable("anything"));
+    assertTrue(page.getVersions().isEmpty());
+    try {
+      page.getVersion("none");
+      fail("versions are not kept");
+    } catch (RuntimeException expected) {
+      assertTrue(expected.getMessage().contains("not kept"));
+    }
+  }
+
+  @Test
+  public void aMissingFrontMatterInfersTheTypeFromTheName() throws Exception {
+    fileSystem.makeFile(new File("root/TestDivision.md"), "# go\n");
+    fileSystem.makeFile(new File("root/SuiteDemo.md"), "body\n");
+    fileSystem.makeFile(new File("root/Notes.md"), "body\n");
+
+    assertTrue(root.getChildPage("TestDivision").getData().hasAttribute("Test"));
+    assertTrue(root.getChildPage("SuiteDemo").getData().hasAttribute("Suite"));
+    PageData notes = root.getChildPage("Notes").getData();
+    assertFalse(notes.hasAttribute("Test"));
+    assertFalse(notes.hasAttribute("Suite"));
+  }
+
+  @Test
+  public void anExplicitTypeOverridesTheName() throws Exception {
+    fileSystem.makeFile(new File("root/TestDivision.md"), "{ \"type\": \"static\" }\nbody\n");
+
+    PageData data = root.getChildPage("TestDivision").getData();
+    assertFalse(data.hasAttribute("Test"));
+    assertFalse(data.hasAttribute("Suite"));
+    assertEquals("body\n", data.getContent());
+  }
+
+  @Test
+  public void aNamedChildHasNoFileUntilSomethingWritesIt() throws Exception {
+    fileSystem.makeFile(new File("root/Notes.md"), "body\n");
+    WikiPage page = root.getChildPage("Notes");
+
+    assertTrue(page.getChildren().isEmpty());
+    WikiPage child = page.addChildPage("Child");
+    assertEquals("Child", child.getName());
+    assertEquals("", child.getData().getContent());
+    page.removeChildPage("Child");
+    page.remove();
+    assertFalse(fileSystem.exists(new File("root/Notes.md")));
+    try {
+      page.commit(page.getData());
+      fail("markdown pages are not written yet");
+    } catch (RuntimeException expected) {
+      assertTrue(expected.getMessage().contains("not written"));
+    }
+  }
+
+  @Test
+  public void aWikiFileStaysAWikiFile() throws Exception {
+    fileSystem.makeFile(new File("root/WikiPage.wiki"), "stuff");
+
+    assertEquals(WikiFilePage.class, root.getChildPage("WikiPage").getClass());
+    assertEquals(FileSystemPage.class, root.getClass());
+  }
+}
