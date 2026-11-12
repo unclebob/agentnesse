@@ -1,6 +1,5 @@
 package fitnesse;
 
-import java.io.File;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -40,20 +39,6 @@ public class ConfigurationParameterTest {
     Properties properties = ConfigurationParameter.makeProperties();
 
     assertThat(properties, is(notNullValue()));
-  }
-
-  @Test
-  public void canLoadPropertiesFromFile() {
-    Properties properties = ConfigurationParameter.loadProperties(new File("configuration-parameter-test.properties"));
-
-    assertThat(properties.getProperty("unitTestProperty"), is("found"));
-  }
-
-  @Test
-  public void missingConfigurationFileYieldsEmptyProperties() {
-    Properties properties = ConfigurationParameter.loadProperties(new File("no-such-configuration.properties"));
-
-    assertThat(properties.isEmpty(), is(true));
   }
 
 }

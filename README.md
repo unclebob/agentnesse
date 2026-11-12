@@ -45,6 +45,21 @@ Start the wiki on port 8001. It listens on 127.0.0.1. `--listen 0.0.0.0` listens
 java -jar build/libs/fitnesse-*-standalone.jar -p 8001 --listen 127.0.0.1
 ```
 
+Configuration is `agentnesse.json` in the working directory. If that file is missing, the built-in defaults are used. A null value leaves that default too. `-f` names a different file, and that file must exist. A command-line flag overrides the file. The port default is 80. A `-c` command uses port 9123 when port is left unset.
+
+```json
+{
+  "port": null,
+  "rootPath": ".",
+  "pageRoot": "FitNesseRoot",
+  "logDirectory": null,
+  "maximumWorkers": 100,
+  "theme": "bootstrap",
+  "refactorStartPath": null,
+  "listen": "127.0.0.1"
+}
+```
+
 On Windows, use `gradlew.bat` instead of `./gradlew`.
 
 ## Credit and license

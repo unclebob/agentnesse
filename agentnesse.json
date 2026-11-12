@@ -1,0 +1,10 @@
+{
+  "port": null,
+  "rootPath": ".",
+  "pageRoot": "FitNesseRoot",
+  "logDirectory": null,
+  "maximumWorkers": 100,
+  "theme": "bootstrap",
+  "refactorStartPath": null,
+  "listen": "127.0.0.1"
+}

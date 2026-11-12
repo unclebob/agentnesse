@@ -1,5 +1,8 @@
 bin
 build
+.metrics/
+.venv/
+target/
 out
 lib/*
 .gradle

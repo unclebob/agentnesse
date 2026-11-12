@@ -12,7 +12,7 @@ import fitnesse.junit.FitNesseRunner.ConfigFile;
 @Name("FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite")
 @FitnesseDir(".")
 @OutputDir("tmp")
-@ConfigFile("plugins.properties")
+@ConfigFile("agentnesse.json")
 public class FitNesseSuiteExampleTest {
 
   @Test

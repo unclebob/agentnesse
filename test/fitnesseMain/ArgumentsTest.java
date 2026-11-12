@@ -20,13 +20,13 @@ public class ArgumentsTest {
   @Test
   public void defaultConfigLocation() {
     Arguments args = new Arguments();
-    assertEquals("./plugins.properties", args.getConfigFile(ContextConfigurator.systemDefaults()));
+    assertEquals("./agentnesse.json", args.getConfigFile(ContextConfigurator.systemDefaults()));
   }
 
   @Test
   public void configLocationWithDifferentRootPath() {
     Arguments args = new Arguments("-d", "customDir");
-    assertEquals("customDir/plugins.properties", args.getConfigFile(ContextConfigurator.systemDefaults()));
+    assertEquals("customDir/agentnesse.json", args.getConfigFile(ContextConfigurator.systemDefaults()));
   }
 
   @Test

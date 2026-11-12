@@ -431,9 +431,15 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     int port = getPort(suiteClass);
     File configFile = getConfigFile(rootPath, suiteClass);
 
-    return ContextConfigurator.systemDefaults()
+    ContextConfigurator configurator = ContextConfigurator.systemDefaults();
+    boolean configRequired = suiteClass.getAnnotation(ConfigFile.class) != null;
+    try {
+      fitnesse.AgentNesseConfig.apply(configurator, configFile, configRequired);
+    } catch (IllegalArgumentException e) {
+      throw new InitializationError(e.getMessage());
+    }
+    return configurator
       .updatedWith(System.getProperties())
-      .updatedWith(ConfigurationParameter.loadProperties(configFile))
       .updatedWith(ConfigurationParameter.makeProperties(
             ConfigurationParameter.PORT, port,
             ConfigurationParameter.ROOT_PATH, rootPath,

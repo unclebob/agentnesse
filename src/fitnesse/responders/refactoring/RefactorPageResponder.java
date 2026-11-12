@@ -43,7 +43,7 @@ public class RefactorPageResponder implements Responder {
     page.put("type", type);
     page.put("viewLocation", request.getResource());
     if ("move".equals(type)) {
-      String rootPath = context.getProperty("Refactor.StartPath");
+      String rootPath = context.getProperty("refactorStartPath");
       page.put("rootpath", StringUtils.isBlank(rootPath) ? "ROOT" : rootPath);
     }
     SimpleResponse response = new SimpleResponse();

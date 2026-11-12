@@ -46,7 +46,7 @@ public class Arguments {
       defaults.get(ROOT_PATH) + "}");
     System.err.println("\t-r <page root directory> {" +
       defaults.get(ROOT_DIRECTORY) + "}");
-    System.err.println("\t-f <config properties file> {" +
+    System.err.println("\t-f <config file> {" +
       defaults.get(CONFIG_FILE) + "}");
     System.err.println("\t-c <command> execute single command.");
     System.err.println("\t-b <filename> redirect command output.");
@@ -56,6 +56,10 @@ public class Arguments {
 
   public String getRootPath(ContextConfigurator configurator) {
     return rootPath == null ? configurator.get(ROOT_PATH) : rootPath;
+  }
+
+  public boolean hasConfigFile() {
+    return configFile != null;
   }
 
   public String getConfigFile(ContextConfigurator configurator) {

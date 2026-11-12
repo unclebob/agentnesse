@@ -52,7 +52,7 @@ public class RefactorPageResponderTest extends ResponderTestCase {
 
   @Test
   public void testMoveWithStartPath() throws Exception {
-    context.getProperties().put("Refactor.StartPath", "SomeStartPath");
+    context.getProperties().put("refactorStartPath", "SomeStartPath");
 
     request.addInput("type", "move");
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);

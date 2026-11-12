@@ -1,14 +1,6 @@
 package fitnesse;
 
-import util.FileUtil;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Parameters used to configure FitNesse.
@@ -25,9 +17,8 @@ public enum ConfigurationParameter {
   COMMAND("Command"),
   LISTEN("listen"),
   MAXIMUM_WORKERS("MaximumWorkers"),
-  THEME("Theme");
-
-  private static final Logger LOG = Logger.getLogger(ConfigurationParameter.class.getName());
+  THEME("Theme"),
+  REFACTOR_START_PATH("refactorStartPath");
 
   private final String name;
 
@@ -51,31 +42,6 @@ public enum ConfigurationParameter {
       properties.setProperty(key, value);
     }
     return properties;
-  }
-
-  public static Properties loadProperties(File propertiesFile) {
-    FileInputStream propertiesStream = null;
-    Properties properties = new Properties();
-    try {
-      propertiesStream = new FileInputStream(propertiesFile);
-      properties.load(propertiesStream);
-    } catch (FileNotFoundException e) {
-      LOG.info(String.format("No configuration file found (%s)", getCanonicalPath(propertiesFile)));
-    } catch (IOException e) {
-      LOG.log(Level.WARNING, String.format("Error reading configuration: %s", e.getMessage()));
-    } finally {
-      FileUtil.close(propertiesStream);
-    }
-
-    return properties;
-  }
-
-  private static String getCanonicalPath(File propertiesFile) {
-    try {
-      return propertiesFile.getCanonicalPath();
-    } catch (IOException e) {
-      return propertiesFile.toString();
-    }
   }
 
   public static ConfigurationParameter byKey(String key) {

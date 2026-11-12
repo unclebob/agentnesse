@@ -13,9 +13,9 @@ Say you want to add a custom theme called "custom". What do you do?
  1. Create FitNesseRoot/files/fitnesse/css/custom.css for styling
  2. Create FitNesseRoot/files/fitnesse/javascript/custom.js for behaviour
     (optional)
- 3. Define the style in plugins.properties
- 
-        Theme=custom
+ 3. Set the theme in agentnesse.json
+
+        "theme": "custom"
         
  4. Edit the style (e.g. to match the corporate standard)
 
@@ -26,4 +26,4 @@ FitNesse projects. In that case you can create a jar with the styles in it:
         /fitnesse/resources/javascript/custom.js
 
 and provide it as a dependency when launching FitNesse. You still have to
-define the theme in plugins.properties.
+set "theme" in agentnesse.json.

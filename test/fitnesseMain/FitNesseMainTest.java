@@ -125,6 +125,53 @@ public class FitNesseMainTest {
   }
 
   @Test
+  public void unknownConfigKeyExitsNonZeroAndNamesTheFileAndKey() throws Exception {
+    File config = new File("bad-agentnesse.json");
+    FileUtil.createFile(config.getPath(), "{\"bogus\": 1}\n");
+    try {
+      assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
+        "bad-agentnesse.json", "bogus");
+    } finally {
+      config.delete();
+    }
+  }
+
+  @Test
+  public void malformedConfigExitsNonZeroAndNamesTheFile() throws Exception {
+    File config = new File("malformed-agentnesse.json");
+    FileUtil.createFile(config.getPath(), "{");
+    try {
+      assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
+        "malformed-agentnesse.json", "malformed");
+    } finally {
+      config.delete();
+    }
+  }
+
+  @Test
+  public void missingExplicitConfigFileExitsNonZero() throws Exception {
+    assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", "no-such-agentnesse.json", "-c", "/root"),
+      "no-such-agentnesse.json", "not found");
+  }
+
+  private void assertConfigError(Arguments arguments, String... expectedText) throws Exception {
+    PrintStream original = System.err;
+    ByteArrayOutputStream captured = new ByteArrayOutputStream();
+    System.setErr(new PrintStream(captured, true, "UTF-8"));
+    int exitCode;
+    try {
+      exitCode = new FitNesseMain().launchFitNesse(arguments);
+    } finally {
+      System.setErr(original);
+    }
+    assertThat(exitCode, not(is(0)));
+    String error = captured.toString("UTF-8");
+    for (String expected : expectedText) {
+      assertThat(error, containsString(expected));
+    }
+  }
+
+  @Test
   public void aBadListenAddressExitsNonZeroAndNamesTheAddress() throws Exception {
     PrintStream original = System.err;
     ByteArrayOutputStream captured = new ByteArrayOutputStream();
@@ -214,9 +261,9 @@ public class FitNesseMainTest {
 
   @Test
   public void systemPropertiesTakePrecedenceOverConfiguredProperties() throws Exception {
-    final String configFileName = "systemPropertiesTakePrecedenceOverConfiguredProperties.properties";
+    final String configFileName = "systemPropertiesTakePrecedenceOverConfiguredProperties.json";
     String themeKey = ConfigurationParameter.THEME.getKey();
-    FileUtil.createFile(configFileName, themeKey + "=example");
+    FileUtil.createFile(configFileName, "{\"theme\": \"example\"}\n");
 
     System.setProperty(themeKey, "othertheme");
     try {

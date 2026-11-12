@@ -50,8 +50,14 @@ public class FitNesseMain {
 
   public Integer launchFitNesse(Arguments arguments) throws Exception {
     ContextConfigurator contextConfigurator = ContextConfigurator.systemDefaults();
+    File configFile = new File(arguments.getConfigFile(contextConfigurator));
+    try {
+      fitnesse.AgentNesseConfig.apply(contextConfigurator, configFile, arguments.hasConfigFile());
+    } catch (IllegalArgumentException e) {
+      System.err.println(e.getMessage());
+      return 1;
+    }
     contextConfigurator = contextConfigurator.updatedWith(System.getProperties());
-    contextConfigurator = contextConfigurator.updatedWith(ConfigurationParameter.loadProperties(new File(arguments.getConfigFile(contextConfigurator))));
     contextConfigurator = arguments.update(contextConfigurator);
 
     return launchFitNesse(contextConfigurator);

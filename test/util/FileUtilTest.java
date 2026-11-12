@@ -12,6 +12,11 @@ import java.util.Arrays;
 
 public class FileUtilTest {
   @Test
+  public void closeIgnoresANullStream() {
+    FileUtil.close(null);
+  }
+
+  @Test
   public void writesAndReadsLines() throws Exception {
     File file = FileUtil.createFile("temp-lines.txt", "");
     FileUtil.writeLinesToFile(file, Arrays.asList("one", "two"));
