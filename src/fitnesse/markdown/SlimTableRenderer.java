@@ -45,12 +45,59 @@ final class SlimTableRenderer implements NodeRenderer {
       writer.raw("<tr>");
       for (String cell : cells) {
         writer.raw("<td>");
-        writer.text(cell);
+        writer.raw(cellHtml(cell));
         writer.raw("</td>");
       }
       writer.raw("</tr>\n");
     }
     writer.raw("</table>\n");
+  }
+
+  private String cellHtml(String cell) {
+    StringBuilder out = new StringBuilder();
+    for (int i = 0; i < cell.length(); i++) {
+      int tag = tagEnd(cell, i);
+      if (tag > i) {
+        out.append(cell, i, tag);
+        i = tag - 1;
+        continue;
+      }
+      char current = cell.charAt(i);
+      if (current == '&') {
+        out.append("&amp;");
+      } else if (current == '<') {
+        out.append("&lt;");
+      } else if (current == '>') {
+        out.append("&gt;");
+      } else {
+        out.append(current);
+      }
+    }
+    return out.toString();
+  }
+
+  private static int tagEnd(String cell, int start) {
+    if (cell.charAt(start) != '<') {
+      return -1;
+    }
+    int end = cell.indexOf('>', start);
+    if (end < 0) {
+      return -1;
+    }
+    String tag = cell.substring(start + 1, end).toLowerCase();
+    if (tag.startsWith("/")) {
+      tag = tag.substring(1);
+    }
+    int nameEnd = 0;
+    while (nameEnd < tag.length() && Character.isLetter(tag.charAt(nameEnd))) {
+      nameEnd++;
+    }
+    String name = tag.substring(0, nameEnd);
+    if (name.equals("span") || name.equals("a") || name.equals("table") || name.equals("tr") || name.equals("td")
+      || name.equals("pre") || name.equals("div")) {
+      return end + 1;
+    }
+    return -1;
   }
 
   private static List<String> withoutTrailingEmpty(List<String> row) {

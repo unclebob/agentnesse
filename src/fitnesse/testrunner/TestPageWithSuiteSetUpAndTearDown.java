@@ -25,7 +25,7 @@ public class TestPageWithSuiteSetUpAndTearDown extends WikiTestPage {
   @Override
   protected void addTrailingHtml(StringBuilder html) {
     super.addTrailingHtml(html);
-    appendPages(html, getSuiteTearDowns());
+    appendTearDowns(html, getSuiteTearDowns());
   }
 
   @Override

@@ -22,19 +22,23 @@ public final class WikiToMarkdown {
   }
 
   public static String convert(String pageName, String wiki, String propertiesXml, List<String> notes) {
-    String body = new Body(notes).convert(wiki == null ? "" : wiki);
+    String body = new Body(notes, pageName).convert(wiki == null ? "" : wiki);
     return FrontMatter.write(type(pageName, propertiesXml), tags(propertiesXml), help(propertiesXml),
       propertiesXml != null && propertiesXml.contains("<Prune"), body);
   }
 
   private static String type(String pageName, String xml) {
-    if (xml != null && xml.contains("<Suite")) {
+    if (xml != null && hasTag(xml, "Suite")) {
       return "suite";
     }
-    if (xml != null && xml.contains("<Test")) {
+    if (xml != null && hasTag(xml, "Test")) {
       return "test";
     }
     return PageType.getPageTypeForPageName(pageName).name().toLowerCase();
+  }
+
+  private static boolean hasTag(String xml, String name) {
+    return xml.contains("<" + name + ">") || xml.contains("<" + name + "/>") || xml.contains("<" + name + " ");
   }
 
   private static String help(String xml) {
@@ -65,12 +69,14 @@ public final class WikiToMarkdown {
 
   private static final class Body {
     final List<String> notes;
+    final String pageName;
     String[] lines = new String[0];
     int index;
     int end;
 
-    private Body(List<String> notes) {
+    private Body(List<String> notes, String pageName) {
       this.notes = notes;
+      this.pageName = pageName;
     }
 
     private String convert(String wiki) {
@@ -142,6 +148,9 @@ public final class WikiToMarkdown {
         index++;
         return "<!-- " + line.trim().substring(1).trim() + " -->";
       }
+      if (line.trim().startsWith("![")) {
+        return plainTextTable();
+      }
       if (line.trim().startsWith("!img")) {
         index++;
         return image(line.trim());
@@ -175,15 +184,9 @@ public final class WikiToMarkdown {
     private String include() {
       String rest = lines[index++].trim().substring("!include".length()).trim();
       rest = options(rest);
-      if (rest.startsWith(">") || rest.startsWith("<")) {
-        rest = rest.substring(1).trim();
-      }
-      if (rest.startsWith(".")) {
-        rest = rest.substring(1);
-      }
       String name = rest.split("\\s+")[0];
       String last = name.substring(name.lastIndexOf('.') + 1);
-      if (INHERITED.contains(last)) {
+      if (INHERITED.contains(last) && !INHERITED.contains(pageName)) {
         return null;
       }
       return fence("include " + name);
@@ -218,6 +221,48 @@ public final class WikiToMarkdown {
       String title = line.trim().substring(2).trim().replace("!help", "").trim();
       index++;
       return "#".repeat(level) + " " + Inline.of(title, notes);
+    }
+
+    private String plainTextTable() {
+      String rest = lines[index].trim().substring(2);
+      Character separator = null;
+      if (!rest.isEmpty() && !Character.isWhitespace(rest.charAt(0))) {
+        separator = rest.charAt(0);
+        rest = rest.substring(1);
+      }
+      List<String> raw = new ArrayList<>();
+      if (!rest.isBlank()) {
+        raw.add(rest);
+      }
+      index++;
+      while (index < end && !lines[index].trim().equals("]!")) {
+        raw.add(lines[index++]);
+      }
+      if (index < end) {
+        index++;
+      }
+      List<List<String>> rows = new ArrayList<>();
+      for (String line : raw) {
+        if (line.isBlank()) {
+          continue;
+        }
+        rows.add(plainRow(line, separator));
+      }
+      return rows.isEmpty() ? "" : Table.fromRows(rows);
+    }
+
+    private static List<String> plainRow(String line, Character separator) {
+      if (separator == null) {
+        return List.of(line.trim());
+      }
+      List<String> cells = new ArrayList<>();
+      for (String part : line.split(java.util.regex.Pattern.quote(separator.toString()), -1)) {
+        cells.add(part.trim());
+      }
+      while (cells.size() > 1 && cells.get(cells.size() - 1).isEmpty()) {
+        cells.remove(cells.size() - 1);
+      }
+      return cells;
     }
 
     private String image(String line) {
@@ -345,7 +390,7 @@ public final class WikiToMarkdown {
         return stripEdges(trimmed.substring(2, trimmed.length() - 2));
       }
       if (looksLikeWiki(trimmed)) {
-        return new Body(notes).convert(trimmed).strip();
+        return new Body(notes, "").convert(trimmed).strip();
       }
       return trimmed;
     }
@@ -500,7 +545,7 @@ public final class WikiToMarkdown {
       if (body.index < body.end) {
         body.index++;
       }
-      String converted = new Body(body.notes).convert(inner.toString()).strip();
+      String converted = new Body(body.notes, body.pageName).convert(inner.toString()).strip();
       String open = collapsed ? "" : "open ";
       return "```agentnesse\ncollapsible " + open + title + "\n" + converted + "\n```";
     }
@@ -510,8 +555,26 @@ public final class WikiToMarkdown {
     private Table() {
     }
 
+    private static String fromRows(List<List<String>> rows) {
+      List<List<String>> escaped = new ArrayList<>();
+      for (List<String> row : rows) {
+        List<String> cells = new ArrayList<>();
+        for (String cell : row) {
+          cells.add(escape(cell));
+        }
+        escaped.add(cells);
+      }
+      keepLastCell(escaped);
+      return emit(escaped);
+    }
+
     private static String toMarkdown(String raw, List<String> notes) {
       List<List<String>> rows = rows(raw, notes);
+      keepLastCell(rows);
+      return emit(rows);
+    }
+
+    private static String emit(List<List<String>> rows) {
       int width = 0;
       for (List<String> row : rows) {
         width = Math.max(width, row.size());
@@ -523,6 +586,15 @@ public final class WikiToMarkdown {
         out.append(render(pad(rows.get(i), width))).append('\n');
       }
       return "\n" + out.substring(0, out.length() - 1);
+    }
+
+    private static void keepLastCell(List<List<String>> rows) {
+      if (rows.size() < 2 || rows.get(0).isEmpty() || !rows.get(0).get(0).toLowerCase().startsWith("baseline")) {
+        return;
+      }
+      for (int i = 1; i < rows.size(); i++) {
+        rows.get(i).add(i == 1 ? "#" : ".");
+      }
     }
 
     private static List<List<String>> rows(String raw, List<String> notes) {
@@ -597,7 +669,8 @@ public final class WikiToMarkdown {
       String trimmed = raw.trim();
       String literal = wholeLiteral(trimmed);
       String text = literal == null ? Inline.of(trimmed, notes) : literalText(literal, notes);
-      return escape(text);
+      String escaped = escape(text);
+      return literal != null && looksLikeWiki(literal) ? holdVariables(escaped) : escaped;
     }
 
     private static String wholeLiteral(String text) {
@@ -625,7 +698,20 @@ public final class WikiToMarkdown {
       if (!looksLikeWiki(inner)) {
         return inner;
       }
-      return new Body(notes).convert(inner).strip();
+      return new Body(notes, "").convert(inner).strip();
+    }
+
+    private static String holdVariables(String text) {
+      StringBuilder out = new StringBuilder();
+      for (int i = 0; i < text.length(); i++) {
+        char current = text.charAt(i);
+        if (current == '$' && i + 1 < text.length() && text.charAt(i + 1) == '{'
+          && (i == 0 || text.charAt(i - 1) != '\\')) {
+          out.append('\\');
+        }
+        out.append(current);
+      }
+      return out.toString();
     }
 
     private static String escape(String text) {
@@ -633,7 +719,7 @@ public final class WikiToMarkdown {
       String source = text.replace("\n", "<br>");
       for (int i = 0; i < source.length(); i++) {
         char current = source.charAt(i);
-        if (current == '\\' || current == '|' || current == '*' || current == '_' || current == '`') {
+        if (current == '\\' || current == '|' || current == '*' || current == '`') {
           out.append('\\');
         }
         out.append(current);
@@ -712,7 +798,16 @@ public final class WikiToMarkdown {
       if (end < 0) {
         return i;
       }
-      out.append('`').append(text, i + 2, end).append('`');
+      String inner = text.substring(i + 2, end);
+      if (looksLikeWiki(inner)) {
+        String converted = new Body(List.of(), "").convert(inner).strip();
+        if (converted.contains("```")) {
+          converted = "\n" + converted + "\n";
+        }
+        out.append(converted);
+      } else {
+        out.append('`').append(inner).append('`');
+      }
       return end + 2;
     }
 

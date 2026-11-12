@@ -28,6 +28,8 @@ final class PlainText {
       text.append(((Text) node).getLiteral());
     } else if (node instanceof HardLineBreak || breakTag(node)) {
       text.append('\n');
+    } else if (node instanceof HtmlInline) {
+      text.append(((HtmlInline) node).getLiteral());
     }
     Node child = node.getFirstChild();
     while (child != null) {

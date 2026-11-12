@@ -35,6 +35,9 @@ public class WikiToMarkdownTest {
       | fitnesse.fixtures |
       """));
     assertTrue(markdown.contains("\"type\": \"test\""));
+    String tagged = convert("SystemUnderTestTest", "hi\n", "<properties><Test/><Suites>testSuite</Suites></properties>");
+    assertTrue(tagged.contains("\"type\": \"test\""));
+    assertTrue(tagged.contains("testSuite"));
   }
 
   @Test
@@ -74,9 +77,11 @@ public class WikiToMarkdownTest {
     assertTrue(!markdown.contains("include FitNesse"));
     assertTrue(markdown.contains("""
       ```agentnesse
-      include IncludedPage
+      include >IncludedPage
       ```
       """));
+    String setup = convert("SetUp", "!include -c .FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SetUp\n", "");
+    assertTrue(setup.contains("include .FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SetUp"));
   }
 
   @Test
@@ -173,10 +178,37 @@ public class WikiToMarkdownTest {
       |fitnesse.slim.test|
       -! |
       """, "");
-    assertTrue(markdown.contains("define TEST\\_SYSTEM"));
+    assertTrue(markdown.contains("define TEST_SYSTEM"));
     assertTrue(markdown.contains("<br>"));
     assertTrue(markdown.contains("\\| import \\|"));
     assertTrue(!markdown.contains("\n| import |"));
+  }
+
+  @Test
+  public void aPlainTextTableBecomesAGfmTable() {
+    String markdown = convert("Page", """
+      ![:
+      scenario:login user _ with password _:user name, password:
+      check:echo:@userName:Bob
+      ]!
+      ![ script
+      login user Bob with password xyzzy
+      ]!
+      """, "");
+    assertTrue(markdown.contains("| scenario | login user _ with password _ | user name, password |"));
+    assertTrue(markdown.contains("| script |\n| --- |\n| login user Bob with password xyzzy |"));
+  }
+
+  @Test
+  public void aBaselineTableKeepsAnEmptyCellThatIsNotLast() {
+    String markdown = convert("Base", """
+      |baseline: milk|
+      |cash|go?|
+      |0| |
+      |1|yes|
+      """, "");
+    assertTrue(markdown.contains("| # |"));
+    assertTrue(markdown.contains("| 0 | | . |"));
   }
 
   @Test

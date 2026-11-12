@@ -65,27 +65,57 @@ public class WikiTestPage implements TestPage {
   }
 
   protected void addTrailingHtml(StringBuilder html) {
-    appendPage(html, getTearDown());
+    appendTearDown(html, getTearDown());
   }
 
   protected void appendPages(StringBuilder html, List<WikiPage> pages) {
+    appendPages(html, pages, false);
+  }
+
+  protected void appendTearDowns(StringBuilder html, List<WikiPage> pages) {
+    appendPages(html, pages, true);
+  }
+
+  private void appendPages(StringBuilder html, List<WikiPage> pages, boolean tearDown) {
     if (pages == null) {
       return;
     }
     for (WikiPage page : pages) {
-      appendPage(html, page);
+      appendIncluded(html, page, tearDown);
     }
   }
 
+  private String includedHtml(WikiPage page) {
+    if (page instanceof MarkdownPage && page != sourcePage) {
+      return ((MarkdownPage) page).getHtmlWithin(sourcePage);
+    }
+    return page.getHtml();
+  }
+
   private void appendPage(StringBuilder html, WikiPage page) {
+    appendIncluded(html, page, false);
+  }
+
+  private void appendTearDown(StringBuilder html, WikiPage page) {
+    appendIncluded(html, page, true);
+  }
+
+  private void appendIncluded(StringBuilder html, WikiPage page, boolean tearDown) {
     if (page == null) {
       return;
+    }
+    if (tearDown) {
+      html.append("<div class=\"teardown\">");
     }
     html.append("<details class=\"agentnesse-include\"><summary>")
       .append(page.getName())
       .append("</summary>")
-      .append(page.getHtml())
-      .append("</details>\n");
+      .append(includedHtml(page))
+      .append("</details>");
+    if (tearDown) {
+      html.append("</div>");
+    }
+    html.append('\n');
   }
 
   private boolean containsWikitext() {

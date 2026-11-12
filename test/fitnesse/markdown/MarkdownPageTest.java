@@ -98,6 +98,23 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void aVariableWithANewlineStaysInsideTheSlimCell() throws Exception {
+    fileSystem.makeFile(new File("root/TestHost.md"), """
+      ```agentnesse
+      define SUT
+      !path lib/*.jar
+      ```
+      | script | with content |
+      | --- | --- |
+      | given page | ${SUT} |
+      """);
+    String html = root.getChildPage("TestHost").getHtml();
+    var scanner = new fitnesse.testsystems.slim.HtmlTableScanner(html);
+    assertEquals("!path lib/*.jar", scanner.getTable(0).getCellContents(1, 1).trim());
+    assertEquals(1, scanner.getTableCount());
+  }
+
+  @Test
   public void commitWritesTheFrontMatterAndTheBody() throws Exception {
     fileSystem.makeFile(new File("root/Notes.md"), "body\n");
     WikiPage page = root.getChildPage("Notes");

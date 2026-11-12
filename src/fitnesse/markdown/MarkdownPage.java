@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   public static final String EXTENSION = ".md";
   public static final String ROOT_FILE = "_root.md";
-  private static final Pattern VARIABLE = Pattern.compile("\\$\\{([^}]+)}");
+  private static final Pattern VARIABLE = Pattern.compile("(?<!\\\\)\\$\\{([^}]+)}");
 
   private final File path;
   private final FileSystem fileSystem;
@@ -57,6 +57,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   private final VariableSource variableSource;
   private final WikiPageFactory pages;
   private PageData pageData;
+  private String renderingName;
 
   public MarkdownPage(File path, String name, WikiPage parent, FileSystem fileSystem, WikiFiles versions,
                VariableSource variableSource, WikiPageFactory pages) {
@@ -145,6 +146,16 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     return render(getData().getContent());
   }
 
+  public String getHtmlWithin(WikiPage context) {
+    String previous = renderingName;
+    renderingName = context.getName();
+    try {
+      return getHtml();
+    } finally {
+      renderingName = previous;
+    }
+  }
+
   private String render(String content) {
     return MarkdownRenderer.render(expand(content), this::pageExists, contentsLinks(), this::includedHtml);
   }
@@ -183,6 +194,9 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     StringBuilder expanded = new StringBuilder();
     while (matcher.find()) {
       String value = getVariable(matcher.group(1));
+      if (value != null) {
+        value = value.replace("\n", "<br>");
+      }
       matcher.appendReplacement(expanded, Matcher.quoteReplacement(value == null ? matcher.group() : value));
     }
     matcher.appendTail(expanded);
@@ -218,7 +232,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   private Optional<String> pageNames(String name) {
     if ("PAGE_NAME".equals(name)) {
-      return Optional.of(getName());
+      return Optional.of(renderingName != null ? renderingName : getName());
     }
     if ("PAGE_PATH".equals(name)) {
       return Optional.of(getFullPath().parentPath().toString());

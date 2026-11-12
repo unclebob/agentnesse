@@ -87,6 +87,12 @@ public class SlimTableBridgeTest {
   }
 
   @Test
+  public void anEscapedDollarStaysADollarForTheNextPage() {
+    String html = MarkdownRenderer.render("| script | |\n| --- | --- |\n| check | \\${PAGE_NAME} |\n");
+    assertEquals("${PAGE_NAME}", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));
+  }
+
+  @Test
   public void anEscapedUnderscoreIsAnUnderscore() {
     String html = MarkdownRenderer.render("| decision:X | |\n| --- | --- |\n| name | TEST\\_SYSTEM |\n");
     assertEquals("TEST_SYSTEM", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));
