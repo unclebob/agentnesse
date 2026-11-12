@@ -6,14 +6,8 @@
     #if( $actions.testPage )
         <li><a class="nav-link text-secondary" href="$localPath?test" accesskey="t">Test</a></li>
     #end
-    #if( $actions.withEdit && !$actions.imported)
+    #if( $actions.withEdit)
         <li><a class="nav-link text-secondary" href="$localPath?edit" accesskey="e">Edit</a></li>
-    #end
-    #if( $actions.imported )
-        <li><a class="nav-link text-secondary" href="$localPath?edit" accesskey="e">Edit Locally</a></li>
-    #end
-    #if( $actions.imported )
-        <li><a class="nav-link text-secondary" href="$sourceUrl?responder=edit&amp;redirectToReferer=true&amp;redirectAction=importAndView">Edit Remotely</a></li>
     #end
 
     #if( $actions.withEdit)

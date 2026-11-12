@@ -17,7 +17,7 @@ public class VersionInfo implements Comparable<VersionInfo> {
   }
 
   public static VersionInfo makeVersionInfo(String author, Date creationTime) {
-    String versionName = WikiImportProperty.getTimeFormat().format(creationTime);
+    String versionName = WikiPageProperty.getTimeFormat().format(creationTime);
     if (author != null && !"".equals(author)) {
       versionName = author + "-" + versionName;
     }

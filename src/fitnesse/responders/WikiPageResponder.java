@@ -94,12 +94,7 @@ public class WikiPageResponder implements SecureResponder {
     html.setMainTemplate("wikiPage");
     html.setFooterTemplate("wikiFooter");
     html.put("footerContent", new WikiPageFooterRenderer(page));
-    handleSpecialProperties(html, page);
     return html.html(request);
-  }
-
-  private void handleSpecialProperties(HtmlPage html, WikiPage page) {
-    WikiImportingResponder.handleImportProperties(html, page);
   }
 
   @Override

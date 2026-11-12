@@ -3,7 +3,6 @@ package fitnesse.responders;
 import fitnesse.responders.editing.TemplateUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.WikiImportProperty;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 
@@ -75,11 +74,6 @@ public class WikiPageActions {
 
   public boolean isWithUserGuide() {
     return page != null;
-  }
-
-  public boolean isImported() {
-    PageData data = getData();
-    return data != null && WikiImportProperty.isImportedSubWiki(data);
   }
 
   private boolean hasAction(String action) {

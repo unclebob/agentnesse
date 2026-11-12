@@ -140,11 +140,6 @@ public class ResponderFactoryTest {
   }
 
   @Test
-  public void testSerializedPageResponder() throws Exception {
-    assertResponderTypeMatchesInput("proxy", SerializedPageResponder.class);
-  }
-
-  @Test
   public void testNameReponder() throws Exception {
     assertResponderTypeMatchesInput("names", NameWikiPageResponder.class);
   }
@@ -207,11 +202,6 @@ public class ResponderFactoryTest {
   @Test
   public void testRawContent() throws Exception {
     assertResponderTypeMatchesInput("raw", RawContentResponder.class);
-  }
-
-  @Test
-  public void testPageImporterResponder() throws Exception {
-    assertResponderTypeMatchesInput("import", WikiImportingResponder.class);
   }
 
   @Test

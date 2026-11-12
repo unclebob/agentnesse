@@ -3,7 +3,6 @@ package fitnesse.wikitext.shared;
 import fitnesse.html.HtmlTag;
 import fitnesse.html.HtmlUtil;
 import fitnesse.wiki.PageType;
-import fitnesse.wiki.WikiImportProperty;
 import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiSourcePage;
 import fitnesse.wikitext.SourcePage;
@@ -152,7 +151,6 @@ public class ContentsItemBuilder {
         String result = "";
         if (sourcePage.hasProperty(PageType.SUITE.toString())) result += propChars.charAt(0);
         if (sourcePage.hasProperty(PageType.TEST.toString())) result += propChars.charAt(1);
-        if (sourcePage.hasProperty(WikiImportProperty.PROPERTY_NAME)) result += propChars.charAt(2);
         if (page != null && page instanceof WikiSourcePage){
             if (((WikiSourcePage)page).hasSymbolicLinkChild(sourcePage.getName())) result += propChars.charAt(3);
         }
@@ -170,7 +168,6 @@ public class ContentsItemBuilder {
         else {
         	result += "static";
         }
-        if (sourcePage.hasProperty(WikiImportProperty.PROPERTY_NAME)) result += " linked";
         if (sourcePage.hasProperty(WikiPageProperty.PRUNE)) result += " pruned";
         return result;
     }

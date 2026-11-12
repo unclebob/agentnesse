@@ -218,33 +218,6 @@ public class WikiPageResponderTest {
   }
 
   @Test
-  public void testImportedPageIndication() throws Exception {
-    final WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SamplePage"));
-    final PageData data = page.getData();
-    final WikiImportProperty importProperty = new WikiImportProperty("blah");
-    importProperty.addTo(data.getProperties());
-    page.commit(data);
-
-    final String content = requestPage("SamplePage").getContent();
-
-    assertSubString("<body class=\"imported\">", content);
-  }
-
-  @Test
-  public void testImportedPageIndicationNotOnRoot() throws Exception {
-    final WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SamplePage"));
-    final PageData data = page.getData();
-    final WikiImportProperty importProperty = new WikiImportProperty("blah");
-    importProperty.setRoot(true);
-    importProperty.addTo(data.getProperties());
-    page.commit(data);
-
-    final String content = requestPage("SamplePage").getContent();
-
-    assertNotSubString("<body class=\"imported\">", content);
-  }
-
-  @Test
   public void testResponderIsSecureReadOperation() throws Exception {
     final Responder responder = new WikiPageResponder();
     assertTrue(responder instanceof SecureResponder);

@@ -87,7 +87,7 @@
  #if( $actions.suitePage )
     Mousetrap.bind('t', function() { window.location.href ="$localPath?suite"; });
   #end
-  #if( $actions.withEdit && !$actions.imported)
+  #if( $actions.withEdit)
     Mousetrap.bind('e', function() { window.location.href ="$localPath?edit"; });
   #end
   #if( $actions.withEdit)

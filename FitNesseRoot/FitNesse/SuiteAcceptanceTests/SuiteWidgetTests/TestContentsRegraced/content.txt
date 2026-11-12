@@ -19,7 +19,7 @@
 !|Response Examiner.|
 |type|pattern|matches?|
 |contents|a href="ParentPage.FirstChild" class="suite">First Child</a|true|
-|contents|a href="ParentPage.SecondChild" class="static linked pruned">Second Child</a|true|
+|contents|a href="ParentPage.SecondChild" class="static pruned">Second Child</a|true|
 
 !3 Indirect via REGRACE_TOC Variable
 '''First create the parent page.'''
@@ -42,4 +42,4 @@
 !|Response Examiner.|
 |type|pattern|matches?|
 |contents|a href="ParentPage.FirstChild" class="suite">First Child</a|true|
-|contents|a href="ParentPage.SecondChild" class="static linked pruned">Second Child</a|true|
+|contents|a href="ParentPage.SecondChild" class="static pruned">Second Child</a|true|

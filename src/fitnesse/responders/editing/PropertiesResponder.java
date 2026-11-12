@@ -18,7 +18,6 @@ import fitnesse.wiki.PageCrawler;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.SymbolicPage;
-import fitnesse.wiki.WikiImportProperty;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageProperty;
@@ -165,14 +164,6 @@ public class PropertiesResponder implements SecureResponder {
 
   private void makeFormSections() {
     makePropertiesForm();
-
-    WikiImportProperty importProperty = WikiImportProperty.createFrom(pageData
-        .getProperties());
-    if (importProperty != null)
-      makeImportUpdateForm(importProperty);
-    else
-      makeImportForm();
-
     makeSymbolicLinkSection();
   }
 
@@ -195,22 +186,6 @@ public class PropertiesResponder implements SecureResponder {
         return attributes[i];
     }
     return attributes[0];
-  }
-
-  private void makeImportForm() {
-    html.put("makeImportForm", true);
-    html.put("autoUpdate", true);
-  }
-
-  private void makeImportUpdateForm(WikiImportProperty importProps) {
-    if (importProps.isRoot()) {
-      html.put("makeImportRootForm", true);
-    } else {
-      html.put("makeImportSubpageForm", true);
-    }
-    if (importProps.isAutoUpdate())
-      html.put("autoUpdate", true);
-    html.put("sourceUrl", importProps.getSourceUrl());
   }
 
   private void makeSymbolicLinkSection() {

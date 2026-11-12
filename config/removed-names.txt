@@ -45,3 +45,10 @@ RssResponder
 
 RecentChangesWikiPage
 updateRecentChanges
+
+WikiImportProperty
+WikiImporter
+WikiImportingResponder
+PageXmlizer
+SerializedPageResponder
+ImportAndViewResponder

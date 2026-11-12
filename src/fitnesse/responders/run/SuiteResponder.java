@@ -6,7 +6,6 @@ import fitnesse.FitNesseContext;
 import fitnesse.authentication.SecureOperation;
 import fitnesse.authentication.SecureResponder;
 import fitnesse.authentication.SecureTestOperation;
-import fitnesse.components.TraversalListener;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
@@ -18,9 +17,6 @@ import fitnesse.reporting.RerunSuiteFormatter;
 import fitnesse.reporting.SuiteHtmlFormatter;
 import fitnesse.reporting.TestTextFormatter;
 import fitnesse.responders.ChunkingResponder;
-import fitnesse.responders.WikiImporter;
-import fitnesse.responders.WikiImportingResponder;
-import fitnesse.responders.WikiImportingTraverser;
 import fitnesse.responders.WikiPageActions;
 import fitnesse.testrunner.MultipleTestsRunner;
 import fitnesse.testrunner.RunningTestingTracker;
@@ -34,7 +30,6 @@ import fitnesse.wiki.PageCrawler;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PageType;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.WikiImportProperty;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageUtil;
@@ -46,9 +41,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static fitnesse.responders.WikiImportingTraverser.ImportError;
-import static fitnesse.wiki.WikiImportProperty.isAutoUpdated;
-
 public class SuiteResponder extends ChunkingResponder implements SecureResponder {
   private static final Logger LOG = Logger.getLogger(SuiteResponder.class.getName());
 
@@ -58,8 +50,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   private static final String OR_FILTER_ARG_2 = "suiteFilter";
 
   static final RunningTestingTracker runningTestingTracker = new RunningTestingTracker();
-
-  private final WikiImporter wikiImporter;
 
   private Formatter rerunFormatter;
 
@@ -75,12 +65,7 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   private Request request;
 
   public SuiteResponder() {
-    this(new WikiImporter());
-  }
-
-  public SuiteResponder(WikiImporter wikiImporter) {
     super();
-    this.wikiImporter = wikiImporter;
   }
 
   private boolean isInteractive() {
@@ -118,10 +103,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   }
 
   public void doExecuteTests() {
-    if (WikiImportProperty.isImported(data)) {
-      importWikiPages();
-    }
-
     try {
       performExecution();
     } catch (Exception e) {
@@ -129,32 +110,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     }
 
     exitCode = mainFormatter.getErrorCount();
-  }
-
-  public void importWikiPages() {
-    if (response.isXmlFormat() || !isAutoUpdated(data != null ? data : page.getData())) {
-      return;
-    }
-
-    try {
-      addToResponse("<span class=\"meta\">Updating imported content...</span><span class=\"meta\">");
-      new WikiImportingTraverser(wikiImporter, page).traverse(new TraversalListener<Object>() {
-        @Override
-        public void process(Object pageOrError) {
-          if (pageOrError instanceof ImportError) {
-            ImportError error = (ImportError) pageOrError;
-            addToResponse(" " + error.toString() + ".");
-          }
-        }
-      });
-      addToResponse(" Done.");
-      // Refresh data, since it might have changed.
-      data = page.getData();
-    } catch (IOException e) {
-      addToResponse(" Import failed: " + e.toString() + ".");
-    } finally {
-      addToResponse("</span>");
-    }
   }
 
   private HtmlPage makeHtml() {
@@ -173,7 +128,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     htmlPage.put("footerContent", new WikiPageFooterRenderer());
     htmlPage.setErrorNavTemplate("errorNavigator");
     htmlPage.put("multipleTestsRun", isMultipleTestsRun());
-    WikiImportingResponder.handleImportProperties(htmlPage, page);
     if (rerunFormatter != null) {
       htmlPage.put("rerunPage", getRerunPageName());
     }

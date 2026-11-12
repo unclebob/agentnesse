@@ -33,14 +33,14 @@ public class ContentsItemTest {
 
     @Test
     public void buildsPropertiesSuite() throws Exception {
-        assertBuildsOption("PlainItem", new String[]{"Suite=true", "WikiImport=true", "Prune=true"}, "-p", "PROPERTY_TOC",
-                "<a href=\"PlainItem\" class=\"suite linked pruned\">PlainItem *@-</a>");
+        assertBuildsOption("PlainItem", new String[]{"Suite=true", "Prune=true"}, "-p", "PROPERTY_TOC",
+                "<a href=\"PlainItem\" class=\"suite pruned\">PlainItem *-</a>");
     }
 
     @Test
     public void buildsPropertiesTest() throws Exception {
-        assertBuildsOption("PlainItem", new String[]{"Test=true", "WikiImport=true", "Prune=true"}, "-p", "PROPERTY_TOC",
-                "<a href=\"PlainItem\" class=\"test linked pruned\">PlainItem +@-</a>");
+        assertBuildsOption("PlainItem", new String[]{"Test=true", "Prune=true"}, "-p", "PROPERTY_TOC",
+                "<a href=\"PlainItem\" class=\"test pruned\">PlainItem +-</a>");
     }
 
     @Test

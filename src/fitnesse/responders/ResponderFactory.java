@@ -64,7 +64,6 @@ public class ResponderFactory {
     addResponder("stoptest", StopTestResponder.class);
     addResponder("test", TestResponder.class);
     addResponder("suite", SuiteResponder.class);
-    addResponder("proxy", SerializedPageResponder.class);
     addResponder("names", NameWikiPageResponder.class);
     addResponder("properties", PropertiesResponder.class);
     addResponder("saveProperties", SavePropertiesResponder.class);
@@ -88,11 +87,9 @@ public class ResponderFactory {
     addResponder("deleteConfirmation", DeleteConfirmationResponder.class);
     addResponder("renameConfirmation", RenameFileConfirmationResponder.class);
     addResponder("raw", RawContentResponder.class);
-    addResponder("import", WikiImportingResponder.class);
     addResponder("files", FileResponder.class);
     addResponder("shutdown", ShutdownResponder.class);
     addResponder("symlink", SymbolicLinkResponder.class);
-    addResponder("importAndView", ImportAndViewResponder.class);
     addResponder("getPage", WikiPageResponder.class);
     addResponder("packet", PacketResponder.class);
     addResponder("addChild", AddChildPageResponder.class);

@@ -3,7 +3,6 @@
 | >SuiteWikiPageResponderTests | ''Specify general behavior of all wiki pages.'' |
 | >SuiteEditResponderTests | ''Specify the behavior of edit requests.'' |
 | >SuiteResponderTests | ''Specify the behavior of the responders.'' |
-| >SuiteWikiImportTests | ''Specify the behavior of the Wiki Import feature'' |
 | >SuiteAuthenticationTests | ''Specify the authentication design'' |
 | >SuiteSymbolicLinkTests | ''Demonstrate usage and behavior of symbolic links'' |
 | >SuiteSlimTests | ''Slim Specific Tests'' |
