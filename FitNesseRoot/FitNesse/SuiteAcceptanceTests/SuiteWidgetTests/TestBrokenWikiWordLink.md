@@ -1,0 +1,16 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+## Test the rendering of a broken WikiPageReference.
+ - A broken WikiPageReference is a reference to a page that does not not exist.
+ - It should be rendered as a **[?]**.  The **[?]** is a link to the wiki page followed by **?edit**
+---
+
+| script | | | |
+| --- | --- | --- | --- |
+| given page | ReferencePage | with content | SomePage |
+| it should have creating link to | SomePage | | |
+

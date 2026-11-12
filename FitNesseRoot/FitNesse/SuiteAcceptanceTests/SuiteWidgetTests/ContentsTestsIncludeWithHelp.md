@@ -1,0 +1,23 @@
+{
+  "type": "static",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+**Next create a child**
+
+| script | |
+| --- | --- |
+| start | Page Builder |
+| line | I came first! |
+| attributes | Help=First Child's help |
+| page | ParentPage.FirstChild |
+
+**Next create a sibling**
+
+| script | |
+| --- | --- |
+| start | Page Builder |
+| line | I'm younger, but wiser |
+| attributes | Help=Second Child's help |
+| page | ParentPage.SecondChild |

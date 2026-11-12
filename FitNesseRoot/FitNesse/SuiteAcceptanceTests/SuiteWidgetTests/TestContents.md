@@ -1,0 +1,23 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": "",
+  "prune": false
+}
+### 
+```agentnesse
+contents
+```
+
+
+Ensure the contents widget builds links to child pages.
+
+
+| script | | | |
+| --- | --- | --- | --- |
+| given page | ParentPage | with content | !contents |
+| given page | ParentPage.FirstChild | | |
+| given page | ParentPage.SecondChild | | |
+| page | ParentPage | should have link to | ParentPage.FirstChild |
+| and it should have link to | ParentPage.SecondChild | | |
+
