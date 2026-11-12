@@ -35,18 +35,9 @@ final class HeadingRenderer implements NodeRenderer {
     attributes.put("id", anchor(PlainText.of(heading)));
     writer.line();
     writer.tag(tag, attributes);
-    renderChildren(heading);
+    NodeChildren.render(heading, context);
     writer.tag("/" + tag);
     writer.line();
-  }
-
-  private void renderChildren(Heading heading) {
-    Node child = heading.getFirstChild();
-    while (child != null) {
-      Node next = child.getNext();
-      context.render(child);
-      child = next;
-    }
   }
 
   private String anchor(String text) {

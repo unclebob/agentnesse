@@ -34,17 +34,8 @@ final class SlimTableRenderer implements NodeRenderer {
       return;
     }
     writer.tag("table", Map.of("class", "agentnesse-table " + table.type()));
-    renderChildren(node);
+    NodeChildren.render(node, context);
     writer.tag("/table");
     writer.line();
-  }
-
-  private void renderChildren(Node node) {
-    Node child = node.getFirstChild();
-    while (child != null) {
-      Node next = child.getNext();
-      context.render(child);
-      child = next;
-    }
   }
 }
