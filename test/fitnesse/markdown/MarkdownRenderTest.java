@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class MarkdownRenderTest {
@@ -49,6 +50,9 @@ public class MarkdownRenderTest {
     assertEquals("<p>Open <a href=\"FrontPage\">FrontPage</a>.</p>\n", linked);
     String code = MarkdownRenderer.render("Use `FrontPage` literally.\n");
     assertEquals("<p>Use <code>FrontPage</code> literally.</p>\n", code);
+    String explicit = MarkdownRenderer.render("[FrontPage](FrontPage)\n");
+    assertTrue(explicit.contains("href=\"FrontPage\""));
+    assertFalse(explicit.contains("nonExistent"));
   }
 
   static void assertGolden(String name) throws Exception {
