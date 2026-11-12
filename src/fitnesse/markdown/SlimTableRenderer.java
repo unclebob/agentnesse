@@ -39,11 +39,15 @@ final class SlimTableRenderer implements NodeRenderer {
       writer.raw("<tr>");
       for (String cell : table.row(row)) {
         writer.raw("<td>");
-        writer.text(cell);
+        writer.text(cellWithNewlines(cell));
         writer.raw("</td>");
       }
       writer.raw("</tr>\n");
     }
     writer.raw("</table>\n");
+  }
+
+  private static String cellWithNewlines(String cell) {
+    return cell.replace("{{n}}", "\n");
   }
 }
