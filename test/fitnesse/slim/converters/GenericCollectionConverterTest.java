@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class GenericCollectionConverterTest extends AbstractConverterTest<List<Integer>, GenericCollectionConverter<Integer, List<Integer>>> {
+public class GenericCollectionConverterTest extends NullWhenUndefinedConverterTest<List<Integer>, GenericCollectionConverter<Integer, List<Integer>>> {
 
   public GenericCollectionConverterTest() {
 

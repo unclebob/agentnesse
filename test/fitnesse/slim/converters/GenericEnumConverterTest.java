@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class GenericEnumConverterTest extends AbstractConverterTest<EnumToTest, GenericEnumConverter<EnumToTest>> {
+public class GenericEnumConverterTest extends NullWhenUndefinedConverterTest<EnumToTest, GenericEnumConverter<EnumToTest>> {
 
   public GenericEnumConverterTest() {
     super(new GenericEnumConverter<>(EnumToTest.class));

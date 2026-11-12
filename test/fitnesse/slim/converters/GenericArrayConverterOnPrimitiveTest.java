@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class GenericArrayConverterOnPrimitiveTest extends AbstractConverterTest<Object, GenericArrayConverter<Integer>> {
+public class GenericArrayConverterOnPrimitiveTest extends NullWhenUndefinedConverterTest<Object, GenericArrayConverter<Integer>> {
 
   public GenericArrayConverterOnPrimitiveTest() {
     super(new GenericArrayConverter<>(int.class, new PrimitiveIntConverter()));

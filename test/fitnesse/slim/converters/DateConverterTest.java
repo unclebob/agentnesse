@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class DateConverterTest extends AbstractConverterTest<Date, DateConverter> {
+public class DateConverterTest extends NullWhenUndefinedConverterTest<Date, DateConverter> {
   public DateConverterTest() {
     super(new DateConverter());
   }

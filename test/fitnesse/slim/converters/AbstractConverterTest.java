@@ -24,3 +24,21 @@ public abstract class AbstractConverterTest<T, C extends Converter<T>> {
     assertEquals(Converter.NULL_VALUE, current);
   }
 }
+
+abstract class NullWhenUndefinedConverterTest<T, C extends Converter<T>> extends AbstractConverterTest<T, C> {
+  NullWhenUndefinedConverterTest(C converter) {
+    super(converter);
+  }
+
+  /*
+   * FROM STRING
+   */
+  @Test
+  public void fromString_should_return_null_object_when_value_is_not_defined() {
+    String value = "";
+
+    T current = converter.fromString(value);
+
+    assertNull(current);
+  }
+}
