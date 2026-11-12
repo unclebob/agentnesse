@@ -1,0 +1,9 @@
+{
+  "type": "static",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+This page has an alias widget that links to a non existent page
+
+[link](NonExistentPage)
