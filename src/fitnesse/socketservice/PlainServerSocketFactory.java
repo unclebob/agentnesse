@@ -15,6 +15,11 @@ public class PlainServerSocketFactory implements ServerSocketFactory {
     return new ServerSocket(port);
   }
 
+  public ServerSocket createServerSocket(int port, InetAddress address) throws IOException {
+    LOG.log(Level.FINER, "Creating plain socket on " + address.getHostAddress() + ":" + port);
+    return new ServerSocket(port, 50, address);
+  }
+
   @Override
   public ServerSocket createLocalOnlyServerSocket(int port) throws IOException {
     LOG.log(Level.FINER, "Creating loopback only plain socket on port: " + port);

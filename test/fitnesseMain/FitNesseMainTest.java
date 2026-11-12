@@ -112,13 +112,32 @@ public class FitNesseMainTest {
   }
 
   @Test
-  public void bindsLoopbackByDefaultAndEveryAddressOnlyWithTheFlag() throws Exception {
-    try (java.net.ServerSocket loopback = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0")))) {
-      assertTrue(loopback.getInetAddress().isLoopbackAddress());
+  public void bindsTheListenAddress() throws Exception {
+    try (ServerSocket loopback = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0")))) {
+      assertEquals("127.0.0.1", loopback.getInetAddress().getHostAddress());
     }
-    try (java.net.ServerSocket all = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--all-interfaces")))) {
+    try (ServerSocket all = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "0.0.0.0")))) {
       assertTrue(all.getInetAddress().isAnyLocalAddress());
     }
+    try (ServerSocket specific = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "127.0.0.2")))) {
+      assertEquals("127.0.0.2", specific.getInetAddress().getHostAddress());
+    }
+  }
+
+  @Test
+  public void aBadListenAddressExitsNonZeroAndNamesTheAddress() throws Exception {
+    PrintStream original = System.err;
+    ByteArrayOutputStream captured = new ByteArrayOutputStream();
+    System.setErr(new PrintStream(captured, true, "UTF-8"));
+    int exitCode;
+    try {
+      exitCode = new FitNesseMain().launchFitNesse(new Arguments(
+        "-r", TEST_FITNESSE_ROOT, "-p", "0", "--listen", "999.999.999.999"));
+    } finally {
+      System.setErr(original);
+    }
+    assertThat(exitCode, not(is(0)));
+    assertThat(captured.toString("UTF-8"), containsString("999.999.999.999"));
   }
 
   private FitNesseContext contextFor(Arguments arguments) throws Exception {

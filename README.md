@@ -38,10 +38,11 @@ Build and test:
 ./gradlew build
 ```
 
-Start the wiki on port 8001:
+Start the wiki on port 8001. It listens on 127.0.0.1. `--listen 0.0.0.0` listens on every interface. Any other `--listen` address binds that address.
 
 ```
 ./gradlew run
+java -jar build/libs/fitnesse-*-standalone.jar -p 8001 --listen 127.0.0.1
 ```
 
 On Windows, use `gradlew.bat` instead of `./gradlew`.

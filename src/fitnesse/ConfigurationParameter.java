@@ -23,7 +23,7 @@ public enum ConfigurationParameter {
   PORT("Port"),
   OUTPUT("RedirectOutput"),
   COMMAND("Command"),
-  LOCALHOST_ONLY("LocalhostOnly"),
+  LISTEN("listen"),
   MAXIMUM_WORKERS("MaximumWorkers"),
   THEME("Theme");
 

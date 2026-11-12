@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import static fitnesse.ConfigurationParameter.COMMAND;
 import static fitnesse.ConfigurationParameter.CONFIG_FILE;
+import static fitnesse.ConfigurationParameter.LISTEN;
 import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
 import static fitnesse.ConfigurationParameter.THEME;
@@ -33,6 +34,7 @@ public class ContextConfigurator {
   public static final int DEFAULT_PORT = 80;
   public static final String DEFAULT_CONFIG_FILE = "plugins.properties";
   public static final String DEFAULT_THEME = "bootstrap";
+  public static final String DEFAULT_LISTEN = "127.0.0.1";
   public static final int DEFAULT_MAXIMUM_WORKERS = 100;
 
   /** Some properties are stored in typed fields: */
@@ -41,6 +43,7 @@ public class ContextConfigurator {
   private String rootPath = DEFAULT_PATH;
   private String rootDirectoryName = DEFAULT_ROOT;
   private Integer maximumWorkers = DEFAULT_MAXIMUM_WORKERS;
+  private String listenAddress;
   private Logger logger;
   private WikiFiles versionsController;
   /** Others as name-value pairs: */
@@ -193,6 +196,9 @@ public class ContextConfigurator {
       case MAXIMUM_WORKERS:
         maximumWorkers = Integer.parseInt(value);
         break;
+      case LISTEN:
+        listenAddress = value;
+        break;
       default:
         properties.setProperty(parameter.getKey(), value);
         break;
@@ -235,6 +241,8 @@ public class ContextConfigurator {
         return String.valueOf(port);
       case MAXIMUM_WORKERS:
         return String.valueOf(maximumWorkers);
+      case LISTEN:
+        return listenAddress == null ? DEFAULT_LISTEN : listenAddress;
       default:
         return properties.getProperty(parameter.getKey());
     }

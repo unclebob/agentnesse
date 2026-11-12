@@ -10,7 +10,9 @@ import fitnesse.wiki.PathParser;
 
 import java.io.*;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -104,23 +106,33 @@ public class FitNesseMain {
 
         return exitCodeListener.getFailCount();
       } else {
-        if("true".equalsIgnoreCase(context.getProperty(LOCALHOST_ONLY.getKey()))) {
-          LOG.info("Starting FitNesse on port: " + context.port + " (loopback only)");
-        } else {
-          LOG.info("Starting FitNesse on port: " + context.port);
+        String listen = context.getProperty(LISTEN.getKey());
+        LOG.info("Starting FitNesse on " + listen + ":" + context.port);
+        ServerSocket serverSocket;
+        try {
+          serverSocket = openSocket(context);
+        } catch (IllegalArgumentException e) {
+          System.err.println(e.getMessage());
+          return 1;
         }
-        ServerSocket serverSocket = openSocket(context);
         context.fitNesse.start(serverSocket);
       }
     return null;
   }
 
   static ServerSocket openSocket(FitNesseContext context) throws IOException {
-    PlainServerSocketFactory sockets = new PlainServerSocketFactory();
-    if ("true".equalsIgnoreCase(context.getProperty(LOCALHOST_ONLY.getKey()))) {
-      return sockets.createLocalOnlyServerSocket(context.port);
+    String listen = context.getProperty(LISTEN.getKey());
+    final InetAddress address;
+    try {
+      address = InetAddress.getByName(listen);
+    } catch (UnknownHostException e) {
+      throw new IllegalArgumentException("Cannot listen on " + listen + ": not an address");
     }
-    return sockets.createServerSocket(context.port);
+    PlainServerSocketFactory sockets = new PlainServerSocketFactory();
+    if (address.isAnyLocalAddress()) {
+      return sockets.createServerSocket(context.port);
+    }
+    return sockets.createServerSocket(context.port, address);
   }
 
   private void executeSingleCommand(FitNesse fitNesse, String command, String outputFile) throws Exception {

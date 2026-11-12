@@ -38,7 +38,7 @@ public class ArgumentsTest {
   @Test
   public void argumentsCanBeRepresentedByProperties() throws IOException {
     Arguments args = new Arguments("-v", "-p", "81", "-d", "directory", "-r", "root", "-b", "someFile.txt",
-              "-f", "fitnesse.properties", "-c", "SomeCommand", "--all-interfaces");
+              "-f", "fitnesse.properties", "-c", "SomeCommand", "--listen", "0.0.0.0");
     Properties properties = args.update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
 
     assertEquals("verbose", properties.getProperty("LogLevel"));
@@ -48,16 +48,19 @@ public class ArgumentsTest {
     assertEquals("someFile.txt", properties.getProperty("RedirectOutput"));
     assertEquals("fitnesse.properties", properties.getProperty("ConfigFile"));
     assertEquals("SomeCommand", properties.getProperty("Command"));
-    assertEquals("false", properties.getProperty("LocalhostOnly"));
+    assertEquals("0.0.0.0", properties.getProperty("listen"));
   }
 
   @Test
-  public void bindsLoopbackUnlessAllInterfacesIsRequested() throws IOException {
+  public void listensOnLoopbackUnlessAnAddressIsGiven() throws IOException {
     Properties defaults = new Arguments().update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
-    assertEquals("true", defaults.getProperty("LocalhostOnly"));
+    assertEquals("127.0.0.1", defaults.getProperty("listen"));
 
-    Properties all = new Arguments("--all-interfaces").update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
-    assertEquals("false", all.getProperty("LocalhostOnly"));
+    Properties all = new Arguments("--listen", "0.0.0.0").update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
+    assertEquals("0.0.0.0", all.getProperty("listen"));
+
+    Properties specific = new Arguments("--listen", "127.0.0.2").update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
+    assertEquals("127.0.0.2", specific.getProperty("listen"));
   }
 
   @Test
@@ -71,7 +74,7 @@ public class ArgumentsTest {
     assertEquals("FitNesseRoot", properties.getProperty("FitNesseRoot"));
     assertNull(properties.getProperty("RedirectOutput"));
     assertNull(properties.getProperty("Command"));
-    assertEquals("true", properties.getProperty("LocalhostOnly"));
+    assertEquals("127.0.0.1", properties.getProperty("listen"));
     assertEquals("100", properties.getProperty("MaximumWorkers"));
   }
 

@@ -113,5 +113,8 @@ RenameFileResponder
 DeleteConfirmationResponder
 RenameFileConfirmationResponder
 AddChildPageResponder
+LocalhostOnly
+all-interfaces
+
 class PropertiesResponder
 class SavePropertiesResponder
