@@ -14,11 +14,11 @@ No test history. A run returns its results. Nothing is kept afterward.
 
 No page versions inside the tool. Pages are written in place. Git is the history.
 
-Pages are Markdown files with front matter. (Planned. Pages are still FitNesse wiki text.)
+Pages can be Markdown files with JSON front matter. The pages already in this tree are still FitNesse wiki text. Samples of the new syntax are under `AgentNesseSamples`.
 
-Slim tables are bare GitHub-flavored Markdown tables. The table type is the name in the first header cell, for example `decision:Division`. A name with no prefix is a decision table. (Planned.)
+Slim tables are bare GitHub-flavored Markdown tables. The table type is the name in the first header cell, for example `decision:Division`. A name with no prefix is a decision table.
 
-Commands that are not tables go in fenced `agentnesse` blocks. (Planned.)
+Commands that are not tables go in fenced `agentnesse` blocks.
 
 Run results are JSON. A JUnit XML file is written from that JSON, for CI. (Planned. HTTP `format=xml` and `format=junit` are already gone. The `fitnesse.junit` runner still writes JUnit XML on its own, and it does not read test history.)
 
