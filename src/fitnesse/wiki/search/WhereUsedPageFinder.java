@@ -25,24 +25,8 @@ public class WhereUsedPageFinder implements TraversalListener<WikiPage>, PageFin
   public void process(WikiPage currentPage) {
     this.currentPage = currentPage;
 
-    checkSymbolicLinks();
     if (!hits.contains(currentPage)) {
       checkContent();
-    }
-  }
-
-  private void checkSymbolicLinks() {
-    WikiPageProperty suiteProperty = currentPage.getData().getProperties().getProperty(SymbolicPage.PROPERTY_NAME);
-    if (suiteProperty != null) {
-      Set<String> links = suiteProperty.keySet();
-      for (String link : links) {
-        WikiPage linkTarget = currentPage.getChildPage(link);
-        if (linkTarget != null && linkTarget.isSymbolicPage()
-          && linkTarget.getRealPage().equals(subjectPage)) {
-          addHit();
-          break;
-        }
-      }
     }
   }
 

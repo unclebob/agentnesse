@@ -92,3 +92,6 @@ fitnesse.Shutdown
 
 MergeResponder
 SaveRecorder
+
+class SymbolicPage
+SymbolicLinkResponder

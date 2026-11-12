@@ -82,13 +82,6 @@ public class PageDriver {
     return data.getAttribute(PageData.LAST_MODIFYING_USER);
   }
 
-  public boolean pageIsASymbolicLink(String pageName) {
-    WikiPage root = FitnesseFixtureContext.context.getRootPage();
-    WikiPagePath pagePath = PathParser.parse(pageName);
-    WikiPage thePage = root.getPageCrawler().getPage(pagePath);
-    return thePage.isSymbolicPage();
-  }
-
   public boolean pageExists(String pageName) {
 	    WikiPage root = FitnesseFixtureContext.context.getRootPage();
 	    WikiPagePath pagePath = PathParser.parse(pageName);

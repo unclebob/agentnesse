@@ -153,29 +153,6 @@ public class PageCrawlerTest {
   }
 
   @Test
-  public void doesTraverseSymbolicPages() throws Exception {
-    PageData data = page1.getData();
-    data.getProperties().set(SymbolicPage.PROPERTY_NAME).set("SymLink", page2.getName());
-    page1.commit(data);
-
-    crawler.traverse(hits, new NoPruningStrategy());
-    hits.assertPagesFound("RooT", "PageOne", "ChildOne", "GrandChildOne", "ChildTwo",
-            "SymLink", "PageTwo");
-  }
-
-  @Test
-  public void doesNotTraverseCyclicPageReferences() {
-    PageData data = child1.getData();
-    data.getProperties().set(SymbolicPage.PROPERTY_NAME).set("SymLink", "." + page1.getName());
-    child1.commit(data);
-
-    crawler = new PageCrawler(page1);
-    crawler.traverse(hits, new NoPruningStrategy());
-    hits.assertPagesFound("PageOne", "ChildOne", "GrandChildOne", "SymLink",
-            "ChildOne", "ChildTwo", "ChildTwo");
-  }
-
-  @Test
   public void canFindAllUncles() throws Exception {
     WikiPage grandUnclePage = WikiPageUtil.addPage(root, PathParser.parse("UnclePage"), "");
     WikiPage unclePage = WikiPageUtil.addPage(root, PathParser.parse("PageOne.UnclePage"), "");

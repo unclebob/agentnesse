@@ -4,7 +4,6 @@ import fitnesse.html.HtmlTag;
 import fitnesse.html.HtmlUtil;
 import fitnesse.wiki.PageType;
 import fitnesse.wiki.WikiPageProperty;
-import fitnesse.wiki.WikiSourcePage;
 import fitnesse.wikitext.SourcePage;
 import util.GracefulNamer;
 
@@ -16,7 +15,6 @@ import java.util.Iterator;
 public class ContentsItemBuilder {
     private final PropertySource contents;
     private final int level;
-    private final SourcePage page;
 
     public ContentsItemBuilder(PropertySource contents, int level) {
         this(contents, level, null);
@@ -25,7 +23,6 @@ public class ContentsItemBuilder {
     public ContentsItemBuilder(PropertySource contents, int level, SourcePage page) {
         this.contents = contents;
         this.level = level;
-        this.page = page;
     }
 
     public HtmlTag buildLevel(SourcePage page) {
@@ -151,9 +148,6 @@ public class ContentsItemBuilder {
         String result = "";
         if (sourcePage.hasProperty(PageType.SUITE.toString())) result += propChars.charAt(0);
         if (sourcePage.hasProperty(PageType.TEST.toString())) result += propChars.charAt(1);
-        if (page != null && page instanceof WikiSourcePage){
-            if (((WikiSourcePage)page).hasSymbolicLinkChild(sourcePage.getName())) result += propChars.charAt(3);
-        }
         if (sourcePage.hasProperty(WikiPageProperty.PRUNE)) result += propChars.charAt(4);
         return result;
     }

@@ -209,26 +209,6 @@ public class WikiFilePageTest {
   }
 
   @Test
-  public void updateWikiFileWithSymLinks() throws IOException {
-    File wikiPageFile = new File("root", "testPage.wiki");
-    fileSystem.makeFile(wikiPageFile, "page content");
-    final WikiPage testPage = root.getChildPage("testPage");
-    PageData data = testPage.getData();
-    final WikiPageProperty symlinks = data.getProperties().set(SymbolicPage.PROPERTY_NAME);
-    symlinks.set("PageOne", "RemotePage");
-    symlinks.set("PageTwo", "AnotherRemotePage");
-    testPage.commit(data);
-    final String content = fileSystem.getContent(wikiPageFile);
-    assertThat(content, is(
-      "---\n" +
-      "SymbolicLinks\n" +
-      "  PageOne: RemotePage\n" +
-      "  PageTwo: AnotherRemotePage\n" +
-      "---\n" +
-      "page content"));
-  }
-
-  @Test
   public void readWikiFileWithFrontMatterButNoContent() throws IOException {
     File wikiPageFile = new File("root", "testPage.wiki");
     fileSystem.makeFile(wikiPageFile, "---\n" +

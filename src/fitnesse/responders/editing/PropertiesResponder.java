@@ -15,7 +15,6 @@ import fitnesse.wiki.MockingPageCrawler;
 import fitnesse.wiki.PageCrawler;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageProperty;
@@ -157,7 +156,6 @@ public class PropertiesResponder implements Responder {
 
   private void makeFormSections() {
     makePropertiesForm();
-    makeSymbolicLinkSection();
   }
 
   private void makePropertiesForm() {
@@ -181,40 +179,6 @@ public class PropertiesResponder implements Responder {
     return attributes[0];
   }
 
-  private void makeSymbolicLinkSection() {
-    WikiPageProperty symLinksProperty = pageData.getProperties().getProperty(
-        SymbolicPage.PROPERTY_NAME);
-    if (symLinksProperty == null)
-      return;
-    List<Symlink> symlinks = new ArrayList<>();
-    Set<String> symbolicLinkNames = symLinksProperty.keySet();
-    for (String name : symbolicLinkNames) {
-      String link = symLinksProperty.get(name);
-
-      String path = makePathForSymbolicLink(link);
-      symlinks.add(new Symlink(name, HtmlUtil.escapeHTML(link), path));
-    }
-    html.put("symlinks", symlinks);
-  }
-
-  private String makePathForSymbolicLink(String linkPath) {
-    WikiPagePath wikiPagePath = PathParser.parse(linkPath);
-
-    if (wikiPagePath != null) {
-      WikiPage parent = wikiPagePath.isRelativePath() ? page.getParent() : page;
-      PageCrawler crawler = parent.getPageCrawler();
-      WikiPage target = crawler.getPage(wikiPagePath);
-      WikiPagePath fullPath;
-      if (target != null) {
-        fullPath = target.getFullPath();
-        fullPath.makeAbsolute();
-      } else
-        fullPath = new WikiPagePath();
-      return fullPath.toString();
-    }
-    return null;
-  }
-
   public void makeTestActionCheckboxesHtml() {
     html.put("actionTypes", ACTION_ATTRIBUTES);
   }
@@ -231,26 +195,4 @@ public class PropertiesResponder implements Responder {
     html.put("disableTypes", DISABLE_ATTRIBUTES);
   }
 
-  public static class Symlink {
-
-    private String name, link, path;
-
-    Symlink(String name, String link, String path) {
-      this.name = name;
-      this.link = link;
-      this.path = path;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getLink() {
-      return link;
-    }
-
-    public String getPath() {
-      return path;
-    }
-  }
 }

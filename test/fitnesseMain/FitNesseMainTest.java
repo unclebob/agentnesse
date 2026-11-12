@@ -112,16 +112,6 @@ public class FitNesseMainTest {
   }
 
   @Test
-  public void canUseSingleCommandToCreateSymbolicLink() throws Exception {
-    // create page to link to in test root
-    FileUtil.createFile(TEST_FITNESSE_ROOT + "/LinkTarget.wiki", "Target for symbolic link unit test");
-
-    String response = runFitnesseMainWith("-r", TEST_FITNESSE_ROOT, "-c", "?responder=symlink&linkName=MyLink&linkPath=LinkTarget");
-    assertThat(response, containsString("Executing command:"));
-    assertThat(response, not(containsString("Starting FitNesse on port:")));
-  }
-
-  @Test
   public void bindsLoopbackByDefaultAndEveryAddressOnlyWithTheFlag() throws Exception {
     try (java.net.ServerSocket loopback = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0")))) {
       assertTrue(loopback.getInetAddress().isLoopbackAddress());

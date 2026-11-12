@@ -5,7 +5,6 @@ import fitnesse.testsystems.TestPage;
 import fitnesse.wiki.BaseWikitextPage;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wikitext.MarkUpSystem;
@@ -49,7 +48,7 @@ public class WikiTestPage implements TestPage {
   }
 
   private boolean containsWikitext() {
-    return SymbolicPage.containsWikitext(sourcePage);
+    return sourcePage instanceof fitnesse.wiki.WikitextPage;
   }
 
   @Override

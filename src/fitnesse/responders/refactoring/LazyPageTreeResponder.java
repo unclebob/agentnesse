@@ -62,14 +62,8 @@ public class LazyPageTreeResponder implements Responder {
     }
 
     for (WikiPage child : page.getChildren()) {
-      if (child.isSymbolicPage()) {
-        continue;
-      }
       String fullPath = child.getFullPath().toString();
-      // If every child is a symbolic link we assume the page to not have any
-      // children
-      boolean hasChildren = !child.getChildren().stream()
-          .allMatch(p -> p.isSymbolicPage());
+      boolean hasChildren = !child.getChildren().isEmpty();
 
       result.add(new PageNode(child.getName(), fullPath, hasChildren));
     }

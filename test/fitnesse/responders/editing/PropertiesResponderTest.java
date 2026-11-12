@@ -10,7 +10,6 @@ import fitnesse.testutil.FitNesseUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PageType;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiPageUtil;
@@ -175,66 +174,6 @@ public class PropertiesResponderTest {
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
     content = response.getContent();
     return page;
-  }
-
-  @Test
-  public void testSymbolicLinkForm() throws Exception {
-    getContentFromSimplePropertiesPage();
-
-    assertSubString("Symbolic Links", content);
-    assertSubString("<input type=\"hidden\" name=\"responder\" value=\"symlink\"", content);
-    assertSubString("<input type=\"text\" name=\"linkName\"", content);
-    assertSubString("<input type=\"text\" name=\"linkPath\"", content);
-    assertSubString("<input type=\"submit\" name=\"submit\" value=\"Create/Replace\"", content);
-  }
-
-  @Test
-  public void testSymbolicLinkListing() throws Exception {
-    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SomePage"), "");
-    WikiPageUtil.addPage(page, PathParser.parse("SomeChild"), "");
-    WikiPage pageOne = WikiPageUtil.addPage(root, PathParser.parse("PageOne"), ""); //...page must exist!
-    WikiPageUtil.addPage(pageOne, PathParser.parse("ChildOne"), "");                //...page must exist!
-
-    PageData data = page.getData();
-    WikiPageProperty props = data.getProperties();
-    WikiPageProperty symProp = props.set(SymbolicPage.PROPERTY_NAME);
-    symProp.set("InternalAbsPage", ".PageOne.ChildOne");
-    symProp.set("InternalRelPage", "PageOne.ChildOne");
-    symProp.set("InternalSubPage", ">SomeChild");
-    symProp.set("ExternalPage", "file://some/page");
-    page.commit(data);
-
-    getPropertiesContentFromPage(page);
-
-    assertSubString("<input type=\"text\" name=\"InternalAbsPage\"", content);
-    assertSubString("<a href=\".PageOne.ChildOne\">.PageOne.ChildOne</a>", content);
-    assertMatches("<a href=\".*\">Rename</a>", content);
-
-    assertSubString("<input type=\"text\" name=\"InternalRelPage\"", content);
-    assertSubString("<a href=\".PageOne.ChildOne\">PageOne.ChildOne</a>", content);
-
-    assertSubString("<input type=\"text\" name=\"InternalSubPage\"", content);
-    assertSubString("<a href=\".SomePage.SomeChild\">&gt;SomeChild</a>", content);
-
-    assertHasRegexp("<td>\\W*file://some/page\\W*</td>", content);
-  }
-
-  @Test
-  public void testSymbolicLinkListingForBackwardPath() throws Exception {
-    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SomePage"), "");
-    WikiPage child = WikiPageUtil.addPage(page, PathParser.parse("SomeChild"), "");
-    WikiPageUtil.addPage(page, PathParser.parse("OtherChild"), "");
-
-    PageData data = child.getData();
-    WikiPageProperty props = data.getProperties();
-    WikiPageProperty symProp = props.set(SymbolicPage.PROPERTY_NAME);
-    symProp.set("InternalBackPage", "<SomePage.OtherChild");
-    page.commit(data);
-
-    getPropertiesContentFromPage(page);
-
-    assertSubString("InternalBackPage", content);
-    assertSubString("<a href=\".SomePage.OtherChild\">&lt;SomePage.OtherChild</a>", content);
   }
 
   @Test

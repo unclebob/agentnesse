@@ -1,14 +1,4 @@
 
-function symbolicLinkRename(linkName, resource)
-{
-  var newName = document.symbolics[linkName].value.replace(/ +/g, '');
-
-  if (newName.length > 0)
-    window.location = resource + '?responder=symlink&rename=' + linkName + '&newname=' + newName;
-  else
-    alert('Enter a new name first.');
-}
-
 function doSilentRequest(url)
 {
   $.get(url);

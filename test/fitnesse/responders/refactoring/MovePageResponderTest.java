@@ -8,7 +8,6 @@ import fitnesse.responders.ResponderTestCase;
 import fitnesse.wiki.PageCrawler;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageProperty;
@@ -128,22 +127,11 @@ public class MovePageResponderTest extends ResponderTestCase {
 
   @Test
   public void testReferenceToSubPageChanged() throws Exception {
-    WikiPage newPage = WikiPageUtil.addPage(root, PathParser.parse("ReferingPage"), "PageOne.PageA");
-    PageData data = newPage.getData();
-    WikiPageProperty linksProperty = new WikiPageProperty();
-    data.getProperties().set(SymbolicPage.PROPERTY_NAME, linksProperty);
-    linksProperty.set("SymLink", "PageOne.PageA");
-    linksProperty.set("SymLink2", "PageOne");
-    newPage.commit(data);
+    WikiPageUtil.addPage(root, PathParser.parse("ReferingPage"), "PageOne.PageA");
 
     movePage("PageOne", "PageTwo", true);
     WikiPage referingPage = root.getChildPage("ReferingPage");
     assertEquals(".PageTwo.PageOne.PageA", referingPage.getData().getContent());
-
-    PageData pageOneDataAfter = referingPage.getData();
-    linksProperty = pageOneDataAfter.getProperties().getProperty(SymbolicPage.PROPERTY_NAME);
-    assertEquals(".PageTwo.PageOne.PageA", linksProperty.get("SymLink"));
-    assertEquals(".PageTwo.PageOne", linksProperty.get("SymLink2"));
   }
 
   @Test

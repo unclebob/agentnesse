@@ -88,29 +88,6 @@ public class ContentsItemTest {
         "<a href=\"PlainItem\" class=\"test\">PlainItem</a>");
     }
 
-    @Test
-    public void assertBuildsSymbolicLinkSuffix() throws Exception{
-        Symbol contents = new Symbol(new Contents());
-        contents.putProperty("-p", "");
-
-        WikiPage root = InMemoryPage.makeRoot("RooT");
-        WikiPage pageOne = WikiPageUtil.addPage(root, PathParser.parse("PageOne"), "page one");
-        WikiPage pageOneChild = WikiPageUtil.addPage(pageOne, PathParser.parse("PageOne.PageOneChild"), "page one child");
-
-        // Make Symbolic Link at root that links to PageOne.PageOneChild.
-        SymbolicPage symPage = new SymbolicPage("SymPage", pageOneChild, root);
-        PageData data = root.getData();
-        data.getProperties().set(SymbolicPage.PROPERTY_NAME).set("SymPage", "PageOne.PageOneChild");
-        root.commit(data);
-
-        WikiSourcePage rootPage = new WikiSourcePage(root);
-        WikiSourcePage symWikiPage = new WikiSourcePage(symPage);
-
-        ContentsItemBuilder builder = new ContentsItemBuilder(contents, 1, rootPage);
-        assertEquals("<li>" + HtmlElement.endl + "\t" + "<a href=\"SymPage\" class=\"static\">SymPage ></a>"
-                + HtmlElement.endl + "</li>" + HtmlElement.endl, builder.buildItem(symWikiPage).html());
-    }
-
     private void assertBuildsOption(String page, String[] properties, String option, String variable, String result) throws Exception {
         assertBuilds(page, properties, option, "", result);
         assertBuilds(page, properties, "", variable, result);

@@ -63,9 +63,6 @@ public abstract class BaseWikiPage implements WikiPage {
       return true;
     if (!(other instanceof WikiPage))
       return false;
-    if (other instanceof SymbolicPage) {
-      return other.equals(this);
-    }
     try {
       WikiPage otherPage = (WikiPage) other;
       if (isRoot() && otherPage.isRoot()) {

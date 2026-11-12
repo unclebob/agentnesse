@@ -10,7 +10,6 @@ import fitnesse.responders.editing.NewPageResponder;
 import fitnesse.responders.editing.PropertiesResponder;
 import fitnesse.responders.editing.SavePropertiesResponder;
 import fitnesse.responders.editing.SaveResponder;
-import fitnesse.responders.editing.SymbolicLinkResponder;
 import fitnesse.responders.files.CreateDirectoryResponder;
 import fitnesse.responders.files.DeleteConfirmationResponder;
 import fitnesse.responders.files.DeleteFileResponder;
@@ -85,7 +84,6 @@ public class ResponderFactory {
     addResponder("raw", RawContentResponder.class);
     addResponder("files", FileResponder.class);
     addResponder("shutdown", ShutdownResponder.class);
-    addResponder("symlink", SymbolicLinkResponder.class);
     addResponder("getPage", WikiPageResponder.class);
     addResponder("packet", PacketResponder.class);
     addResponder("addChild", AddChildPageResponder.class);

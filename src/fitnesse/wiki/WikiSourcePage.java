@@ -101,13 +101,6 @@ public class WikiSourcePage implements SourcePage {
         return propertyValue != null ? propertyValue.trim() : "";
     }
 
-    public boolean hasSymbolicLinkChild(String childName){
-        if(page.getData().getProperties().has(SymbolicPage.PROPERTY_NAME)){
-             return page.getData().getProperties().getProperty(SymbolicPage.PROPERTY_NAME).keySet().contains(childName);
-        }
-        return false;
-    }
-
     private boolean isParentOf(WikiPage possibleParent) {
         for (WikiPage candidate = page; candidate.getParent() != candidate; candidate = candidate.getParent()) {
             if (possibleParent == candidate)

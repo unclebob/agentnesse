@@ -3,7 +3,6 @@ package fitnesse.wiki.search;
 import fitnesse.wiki.HitCollector;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.SymbolicPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiPageUtil;
@@ -106,64 +105,4 @@ public class WhereUsedPageFinderTest {
     hits.assertPagesFound();
   }
 
-  @Test
-  public void testFinderShouldFindFullSymbolicLinks() {
-    PageData data = pageOne.getData();
-    WikiPageProperty suiteProperty = data.getProperties().set(SymbolicPage.PROPERTY_NAME);
-    suiteProperty.set("SymbThree", "." + pageThree.getFullPath().toString());
-    pageOne.commit(data);
-
-    WhereUsedPageFinder whereUsed = new WhereUsedPageFinder(pageThree, hits);
-    whereUsed.search(root);
-    hits.assertPagesFound(pageOne.getName());
-  }
-
-  @Test
-  public void testFinderShouldFindSibilingSymbolicLinks() {
-    PageData data = pageTwoChild2.getData();
-    WikiPageProperty suiteProperty = data.getProperties().set(SymbolicPage.PROPERTY_NAME);
-    suiteProperty.set("SymbThree", pageTwoChild.getName());
-    pageTwoChild2.commit(data);
-
-    WhereUsedPageFinder whereUsed = new WhereUsedPageFinder(pageTwoChild, hits);
-    whereUsed.search(root);
-    hits.assertPagesFound(pageOne.getName(), pageTwo.getName(), pageTwoChild2.getName());
-  }
-
-  @Test
-  public void testFinderShouldFindUncleSymbolicLinks() {
-    PageData data = pageTwoChild.getData();
-    WikiPageProperty suiteProperty = data.getProperties().set(SymbolicPage.PROPERTY_NAME);
-    suiteProperty.set("SymbThree", "<" + pageThree.getFullPath().toString());
-    pageTwoChild.commit(data);
-
-    WhereUsedPageFinder whereUsed = new WhereUsedPageFinder(pageThree, hits);
-    whereUsed.search(root);
-    hits.assertPagesFound(pageTwoChild.getName());
-  }
-
-  @Test
-  public void testFinderCanHandleBrokenLinks() {
-    PageData data = pageTwoChild.getData();
-    WikiPageProperty suiteProperty = data.getProperties().set(SymbolicPage.PROPERTY_NAME);
-    suiteProperty.set("SymbThree", "NonExistingPage");
-    pageTwoChild.commit(data);
-
-    WhereUsedPageFinder whereUsed = new WhereUsedPageFinder(pageThree, hits);
-    whereUsed.search(root);
-    hits.assertPagesFound();
-  }
-
-  @Test
-  public void testFinderShouldFindUncleSymbolicLinksOnce() {
-    PageData data = pageTwoChild.getData();
-    WikiPageProperty suiteProperty = data.getProperties().set(SymbolicPage.PROPERTY_NAME);
-    suiteProperty.set("SymbThree", "<" + pageThree.getFullPath().toString());
-    suiteProperty.set("SymbThree2", "<" + pageThree.getFullPath().toString());
-    pageTwoChild.commit(data);
-
-    WhereUsedPageFinder whereUsed = new WhereUsedPageFinder(pageThree, hits);
-    whereUsed.search(root);
-    hits.assertPagesFound(pageTwoChild.getName());
-  }
 }

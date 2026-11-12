@@ -11,7 +11,6 @@ import fitnesse.responders.editing.EditResponder;
 import fitnesse.responders.editing.PropertiesResponder;
 import fitnesse.responders.editing.SavePropertiesResponder;
 import fitnesse.responders.editing.SaveResponder;
-import fitnesse.responders.editing.SymbolicLinkResponder;
 import fitnesse.responders.files.CreateDirectoryResponder;
 import fitnesse.responders.files.DeleteConfirmationResponder;
 import fitnesse.responders.files.DeleteFileResponder;
@@ -206,11 +205,6 @@ public class ResponderFactoryTest {
   @Test
   public void testShutdownResponder() throws Exception {
     assertResponderTypeMatchesInput("shutdown", ShutdownResponder.class);
-  }
-
-  @Test
-  public void testSymbolicLinkResponder() throws Exception {
-    assertResponderTypeMatchesInput("symlink", SymbolicLinkResponder.class);
   }
 
   @Test
