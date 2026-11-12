@@ -4,7 +4,6 @@ package fitnesse.responders;
 
 import fitnesse.Responder;
 import fitnesse.http.Request;
-import fitnesse.responders.editing.AddChildPageResponder;
 import fitnesse.responders.editing.EditResponder;
 import fitnesse.responders.editing.NewPageResponder;
 import fitnesse.responders.editing.PropertiesResponder;
@@ -68,7 +67,6 @@ public class ResponderFactory {
     addResponder("shutdown", ShutdownResponder.class);
     addResponder("getPage", WikiPageResponder.class);
     addResponder("packet", PacketResponder.class);
-    addResponder("addChild", AddChildPageResponder.class);
     addResponder("instruction", InstructionResponder.class);
     filterMap = new HashMap<>();
   }

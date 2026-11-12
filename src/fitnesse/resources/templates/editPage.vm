@@ -17,7 +17,7 @@
  <input type="hidden" name="redirect" value="#escape($redirect)"/>
 #end
 #if($!isNewPage)
- <input type="hidden" name="responder" value="addChild"/>
+ <input type="hidden" name="responder" value="new"/>
  <fieldset>
   <label for="pagename">Page name:</label>
   <input type="text" id="pagename" name="pageName" value="" class="wikiword" />

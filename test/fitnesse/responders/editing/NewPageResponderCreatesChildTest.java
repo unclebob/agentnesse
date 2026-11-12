@@ -17,7 +17,7 @@ import fitnesse.wiki.WikiPageUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AddChildPageResponderTest {
+public class NewPageResponderCreatesChildTest {
   private PageData childPageData;
   private PageCrawler crawler;
   private String childName;
@@ -42,7 +42,7 @@ public class AddChildPageResponderTest {
     request.addInput("pageName", childName);
     request.addInput("pageContent", childContent);
     request.addInput("pageType", pagetype);
-    responder = new AddChildPageResponder();
+    responder = new NewPageResponder();
     path = PathParser.parse("TestPage.ChildPage");
   }
 

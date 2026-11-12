@@ -6,8 +6,8 @@ import java.io.File;
 
 import fitnesse.Responder;
 import fitnesse.http.MockRequest;
-import fitnesse.responders.editing.AddChildPageResponder;
 import fitnesse.responders.editing.EditResponder;
+import fitnesse.responders.editing.NewPageResponder;
 import fitnesse.responders.editing.PropertiesResponder;
 import fitnesse.responders.editing.SavePropertiesResponder;
 import fitnesse.responders.editing.SaveResponder;
@@ -190,8 +190,8 @@ public class ResponderFactoryTest {
   }
 
   @Test
-  public void testAddChildPageResponder() throws Exception {
-    assertResponderTypeMatchesInput("addChild", AddChildPageResponder.class);
+  public void testNewPageResponder() throws Exception {
+    assertResponderTypeMatchesInput("new", NewPageResponder.class);
   }
 
 }
