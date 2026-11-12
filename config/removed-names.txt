@@ -40,3 +40,5 @@ ExternalSuitePageFactory
 
 PublishResponder
 Publisher
+
+RssResponder

@@ -88,7 +88,6 @@ public class ResponderFactory {
     addResponder("deleteConfirmation", DeleteConfirmationResponder.class);
     addResponder("renameConfirmation", RenameFileConfirmationResponder.class);
     addResponder("raw", RawContentResponder.class);
-    addResponder("rss", RssResponder.class);
     addResponder("import", WikiImportingResponder.class);
     addResponder("files", FileResponder.class);
     addResponder("shutdown", ShutdownResponder.class);

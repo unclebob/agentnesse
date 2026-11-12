@@ -210,11 +210,6 @@ public class ResponderFactoryTest {
   }
 
   @Test
-  public void testRssResponder() throws Exception {
-    assertResponderTypeMatchesInput("rss", RssResponder.class);
-  }
-
-  @Test
   public void testPageImporterResponder() throws Exception {
     assertResponderTypeMatchesInput("import", WikiImportingResponder.class);
   }
