@@ -6,8 +6,6 @@ import fitnesse.Responder;
 import fitnesse.http.Request;
 import fitnesse.responders.editing.EditResponder;
 import fitnesse.responders.editing.NewPageResponder;
-import fitnesse.responders.editing.PropertiesResponder;
-import fitnesse.responders.editing.SavePropertiesResponder;
 import fitnesse.responders.editing.SaveResponder;
 import fitnesse.responders.files.FileResponder;
 import fitnesse.responders.refactoring.DeletePageResponder;
@@ -52,8 +50,6 @@ public class ResponderFactory {
     addResponder("test", TestResponder.class);
     addResponder("suite", SuiteResponder.class);
     addResponder("names", NameWikiPageResponder.class);
-    addResponder("properties", PropertiesResponder.class);
-    addResponder("saveProperties", SavePropertiesResponder.class);
     addResponder("searchProperties", SearchPropertiesResponder.class);
     addResponder("variables", ScopeVariablesResponder.class);
     // Deprecated:

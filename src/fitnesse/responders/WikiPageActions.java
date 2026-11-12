@@ -31,10 +31,6 @@ public class WikiPageActions {
     return hasAction("Edit");
   }
 
-  public boolean isWithProperties() {
-    return hasAction("Properties");
-  }
-
   public boolean isWithRefactor() {
     return hasAction("Refactor");
   }

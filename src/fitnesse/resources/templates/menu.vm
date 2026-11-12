@@ -18,9 +18,6 @@
         #set( $nav_newsection = 0 )
         #macro( group $n )#if( $nav_newsection != 0 && $nav_newsection != $n ) class="divider"#end#set( $nav_newsection = $n )#end
         <ul class="dropdown-menu position-absolute">
-            #if( $actions.withProperties )
-                <li#group(1)><a class="dropdown-item" href="$localPath?properties" accesskey="p">Properties</a></li>
-            #end
             #if( $actions.withRefactor )
                 <li#group(2)><a class="dropdown-item" href="$localPath?refactor&amp;type=rename">Rename</a></li>
                 <li><a class="dropdown-item" href="$localPath?refactor&amp;type=move">Move</a></li>

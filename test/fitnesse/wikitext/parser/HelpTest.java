@@ -14,8 +14,8 @@ public class HelpTest {
     @Test public void translatesHelp() throws Exception {
         assertTranslates("help me", "!help", PageData.PropertyHELP);
         assertTranslates("", "!help", PageData.PropertySUITES);
-        assertTranslates("help me <a href=\"TestHelp?properties\">(edit)</a>", "!help -editable", PageData.PropertyHELP);
-        assertTranslates(" <a href=\"TestHelp?properties\">(edit help text)</a>", "!help -editable", PageData.PropertySUITES);
+        assertTranslates("help me", "!help -editable", PageData.PropertyHELP);
+        assertTranslates("", "!help -editable", PageData.PropertySUITES);
     }
 
     private void assertTranslates(String expected, String content, String property) throws Exception {

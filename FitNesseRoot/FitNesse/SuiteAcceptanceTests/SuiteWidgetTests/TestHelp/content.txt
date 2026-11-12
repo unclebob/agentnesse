@@ -18,4 +18,4 @@
 
 |Response Examiner.|
 |type|pattern|matches?|value|
-|contents| (edit help text) |true||
+|contents| (edit help text) |false||

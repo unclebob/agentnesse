@@ -8,8 +8,6 @@ import fitnesse.Responder;
 import fitnesse.http.MockRequest;
 import fitnesse.responders.editing.EditResponder;
 import fitnesse.responders.editing.NewPageResponder;
-import fitnesse.responders.editing.PropertiesResponder;
-import fitnesse.responders.editing.SavePropertiesResponder;
 import fitnesse.responders.editing.SaveResponder;
 import fitnesse.responders.files.FileResponder;
 import fitnesse.responders.refactoring.DeletePageResponder;
@@ -125,16 +123,6 @@ public class ResponderFactoryTest {
   @Test
   public void testNameReponder() throws Exception {
     assertResponderTypeMatchesInput("names", NameWikiPageResponder.class);
-  }
-
-  @Test
-  public void testCreatePropertiesResponder() throws Exception {
-    assertResponderTypeMatchesInput("properties", PropertiesResponder.class);
-  }
-
-  @Test
-  public void testCreateSavePropertiesResponder() throws Exception {
-    assertResponderTypeMatchesInput("saveProperties", SavePropertiesResponder.class);
   }
 
   @Test
