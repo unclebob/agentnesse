@@ -17,7 +17,7 @@ public class WikiToMarkdownTest {
       | check | echo | Hello | Hello |
       """, "");
     assertTrue(markdown.contains("""
-      | script | echo fixture | | |
+      | script | echo fixture | {{pad}} | {{pad}} |
       | --- | --- | --- | --- |
       | check | echo | Hello | Hello |
       """));
@@ -115,7 +115,12 @@ public class WikiToMarkdownTest {
     assertTrue(markdown.contains("A `word` here"));
     assertTrue(markdown.contains("<!-- a comment -->"));
     assertTrue(markdown.contains("[text](http://example.com)"));
-    assertTrue(markdown.contains("<details>\n<summary>Closed</summary>\nhidden\n</details>"));
+    assertTrue(markdown.contains("""
+      ```agentnesse
+      collapsible Closed
+      hidden
+      ```
+      """));
   }
 
   @Test
@@ -157,6 +162,28 @@ public class WikiToMarkdownTest {
       """, "");
     assertTrue(markdown.contains("{{n}}"));
     assertTrue(markdown.contains("\\| import \\|") || markdown.contains("import"));
+  }
+
+  @Test
+  public void aLiteralCloseBeforeATableIsStillATable() {
+    String markdown = convert("Page", """
+      !|Table:ReturnsNull|
+      ||
+
+      -!|script|
+      |pass|
+      """, "");
+    assertTrue(markdown.contains("| script |\n| --- |\n| pass |"));
+  }
+
+  @Test
+  public void aTableAfterASentenceStartsOnItsOwnLine() {
+    String markdown = convert("Page", """
+      Get the fixture
+      |Library|
+      |fitnesse.slim.test.Division|
+      """, "");
+    assertTrue(markdown.contains("\n\n| Library |\n| --- |\n| fitnesse.slim.test.Division |\n"));
   }
 
   private static String convert(String name, String wiki, String properties) {

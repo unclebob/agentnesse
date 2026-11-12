@@ -56,6 +56,20 @@ public class PageCreatorTest {
   }
 
   @Test
+  public void aCreatedPageWhoseContentIsMarkdownIsStoredAsMarkdown() throws Exception {
+    new PageDriver().createPageWithContent("Made", """
+      ```agentnesse
+      define SLIM_PORT
+      1
+      ```
+      """);
+    WikiPage page = FitnesseFixtureContext.context.getRootPage().getChildPage("Made");
+
+    assertEquals(MarkdownPage.class, page.getClass());
+    assertEquals("1", page.getVariable("SLIM_PORT"));
+  }
+
+  @Test
   public void testMultipleAttributes() throws Exception {
     WikiPage testPage = makePage("TestPage", "Contents", "att1=one,att2=two");
     PageData data = testPage.getData();

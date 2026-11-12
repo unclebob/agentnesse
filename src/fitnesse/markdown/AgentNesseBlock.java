@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public final class AgentNesseBlock {
   public static final Set<String> COMMANDS = Set.of(
-    "define", "include", "scenarios", "path", "contents", "alias");
+    "define", "include", "scenarios", "path", "contents", "alias", "collapsible");
 
   private final String command;
   private final String argument;
@@ -74,6 +74,21 @@ public final class AgentNesseBlock {
     div.addAttribute("class", "agentnesse-contents");
     div.add(list);
     return div.htmlInline() + "\n";
+  }
+
+  public String collapsibleHtml() {
+    String rest = argument;
+    boolean open = rest.startsWith("open ");
+    if (open) {
+      rest = rest.substring("open ".length());
+    }
+    int newline = rest.indexOf('\n');
+    String title = newline < 0 ? rest : rest.substring(0, newline);
+    String body = newline < 0 ? "" : rest.substring(newline + 1);
+    String inner = MarkdownRenderer.render(body);
+    HtmlTag summary = new HtmlTag("summary");
+    summary.add(new HtmlText(title.trim()));
+    return "<details" + (open ? " open" : "") + ">" + summary.htmlInline() + inner + "</details>\n";
   }
 
   public String includeWith(String body) {

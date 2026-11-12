@@ -39,7 +39,11 @@ public class PageDriver {
   public void createPageWithContent(String pageName, String content) throws Exception {
     creator.pageName = pageName;
     creator.pageContents = content;
-    creator.valid();
+    if (content != null && (content.contains("```") || content.contains("| ---"))) {
+      creator.markdown();
+    } else {
+      creator.valid();
+    }
   }
 
   public void createPageWithAuthentication(String pageName, String attributes) throws Exception {

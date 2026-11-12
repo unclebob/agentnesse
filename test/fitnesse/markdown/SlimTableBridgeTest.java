@@ -4,6 +4,7 @@ import fitnesse.testsystems.slim.HtmlTableScanner;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SlimTableBridgeTest {
 
@@ -19,10 +20,38 @@ public class SlimTableBridgeTest {
     HtmlTableScanner scanner = new HtmlTableScanner(html);
     assertEquals(1, scanner.getTableCount());
     assertEquals("decision:Division", scanner.getTable(0).getCellContents(0, 0));
-    assertEquals("", scanner.getTable(0).getCellContents(1, 0));
+    assertEquals(1, scanner.getTable(0).getColumnCountInRow(0));
     assertEquals("numerator", scanner.getTable(0).getCellContents(0, 1));
     assertEquals("10", scanner.getTable(0).getCellContents(0, 2));
-    assertEquals(3, scanner.getTable(0).getColumnCountInRow(0));
+    assertEquals(3, scanner.getTable(0).getColumnCountInRow(1));
+  }
+
+  @Test
+  public void aTableInsideACollapsibleIsStillASlimTable() {
+    String html = MarkdownRenderer.render("""
+      ```agentnesse
+      collapsible open Dependencies
+      | import |
+      | --- |
+      | fitnesse.slim.test |
+      ```
+      """);
+    assertTrue(html.contains("<details open>"));
+    assertEquals("import", new HtmlTableScanner(html).getTable(0).getCellContents(0, 0));
+  }
+
+  @Test
+  public void anEmptyBodyCellStaysSoAShortRowKeepsItsWidth() {
+    String html = MarkdownRenderer.render("""
+      | baseline:buy milk | | | |
+      | --- | --- | --- | --- |
+      | cash? | card? | pints? | go? |
+      | | | | no |
+      """);
+    HtmlTableScanner scanner = new HtmlTableScanner(html);
+    assertEquals(1, scanner.getTable(0).getColumnCountInRow(0));
+    assertEquals(4, scanner.getTable(0).getColumnCountInRow(2));
+    assertEquals("no", scanner.getTable(0).getCellContents(3, 2));
   }
 
   @Test
@@ -42,5 +71,11 @@ public class SlimTableBridgeTest {
     String html = MarkdownRenderer.render(
       "| decision:X | |\n| --- | --- |\n| pattern | (?s)^([^\\\\n]\\*)\\\\n.\\* |\n");
     assertEquals("(?s)^([^\\n]*)\\n.*", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));
+  }
+
+  @Test
+  public void anEscapedUnderscoreIsAnUnderscore() {
+    String html = MarkdownRenderer.render("| decision:X | |\n| --- | --- |\n| name | TEST\\_SYSTEM |\n");
+    assertEquals("TEST_SYSTEM", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));
   }
 }

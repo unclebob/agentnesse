@@ -45,15 +45,54 @@ public final class WikiTree {
   private static void convertWiki(Path wiki, List<String> notes) throws IOException {
     String file = wiki.getFileName().toString();
     String name = file.substring(0, file.length() - ".wiki".length());
-    write(wiki.resolveSibling(name + ".md"), wiki, null, name, notes);
+    String text = Files.readString(wiki);
+    String properties = "";
+    if (text.startsWith("---\n")) {
+      int end = text.indexOf("\n---\n", 4);
+      if (end > 0) {
+        properties = propertiesFromHeader(text.substring(4, end));
+        text = text.substring(end + "\n---\n".length());
+      }
+    }
+    writeText(wiki.resolveSibling(name + ".md"), text, properties, name, notes);
     Files.delete(wiki);
+  }
+
+  private static String propertiesFromHeader(String header) {
+    StringBuilder xml = new StringBuilder("<properties>");
+    for (String line : header.split("\n")) {
+      if ("Test".equals(line)) {
+        xml.append("<Test/>");
+      } else if ("Suite".equals(line)) {
+        xml.append("<Suite/>");
+      } else if ("Prune".equals(line)) {
+        xml.append("<Prune/>");
+      } else if (line.startsWith("Help:")) {
+        xml.append("<Help>").append(escape(line.substring("Help:".length()).trim())).append("</Help>");
+      } else if (line.startsWith("Suites:")) {
+        xml.append("<Suites>").append(escape(line.substring("Suites:".length()).trim())).append("</Suites>");
+      }
+    }
+    return xml.append("</properties>").toString();
+  }
+
+  private static String escape(String text) {
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
   }
 
   private static void write(Path markdown, Path source, Path properties, String name, List<String> notes)
       throws IOException {
-    List<String> pageNotes = new ArrayList<>();
     String props = properties != null && Files.exists(properties) ? Files.readString(properties) : "";
-    Files.writeString(markdown, WikiToMarkdown.convert(name, Files.readString(source), props, pageNotes));
+    writeText(markdown, Files.readString(source), props, name, notes);
+  }
+
+  private static void writeText(Path markdown, String source, String properties, String name, List<String> notes) {
+    List<String> pageNotes = new ArrayList<>();
+    try {
+      Files.writeString(markdown, WikiToMarkdown.convert(name, source, properties, pageNotes));
+    } catch (IOException e) {
+      throw new IllegalStateException("Could not write " + markdown, e);
+    }
     for (String note : pageNotes) {
       notes.add(markdown.getFileName() + ": " + note);
     }

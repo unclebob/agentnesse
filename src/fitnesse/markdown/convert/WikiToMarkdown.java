@@ -13,7 +13,7 @@ public final class WikiToMarkdown {
   private static final Set<String> INHERITED = Set.of(
     "SetUp", "TearDown", "SuiteSetUp", "SuiteTearDown", "PageHeader", "PageFooter");
   private static final String[] UNSUPPORTED = {
-    "!today", "!headings", "${=", "!{", "!style", "!note", "!anchor", "!lastmodified", "!meta", "!line", "!see", "!help"
+    "!today", "!headings", "${=", "!{", "!style", "!note", "!anchor", "!lastmodified", "!meta", "!line", "!see"
   };
   private static final Pattern HELP = Pattern.compile("<Help>(.*?)</Help>", Pattern.DOTALL);
   private static final Pattern SUITES = Pattern.compile("<Suites>(.*?)</Suites>", Pattern.DOTALL);
@@ -215,7 +215,7 @@ public final class WikiToMarkdown {
 
     private String headingLine(String line) {
       int level = heading(line);
-      String title = line.trim().substring(2).trim();
+      String title = line.trim().substring(2).trim().replace("!help", "").trim();
       index++;
       return "#".repeat(level) + " " + Inline.of(title, notes);
     }
@@ -261,6 +261,9 @@ public final class WikiToMarkdown {
 
     private static boolean tableLine(String line) {
       String trimmed = line.trim();
+      if (trimmed.startsWith("-!")) {
+        trimmed = trimmed.substring(2).trim();
+      }
       if (trimmed.startsWith("!")) {
         trimmed = trimmed.substring(1).trim();
       }
@@ -480,8 +483,8 @@ public final class WikiToMarkdown {
         body.index++;
       }
       String converted = new Body(body.notes).convert(inner.toString()).strip();
-      String open = collapsed ? "" : " open";
-      return "<details" + open + ">\n<summary>" + title + "</summary>\n" + converted + "\n</details>";
+      String open = collapsed ? "" : "open ";
+      return "```agentnesse\ncollapsible " + open + title + "\n" + converted + "\n```";
     }
   }
 
@@ -501,7 +504,7 @@ public final class WikiToMarkdown {
       for (int i = 1; i < rows.size(); i++) {
         out.append(render(pad(rows.get(i), width))).append('\n');
       }
-      return out.substring(0, out.length() - 1);
+      return "\n" + out.substring(0, out.length() - 1);
     }
 
     private static List<List<String>> rows(String raw, List<String> notes) {
@@ -563,6 +566,9 @@ public final class WikiToMarkdown {
     }
 
     private static String withoutBang(String line) {
+      if (line.startsWith("-!")) {
+        line = line.substring(2).trim();
+      }
       return line.startsWith("!") ? line.substring(1).trim() : line;
     }
 
@@ -611,7 +617,7 @@ public final class WikiToMarkdown {
     private static List<String> pad(List<String> row, int width) {
       List<String> padded = new ArrayList<>(row);
       while (padded.size() < width) {
-        padded.add("");
+        padded.add("{{pad}}");
       }
       return padded;
     }

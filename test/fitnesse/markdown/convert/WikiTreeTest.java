@@ -19,7 +19,13 @@ public class WikiTreeTest {
     Path child = Files.createDirectory(root.resolve("Child"));
     Files.writeString(child.resolve("content.txt"), "| script |\n| check | x |\n");
     Files.writeString(child.resolve("properties.xml"), "<properties><Test/></properties>");
-    Files.writeString(child.resolve("Leaf.wiki"), "!2 Hi\n");
+    Files.writeString(child.resolve("Leaf.wiki"), """
+      ---
+      Test
+      Help: the leaf
+      ---
+      !2 Hi
+      """);
 
     WikiTree.convert(root, root);
 
@@ -33,6 +39,9 @@ public class WikiTreeTest {
     String childPage = Files.readString(root.resolve("Child.md"));
     assertTrue(childPage.contains("\"type\": \"test\""));
     assertTrue(childPage.contains("| script |"));
-    assertEquals(true, Files.readString(child.resolve("Leaf.md")).contains("## Hi"));
+    String leaf = Files.readString(child.resolve("Leaf.md"));
+    assertTrue(leaf.contains("## Hi"));
+    assertTrue(leaf.contains("\"type\": \"test\""));
+    assertTrue(leaf.contains("\"help\": \"the leaf\""));
   }
 }
