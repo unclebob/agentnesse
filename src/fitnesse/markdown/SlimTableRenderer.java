@@ -6,15 +6,12 @@ import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlWriter;
 
-import java.util.Map;
 import java.util.Set;
 
 final class SlimTableRenderer implements NodeRenderer {
-  private final HtmlNodeRendererContext context;
   private final HtmlWriter writer;
 
   SlimTableRenderer(HtmlNodeRendererContext context) {
-    this.context = context;
     this.writer = context.getWriter();
   }
 
@@ -33,9 +30,20 @@ final class SlimTableRenderer implements NodeRenderer {
       writer.raw("</span></td>\n</tr>\n</table>\n");
       return;
     }
-    writer.tag("table", Map.of("class", "agentnesse-table " + table.type()));
-    NodeChildren.render(node, context);
-    writer.tag("/table");
-    writer.line();
+    writeRows(table);
+  }
+
+  private void writeRows(SlimMarkdownTable table) {
+    writer.raw("<table class=\"agentnesse-table " + table.type() + "\">\n");
+    for (int row = 1; row <= table.rowCount(); row++) {
+      writer.raw("<tr>");
+      for (String cell : table.row(row)) {
+        writer.raw("<td>");
+        writer.text(cell);
+        writer.raw("</td>");
+      }
+      writer.raw("</tr>\n");
+    }
+    writer.raw("</table>\n");
   }
 }

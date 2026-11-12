@@ -60,6 +60,10 @@ public final class SlimMarkdownTable {
     return rows.get(fitNesseRow - 1);
   }
 
+  public int rowCount() {
+    return rows.size();
+  }
+
   public List<String> constructorArguments() {
     List<String> header = rows.get(0);
     return header.subList(1, header.size());
