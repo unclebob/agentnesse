@@ -19,6 +19,14 @@ public class SamplePagesTest {
     WikiPage root = new FileSystemPageFactory(new fitnesse.wiki.fs.DiskFileSystem(), new WikiFiles())
       .makePage(new File("FitNesseRoot"), "FitNesseRoot", null, new SystemVariableSource());
 
+    WikiPage samples = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples"));
+    String contents = samples.getHtml();
+    for (String child : new String[] {
+      "Blocks", "DecisionDivision", "PageFooter", "PageHeader", "ScriptLogin", "SetUp", "WithSetUp"}) {
+      assertTrue(contents, contents.contains("<a href=\"AgentNesseSamples." + child + "\">" + child + "</a>"));
+    }
+    assertTrue(!contents.contains("agentnesse-include"));
+
     WikiPage decision = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.DecisionDivision"));
     WikiPage script = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.ScriptLogin"));
     WikiPage withSetUp = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.WithSetUp"));

@@ -154,6 +154,24 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void contentsListsLinksToTheChildPages() throws Exception {
+    fileSystem.makeFile(new File("root/SuiteDemo.md"), """
+      { "type": "suite" }
+      ```agentnesse
+      contents
+      ```
+      """);
+    fileSystem.makeFile(new File("root/SuiteDemo/Blocks.md"), "# b\n");
+    fileSystem.makeFile(new File("root/SuiteDemo/SetUp.md"), "# s\n");
+
+    String html = root.getChildPage("SuiteDemo").getHtml();
+
+    assertTrue(html, html.contains("class=\"agentnesse-contents\""));
+    assertTrue(html, html.contains("<a href=\"SuiteDemo.Blocks\">Blocks</a>"));
+    assertTrue(html, html.contains("<a href=\"SuiteDemo.SetUp\">SetUp</a>"));
+  }
+
+  @Test
   public void theRootPageIsStoredAsRootMarkdown() throws Exception {
     fileSystem.makeFile(new File("wiki/_root.md"), "{ \"help\": \"home\" }\n# Home\n");
     WikiPage markdownRoot = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))

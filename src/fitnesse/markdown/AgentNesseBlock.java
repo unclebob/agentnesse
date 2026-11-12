@@ -3,6 +3,7 @@ package fitnesse.markdown;
 import fitnesse.html.HtmlTag;
 import fitnesse.html.HtmlText;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -51,9 +52,27 @@ public final class AgentNesseBlock {
     if ("include".equals(command)) {
       return includeHtml();
     }
+    if ("contents".equals(command)) {
+      return contentsHtml(List.of());
+    }
     HtmlTag div = new HtmlTag("div");
     div.addAttribute("class", "agentnesse-" + command);
     div.add(new HtmlText(argument));
+    return div.htmlInline() + "\n";
+  }
+
+  public static String contentsHtml(List<ContentsLink> links) {
+    HtmlTag list = new HtmlTag("ul");
+    for (ContentsLink link : links) {
+      HtmlTag anchor = new HtmlTag("a", link.name());
+      anchor.addAttribute("href", link.href());
+      HtmlTag item = new HtmlTag("li");
+      item.add(anchor);
+      list.add(item);
+    }
+    HtmlTag div = new HtmlTag("div");
+    div.addAttribute("class", "agentnesse-contents");
+    div.add(list);
     return div.htmlInline() + "\n";
   }
 

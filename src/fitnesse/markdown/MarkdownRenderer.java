@@ -17,10 +17,14 @@ public final class MarkdownRenderer {
   }
 
   public static String render(String markdown) {
-    return render(markdown, word -> false);
+    return render(markdown, word -> false, List.of());
   }
 
   public static String render(String markdown, Predicate<String> pageExists) {
+    return render(markdown, pageExists, List.of());
+  }
+
+  public static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children) {
     Parser parser = Parser.builder().extensions(EXTENSIONS).build();
     Set<String> headingIds = new HashSet<>();
     HtmlRenderer html = HtmlRenderer.builder()
@@ -28,7 +32,7 @@ public final class MarkdownRenderer {
       .extensions(EXTENSIONS)
       .nodeRendererFactory(context -> new WikiWordNodeRenderer(context, pageExists))
       .nodeRendererFactory(context -> new HeadingRenderer(context, headingIds))
-      .nodeRendererFactory(AgentNesseBlockRenderer::new)
+      .nodeRendererFactory(context -> new AgentNesseBlockRenderer(context, children))
       .build();
     return html.render(parser.parse(markdown == null ? "" : markdown));
   }

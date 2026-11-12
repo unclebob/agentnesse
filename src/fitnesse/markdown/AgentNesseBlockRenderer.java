@@ -6,13 +6,16 @@ import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlWriter;
 
+import java.util.List;
 import java.util.Set;
 
 final class AgentNesseBlockRenderer implements NodeRenderer {
   private final HtmlWriter writer;
+  private final List<ContentsLink> children;
 
-  AgentNesseBlockRenderer(HtmlNodeRendererContext context) {
+  AgentNesseBlockRenderer(HtmlNodeRendererContext context, List<ContentsLink> children) {
     this.writer = context.getWriter();
+    this.children = children;
   }
 
   @Override
@@ -28,7 +31,10 @@ final class AgentNesseBlockRenderer implements NodeRenderer {
       return;
     }
     try {
-      writer.raw(AgentNesseBlock.parse(code.getLiteral()).html());
+      AgentNesseBlock block = AgentNesseBlock.parse(code.getLiteral());
+      writer.raw("contents".equals(block.command())
+        ? AgentNesseBlock.contentsHtml(children)
+        : block.html());
     } catch (IllegalArgumentException e) {
       writer.raw("<div class=\"agentnesse-error\">" + e.getMessage() + "</div>\n");
     }

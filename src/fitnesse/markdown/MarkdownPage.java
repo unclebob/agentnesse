@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,7 +137,15 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   @Override
   public String getHtml() {
-    return MarkdownRenderer.render(expand(getData().getContent()), this::pageExists);
+    return MarkdownRenderer.render(expand(getData().getContent()), this::pageExists, contentsLinks());
+  }
+
+  private List<ContentsLink> contentsLinks() {
+    List<ContentsLink> links = new ArrayList<>();
+    for (WikiPage child : getChildren()) {
+      links.add(new ContentsLink(child.getName(), PathParser.render(child.getFullPath())));
+    }
+    return links;
   }
 
   private String expand(String content) {
