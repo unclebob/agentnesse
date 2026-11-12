@@ -54,7 +54,7 @@ public class EditResponderTest {
     assertNotSubString("SpreadsheetTranslator.js", body);
     assertNotSubString("wysiwyg.js", body);
     assertNotSubString("jquery.tagsinput.js", body);
-    assertSubString("codemirror.js", body);
+    assertNotSubString("codemirror.js", body);
 
     assertSubString("type=\"submit\"", body);
     assertSubString("textarea", body);

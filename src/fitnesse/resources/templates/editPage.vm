@@ -1,14 +1,4 @@
 <script src="/files/fitnesse/javascript/mousetrap.min.js" type="text/javascript"></script>
-<script src="/files/fitnesse/codemirror/codemirror.js" type="text/javascript"></script>
-<script src="/files/fitnesse/codemirror/addon/foldcode.js" type="text/javascript"></script>
-<script src="/files/fitnesse/codemirror/addon/simple.js" type="text/javascript"></script>
-<script src="/files/fitnesse/codemirror/addon/foldgutter.js" type="text/javascript"></script>
-<script src="/files/fitnesse/codemirror/fitnesse/fitnesse.js" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="/files/fitnesse/codemirror/addon/foldgutter.css" media="screen" />
-<link rel="stylesheet" type="text/css" href="/files/fitnesse/codemirror/codemirror.css" media="screen" />
-<link rel="stylesheet" type="text/css" href="/files/fitnesse/codemirror/addon/hint/show-hint.css">
-<script src="/files/fitnesse/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
-<script src="/files/fitnesse/codemirror/addon/hint/fitnesse_anyword-hint.js" type="text/javascript"></script>
 
 <form method="post" action="$resource" name="f" class="mousetrap">
 #if($!redirect)
@@ -54,21 +44,9 @@
 
 <script type="text/javascript">
 $(function () {
-  CodeMirror.commands.autocomplete = function(cm) {
-    cm.showHint({hint: CodeMirror.hint.fitnesse_anyword});
-  };
-  var editor = CodeMirror.fromTextArea(document.getElementById('pageContent'), {
-    mode: "fitnesse",
-    lineNumbers: true,
-    foldGutter: true,
-    showCursorWhenSelecting: true,
-    viewportMargin: Infinity,
-    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-    extraKeys: {"Ctrl-Space": "autocomplete"}
-  });
+  var editor = document.getElementById('pageContent');
 
   function fieldValues() {
-    editor.save();
     return $.map($('#pageContent,#helptext,#suites', document.f), function(e) { return $(e).val(); });
   }
 
@@ -77,7 +55,6 @@ $(function () {
 
   $(document.f).submit(function () {
     performingSubmit = true;
-    editor.save();
   });
 
   window.onbeforeunload = function () {
@@ -89,10 +66,9 @@ $(function () {
     }
   };
 
-  var wrappedElement = $(editor.getWrapperElement());
   $(window).resize(function () {
     var h = $('#save_buttons').position().top;
-    wrappedElement.height(h - wrappedElement.position().top - 6);
+    $(editor).height(h - $(editor).position().top - 6);
   }).resize();
 
   #if($!isNewPage)
@@ -103,7 +79,6 @@ $(function () {
 
   Mousetrap.bind('ctrl+s', function(e) {
     performingSubmit = true;
-    editor.save();
     $(document.f).submit();
     return false;
   });
