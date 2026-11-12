@@ -33,5 +33,4 @@
 |and cell                           |Test not run            |has result      |ignore                                   |
 |# show Symbol                        |$HTML_Input                                                               |
 |show Symbol                        |$HTML_Result                                                              |
-|get collapsed executon log for page|${TestPageName}                                                           |
 

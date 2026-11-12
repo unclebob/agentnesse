@@ -45,4 +45,3 @@ Then the base scenario must ignore them already
 |and cell                           |1.0            |has result      |ignore                                   |
 |show Symbol                        |$HTML_Input                                                               |
 |show Symbol                        |$HTML_Result                                                              |
-|get collapsed executon log for page|${TestPageName}                                                           |

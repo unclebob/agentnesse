@@ -76,7 +76,7 @@ public class PropertiesResponderTest {
 
     for (String attribute : new String[] { "Prune",
         WikiPageProperty.SECURE_READ, WikiPageProperty.SECURE_WRITE,
-        WikiPageProperty.SECURE_TEST, WikiPageProperty.DISABLE_TESTHISTORY })
+        WikiPageProperty.SECURE_TEST })
       assertCheckboxNotChecked(content, attribute);
   }
 
@@ -121,7 +121,6 @@ public class PropertiesResponderTest {
     assertFalse(jsonObject.getBoolean(WikiImportProperty.SECURE_READ));
     assertFalse(jsonObject.getBoolean(WikiImportProperty.SECURE_WRITE));
     assertFalse(jsonObject.getBoolean(WikiImportProperty.SECURE_TEST));
-    assertFalse(jsonObject.getBoolean(WikiImportProperty.DISABLE_TESTHISTORY));
   }
 
   @Test
@@ -154,7 +153,6 @@ public class PropertiesResponderTest {
     assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_READ));
     assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_WRITE));
     assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_TEST));
-    assertFalse(jsonObject.getBoolean(WikiPageProperty.DISABLE_TESTHISTORY));
   }
 
 
@@ -393,15 +391,6 @@ public class PropertiesResponderTest {
     assertSubString("<input type=\"checkbox\" id=\"secure-test\" name=\"secure-test\"/>", html);
   }
   
-  @Test
-  public void testMakeTestHistoryPropertiesHtml() throws Exception {
-    SimpleResponse response = (SimpleResponse) new PropertiesResponder().makeResponse(context, request);
-    String html = response.getContent();
-    assertSubString("Disable:", html);
-    assertSubString("<input type=\"checkbox\" id=\"" + WikiPageProperty.DISABLE_TESTHISTORY + "\" name=\""
-        + WikiPageProperty.DISABLE_TESTHISTORY + "\"/>", html);
-  }
-
   @Test
   public void testEmptySuitesForm() throws Exception {
     getContentFromSimplePropertiesPage();

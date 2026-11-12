@@ -50,6 +50,16 @@ public class ContextConfiguratorTest {
   }
 
   @Test
+  public void recordsRootPathAsAWikiVariable() throws IOException, PluginException {
+    FitNesseContext context = ContextConfigurator.empty()
+      .withRootPath("/tmp/wiki-root")
+      .withPort(9125)
+      .makeFitNesseContext();
+
+    assertThat(context.variableSource.getProperty("FITNESSE_ROOTPATH"), is("/tmp/wiki-root"));
+  }
+
+  @Test
   public void usesThePortItWasGiven() throws IOException, PluginException {
     FitNesseContext context = ContextConfigurator.empty()
       .withPort(9124)

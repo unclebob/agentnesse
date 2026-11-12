@@ -45,6 +45,3 @@ Note: if run from Junit no wiki server is started and this test would fail. The 
 | check | request page | TestPage?test | 200 |
 |ensure |content matches |class="error".{0,60}SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running.|
 | show collapsed| content |
-| check | request page | TestPage?executionLog| 200 |
-|ensure | content matches  | Command.{0,20}Connection to running SlimService: 127.0.0.1:${FITNESSE_PORT} |
-| show collapsed| content |

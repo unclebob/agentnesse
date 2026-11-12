@@ -19,6 +19,4 @@
 |importAndView|
 |getPage|
 |packet|
-|testHistory|
-|pageHistory|
 

@@ -5,7 +5,6 @@ package fitnesse.fixtures;
 import fitnesse.FitNesseExpediter;
 import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
-import fitnesse.reporting.history.PageHistory;
 import fitnesse.responders.editing.EditResponder;
 import fitnesse.util.MockSocket;
 import fitnesse.util.SerialExecutorService;
@@ -26,8 +25,6 @@ import org.htmlparser.lexer.Page;
 import org.htmlparser.util.NodeList;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class PageDriver {
   private PageCreator creator = new PageCreator();
@@ -201,11 +198,6 @@ public class PageDriver {
     NodeList list = parser.parse(null);
     NodeList matches = list.extractAllNodesThatMatch(filter, true);
     return matches;
-  }
-
-  public String pageHistoryDateSignatureOf(Date date) {
-    SimpleDateFormat dateFormat = PageHistory.getDateFormat();
-    return dateFormat.format(date);
   }
 
   public int countOfTagWithClassBelowTagWithIdPrefix(String childTag, String tagClass, String parentTag, String parentIdPrefix) throws Exception {

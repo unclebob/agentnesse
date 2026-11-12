@@ -7,7 +7,6 @@
 | >SuiteAuthenticationTests | ''Specify the authentication design'' |
 | >SuiteSymbolicLinkTests | ''Demonstrate usage and behavior of symbolic links'' |
 | >SuiteSlimTests | ''Slim Specific Tests'' |
-| >SuiteTestHistory | ''Test History tests'' |
 | >SuiteVersionsControllerTests | Versions controller tests |
 | >SuiteTestSystems | Test interaction with custom test systems |
 

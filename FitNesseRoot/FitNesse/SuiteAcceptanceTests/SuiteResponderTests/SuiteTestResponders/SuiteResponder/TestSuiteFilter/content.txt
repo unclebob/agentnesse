@@ -41,19 +41,6 @@ The suite should report the TestPages and should show no errors.
 |contents|!-TestPageTwo-!     |false   |
 |contents|Test Pages:.*1 right|true    |
 
-The error log page should not have any errors
-
-|Response Requester.           |
-|uri                    |valid?|
-|!-SuitePage?executionLog-!|true  |
-
-|Response Examiner.|
-|contents?         |
-|                  |
-
-|Response Examiner.                  |
-|type    |pattern           |matches?|
-|contents|Exit code.*0.*Time|true    |
 
 ---
 
@@ -98,19 +85,6 @@ The suite should report the TestPages and should show no errors.
 |contents|!-TestPageTwo-!     |false   |
 |contents|Test Pages:.*1 right|true    |
 
-The error log page should not have any errors
-
-|Response Requester.           |
-|uri                    |valid?|
-|!-SuitePage?executionLog-!|true  |
-
-|Response Examiner.|
-|contents?         |
-|                  |
-
-|Response Examiner.                  |
-|type    |pattern           |matches?|
-|contents|Exit code.*0.*Time|true    |
 
 ---
 
@@ -156,16 +130,3 @@ The suite should report the TestPages and should show no errors.
 |contents|!-TestPageTwo-!     |false   |
 |contents|Test Pages:.*1 right|true    |
 
-The error log page should not have any errors
-
-|Response Requester.           |
-|uri                    |valid?|
-|!-SuitePage?executionLog-!|true  |
-
-|Response Examiner.|
-|contents?         |
-|                  |
-
-|Response Examiner.                  |
-|type    |pattern           |matches?|
-|contents|Exit code.*0.*Time|true    |

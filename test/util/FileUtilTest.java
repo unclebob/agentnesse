@@ -3,6 +3,7 @@
 package util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import java.io.File;
@@ -107,6 +108,22 @@ public class FileUtilTest {
     assertEquals(file2, FileUtil.getDirectoryListing(dir)[7]);
     assertEquals(file3, FileUtil.getDirectoryListing(dir)[8]);
     assertEquals(file4, FileUtil.getDirectoryListing(dir)[9]);
+    FileUtil.deleteFileSystemDirectory(dir);
+  }
+
+  @Test
+  public void readsFileContentFromAPath() throws IOException {
+    File file = FileUtil.createFile("temp-content/note.txt", "hello");
+    assertEquals("hello", FileUtil.getFileContent(file.getPath()));
+    FileUtil.deleteFileSystemDirectory("temp-content");
+  }
+
+  @Test
+  public void reportsWhetherADirectoryIsEmpty() throws IOException {
+    File dir = FileUtil.createDir("temp-empty");
+    assertTrue(FileUtil.isEmpty(dir));
+    createFileInDir(dir, "note.txt");
+    assertFalse(FileUtil.isEmpty(dir));
     FileUtil.deleteFileSystemDirectory(dir);
   }
 

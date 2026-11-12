@@ -27,17 +27,3 @@ The bgcolor of the cell should turn green
 |type  |pattern|matches?|
 |contents|class="pass"|true|
 |contents|Assertions:.*1 right, 0 wrong, 0 ignored, 0 exceptions|true|
-
-The error log page should not have any errors
-
-|Response Requester.|
-|uri   |valid?|
-|!-TestPage?executionLog-!|true|
-
-|Response Examiner.|
-|contents?|
-||
-
-|Response Examiner.|
-|type  |pattern|matches?|
-|contents|Exit code.*0.*Time|true|

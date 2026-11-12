@@ -5,7 +5,6 @@ In this section you can read about the >TestSystems FitNesse provides out-of-the
 Organize tests:
  * >TestSuites
  * >SpecialPages
- * >TestHistory
  * >AcceptanceTestPatterns
 
 Implement the tests:

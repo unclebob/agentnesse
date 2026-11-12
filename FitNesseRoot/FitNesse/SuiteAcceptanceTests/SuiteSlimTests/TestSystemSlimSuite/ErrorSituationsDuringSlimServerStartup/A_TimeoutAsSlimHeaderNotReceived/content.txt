@@ -18,6 +18,3 @@ After slim.timeout seconds we should abort and stop the test.
 |check         |request page    |TestPage?test                             |200                     |
 |ensure        |content contains|Timeout while reading slim header from client.                     |
 |show collapsed|content                                                                             |
-|check         |request page    |TestPage?executionLog                     |200                     |
-|ensure        |content matches |!-Address already in use|java.net.BindException.* \(Bind failed\)-!|
-|show collapsed|content                                                                             |

@@ -7,14 +7,10 @@ import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
 import fitnesse.http.Response;
 import fitnesse.reporting.BaseFormatter;
-import fitnesse.responders.run.TestResponderTest.JunitTestUtilities;
-import fitnesse.responders.run.TestResponderTest.XmlTestUtilities;
-import fitnesse.testsystems.TestSummary;
 import fitnesse.testutil.FitNesseUtil;
 import fitnesse.util.Clock;
 import fitnesse.util.DateAlteringClock;
 import fitnesse.util.DateTimeUtil;
-import fitnesse.util.XmlUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
@@ -23,13 +19,9 @@ import fitnesse.wiki.WikiPageUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import util.FileUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import static fitnesse.wiki.WikiPageProperty.SUITES;
@@ -370,185 +362,6 @@ public class SuiteResponderTest {
     assertHasRegexp("<td><span class=\"pass\">wow</span></td>", results);
     assertHasRegexp("<h3>slim:in-process", results);
     assertNotSubString("fit:fit.FitServer", results);
-  }
-
-  @Test
-  public void xmlFormat() throws Exception {
-    responder.turnOffChunking();
-    request.addInput("format", "xml");
-    addTestToSuite("SlimTest", simpleSlimDecisionTable);
-    String results = runSuite();
-    Document testResultsDocument = XmlTestUtilities.getXmlDocumentFromResults(results);
-    Element testResultsElement = testResultsDocument.getDocumentElement();
-    assertEquals("testResults", testResultsElement.getNodeName());
-    assertEquals("SuitePage", XmlUtil.getTextValue(testResultsElement, "rootPath"));
-    assertEquals("2008-12-05T14:19:00+14:00", XmlUtil.getTextValue(testResultsElement, "date"));
-    assertEquals("SuitePage?pageHistory&resultDate=20081205141900", XmlUtil.getTextValue(testResultsElement, "pageHistoryLink"));
-
-    NodeList resultList = testResultsElement.getElementsByTagName("result");
-    assertEquals(2, resultList.getLength());
-    Element testResult;
-
-    for (int elementIndex = 0; elementIndex < 2; elementIndex++) {
-      testResult = (Element) resultList.item(elementIndex);
-      String pageName = XmlUtil.getTextValue(testResult, "relativePageName");
-      assertSubString(pageName + "?pageHistory&resultDate=", XmlUtil.getTextValue(testResult, "pageHistoryLink"));
-      if ("SlimTest".equals(pageName)) {
-    	  XmlTestUtilities.assertCounts(testResult, "1", "0", "0", "0");
-      } else if ("TestOne".equals(pageName)) {
-    	  XmlTestUtilities.assertCounts(testResult, "1", "0", "0", "0");
-      } else {
-        fail(pageName);
-      }
-    }
-    Element finalCounts = XmlUtil.getElementByTagName(testResultsElement, "finalCounts");
-    XmlTestUtilities.assertCounts(finalCounts, "2", "0", "0", "0");
-  }
-
-  @Test
-  public void junitFormat() throws Exception {
-    responder.turnOffChunking();
-    request.addInput("format", "junit");
-    addTestToSuite("SlimTest", simpleSlimDecisionTable);
-    String results = runSuite();
-    Document testResultsDocument = JunitTestUtilities.getXmlDocumentFromResults(results);
-    Element testResultsElement = testResultsDocument.getDocumentElement();
-    assertEquals("testsuite", testResultsElement.getNodeName());
-    assertEquals("SuitePage",testResultsElement.getAttribute("name"));
-    assertEquals("2",testResultsElement.getAttribute("tests"));
-    assertEquals("0",testResultsElement.getAttribute("failures"));
-    assertEquals("0",testResultsElement.getAttribute("disabled"));
-    assertEquals("0",testResultsElement.getAttribute("errors"));
-
-    NodeList resultList = testResultsElement.getElementsByTagName("testcase");
-    assertEquals(2, resultList.getLength());
-    Element testResult;
-
-    for (int elementIndex = 0; elementIndex < 2; elementIndex++) {
-      testResult = (Element) resultList.item(elementIndex);
-      String pageName = testResult.getAttribute("name");
-      assertSubString(pageName + "?pageHistory&resultDate=", XmlUtil.getTextValue(testResult,"system-out"));
-      assertEquals("1",testResult.getAttribute("assertions"));
-    }
-  }
-
-  @Test
-  public void normalSuiteRunWithThreePassingTestsProducesSuiteResultFile() throws Exception {
-    File xmlResultsFile = expectedXmlResultsFile();
-
-    if (xmlResultsFile.exists())
-      xmlResultsFile.delete();
-
-    addTestToSuite("SlimTestOne", simpleSlimDecisionTable);
-    addTestToSuite("SlimTestTwo", simpleSlimDecisionTable);
-    runSuite();
-
-    FileInputStream xmlResultsStream = new FileInputStream(xmlResultsFile);
-    XmlUtil.newDocument(xmlResultsStream);
-    xmlResultsStream.close();
-    xmlResultsFile.delete();
-  }
-  @Test
-  public void NoHistory_avoidsProducingSuiteResultFile() throws Exception {
-    File xmlResultsFile = expectedXmlResultsFile();
-
-    if (xmlResultsFile.exists())
-      xmlResultsFile.delete();
-
-    request.addInput("nohistory", "true");
-    addTestToSuite("SlimTestOne", simpleSlimDecisionTable);
-    addTestToSuite("SlimTestTwo", simpleSlimDecisionTable);
-    runSuite();
-    assertFalse(xmlResultsFile.exists());
-  }
-
-  @Test
-  public void DisableHistory_avoidsProducingSuiteResultFile() throws Exception {
-    File xmlResultsFile = expectedXmlResultsFile();
-
-    if (xmlResultsFile.exists())
-      xmlResultsFile.delete();
-    
-    PageData data = suite.getData();
-    data.setAttribute(WikiPageProperty.DISABLE_TESTHISTORY);
-    suite.commit(data);
-    suite.getData();
-    responder.page = suite;
-    
-    addTestToSuite("SlimTestOne", simpleSlimDecisionTable);
-    addTestToSuite("SlimTestTwo", simpleSlimDecisionTable);
-    runSuite();
-    assertFalse(xmlResultsFile.exists());
-  }
-
-  @Test
-  public void Includehtml_producesHTMLResultsInXMLSuite() throws Exception {
-    request.addInput("format", "xml");
-    request.addInput("includehtml", "true");
-    addTestToSuite("SlimTestOne", simpleSlimDecisionTable);
-    addTestToSuite("SlimTestTwo", simpleSlimDecisionTable);
-    String results = runSuite();
-    assertSubString("<content>", results);
-  }
-
-  @Test
-  public void Default_producesNoHTMLResultsInXMLSuite() throws Exception {
-    request.addInput("format", "xml");
-    addTestToSuite("SlimTestOne", simpleSlimDecisionTable);
-    addTestToSuite("SlimTestTwo", simpleSlimDecisionTable);
-    String results = runSuite();
-    assertNotSubString("<content>", results);
-  }
-
-  private File expectedXmlResultsFile() {
-    TestSummary counts = new TestSummary(3, 0, 0, 0);
-    String resultsFileName = String.format("%s/SuitePage/20081205141900_%d_%d_%d_%d.xml",
-      context.getTestHistoryDirectory(), counts.getRight(), counts.getWrong(), counts.getIgnores(), counts.getExceptions());
-    return new File(resultsFileName);
-  }
-
-  @Test
-  public void normalSuiteRunProducesIndivualTestHistoryFile() throws Exception {
-    TestSummary counts = new TestSummary(1, 0, 0, 0);
-    String resultsFileName = String.format("%s/SuitePage.SlimTest/20081205141900_%d_%d_%d_%d.xml",
-      context.getTestHistoryDirectory(), counts.getRight(), counts.getWrong(), counts.getIgnores(), counts.getExceptions());
-    File xmlResultsFile = new File(resultsFileName);
-
-    if (xmlResultsFile.exists())
-      xmlResultsFile.delete();
-
-    addTestToSuite("SlimTest", simpleSlimDecisionTable);
-    runSuite();
-
-    assertTrue(resultsFileName, xmlResultsFile.exists());
-    FileInputStream xmlResultsStream = new FileInputStream(xmlResultsFile);
-    XmlUtil.newDocument(xmlResultsStream);
-    xmlResultsStream.close();
-    xmlResultsFile.delete();
-  }
-
-  @Test
-  public void exitCodeHeaderIsErrorCountForXml() throws Exception {
-    request.addInput("format", "xml");
-    addTestToSuite("TestFailingTest", fitFailFixture);
-    String results = runSuite();
-    assertSubString("Exit-Code: 1", results);
-  }
-
-  @Test
-  public void showExecutionLogInXmlFormat() throws Exception {
-    request.addInput("format", "xml");
-    request.addInput("nochunk", "nochunk");
-    addTestToSuite("SlimTest", simpleSlimDecisionTable);
-
-    String results = runSuite();
-
-    assertHasRegexp("<executionLog>", results);
-    assertHasRegexp("<testSystem>slim:in-process</testSystem>", results);
-    assertNotSubString("fit:fit.FitServer", results);
-    assertHasRegexp("<exitCode>0</exitCode>", results);
-    assertHasRegexp("<stdOut>.*</stdOut>", results);
-    assertHasRegexp("<stdErr>.*</stdErr>", results);
   }
 
   @Test

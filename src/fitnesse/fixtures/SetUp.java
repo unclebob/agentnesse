@@ -3,7 +3,6 @@
 package fitnesse.fixtures;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.Properties;
 
 import fitnesse.authentication.Authenticator;
@@ -30,10 +29,6 @@ public class SetUp {
         return FitnesseFixtureContext.authenticator == null || FitnesseFixtureContext.authenticator.isAuthenticated(username, password);
       }
     }, properties);
-    File historyDirectory = context.getTestHistoryDirectory();
-    if (historyDirectory.exists())
-      FileUtil.deleteFileSystemDirectory(historyDirectory);
-    historyDirectory.mkdirs();
     SaveRecorder.clear();
     FitNesseUtil.startFitnesseWithContext(context);
   }

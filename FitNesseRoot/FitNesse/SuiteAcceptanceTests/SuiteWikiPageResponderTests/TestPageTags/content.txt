@@ -67,15 +67,3 @@
 !|Response Examiner.|
 |type|pattern|matches?|
 |contents|Tags On Test Page|true|
-
-
-!3 Test results error log page with tags specified - should include test's tags in header.
- * Request the page.
-|Response Requester.|
-|uri   |valid?|
-|!-TestPage?executionLog-!|true|
-
- * Examine the requested page to be sure the tags are displayed.
-|Response Examiner.                                          |
-|type    |pattern                                   |matches?|
-|contents|<span class="tag">Tags On Test Page</span>|true    |

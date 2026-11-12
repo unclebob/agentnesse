@@ -21,7 +21,7 @@ testHistoryDirectory/
 tmp/*
 FitNesseRoot/properties
 FitNesseRoot/ErrorLogs/*
-FitNesseRoot/files/testResults/*
+FitNesseRoot/files/testResults
 FitNesseRoot/RecentChanges*
 FitNesseRoot/RerunLastFailures*.wiki
 junit*.properties

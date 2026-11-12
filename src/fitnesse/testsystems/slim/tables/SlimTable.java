@@ -276,7 +276,6 @@ public abstract class SlimTable {
       return row;
     }
 
-    // Used only by TestXmlFormatter.SlimTestXmlFormatter
     public String getExpected() {
       return originalContent;
     }

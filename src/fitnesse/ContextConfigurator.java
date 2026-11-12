@@ -111,9 +111,7 @@ public class ContextConfigurator {
 
     ComponentFactory componentFactory = new ComponentFactory(properties, classLoader);
 
-    if (port == null) {
-      port = getPort();
-    }
+    port = getPort();
 
     FitNesseVersion version = new FitNesseVersion();
 

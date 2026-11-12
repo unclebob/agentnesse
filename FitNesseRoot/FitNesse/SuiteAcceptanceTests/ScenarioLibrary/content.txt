@@ -153,10 +153,6 @@
 |show collapsed| get value|
 
 
-!|scenario|get collapsed executon log for page|source|
-|check                |request page    |@source?executionLog|200                                     |
-|show |content|
-
 !|scenario|when page|source| is tested|
 |check|request page|@source?test|200|
 |show collapsed|content|

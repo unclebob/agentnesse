@@ -52,16 +52,3 @@ The suite should report the !-TestPage-! and should show no errors.
 |contents|!-TopPage\.TestPage-!|true|
 |contents|Test Pages:.*1 right|true|
 
-The error log page should not have any errors
-
-|Response Requester.|
-|uri   |valid?|
-|!-SuitePage?executionLog-!|true|
-
-|Response Examiner.|
-|contents?|
-||
-
-|Response Examiner.|
-|type  |pattern|matches?|
-|contents|Exit code.*0.*Time|true|

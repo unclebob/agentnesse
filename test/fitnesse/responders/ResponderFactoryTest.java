@@ -31,10 +31,6 @@ import fitnesse.responders.run.TestResponder;
 import fitnesse.responders.search.SearchPropertiesResponder;
 import fitnesse.responders.search.SearchResponder;
 import fitnesse.responders.search.WhereUsedResponder;
-import fitnesse.responders.testHistory.HistoryComparerResponder;
-import fitnesse.responders.testHistory.PageHistoryResponder;
-import fitnesse.responders.testHistory.PurgeHistoryResponder;
-import fitnesse.responders.testHistory.TestHistoryResponder;
 import fitnesse.responders.versions.RollbackResponder;
 import fitnesse.responders.versions.VersionResponder;
 import fitnesse.responders.versions.VersionSelectionResponder;
@@ -289,27 +285,8 @@ public class ResponderFactoryTest {
   }
 
   @Test
-  public void testTestHistoryResponder() throws Exception {
-    assertResponderTypeMatchesInput("testHistory", TestHistoryResponder.class);
-  }
-
-  @Test
-  public void testPageHistoryResponder() throws Exception {
-    assertResponderTypeMatchesInput("pageHistory", PageHistoryResponder.class);
-  }
-
-  @Test
   public void testAddChildPageResponder() throws Exception {
     assertResponderTypeMatchesInput("addChild", AddChildPageResponder.class);
   }
 
-  @Test
-  public void testPurgeHistoryResponder() throws Exception {
-    assertResponderTypeMatchesInput("purgeHistory", PurgeHistoryResponder.class);
-  }
-
-  @Test
-  public void testHistoryComparerResponder() throws Exception {
-    assertResponderTypeMatchesInput("compareHistory", HistoryComparerResponder.class);
-  }
 }

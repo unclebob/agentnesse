@@ -30,14 +30,3 @@ Test
 |ensure |	content contains|<span class="fail">expected [H<span class="diff">ello</span>]</span>|
 |and cell                           |expected.*                     |has result      |fail                                     |
 |show Symbol                        |$HTML_Result                                                                                                    |
-|note                               |!4 As a TDD developer !-
-To have fast turnaround times
-I need to see the exceptions stack trace in the execution log with verbose logging enabled
--!|
-|get collapsed executon log for page|${TestPageName}                                                                                                 |
-|and should contain                 |java.lang.NumberFormatException: For input string: "twenty"                                                     |
-|and should contain                 |java.lang.NumberFormatException: For input string: "five"                                                       |
-|and should contain                 |NO_CONVERTER_FOR_ARGUMENT_NUMBER java.time.Clock                                                                |
-|and should contain                 |java.lang.NumberFormatException: For input string: "Hello"                                                      |
-|and should contain                 |java.lang.NumberFormatException: For input string: "aWrongValue"                                                |
-|and should contain                 |NO_CONVERTER_FOR_ARGUMENT_NUMBER java.time.temporal.TemporalAccessor.                                           |

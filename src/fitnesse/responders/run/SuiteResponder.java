@@ -17,12 +17,6 @@ import fitnesse.reporting.InteractiveFormatter;
 import fitnesse.reporting.RerunSuiteFormatter;
 import fitnesse.reporting.SuiteHtmlFormatter;
 import fitnesse.reporting.TestTextFormatter;
-import fitnesse.reporting.history.HistoryPurger;
-import fitnesse.reporting.history.JunitReFormatter;
-import fitnesse.reporting.history.PageHistory;
-import fitnesse.reporting.history.SuiteHistoryFormatter;
-import fitnesse.reporting.history.SuiteXmlReformatter;
-import fitnesse.reporting.history.TestXmlFormatter;
 import fitnesse.responders.ChunkingResponder;
 import fitnesse.responders.WikiImporter;
 import fitnesse.responders.WikiImportingResponder;
@@ -36,7 +30,6 @@ import fitnesse.testrunner.run.TestRun;
 import fitnesse.testsystems.ConsoleExecutionLogListener;
 import fitnesse.testsystems.ExecutionLogListener;
 import fitnesse.testsystems.TestExecutionException;
-import fitnesse.testsystems.TestSummary;
 import fitnesse.wiki.PageCrawler;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PageType;
@@ -44,17 +37,11 @@ import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiImportProperty;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
-import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiPageUtil;
 import org.apache.commons.lang3.StringUtils;
-import util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,7 +60,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   static final RunningTestingTracker runningTestingTracker = new RunningTestingTracker();
 
   private final WikiImporter wikiImporter;
-  private SuiteHistoryFormatter suiteHistoryFormatter;
 
   private Formatter rerunFormatter;
 
@@ -84,7 +70,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
 
   private boolean debug = false;
   private boolean remoteDebug = false;
-  private boolean includeHtml = false;
   private int exitCode;
 
   private Request request;
@@ -118,7 +103,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   protected void doSending() throws Exception {
     debug |= request.hasInput("debug");
     remoteDebug |= request.hasInput("remote_debug");
-    includeHtml |= request.hasInput("includehtml");
     data = page.getData();
 
     createMainFormatter();
@@ -131,19 +115,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     }
 
     closeHtmlResponse(exitCode);
-
-    cleanHistoryForSuite();
-  }
-
-  private void cleanHistoryForSuite() {
-    String testHistoryDays = context.getProperty("TestHistory.days");
-    String testHistoryDaysDeprecated = StringUtils.isBlank(testHistoryDays)
-        ? context.getProperty("test.history.days")
-        : testHistoryDays;
-    if (withSuiteHistoryFormatter() && StringUtils.isNumeric(testHistoryDaysDeprecated)) {
-      new HistoryPurger(context.getTestHistoryDirectory(), Integer.parseInt(testHistoryDaysDeprecated))
-              .deleteTestHistoryOlderThanDays(path);
-    }
   }
 
   public void doExecuteTests() {
@@ -249,11 +220,7 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     if (rerunFormatter != null) {
       runner.addTestSystemListener(rerunFormatter);
     }
-    if (withSuiteHistoryFormatter()) {
-      addHistoryFormatter(runner);
-    } else {
-      runner.addExecutionLogListener(new ConsoleExecutionLogListener());
-    }
+    runner.addExecutionLogListener(new ConsoleExecutionLogListener());
     if (mainFormatter instanceof ExecutionLogListener) {
       runner.addExecutionLogListener((ExecutionLogListener) mainFormatter);
     }
@@ -265,24 +232,9 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     }
   }
 
-  private boolean withSuiteHistoryFormatter() {
-    return !request.hasInput("nohistory")
-        && !page.getData().hasAttribute(WikiPageProperty.DISABLE_TESTHISTORY);
-  }
-
-  protected void addHistoryFormatter(MultipleTestsRunner runner) {
-    SuiteHistoryFormatter historyFormatter = getSuiteHistoryFormatter();
-    runner.addTestSystemListener(historyFormatter);
-    runner.addExecutionLogListener(historyFormatter);
-  }
-
   private void createMainFormatter() {
-    if (response.isXmlFormat()) {
-      mainFormatter = newXmlFormatter();
-    } else if (response.isTextFormat()) {
+    if (response.isTextFormat()) {
       mainFormatter = newTextFormatter();
-    } else if (response.isJunitFormat()) {
-      mainFormatter = newJunitFormatter();
     } else {
       mainFormatter = newHtmlFormatter();
     }
@@ -334,21 +286,8 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     return "testPage";
   }
 
-  protected BaseFormatter newXmlFormatter() {
-    SuiteXmlReformatter xmlFormatter = new SuiteXmlReformatter(context, page, response.getWriter(), getSuiteHistoryFormatter());
-    if (includeHtml)
-      xmlFormatter.includeHtml();
-    if (!isMultipleTestsRun())
-      xmlFormatter.includeInstructions();
-    return xmlFormatter;
-  }
-
   protected BaseFormatter newTextFormatter() {
     return new TestTextFormatter(response);
-  }
-
-  protected BaseFormatter newJunitFormatter() {
-    return new JunitReFormatter(context, page, response.getWriter(), getSuiteHistoryFormatter());
   }
 
   protected BaseFormatter newHtmlFormatter() {
@@ -474,38 +413,4 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   }
 
 
-  public static class HistoryWriterFactory implements TestXmlFormatter.WriterFactory {
-
-    @Override
-    public Writer getWriter(FitNesseContext context, WikiPage page, TestSummary counts, long time) throws IOException {
-      File resultPath = new File(makePageHistoryFileName(context, page, counts, time));
-      File resultDirectory = new File(resultPath.getParent());
-      if (!resultDirectory.exists()) {
-        resultDirectory.mkdirs();
-      }
-      File resultFile = new File(resultDirectory, resultPath.getName());
-      return new PrintWriter(resultFile, FileUtil.CHARENCODING);
-    }
-  }
-
-  public static String makePageHistoryFileName(FitNesseContext context, WikiPage page, TestSummary counts, long time) {
-    return String.format("%s/%s/%s",
-            context.getTestHistoryDirectory(),
-            page.getFullPath().toString(),
-            makeResultFileName(counts, time));
-  }
-
-  public static String makeResultFileName(TestSummary summary, long time) {
-    SimpleDateFormat format = PageHistory.getDateFormat();
-    String datePart = format.format(new Date(time));
-    return String.format("%s_%d_%d_%d_%d.xml", datePart, summary.getRight(), summary.getWrong(), summary.getIgnores(), summary.getExceptions());
-  }
-
-  private SuiteHistoryFormatter getSuiteHistoryFormatter() {
-    if (suiteHistoryFormatter == null) {
-      HistoryWriterFactory source = new HistoryWriterFactory();
-      suiteHistoryFormatter = new SuiteHistoryFormatter(context, page, source);
-    }
-    return suiteHistoryFormatter;
-  }
 }

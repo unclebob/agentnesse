@@ -30,7 +30,6 @@ public class FitNesseContext {
 
   public static final String recentChangesDateFormat = "kk:mm:ss EEE, MMM dd, yyyy";
   public static final String rfcCompliantDateFormat = "EEE, d MMM yyyy HH:mm:ss Z";
-  public static final String testResultsDirectoryName = "testResults";
 
   public final FitNesseVersion version;
   public final FitNesse fitNesse;
@@ -103,15 +102,6 @@ public class FitNesseContext {
     return wikiPageFactory.makePage(new File(rootPath, rootDirectoryName), rootDirectoryName, null, variableSource);
 
   }
-  public File getTestHistoryDirectory() {
-    String testHistoryPath = getProperty("TestHistory.path");
-    String testHistoryPathDeprecated = testHistoryPath == null ? getProperty("test.history.path") : testHistoryPath;
-    if (testHistoryPathDeprecated == null) {
-      testHistoryPathDeprecated = String.format(unifiedPathPattern("%s/files/%s"), getRootPagePath(), testResultsDirectoryName);
-    }
-    return new File(testHistoryPathDeprecated);
-  }
-
   public String getTestProgressPath() {
     return String.format(unifiedPathPattern("%s/files/testProgress"), getRootPagePath());
   }

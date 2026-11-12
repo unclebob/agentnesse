@@ -57,7 +57,7 @@ public class PageData implements ReadOnlyPageData, Serializable {
   public static final String[] NAVIGATION_ATTRIBUTES = {
       WikiPageProperty.RECENT_CHANGES, WikiPageProperty.FILES, WikiPageProperty.SEARCH };
 
-  public static final String[] DISABLE_ATTRIBUTES = { WikiPageProperty.DISABLE_TESTHISTORY };
+  public static final String[] DISABLE_ATTRIBUTES = {};
 
   public static final String[] NON_SECURITY_ATTRIBUTES = Stream
       .of(ACTION_ATTRIBUTES, NAVIGATION_ATTRIBUTES, DISABLE_ATTRIBUTES)
