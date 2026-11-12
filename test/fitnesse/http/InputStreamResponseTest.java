@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import util.FileUtil;
 
@@ -82,18 +81,6 @@ public class InputStreamResponseTest implements ResponseSender {
     String responseString = output.toString();
     assertSubString("Content-Length: 10000000", responseString);
     assertTrue(bytesSent > 10000000);
-  }
-
-  @Test
-  @Ignore("Don't run unless you have some time to kill.")
-  public void testWithReallyBigFile() throws Exception {
-    writeLinesToFile(10000000);
-
-    response.setBody(testFile);
-    response.sendTo(this);
-    String responseString = output.toString();
-    assertSubString("Content-Length: 1000000000", responseString);
-    assertTrue(bytesSent > 1000000000);
   }
 
   private void writeLinesToFile(int lines) throws IOException {
