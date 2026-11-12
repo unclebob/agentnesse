@@ -1,0 +1,59 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+If a `SuiteSetUp` or `SuiteTearDown` page is eecuted without errors, it should be counted as a correctly executed page.
+
+```agentnesse
+define TEST_SYSTEM
+slim
+```
+
+```agentnesse
+collapsible test content
+```agentnesse
+define PATHS
+${SUT_PATH}
+
+```agentnesse
+define TEST_SYSTEM
+slim
+```
+```
+
+```agentnesse
+define MOCK_TEST
+| script | fitnesse.fixtures.Pass |-!
+!-| ensure | ok |
+```
+```
+
+
+| Library |
+| --- |
+| page driver |
+| echo fixture |
+
+
+| given page with content | |
+| --- | --- |
+| page | content |
+| SuiteParent | ${PATHS} |
+| SuiteParent.SuiteSetUp | |
+| SuiteParent.SuiteTearDown | |
+| SuiteParent.TestOneOne | ${MOCK_TEST} |
+| SuiteParent.TestOneTwo | ${MOCK_TEST} |
+
+For normal (HTML) responses:
+
+
+| script | | | |
+| --- | --- | --- | --- |
+| check | request page | SuiteParent?suite | 200 |
+| show | content | | |
+| ensure | content contains | <strong>Test Pages:</strong>&nbsp;4 right, 0 wrong, 0 ignored, 0 exceptions | |
+| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.\*>SuiteSetUp</a> | |
+| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.\*>SuiteTearDown</a> | |
+

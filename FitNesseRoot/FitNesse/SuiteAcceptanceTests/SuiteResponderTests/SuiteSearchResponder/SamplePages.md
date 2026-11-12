@@ -1,0 +1,15 @@
+{
+  "type": "static",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+Here are some sample pages.
+
+| Page creator. | | |
+| --- | --- | --- |
+| Page name. | Page contents. | valid? |
+| PageAbc | This page has ABCs | true |
+| XyzPage | A page with XYZ | true |
+| BasePage | This is the base page | true |
+| BasePage.ChildPage | This is the child page | true |

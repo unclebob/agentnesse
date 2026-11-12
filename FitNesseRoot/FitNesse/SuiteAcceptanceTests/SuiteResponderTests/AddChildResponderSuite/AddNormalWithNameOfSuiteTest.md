@@ -1,0 +1,13 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| script | | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| given page | ParentPage | | | | | | | |
+| add child page | SuiteChild | of type | Static | containing | child content | to parent page | ParentPage | should return Redirect |
+| reject | page | ParentPage.SuiteChild | has attribute | Suite | | | | |
+| reject | page | ParentPage.SuiteChild | has attribute | Test | | | | |

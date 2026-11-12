@@ -1,0 +1,13 @@
+{
+  "type": "suite",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+### This Suite specifies the behavior of the move responder.
+
+The move responder is invoked with the *movePage* url.  This url has an argument named *newPageLocation* that holds the name of the new parent of the page.  Thus the url:{{{http://localhost/SomePage?responder=movePage&newLocation=NewPage}}} will move*`SomePage`* beneath *`NewPage`*
+
+```agentnesse
+contents
+```

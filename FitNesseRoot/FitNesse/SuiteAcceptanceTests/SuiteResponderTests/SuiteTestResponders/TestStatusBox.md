@@ -1,0 +1,42 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": "",
+  "prune": false
+}
+When you execute a test page, a status box will appear in the upper right hand corner that will provide a link to the error log.
+
+---
+
+Create a simple test page
+
+
+| script | Page Builder |
+| --- | --- |
+| line | ${SUT_PATH} |
+| line | \|<br>\| |
+| line | \|<br>\| |
+| line | \|<br>\| |
+| page | TestPage |
+
+Now run the test page.
+
+
+| Response Requester. | |
+| --- | --- |
+| uri | valid? |
+| TestPage?responder=test | true |
+
+
+| Response Examiner. |
+| --- |
+| contents? |
+| |
+
+Check to make sure the box exists.
+
+
+| Response Examiner. | | |
+| --- | --- | --- |
+| type | pattern | matches? |
+| contents | <span id="test-action"> | true |

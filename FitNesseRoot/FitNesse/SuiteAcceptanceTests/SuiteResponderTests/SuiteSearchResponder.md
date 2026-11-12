@@ -1,0 +1,17 @@
+{
+  "type": "suite",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+!c !2 Search Responder
+
+The search responder works in two fashions: Title Search and Content Search.
+
+ ^TestSearchForm
+ ^TestTitleSearch
+ ^TestContentSearch
+
+---
+Includes:
+ ^SamplePages

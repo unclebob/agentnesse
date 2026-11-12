@@ -1,0 +1,11 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| script | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- |
+| add child page | ChildPage | containing | child content | to parent page | NoSuchPage | should return Not Found |
+| page | ParentPage.ChildPage | should not contain | child content | | | |
