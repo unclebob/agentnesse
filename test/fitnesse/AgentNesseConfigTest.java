@@ -80,6 +80,14 @@ public class AgentNesseConfigTest {
       assertThat(e.getMessage(), containsString(file.getName()));
       assertThat(e.getMessage(), containsString("nope"));
     }
+    File nullValue = folder.newFile("null-key.json");
+    Files.writeString(nullValue.toPath(), "{\"nope\": null}", StandardCharsets.UTF_8);
+    try {
+      AgentNesseConfig.apply(ContextConfigurator.empty(), nullValue, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString("nope"));
+    }
   }
 
   @Test

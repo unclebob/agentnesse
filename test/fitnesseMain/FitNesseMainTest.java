@@ -55,6 +55,11 @@ public class FitNesseMainTest {
   }
 
   @Test
+  public void badArgumentsReturnOneWithoutStarting() {
+    assertEquals(Integer.valueOf(1), FitNesseMain.start(new String[] {"-x"}));
+  }
+
+  @Test
   public void commandArgCallsExecuteSingleCommand() throws Exception {
     context.withParameter(ConfigurationParameter.COMMAND, "command");
 

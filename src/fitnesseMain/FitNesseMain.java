@@ -25,22 +25,25 @@ public class FitNesseMain {
   private final ExitCodeListener exitCodeListener = new ExitCodeListener();
 
   public static void main(String[] args) {
-    Arguments arguments = null;
+    Integer exitCode = start(args);
+    if (exitCode != null) {
+      exit(exitCode);
+    }
+  }
+
+  static Integer start(String[] args) {
+    final Arguments arguments;
     try {
       arguments = new Arguments(args);
     } catch (IllegalArgumentException e) {
       Arguments.printUsage();
-      exit(1);
+      return 1;
     }
-    Integer exitCode;
     try {
-        exitCode = new FitNesseMain().launchFitNesse(arguments);
-    } catch (Exception e){
+      return new FitNesseMain().launchFitNesse(arguments);
+    } catch (Exception e) {
       LOG.log(Level.SEVERE, "Error while starting the FitNesse", e);
-      exitCode = 1;
-    }
-    if (exitCode != null) {
-      exit(exitCode);
+      return 1;
     }
   }
 

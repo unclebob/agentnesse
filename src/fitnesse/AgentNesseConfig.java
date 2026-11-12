@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 import static fitnesse.ConfigurationParameter.LISTEN;
 import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
@@ -20,6 +21,10 @@ import static fitnesse.ConfigurationParameter.THEME;
  * Reads agentnesse.json. Command-line flags are applied after this, so they win.
  */
 public final class AgentNesseConfig {
+  private static final Set<String> KEYS = Set.of(
+    "port", "listen", "rootPath", "pageRoot",
+    "logDirectory", "maximumWorkers", "theme", "refactorStartPath");
+
   private AgentNesseConfig() {
   }
 
@@ -33,11 +38,19 @@ public final class AgentNesseConfig {
     JSONObject json = read(file);
     for (String key : json.keySet()) {
       if (json.isNull(key)) {
-        requireKnown(file, key);
+        if (!known(key)) {
+          throw unknown(file, key);
+        }
         continue;
       }
-      applyKey(configurator, file, json, key);
+      if (!applyAddress(configurator, file, json, key) && !applyServer(configurator, file, json, key)) {
+        throw unknown(file, key);
+      }
     }
+  }
+
+  private static boolean known(String key) {
+    return KEYS.contains(key);
   }
 
   private static JSONObject read(File file) {
@@ -54,50 +67,41 @@ public final class AgentNesseConfig {
     }
   }
 
-  private static void applyKey(ContextConfigurator configurator, File file, JSONObject json, String key) {
+  private static boolean applyAddress(ContextConfigurator configurator, File file, JSONObject json, String key) {
     switch (key) {
       case "port":
         configurator.withPort(requireInt(file, key, json));
-        break;
-      case "rootPath":
-        configurator.withRootPath(requireString(file, key, json));
-        break;
-      case "pageRoot":
-        configurator.withRootDirectoryName(requireString(file, key, json));
-        break;
-      case "logDirectory":
-        configurator.withParameter(LOG_DIRECTORY, requireString(file, key, json));
-        break;
-      case "maximumWorkers":
-        configurator.withParameter(MAXIMUM_WORKERS, Integer.toString(requireInt(file, key, json)));
-        break;
-      case "theme":
-        configurator.withParameter(THEME, requireString(file, key, json));
-        break;
-      case "refactorStartPath":
-        configurator.withParameter(REFACTOR_START_PATH, requireString(file, key, json));
-        break;
+        return true;
       case "listen":
         configurator.withParameter(LISTEN, requireString(file, key, json));
-        break;
+        return true;
+      case "rootPath":
+        configurator.withRootPath(requireString(file, key, json));
+        return true;
+      case "pageRoot":
+        configurator.withRootDirectoryName(requireString(file, key, json));
+        return true;
       default:
-        throw unknown(file, key);
+        return false;
     }
   }
 
-  private static void requireKnown(File file, String key) {
+  private static boolean applyServer(ContextConfigurator configurator, File file, JSONObject json, String key) {
     switch (key) {
-      case "port":
-      case "rootPath":
-      case "pageRoot":
       case "logDirectory":
+        configurator.withParameter(LOG_DIRECTORY, requireString(file, key, json));
+        return true;
       case "maximumWorkers":
+        configurator.withParameter(MAXIMUM_WORKERS, Integer.toString(requireInt(file, key, json)));
+        return true;
       case "theme":
+        configurator.withParameter(THEME, requireString(file, key, json));
+        return true;
       case "refactorStartPath":
-      case "listen":
-        return;
+        configurator.withParameter(REFACTOR_START_PATH, requireString(file, key, json));
+        return true;
       default:
-        throw unknown(file, key);
+        return false;
     }
   }
 
