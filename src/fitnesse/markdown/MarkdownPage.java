@@ -116,7 +116,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   @Override
   public String getHtml() {
-    return getData().getContent();
+    return MarkdownRenderer.render(getData().getContent());
   }
 
   @Override

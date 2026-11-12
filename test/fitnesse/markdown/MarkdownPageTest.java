@@ -59,7 +59,7 @@ public class MarkdownPageTest {
     assertEquals("the suite", data.getAttribute("Help"));
     assertTrue(data.hasAttribute("Prune"));
     assertEquals("SuiteDemo", page.getName());
-    assertEquals("# Suite\n", page.getHtml());
+    assertEquals("<h1>Suite</h1>\n", page.getHtml());
     assertNull(page.getVariable("anything"));
     assertTrue(page.getVersions().isEmpty());
     try {
