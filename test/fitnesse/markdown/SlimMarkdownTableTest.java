@@ -57,4 +57,16 @@ public class SlimMarkdownTableTest {
     assertEquals(List.of("scenario", "login as", "user"), table.row(1));
     assertEquals(List.of("enter", "@user", ""), table.row(2));
   }
+
+  @Test
+  public void anUnknownPrefixIsAnErrorNamingThePrefix() {
+    SlimMarkdownTable table = SlimMarkdownTable.parse("""
+      | nope:Thing | |
+      | --- | --- |
+      | a | b |
+      """);
+
+    assertEquals("error", table.type());
+    assertEquals("unknown table type \"nope\"", table.error());
+  }
 }

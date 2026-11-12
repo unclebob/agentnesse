@@ -24,10 +24,10 @@ public final class MarkdownRenderer {
     Parser parser = Parser.builder().extensions(EXTENSIONS).build();
     Set<String> headingIds = new HashSet<>();
     HtmlRenderer html = HtmlRenderer.builder()
+      .nodeRendererFactory(SlimTableRenderer::new)
       .extensions(EXTENSIONS)
       .nodeRendererFactory(context -> new WikiWordNodeRenderer(context, pageExists))
       .nodeRendererFactory(context -> new HeadingRenderer(context, headingIds))
-      .attributeProviderFactory(context -> new SlimTableAttributes())
       .nodeRendererFactory(AgentNesseBlockRenderer::new)
       .build();
     return html.render(parser.parse(markdown == null ? "" : markdown));

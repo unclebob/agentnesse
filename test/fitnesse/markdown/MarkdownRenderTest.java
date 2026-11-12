@@ -33,6 +33,7 @@ public class MarkdownRenderTest {
     assertGolden("bare-decision");
     assertGolden("script-table");
     assertGolden("query-table");
+    assertGolden("unknown-table");
   }
 
   @Test
