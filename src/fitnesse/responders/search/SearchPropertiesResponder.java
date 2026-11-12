@@ -3,8 +3,6 @@ package fitnesse.responders.search;
 import static fitnesse.wiki.PageData.LEGACY_PAGE_TYPE_ATTRIBUTE;
 import static fitnesse.wiki.PageData.PAGE_TYPE_ATTRIBUTE;
 import static fitnesse.wiki.PageData.PropertySUITES;
-import static fitnesse.wiki.PageData.SECURITY_ATTRIBUTES;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,8 +11,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.search.AttributeWikiPageFinder;
 import fitnesse.wiki.search.PageFinder;
@@ -30,11 +26,6 @@ public class SearchPropertiesResponder extends ResultResponder {
   public static final String ACTION = "Action";
   public static final String SECURITY = "Security";
   public static final String SPECIAL = "Special";
-
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
-  }
 
   protected List<PageType> getPageTypesFromInput(Request request) {
     String requestedPageTypes = request.hasInput(PAGE_TYPE_ATTRIBUTE)
@@ -71,9 +62,6 @@ public class SearchPropertiesResponder extends ResultResponder {
     // the search form sends the navigation attributes as "Action" too
     getListboxAttributesFromRequest(request, ACTION, SEARCH_NAVIGATION_ATTRIBUTES,
         attributes);
-    getListboxAttributesFromRequest(request, SECURITY, SECURITY_ATTRIBUTES,
-        attributes);
-
     getListboxAttributesFromRequest(request, SPECIAL, SPECIAL_ATTRIBUTES,
         attributes);
 

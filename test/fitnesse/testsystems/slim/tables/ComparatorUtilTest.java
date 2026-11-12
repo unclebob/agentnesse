@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 public class ComparatorUtilTest {
 
-
   @Test
   public void trulyEqual() throws Exception {
     assertTrue(approximatelyEqual("3.0", "3.0"));

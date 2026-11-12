@@ -139,7 +139,6 @@ public class FitNesseExpediter implements ResponseSender, Runnable {
     if (StringUtils.isBlank(request.getResource()) && StringUtils.isBlank(request.getQueryString()))
       request.setResource(WikiPageUtil.FRONT_PAGE);
     Responder responder = context.responderFactory.makeResponder(request);
-    responder = context.authenticator.authenticate(context, request, responder);
     return responder.makeResponse(context, request);
   }
 

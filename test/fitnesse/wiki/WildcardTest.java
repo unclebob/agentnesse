@@ -92,5 +92,4 @@ public class WildcardTest {
     FileUtil.deleteFileSystemDirectory(TEST_DIR);
   }
 
-
 }

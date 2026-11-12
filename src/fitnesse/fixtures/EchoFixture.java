@@ -41,5 +41,4 @@ public class EchoFixture {
     throw new SlimIgnoreAllTestsException("testing ignore all");
   }
 
-
 }

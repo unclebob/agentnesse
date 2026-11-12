@@ -3,8 +3,6 @@
 package fitnesse.responders;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
 import fitnesse.http.Request;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
@@ -88,8 +86,4 @@ public class NameWikiPageResponder extends BasicResponder {
     return "text/plain";
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
-  }
 }

@@ -3,7 +3,6 @@
 package fitnesse.fixtures;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.Authenticator;
 import fitnesse.http.MockResponseSender;
 import fitnesse.http.Response;
 import fitnesse.wiki.WikiPage;
@@ -12,6 +11,5 @@ public class FitnesseFixtureContext {
   static WikiPage page;
   static Response response;
   static MockResponseSender sender;
-  static Authenticator authenticator;
   static FitNesseContext context;
 }

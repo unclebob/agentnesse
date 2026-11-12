@@ -2,8 +2,6 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse;
 
-import fitnesse.authentication.Authenticator;
-import fitnesse.authentication.UnauthorizedResponder;
 import fitnesse.http.MockRequest;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
@@ -40,17 +38,6 @@ public class FitNesseExpediterTest {
     root.addChildPage("FrontPage");
     socket = new MockSocket();
     expediter = new FitNesseExpediter(socket, context, executorService);
-  }
-
-  @Test
-  public void testAuthenticationGetsCalled() throws Exception {
-    context = FitNesseUtil.makeTestContext(new StoneWallAuthenticator());
-    WikiPage root = context.getRootPage();
-    root.addChildPage("FrontPage");
-    expediter = new FitNesseExpediter(socket, context, executorService);
-    MockRequest request = new MockRequest();
-    Response response = expediter.createGoodResponse(request);
-    assertEquals(401, response.getStatus());
   }
 
   @Test(expected = IOException.class)
@@ -178,18 +165,6 @@ public class FitNesseExpediterTest {
         }
       }
     });
-  }
-
-  class StoneWallAuthenticator extends Authenticator {
-    @Override
-    public Responder authenticate(FitNesseContext context, Request request, Responder privilegedResponder) {
-      return new UnauthorizedResponder();
-    }
-
-    @Override
-    public boolean isAuthenticated(String username, String password) {
-      return false;
-    }
   }
 
 }

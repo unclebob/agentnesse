@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public class ContextConfiguratorTest {
@@ -57,6 +58,16 @@ public class ContextConfiguratorTest {
       .makeFitNesseContext();
 
     assertThat(context.variableSource.getProperty("FITNESSE_ROOTPATH"), is("/tmp/wiki-root"));
+  }
+
+  @Test
+  public void omitsRootPathVariableWhenRootPathIsNull() throws IOException, PluginException {
+    FitNesseContext context = ContextConfigurator.empty()
+      .withRootPath(null)
+      .withPort(9125)
+      .makeFitNesseContext();
+
+    assertNull(context.variableSource.getProperty("FITNESSE_ROOTPATH"));
   }
 
   @Test

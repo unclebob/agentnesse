@@ -2,19 +2,17 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.files;
 
+import fitnesse.Responder;
 import java.io.File;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 
-public class DeleteConfirmationResponder implements SecureResponder {
+public class DeleteConfirmationResponder implements Responder {
   private String resource;
 
   @Override
@@ -49,8 +47,4 @@ public class DeleteConfirmationResponder implements SecureResponder {
     }
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
 }

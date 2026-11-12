@@ -113,15 +113,9 @@ public class FitNesseMainTest {
     assertThat(response, not(containsString("Starting FitNesse on port:")));
   }
 
-  @Test
-  public void canRunSingleCommandWithAuthentication() throws Exception {
-    String output = runFitnesseMainWith("-o", "-a", "user:pwd", "-c", "user:pwd:/FitNesse.ReadProtectedPage");
-    assertThat(output, containsString("fitnesse.authentication.OneUserAuthenticator"));
-  }
-
   @Test(expected = Exception.class)
   public void runningCommandWithNonExistentAddressResultsInError() throws Exception {
-    String[] args = {"-o", "-a", "user:pwd", "-c", "user:pwd:/FitNesse.NonExistentTestCase?test"};
+    String[] args = {"-o", "-c", "/FitNesse.NonExistentTestCase?test"};
     Arguments arguments = new Arguments(args);
     try {
       new FitNesseMain().launchFitNesse(arguments);

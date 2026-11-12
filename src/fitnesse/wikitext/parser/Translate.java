@@ -1,6 +1,5 @@
 package fitnesse.wikitext.parser;
 
-
 import fitnesse.wikitext.shared.PropertySource;
 
 import java.util.ArrayList;

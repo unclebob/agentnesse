@@ -80,7 +80,6 @@ public class Request {
     return "";
   }
 
-
   private void readAndParseRequestLine() throws IOException, HttpException {
     String request = input.readLine();
     if ("".equals(request)) {

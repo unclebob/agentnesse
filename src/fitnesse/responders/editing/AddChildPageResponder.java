@@ -1,9 +1,7 @@
 package fitnesse.responders.editing;
 
+import fitnesse.Responder;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
-import fitnesse.authentication.SecureWriteOperation;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -16,7 +14,7 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageUtil;
 
-public class AddChildPageResponder implements SecureResponder {
+public class AddChildPageResponder implements Responder {
   private WikiPage currentPage;
   private String childName;
   private WikiPagePath childPath;
@@ -26,11 +24,6 @@ public class AddChildPageResponder implements SecureResponder {
   private String suites;
   private WikiPage pageTemplate;
   private String user;
-
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureWriteOperation();
-  }
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {

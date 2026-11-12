@@ -122,7 +122,6 @@ public class ClassPathBuilderTest {
     }
   }
 
-
   @Test
   public void testClasspath() throws Exception {
     WikiPage root = InMemoryPage.makeRoot("RooT");

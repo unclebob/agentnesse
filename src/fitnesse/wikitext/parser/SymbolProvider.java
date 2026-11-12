@@ -123,7 +123,6 @@ public class SymbolProvider {
     return this;
   }
 
-
   private List<Matchable> getMatchTypes(Character match) {
     if (currentDispatch.containsKey(match)) return currentDispatch.get(match);
     return currentDispatch.get(defaultMatch);

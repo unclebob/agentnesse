@@ -65,7 +65,6 @@ public final class HtmlParserTools {
     return node instanceof Tag ? ((Tag) node).getEndTag() : null;
   }
 
-
   private static NodeList deepClone(NodeList tree, Node clonedParent) {
     NodeList newNodeList = new NodeList();
     for (int i = 0; i < tree.size(); i++) {

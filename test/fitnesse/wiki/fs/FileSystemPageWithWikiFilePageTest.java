@@ -36,5 +36,4 @@ public class FileSystemPageWithWikiFilePageTest {
     assertThat(child.getData().getContent(), is("new content"));
   }
 
-
 }

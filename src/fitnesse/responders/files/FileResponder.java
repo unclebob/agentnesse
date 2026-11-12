@@ -2,6 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.files;
 
+import fitnesse.Responder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,8 +14,6 @@ import java.net.URLDecoder;
 import java.text.ParseException;
 import java.util.Date;
 
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.util.Clock;
 import fitnesse.wiki.PathParser;
 import util.FileUtil;
@@ -27,7 +26,7 @@ import fitnesse.http.SimpleResponse;
 import fitnesse.responders.ErrorResponder;
 import fitnesse.responders.NotFoundResponder;
 
-public class FileResponder implements SecureResponder {
+public class FileResponder implements Responder {
   // 1000-trick: remove milliseconds.
   private static final Date LAST_MODIFIED_FOR_RESOURCES = new Date((Clock.currentTimeInMillis() / 1000) * 1000);
 
@@ -61,7 +60,6 @@ public class FileResponder implements SecureResponder {
       return new NotFoundResponder().makeResponse(context, request);
     }
   }
-
 
   private boolean canLoadFromClasspath() {
     return resource.startsWith("files/fitnesse/");
@@ -182,17 +180,6 @@ public class FileResponder implements SecureResponder {
 
   private static boolean isInSubDirectory(File dir, File file) {
     return file != null && (file.equals(dir) || isInSubDirectory(dir, file.getParentFile()));
-  }
-
-  @Override
-  public SecureOperation getSecureOperation() {
-    return (context, request) -> {
-      try {
-        return new File(context.getRootPagePath(), URLDecoder.decode(request.getResource(), FileUtil.CHARENCODING)).isDirectory();
-      } catch (UnsupportedEncodingException e) {
-        throw new IllegalArgumentException("Invalid URL encoding", e);
-      }
-    };
   }
 
 }

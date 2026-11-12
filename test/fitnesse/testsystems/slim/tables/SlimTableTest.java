@@ -133,8 +133,6 @@ public class SlimTableTest {
     assertEquals("this is $x->[1]1 and $y->[a]b", table.replaceSymbolsWithFullExpansion("this is $x1 and $yb"));
   }
 
-
-
   private static class MockTable extends SlimTable {
     public MockTable() {
       super(null, null, new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy())));

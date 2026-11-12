@@ -1,14 +1,12 @@
 package fitnesse.responders.refactoring;
 
+import fitnesse.Responder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -17,7 +15,7 @@ import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 
-public class LazyPageTreeResponder implements SecureResponder {
+public class LazyPageTreeResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request)
@@ -43,11 +41,6 @@ public class LazyPageTreeResponder implements SecureResponder {
     response.setContent(json.toString());
 
     return response;
-  }
-
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
   }
 
   private static WikiPage getPage(FitNesseContext context, String path) {

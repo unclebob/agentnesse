@@ -2,10 +2,8 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.refactoring;
 
+import fitnesse.Responder;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
@@ -18,7 +16,7 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageProperty;
 
-public class RefactorPageResponder implements SecureResponder {
+public class RefactorPageResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
@@ -53,8 +51,4 @@ public class RefactorPageResponder implements SecureResponder {
     return response;
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
 }

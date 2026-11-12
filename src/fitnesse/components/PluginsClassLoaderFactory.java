@@ -8,7 +8,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Gets a class loader which extends the class path with jars found in "plugins" directory.
  */

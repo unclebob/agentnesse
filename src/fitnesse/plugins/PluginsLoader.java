@@ -1,9 +1,5 @@
 package fitnesse.plugins;
 
-import fitnesse.authentication.Authenticator;
-import fitnesse.authentication.MultiUserAuthenticator;
-import fitnesse.authentication.OneUserAuthenticator;
-import fitnesse.authentication.PromiscuousAuthenticator;
 import fitnesse.components.ComponentFactory;
 import fitnesse.components.Logger;
 import fitnesse.reporting.FormatterRegistry;
@@ -17,8 +13,6 @@ import fitnesse.wiki.WikiPageFactoryRegistry;
 import fitnesse.wikitext.MarkUpSystems;
 import fitnesse.wikitext.parser.SymbolProvider;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,35 +48,6 @@ public class PluginsLoader {
 
   public Logger makeLogger(String logDirectory) {
     return logDirectory != null ? new Logger(logDirectory) : null;
-  }
-
-  public Authenticator makeAuthenticator(String authenticationParameter) throws IOException, PluginException {
-    Authenticator authenticator = new PromiscuousAuthenticator();
-    if (authenticationParameter != null) {
-      if (new File(authenticationParameter).exists())
-        try {
-          authenticator = new MultiUserAuthenticator(authenticationParameter);
-        } catch (ReflectiveOperationException e) {
-          throw new PluginException("Could not instantiate authentication classes", e);
-        }
-      else {
-        String[] values = authenticationParameter.split(":");
-        authenticator = new OneUserAuthenticator(values[0], values[1]);
-      }
-    }
-
-    return getAuthenticator(authenticator);
-  }
-
-  public Authenticator getAuthenticator(Authenticator defaultAuthenticator) {
-    Authenticator authenticator = null;
-    for (PluginFeatureFactory pff : pluginFeatureFactories) {
-      authenticator = pff.getAuthenticator();
-      if (authenticator != null) {
-        break;
-      }
-    }
-    return authenticator == null ? defaultAuthenticator : authenticator;
   }
 
   public String getDefaultTheme() {

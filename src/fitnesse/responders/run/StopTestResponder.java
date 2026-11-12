@@ -2,16 +2,14 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.run;
 
+import fitnesse.Responder;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
-import fitnesse.authentication.SecureTestOperation;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
 
-public class StopTestResponder implements SecureResponder {
+public class StopTestResponder implements Responder {
 
   String testId = null;
 
@@ -34,11 +32,6 @@ public class StopTestResponder implements SecureResponder {
     page.put("runningTestingTracker", SuiteResponder.runningTestingTracker);
     page.setMainTemplate("stopTestPage.vm");
     return page.html(request);
-  }
-
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureTestOperation();
   }
 
 }

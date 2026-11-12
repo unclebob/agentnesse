@@ -60,7 +60,6 @@ public class JUnitRunNotifierResultsListener
     increaseCompletedTests();
     Description description = descriptionFor(test);
 
-
     if (firstFailure != null) {
       notifier.fireTestFailure(new Failure(description, firstFailure));
     } else if (testSummary.getExceptions() > 0) {

@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
 import fitnesse.Responder;
-import fitnesse.authentication.AlwaysSecureOperation;
 import fitnesse.http.SimpleResponse;
 import fitnesse.responders.ResponderTestCase;
 import fitnesse.wiki.PathParser;
@@ -80,9 +79,4 @@ public class LazyPageTreeResponderTest extends ResponderTestCase {
         assertThat(response.getContent(), jsonEquals("[]"));
     }
 
-    @Test
-    public void testGetSecureOperation() {
-        LazyPageTreeResponder responder = new LazyPageTreeResponder();
-        assertThat(responder.getSecureOperation(), instanceOf(AlwaysSecureOperation.class));
-    }
 }

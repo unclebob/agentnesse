@@ -1,6 +1,5 @@
 package fitnesse.slim;
 
-
 import org.junit.Test;
 
 import java.util.*;

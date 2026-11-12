@@ -2,9 +2,6 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.search;
 
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.components.TraversalListener;
 import fitnesse.components.Traverser;
 import fitnesse.html.template.HtmlPage;
@@ -26,11 +23,8 @@ import static fitnesse.wiki.PageData.PropertyREFACTOR;
 import static fitnesse.wiki.PageData.PropertySEARCH;
 import static fitnesse.wiki.PageData.PropertyVERSIONS;
 import static fitnesse.wiki.PageData.PropertyWHERE_USED;
-import static fitnesse.wiki.PageData.SECURITY_ATTRIBUTES;
 
-
-public abstract class ResultResponder extends ChunkingResponder implements
-  SecureResponder, Traverser<WikiPage> {
+public abstract class ResultResponder extends ChunkingResponder implements Traverser<WikiPage> {
 
   static final String[] SEARCH_ACTION_ATTRIBUTES = { PropertyEDIT, PropertyVERSIONS,
     PropertyPROPERTIES, PropertyREFACTOR, PropertyWHERE_USED };
@@ -56,7 +50,6 @@ public abstract class ResultResponder extends ChunkingResponder implements
     }
   }
 
-
   @Override
   protected void doSending() throws IOException {
     if (page == null)
@@ -79,7 +72,7 @@ public abstract class ResultResponder extends ChunkingResponder implements
     htmlPage.put("pageTypeAttributes", PageType.valuesAsString());
     htmlPage.put("actionAttributes", SEARCH_ACTION_ATTRIBUTES);
     htmlPage.put("navigationAttributes", SEARCH_NAVIGATION_ATTRIBUTES);
-    htmlPage.put("securityAttributes", SECURITY_ATTRIBUTES);
+    htmlPage.put("securityAttributes", new String[0]);
     htmlPage.put("specialAttributes", SPECIAL_ATTRIBUTES);
     htmlPage.put("request", request);
 
@@ -102,11 +95,5 @@ public abstract class ResultResponder extends ChunkingResponder implements
 
   protected abstract PageFinder getPageFinder(TraversalListener<WikiPage> observer);
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
-  }
-
 }
-
 

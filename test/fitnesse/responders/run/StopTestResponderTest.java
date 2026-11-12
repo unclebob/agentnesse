@@ -15,7 +15,6 @@ import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.testutil.FitNesseUtil;
 
-
 public class StopTestResponderTest {
 
   private Request request;
@@ -71,7 +70,6 @@ public class StopTestResponderTest {
 
     assertSubString("Stopped 1 test", response);
   }
-
 
   private String runResponder(StopTestResponder responder) throws Exception {
     Response response = responder.makeResponse(context, request);

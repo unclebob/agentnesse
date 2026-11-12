@@ -29,9 +29,6 @@ public class WikiPageProperty implements Serializable {
   public static final String EDIT = "Edit";
   public static final String SUITES = "Suites";
 
-  public static final String SECURE_READ = "secure-read";
-  public static final String SECURE_WRITE = "secure-write";
-  public static final String SECURE_TEST = "secure-test";
 
   private String value;
   private SortedMap<String, WikiPageProperty> children = new TreeMap<>();

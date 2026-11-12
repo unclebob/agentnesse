@@ -186,7 +186,6 @@ public class SuiteHtmlFormatterTest {
     assertPageBufferContains("(2/20)");
     pageBuffer.getBuffer().setLength(0);
 
-
     formatter.processTestResults("RelativeName", new TestSummary(1, 0, 0, 0));
     formatter.announceStartNewTest("RelativeName", "FullName");
 

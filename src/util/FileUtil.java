@@ -45,7 +45,6 @@ public class FileUtil {
     return createFile(file, content.getBytes(StandardCharsets.UTF_8));
   }
 
-
   public static File createFile(File file, byte[] bytes) throws IOException {
     return createFile(file, new ByteArrayInputStream(bytes));
   }

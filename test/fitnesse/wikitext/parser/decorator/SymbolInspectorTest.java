@@ -38,7 +38,6 @@ public class SymbolInspectorTest {
     assertThat(inspect(symbolWithContent).getRawContent(), is("ab c"));
   }
 
-
   private Symbol symbol(Symbol... children) {
     Symbol symbol = new Symbol(Table.tableCell);
     stream(children).forEach(symbol::add);

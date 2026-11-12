@@ -183,7 +183,6 @@ public class DynamicDecisionTableTest extends SlimTableTestSupport<DynamicDecisi
     assertEquals(expectedInstructions, instructions);
   }
 
-
   @SuppressWarnings("unchecked")
   @Test
   public void settersAreFirstFunctionsAreLastLeftToRight() throws Exception {
@@ -216,8 +215,6 @@ public class DynamicDecisionTableTest extends SlimTableTestSupport<DynamicDecisi
     );
     assertEquals(expectedInstructions, instructions);
   }
-
-
 
   @Test
   public void canBuildInstructionsForTableWithVariables() throws Exception {

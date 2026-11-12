@@ -30,7 +30,6 @@ public abstract class SlimTestSystem implements TestSystem {
   private boolean stopSuiteCalled;
   private boolean testSystemIsStopped;
 
-
   public SlimTestSystem(String testSystemName, SlimClient slimClient) {
     this.testSystemName = testSystemName;
     this.slimClient = slimClient;

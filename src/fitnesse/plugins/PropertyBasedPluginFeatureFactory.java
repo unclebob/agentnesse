@@ -1,7 +1,6 @@
 package fitnesse.plugins;
 
 import fitnesse.ConfigurationParameter;
-import fitnesse.authentication.Authenticator;
 import fitnesse.components.ComponentFactory;
 import fitnesse.components.ComponentInstantiationException;
 import fitnesse.reporting.Formatter;
@@ -63,11 +62,6 @@ public class PropertyBasedPluginFeatureFactory extends PluginFeatureFactoryBase 
       return null;
     else
       return value.split(",");
-  }
-
-  @Override
-  public Authenticator getAuthenticator() {
-    return componentFactory.createComponent(ConfigurationParameter.AUTHENTICATOR);
   }
 
   @Override

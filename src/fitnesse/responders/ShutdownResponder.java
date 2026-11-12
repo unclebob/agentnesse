@@ -2,20 +2,18 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders;
 
+import fitnesse.Responder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
 
-public class ShutdownResponder implements SecureResponder {
+public class ShutdownResponder implements Responder {
   private static final Logger LOG = Logger.getLogger(ShutdownResponder.class.getName());
 
   @Override
@@ -45,8 +43,4 @@ public class ShutdownResponder implements SecureResponder {
     return response;
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
 }

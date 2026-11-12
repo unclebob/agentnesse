@@ -3,10 +3,6 @@
 package fitnesse.plugins;
 
 import fitnesse.ConfigurationParameter;
-import fitnesse.authentication.Authenticator;
-import fitnesse.authentication.MultiUserAuthenticator;
-import fitnesse.authentication.OneUserAuthenticator;
-import fitnesse.authentication.PromiscuousAuthenticator;
 import fitnesse.components.ComponentFactory;
 import fitnesse.reporting.BaseFormatter;
 import fitnesse.reporting.FormatterFactory;
@@ -29,7 +25,6 @@ import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.tables.SlimAssertion;
 import fitnesse.testsystems.slim.tables.SlimTable;
 import fitnesse.testsystems.slim.tables.SlimTableFactory;
-import fitnesse.testutil.SimpleAuthenticator;
 import fitnesse.util.ClassUtils;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageDummy;
@@ -172,48 +167,6 @@ public class PluginsLoaderTest {
 
     assertSymbolTypeMatch("!monthsFromToday2", true);
   }
-
-  @Test
-  public void testAuthenticatorDefaultCreation() throws Exception {
-    Authenticator authenticator = loader.getAuthenticator(new PromiscuousAuthenticator());
-    assertNotNull(authenticator);
-    assertEquals(PromiscuousAuthenticator.class, authenticator.getClass());
-  }
-
-  @Test
-  public void testAuthenticatorCustomCreation() throws Exception {
-    testProperties.setProperty(ConfigurationParameter.AUTHENTICATOR.getKey(), SimpleAuthenticator.class.getName());
-
-    Authenticator authenticator = loader.getAuthenticator(new PromiscuousAuthenticator());
-    assertNotNull(authenticator);
-    assertEquals(SimpleAuthenticator.class, authenticator.getClass());
-  }
-
-  @Test
-  public void testMakeNullAuthenticator() throws Exception {
-    Authenticator a = loader.makeAuthenticator(null);
-    assertTrue(a instanceof PromiscuousAuthenticator);
-  }
-
-  @Test
-  public void testMakeOneUserAuthenticator() throws Exception {
-    Authenticator a = loader.makeAuthenticator("bob:uncle");
-    assertTrue(a instanceof OneUserAuthenticator);
-    OneUserAuthenticator oua = (OneUserAuthenticator) a;
-    assertEquals("bob", oua.getUser());
-    assertEquals("uncle", oua.getPassword());
-  }
-
-  @Test
-  public void testMakeMultiUserAuthenticator() throws Exception {
-    final String passwordFilename = "testpasswd";
-    File passwd = new File(passwordFilename);
-    passwd.createNewFile();
-    Authenticator a = loader.makeAuthenticator(passwordFilename);
-    assertTrue(a instanceof MultiUserAuthenticator);
-    passwd.delete();
-  }
-
 
   @Test
   public void noContentFilter() throws Exception {

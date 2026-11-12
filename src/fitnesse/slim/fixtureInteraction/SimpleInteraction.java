@@ -287,7 +287,6 @@ private List<String> pathsCache = new ArrayList<>();
     return method;
   }
 
-
   private boolean isMatchingMethod(Method method, String methodName, int nArgs) {
     boolean hasMatchingName = method.getName().equals(methodName);
     boolean hasMatchingArguments = method.getParameterTypes().length == nArgs;

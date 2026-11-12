@@ -6,7 +6,6 @@ import org.junit.Test;
 
 public class MethodExtractorRuleTest {
 
-
   @Test
   public void JasonConfigurationParser() {
     MethodExtractor cf = new MethodExtractor();

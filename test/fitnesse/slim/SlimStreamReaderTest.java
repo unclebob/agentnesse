@@ -25,7 +25,6 @@ public class SlimStreamReaderTest {
     assertEquals("foo bar baz", writer.toString());
   }
 
-
   @Test
   public void readSlimMessage() throws IOException {
     InputStream input = new ByteArrayInputStream("000011:foo bar baz".getBytes());

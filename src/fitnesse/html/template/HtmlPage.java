@@ -83,7 +83,6 @@ public class HtmlPage {
     template.merge(velocityContext, writer);
   }
 
-
   public void setTitle(String title) {
     velocityContext.put("title", title);
   }
@@ -97,7 +96,6 @@ public class HtmlPage {
     setTitle(title);
     setPageTitle(new PageTitle(title));
   }
-
 
   public void setPageTitle(PageTitle pageTitle) {
     velocityContext.put("pageTitle", pageTitle);

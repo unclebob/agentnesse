@@ -44,7 +44,6 @@ public class SimpleInteractionTest {
     assertEquals(convertedArgs[2], testee.getDateVal());
   }
 
-
   @Test
   public void canExecuteConstructorWithDateArgTypePriorityOverString() throws Throwable {
     //given

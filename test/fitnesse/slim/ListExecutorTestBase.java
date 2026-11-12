@@ -134,7 +134,6 @@ public abstract class ListExecutorTestBase {
       "------" + endl, os.toString());
   }
 
-
   @Test
   public void oneFunctionCallWithBlankArgument() throws Exception {
     statements.add(Arrays.asList("id", "call", "testSlim", "echoString", ""));
@@ -158,7 +157,6 @@ public abstract class ListExecutorTestBase {
             Arrays.asList(Arrays.asList("m2", (Object) "OK"), Arrays.asList("c1", (Object) "3"), Arrays.asList("c2", (Object) "0"))
     );
   }
-
 
   @Test
   public void multiFunctionCall() throws Exception {

@@ -11,14 +11,13 @@ import static fitnesse.ContextConfigurator.*;
 public class Arguments {
 
   private final CommandLine commandLine = new CommandLine(
-          "[-v][-p port][-d dir][-r root][-l logDir][-f config][-o][-i][-a credentials][-c command][-b output][-lh][-w workers]");
+          "[-v][-p port][-d dir][-r root][-l logDir][-f config][-o][-i][-c command][-b output][-lh][-w workers]");
 
   private final String rootPath;
   private final Integer port;
   private final String rootDirectory;
   private final String logDirectory;
   private final boolean omitUpdate;
-  private final String credentials;
   private final boolean installOnly;
   private final String command;
   private final String output;
@@ -36,7 +35,6 @@ public class Arguments {
     this.rootPath = commandLine.getOptionArgument("d", "dir");
     this.rootDirectory = commandLine.getOptionArgument("r", "root");
     this.logDirectory = commandLine.getOptionArgument("l", "logDir");
-    this.credentials = commandLine.getOptionArgument("a", "credentials");
     this.command = commandLine.getOptionArgument("c", "command");
     this.output = commandLine.getOptionArgument("b", "output");
     this.configFile = commandLine.getOptionArgument("f", "config");
@@ -51,7 +49,7 @@ public class Arguments {
   static void printUsage() {
     ContextConfigurator defaults = ContextConfigurator.systemDefaults();
 
-    System.err.println("Usage: java -jar fitnesse.jar [-vpdrlfoaicblh]");
+    System.err.println("Usage: java -jar fitnesse.jar [-vpdrlfoicblh]");
     System.err.println("\t-p <port number> {" + DEFAULT_PORT + "}");
     System.err.println("\t-d <working directory> {" +
       defaults.get(ROOT_PATH) + "}");
@@ -61,8 +59,6 @@ public class Arguments {
     System.err.println("\t-f <config properties file> {" +
       defaults.get(CONFIG_FILE) + "}");
     System.err.println("\t-o omit updates");
-    System.err
-      .println("\t-a {user:pwd | user-file-name} enable authentication.");
     System.err.println("\t-i Install only, then quit.");
     System.err.println("\t-c <command> execute single command.");
     System.err.println("\t-b <filename> redirect command output.");
@@ -101,8 +97,6 @@ public class Arguments {
       result = result.withParameter(INSTALL_ONLY, "true");
     if (command != null)
       result = result.withParameter(COMMAND, command);
-    if (credentials != null)
-      result = result.withParameter(CREDENTIALS, credentials);
     if (localhostOnly)
       result = result.withParameter(LOCALHOST_ONLY, "true");
     if (maximumWorkers != null)

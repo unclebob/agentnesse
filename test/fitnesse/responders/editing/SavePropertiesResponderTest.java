@@ -41,7 +41,6 @@ public class SavePropertiesResponderTest {
     request.addInput("Search", "on");
     request.addInput("RecentChanges", "on");
     request.addInput(WikiPageProperty.PRUNE,"on");
-    request.addInput(WikiPageProperty.SECURE_READ, "on");
     request.addInput("Suites", "Suite A, Suite B");
     request.addInput("HelpText", "Help text literal");
     request.setResource(PAGE_NAME);
@@ -59,8 +58,6 @@ public class SavePropertiesResponderTest {
     assertTrue(data.hasAttribute("Search"));
     assertFalse(data.hasAttribute("Edit"));
     assertTrue(data.hasAttribute("RecentChanges"));
-    assertTrue(data.hasAttribute(WikiPageProperty.SECURE_READ));
-    assertFalse(data.hasAttribute(WikiPageProperty.SECURE_WRITE));
     assertTrue(data.hasAttribute(WikiPageProperty.PRUNE));
     assertEquals("Suite A, Suite B", data.getAttribute(WikiPageProperty.SUITES));
     assertEquals("Help text literal", data.getAttribute(WikiPageProperty.HELP));
@@ -93,7 +90,6 @@ public class SavePropertiesResponderTest {
     request = new MockRequest();
     request.setResource(PAGE_NAME);
     setBooleanAttributesOnRequest(defaultData, PageData.NON_SECURITY_ATTRIBUTES);
-    setBooleanAttributesOnRequest(defaultData, PageData.SECURITY_ATTRIBUTES);
 
     responder.makeResponse(context, request);
 

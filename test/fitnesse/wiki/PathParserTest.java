@@ -117,7 +117,6 @@ public class PathParserTest {
     assertFalse(PathParser.isSingleWikiWord("root"));
   }
 
-
   @Test
   public void isValidWikiPath() {
     assertWikiPath("SomePage");

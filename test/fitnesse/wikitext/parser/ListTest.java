@@ -32,7 +32,6 @@ public class ListTest {
         return indent(level) + "<" + tag  + ">" + HtmlElement.endl;
     }
 
-
     private String listItem(String item, int level) {
         return indent(level) + "<li>" + item + "</li>" + HtmlElement.endl;
     }

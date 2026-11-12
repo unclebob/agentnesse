@@ -1,9 +1,7 @@
 package fitnesse.responders;
 
+import fitnesse.Responder;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -22,7 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketResponder implements SecureResponder {
+public class PacketResponder implements Responder {
   private SimpleResponse response;
   private WikiPage page;
   private JSONObject packet;
@@ -105,8 +103,4 @@ public class PacketResponder implements SecureResponder {
     return rowList;
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
-  }
 }

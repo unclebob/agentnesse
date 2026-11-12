@@ -241,7 +241,6 @@ public class HtmlTable implements Table {
     return tag;
   }
 
-
   class Row {
     private List<Cell> cells = new ArrayList<>();
     private CompositeTag rowNode;

@@ -1,6 +1,5 @@
 package fitnesse;
 
-import fitnesse.authentication.Authenticator;
 import fitnesse.components.ComponentFactory;
 import fitnesse.components.Logger;
 import fitnesse.plugins.PluginException;
@@ -28,7 +27,6 @@ import java.util.Properties;
 import static fitnesse.ConfigurationParameter.COMMAND;
 import static fitnesse.ConfigurationParameter.CONFIG_FILE;
 import static fitnesse.ConfigurationParameter.CONTEXT_ROOT;
-import static fitnesse.ConfigurationParameter.CREDENTIALS;
 import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
 import static fitnesse.ConfigurationParameter.THEME;
@@ -59,7 +57,6 @@ public class ContextConfigurator {
   private Integer maximumWorkers = DEFAULT_MAXIMUM_WORKERS;
   private String contextRoot;
   private Logger logger;
-  private Authenticator authenticator;
   private WikiFiles versionsController;
   /** Others as name-value pairs: */
   private final Properties properties = new Properties();
@@ -121,9 +118,6 @@ public class ContextConfigurator {
     if (logger == null) {
       logger = pluginsLoader.makeLogger(get(LOG_DIRECTORY));
     }
-    if (authenticator == null) {
-      authenticator = pluginsLoader.makeAuthenticator(get(CREDENTIALS));
-    }
 
     SystemVariableSource variableSource = new SystemVariableSource(properties);
 
@@ -150,7 +144,6 @@ public class ContextConfigurator {
           contextRoot,
           versionsController,
           port,
-          authenticator,
           logger,
           testSystemFactory,
           testSystemListener,
@@ -277,11 +270,6 @@ public class ContextConfigurator {
 
   public ContextConfigurator withPort(int port) {
     this.port = port;
-    return this;
-  }
-
-  public ContextConfigurator withAuthenticator(Authenticator authenticator) {
-    this.authenticator = authenticator;
     return this;
   }
 

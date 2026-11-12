@@ -1,6 +1,5 @@
 package fitnesse.slim;
 
-
 import fitnesse.slim.fixtureInteraction.FixtureInteraction;
 
 public abstract class MethodExecutor {

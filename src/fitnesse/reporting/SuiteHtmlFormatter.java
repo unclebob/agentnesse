@@ -32,7 +32,6 @@ public class SuiteHtmlFormatter extends InteractiveFormatter implements Closeabl
   private boolean testSummariesPresent;
   private TimeMeasurement totalTimeMeasurement;
 
-
   public SuiteHtmlFormatter(WikiPage page, boolean testSummariesPresent, Writer writer) {
     super(page, writer);
     this.testSummariesPresent = testSummariesPresent;
@@ -157,7 +156,6 @@ public class SuiteHtmlFormatter extends InteractiveFormatter implements Closeabl
     writeData(output);
   }
 
-
   @Override
   public void testComplete(TestPage testPage, TestSummary testSummary) {
     latestTestTime.stop();
@@ -193,6 +191,4 @@ public class SuiteHtmlFormatter extends InteractiveFormatter implements Closeabl
     return testSummariesPresent;
   }
 }
-
-
 

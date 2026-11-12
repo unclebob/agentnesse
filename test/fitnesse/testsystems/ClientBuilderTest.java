@@ -21,7 +21,6 @@ public class ClientBuilderTest {
 
   private static final String MOCK_TEST_RUNNER = "default-test-runner";
 
-
   private WikiPage root;
 
   @Before
@@ -97,8 +96,6 @@ public class ClientBuilderTest {
     String testSystemName = clientBuilder.getTestSystemName();
     Assert.assertEquals("system:A:runner", testSystemName);
   }
-
-
 
   @Test
   public void testCommandPatternCSharp() throws Exception {

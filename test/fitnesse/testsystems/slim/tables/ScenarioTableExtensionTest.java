@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-
 public class ScenarioTableExtensionTest {
   private static final String EXTENSION_NAME = "autoArgScenario";
   private WikiPage root;

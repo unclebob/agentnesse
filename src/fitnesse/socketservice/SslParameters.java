@@ -5,9 +5,6 @@ import fitnesse.util.ClassUtils;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
-
-
-
 public class SslParameters {
 
 	private String keyStoreFilename;
@@ -27,7 +24,6 @@ public class SslParameters {
 	protected void setTrustStoreFilename(String filename) {
 		if(filename != null) this.trustStoreFilename = filename;
 	}
-
 
 	private void setProperty(String tag, String value, String defaultValue) {
 		if ( value == null) value =  defaultValue;
@@ -65,7 +61,6 @@ public class SslParameters {
 		setProperty("javax.net.ssl.keyStorePassword", keyStorePasswordOld, keyStorePasswordOld);
 		setProperty("javax.net.ssl.trustStore", trustStoreFilenameOld, trustStoreFilenameOld);
 	}
-
 
 	public static SslParameters createSslParameters(String sslParameterClassName) {
 	  return createSslParameters(sslParameterClassName, ClassLoader.getSystemClassLoader());

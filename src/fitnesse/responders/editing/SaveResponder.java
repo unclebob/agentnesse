@@ -2,11 +2,8 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.editing;
 
-
+import fitnesse.Responder;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
-import fitnesse.authentication.SecureWriteOperation;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -14,7 +11,7 @@ import fitnesse.wiki.*;
 
 import static fitnesse.responders.editing.SaveRecorder.changesShouldBeMerged;
 
-public class SaveResponder implements SecureResponder {
+public class SaveResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
@@ -82,8 +79,4 @@ public class SaveResponder implements SecureResponder {
     data.setOrRemoveAttribute(PageData.LAST_MODIFYING_USER, user);
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureWriteOperation();
-  }
 }

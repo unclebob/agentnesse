@@ -69,5 +69,4 @@ public class CreateDirectoryResponderTest {
     assertTrue(response.getContent(), response.getContent().contains("Invalid path: dir"));
   }
 
-
 }

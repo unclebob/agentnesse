@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import static java.util.Arrays.asList;
 import static util.FileUtil.CHARENCODING;
 
-
 public class CommandRunner {
   private static final Logger LOG = Logger.getLogger(CommandRunner.class.getName());
 

@@ -1,6 +1,5 @@
 package fitnesse.testsystems;
 
-
 public enum ExecutionResult {
   ERROR,
   FAIL,

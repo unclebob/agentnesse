@@ -117,7 +117,6 @@ public class ReturnedValueExpectationTest {
     assertExpectationMessage("!~= 3.0", "2.8", "pass(2.8!~= 3.0)");
   }
 
-
   @Test
   public void notEqualComparison() throws Exception {
     assertExpectationMessage(" != 5.9", "8", "pass(8!= 5.9)");

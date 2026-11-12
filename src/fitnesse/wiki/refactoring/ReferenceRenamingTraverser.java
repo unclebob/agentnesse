@@ -47,7 +47,6 @@ public class ReferenceRenamingTraverser implements TraversalListener<WikiPage> {
     return pageHasChanged;
   }
 
-
   private boolean updatePageContent(WikiPage currentPage, PageData data) {
     String content = data.getContent();
 

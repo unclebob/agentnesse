@@ -173,7 +173,6 @@ public class AddChildPageResponderTest {
     assertTrue(isSuite());
   }
 
-
   @Test
   public void pageTypeShouldBeSuiteWhenPageNameWouldQualifyForTestPage() throws Exception {
     request.addInput("pageType", "Suite");
@@ -209,7 +208,6 @@ public class AddChildPageResponderTest {
     assertEquals("true", newPage.getData().getAttribute(dummyKey));
     assertEquals(newContent, newPage.getData().getContent());
   }
-
 
   private boolean isTest() {
     return childPageData.hasAttribute("Test");

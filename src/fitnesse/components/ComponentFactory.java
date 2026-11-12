@@ -112,5 +112,4 @@ public class ComponentFactory {
     return properties.getProperty(key, defaultValue);
   }
 
-
 }

@@ -25,7 +25,6 @@ import org.htmlparser.lexer.Page;
 import org.htmlparser.util.NodeList;
 import org.json.JSONObject;
 
-
 public class PageDriver {
   private PageCreator creator = new PageCreator();
   private ResponseRequester requester = new ResponseRequester();
@@ -240,7 +239,6 @@ public class PageDriver {
   public String contentOfTagWithId(String id) throws Exception {
     return getValueOfTagWithAttributeValue("id", id);
   }
-
 
   private static class HasAttributePrefixFilter extends HasAttributeFilter {
     private static final long serialVersionUID = 1L;

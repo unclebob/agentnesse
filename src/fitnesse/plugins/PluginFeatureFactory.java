@@ -1,6 +1,5 @@
 package fitnesse.plugins;
 
-import fitnesse.authentication.Authenticator;
 import fitnesse.reporting.FormatterRegistry;
 import fitnesse.responders.ResponderFactory;
 import fitnesse.responders.editing.ContentFilter;
@@ -13,10 +12,6 @@ import fitnesse.wikitext.MarkUpSystems;
 import fitnesse.wikitext.parser.SymbolProvider;
 
 public interface PluginFeatureFactory {
-
-  default Authenticator getAuthenticator() {
-    return null;
-  }
 
   default ContentFilter getContentFilter() {
     return null;

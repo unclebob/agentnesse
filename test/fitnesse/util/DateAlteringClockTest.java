@@ -71,5 +71,4 @@ public class DateAlteringClockTest {
     assertThat(Clock.currentTimeInMillis(), is(startOfTheCentury.getTime() + 39));
   }
 
-
 }

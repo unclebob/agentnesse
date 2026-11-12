@@ -4,9 +4,6 @@ package fitnesse.responders.run;
 
 import fitnesse.FitNesseContext;
 import fitnesse.FitNesseVersion;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
-import fitnesse.authentication.SecureTestOperation;
 import fitnesse.html.HtmlUtil;
 import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
@@ -343,7 +340,6 @@ public class TestResponderTest {
     assertHasRegexp("<script>.*?document\\.getElementById\\(\"test-summary\"\\)\\.className = \".*?\";.*?</script>", results);
   }
 
-
   @Test
   public void testTestSummaryHasRightClass() throws Exception {
     doSimpleRun(passFixtureTable());
@@ -396,14 +392,6 @@ public class TestResponderTest {
       } catch (InterruptedException e) {
       }
     }
-  }
-
-
-  @Test
-  public void testAuthentication_RequiresTestPermission() throws Exception {
-    assertTrue(responder instanceof SecureResponder);
-    SecureOperation operation = responder.getSecureOperation();
-    assertEquals(SecureTestOperation.class, operation.getClass());
   }
 
   @Test

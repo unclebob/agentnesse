@@ -85,7 +85,6 @@ public class SearchPropertiesResponderTest {
     assertOutputHasRowWithLink(content, titles);
   }
 
-
   private String invokeResponder(MockRequest request) throws Exception {
     Response response = responder.makeResponse(context, request);
     MockResponseSender sender = new MockResponseSender();

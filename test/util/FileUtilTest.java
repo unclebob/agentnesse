@@ -8,8 +8,17 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class FileUtilTest {
+  @Test
+  public void writesAndReadsLines() throws Exception {
+    File file = FileUtil.createFile("temp-lines.txt", "");
+    FileUtil.writeLinesToFile(file, Arrays.asList("one", "two"));
+    assertEquals(Arrays.asList("one", "two"), FileUtil.getFileLines(file));
+    file.delete();
+  }
+
   @Test
   public void testCreateDir() throws Exception {
     File dir = FileUtil.createDir("temp1");

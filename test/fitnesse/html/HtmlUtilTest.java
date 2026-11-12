@@ -142,7 +142,6 @@ public class HtmlUtilTest {
     assertSubString("My string has escaped \\\\r \\\\n", scriptTag.html());
   }
 
-
   @Test
   public void shouldEscapeBackslashesInMakeReplaceElementScript() {
     String appendText = "<p>My string has escaped \\r \\n</p>";

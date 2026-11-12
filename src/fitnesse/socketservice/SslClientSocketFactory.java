@@ -38,7 +38,6 @@ public class SslClientSocketFactory implements ClientSocketFactory {
     return socket;
   }
 
-
   public static boolean isSSLSocket(Socket theSocket) {
     return (theSocket instanceof SSLSocket);
   }
@@ -76,7 +75,6 @@ public class SslClientSocketFactory implements ClientSocketFactory {
       return null;
     }
   }
-
 
   public static String getRdnByNameFromDn(String dn, String rdnType) {
     if (dn == null) {

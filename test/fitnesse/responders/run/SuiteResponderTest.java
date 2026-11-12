@@ -314,7 +314,6 @@ public class SuiteResponderTest {
     assertHasRegexp("#TestThree", results);
   }
 
-
   @Test
   public void excludeSuiteWithSuiteFilterQuery() throws Exception {
     addTestPagesWithSuiteProperty();
@@ -324,7 +323,6 @@ public class SuiteResponderTest {
     assertHasRegexp("#TestTwo", results);
     assertDoesntHaveRegexp("#TestThree", results);
   }
-
 
   @Test
   public void testFirstTest() throws Exception {
@@ -345,7 +343,6 @@ public class SuiteResponderTest {
     assertHasRegexp("#TestTwo", results);
     assertHasRegexp("#TestThree", results);
   }
-
 
   @Test
   public void testTagsShouldBeInheritedFromSuite() throws Exception {

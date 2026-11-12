@@ -1,6 +1,5 @@
 package fitnesse.testsystems.slim.tables;
 
-
 import fitnesse.testsystems.Expectation;
 import fitnesse.testsystems.TestResult;
 import fitnesse.testsystems.slim.results.SlimExceptionResult;

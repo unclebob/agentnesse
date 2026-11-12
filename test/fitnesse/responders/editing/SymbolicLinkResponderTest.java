@@ -54,7 +54,6 @@ public class SymbolicLinkResponderTest {
     childTwo = pageTwo.addChildPage("ChildTwo");
   }
 
-
   private Response invokeResponder() throws Exception {
     Response response = responder.makeResponse(context, request);
     reloadPages();
@@ -219,7 +218,6 @@ public class SymbolicLinkResponderTest {
 
     request.addInput("rename", "SymLink");
   }
-
 
   @Test
   public void testNoPageAtPath() throws Exception {

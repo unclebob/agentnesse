@@ -31,7 +31,6 @@ public class ConverterSupportTest {
     assertSame(value, current);
   }
 
-
   @Test(expected = fitnesse.slim.SlimError.class)
   public void convertArgs_should_throw_an_exception_when_target_type_has_no_converter() {
     String value = "";

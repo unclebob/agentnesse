@@ -98,7 +98,6 @@ public class SlimTableFactoryTest {
     assertThatTableTypeImportWorks("MakeQuery", "as Table", "query: Make Query", QueryTable.class);
   }
 
-
   private void assertThatTableTypeImportWorks(String importName, String importTypedescription, String tableName,
       Class<? extends SlimTable> tableClass) {
     addTableTypeImport(importName, importTypedescription);

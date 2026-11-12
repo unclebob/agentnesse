@@ -34,5 +34,4 @@ public class DisabledResponderTest {
     assertHasRegexp("that this action should be disabled.", body);
   }
 
-
 }

@@ -10,9 +10,6 @@ import org.junit.Test;
 
 import fitnesse.FitNesseContext;
 import fitnesse.Responder;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.http.MockRequest;
 import fitnesse.http.SimpleResponse;
 import fitnesse.testutil.FitNesseUtil;
@@ -33,22 +30,6 @@ public class WikiPageResponderTest {
   public void setUp() throws Exception {
     context = FitNesseUtil.makeTestContext();
     root = context.getRootPage();
-  }
-
-  @Test
-  public void testResponseForAuthenticatedPage() throws Exception {
-    createBasicPage();
-    final MockRequest request = new MockRequest();
-    request.setCredentials("admin", "admin");
-    request.setResource("ChildPage");
-    final Responder responder = new WikiPageResponder();
-    final SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-
-    assertEquals(200, response.getStatus());
-
-    final String body = response.getContent();
-    assertBasicContent(response, body);
-    assertSubString("User: <a href=\"ChildPage?account\">admin</a>", body);
   }
 
   @Test
@@ -179,7 +160,6 @@ public class WikiPageResponderTest {
     assertHasRegexp("normal normalValue", content);
     assertHasRegexp("footer footerValue", content);
 
-
     urlInputValues = new HashMap<>();
     urlInputValues.put("headerParam", "headerValue");
     urlInputValues.put("footerParam", "footerValue");
@@ -189,7 +169,6 @@ public class WikiPageResponderTest {
     urlInputValues.put("teardownParam", "teardownValue");
     urlInputValues.put("suiteSetupParam", "suiteSetupValue");
     urlInputValues.put("suiteTeardownParam", "suiteTeardownValue");
-
 
     response = requestPage("TestPage", urlInputValues);
     content = response.getContent();
@@ -217,11 +196,4 @@ public class WikiPageResponderTest {
     return (SimpleResponse) responder.makeResponse(context, request);
   }
 
-  @Test
-  public void testResponderIsSecureReadOperation() throws Exception {
-    final Responder responder = new WikiPageResponder();
-    assertTrue(responder instanceof SecureResponder);
-    final SecureOperation operation = ((SecureResponder) responder).getSecureOperation();
-    assertEquals(SecureReadOperation.class, operation.getClass());
-  }
 }

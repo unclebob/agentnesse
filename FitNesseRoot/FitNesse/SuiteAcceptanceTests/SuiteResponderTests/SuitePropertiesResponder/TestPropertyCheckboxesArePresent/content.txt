@@ -41,6 +41,3 @@ Ensure that the Security links are present
 !|Response Examiner.|
 |type|pattern|matches?|
 |contents|Security:|true|
-|contents|<input type="checkbox" id="secure-read" name="secure-read"/>|true|
-|contents|<input type="checkbox" id="secure-write" name="secure-write"/>|true|
-|contents|<input type="checkbox" id="secure-test" name="secure-test"/>|true|

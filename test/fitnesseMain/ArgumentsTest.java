@@ -39,7 +39,7 @@ public class ArgumentsTest {
   @Test
   public void argumentsCanBeRepresentedByProperties() throws IOException, PluginException {
     Arguments args = new Arguments("-v", "-p", "81", "-d", "directory", "-r", "root", "-b", "someFile.txt",
-              "-l", "myLogDirectory", "-o", "-f", "fitnesse.properties", "-i", "-c", "SomeCommand", "-a", "user:pass", "-lh", "-w", "42");
+              "-l", "myLogDirectory", "-o", "-f", "fitnesse.properties", "-i", "-c", "SomeCommand", "-lh", "-w", "42");
     Properties properties = args.update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
 
     assertEquals("verbose", properties.getProperty("LogLevel"));
@@ -52,7 +52,6 @@ public class ArgumentsTest {
     assertEquals("fitnesse.properties", properties.getProperty("ConfigFile"));
     assertEquals("true", properties.getProperty("InstallOnly"));
     assertEquals("SomeCommand", properties.getProperty("Command"));
-    assertEquals("user:pass", properties.getProperty("Credentials"));
     assertEquals("true", properties.getProperty("LocalhostOnly"));
     assertEquals("42", properties.getProperty("MaximumWorkers"));
   }
@@ -71,7 +70,6 @@ public class ArgumentsTest {
     assertNull(properties.getProperty("OmittingUpdates"));
     assertNull(properties.getProperty("InstallOnly"));
     assertNull(properties.getProperty("Command"));
-    assertNull(properties.getProperty("Credentials"));
     assertNull(properties.getProperty("LocalhostOnly"));
     assertEquals("100", properties.getProperty("MaximumWorkers"));
   }

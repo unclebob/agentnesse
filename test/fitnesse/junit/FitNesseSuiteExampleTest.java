@@ -8,7 +8,6 @@ import fitnesse.junit.FitNesseSuite.Name;
 import fitnesse.junit.FitNesseRunner.OutputDir;
 import fitnesse.junit.FitNesseRunner.ConfigFile;
 
-
 @RunWith(FitNesseSuite.class)
 @Name("FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite")
 @FitnesseDir(".")

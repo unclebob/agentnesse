@@ -2,9 +2,6 @@ package fitnesse.responders.refactoring;
 
 import fitnesse.FitNesseContext;
 import fitnesse.Responder;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.html.HtmlUtil;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
@@ -17,7 +14,7 @@ import fitnesse.wiki.refactoring.ReferenceRenamingTraverser;
 
 import java.util.List;
 
-public abstract class PageMovementResponder implements SecureResponder {
+public abstract class PageMovementResponder implements Responder {
 
   protected String oldNameOfPageToBeMoved;
   protected WikiPage oldRefactoredPage;
@@ -147,17 +144,10 @@ public abstract class PageMovementResponder implements SecureResponder {
     newParentPage.commit(newParentData);
   }
 
-
-
   private boolean isChildOf(WikiPage childPage, WikiPage parentPage) {
 	  String childPath = PathParser.render(childPage.getFullPath());
 	  String parentPath = PathParser.render(parentPage.getFullPath());
 	  return childPath.startsWith(parentPath);
-  }
-
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
   }
 
 }

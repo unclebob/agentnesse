@@ -193,8 +193,7 @@ public class WikiFilePage extends BaseWikitextPage implements FileBasedWikiPage 
 
   private boolean isBooleanProperty(final String key) {
     return qualifiesAs(key, PageData.PAGE_TYPE_ATTRIBUTES) ||
-      qualifiesAs(key, PageData.NON_SECURITY_ATTRIBUTES) ||
-      qualifiesAs(key, PageData.SECURITY_ATTRIBUTES);
+      qualifiesAs(key, PageData.NON_SECURITY_ATTRIBUTES);
   }
 
   private boolean isTruthy(final String value) {
@@ -277,6 +276,5 @@ public class WikiFilePage extends BaseWikitextPage implements FileBasedWikiPage 
       return data.getProperties().getLastModificationTime();
     }
   }
-
 
 }

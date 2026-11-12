@@ -12,7 +12,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
 
-
 /**
  * Handle Slim requests.
  *

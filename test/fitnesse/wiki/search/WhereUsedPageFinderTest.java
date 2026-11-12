@@ -11,7 +11,6 @@ import fitnesse.wiki.fs.InMemoryPage;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class WhereUsedPageFinderTest {
   private WikiPage root;
   private WikiPage pageOne;

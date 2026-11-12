@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import fitnesse.http.MockResponseSender;
 
-
 public class PageDriverTest {
 
   PageDriver pageDriver;

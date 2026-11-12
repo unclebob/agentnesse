@@ -145,7 +145,6 @@ public class WikiContentUpdaterTest {
     FileUtil.deleteFile(propertiesFile);
     assertFalse(propertiesFile.exists());
 
-
     updater.update();
     assertTrue(updateDone);
     assertTrue(propertiesFile.exists());

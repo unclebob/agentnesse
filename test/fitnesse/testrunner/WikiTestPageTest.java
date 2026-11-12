@@ -163,7 +163,6 @@ public class WikiTestPageTest {
     assertSubString("!define TEST_SYSTEM {slim}\n", content);
   }
 
-
   @Test
   public void shouldNotIncludeScenarioLibrariesIfNotSlimTest() throws Exception {
     addPage("ScenarioLibrary", "scenario library");
@@ -190,7 +189,6 @@ public class WikiTestPageTest {
     String html = testPage.getHtml();
     assertNotSubString("scenario library", html);
   }
-
 
   @Test
   public void testPathSeparatorVariable() throws Exception {

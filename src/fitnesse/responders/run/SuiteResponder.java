@@ -3,9 +3,6 @@
 package fitnesse.responders.run;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
-import fitnesse.authentication.SecureTestOperation;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
@@ -42,7 +39,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SuiteResponder extends ChunkingResponder implements SecureResponder {
+public class SuiteResponder extends ChunkingResponder {
   private static final Logger LOG = Logger.getLogger(SuiteResponder.class.getName());
 
   private static final String NOT_FILTER_ARG = "excludeSuiteFilter";
@@ -305,11 +302,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     return context.testRunFactoryRegistry.createRun(pages);
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureTestOperation();
-  }
-
   public void addToResponse(String output) {
     if (!isClosed()) {
       try {
@@ -339,7 +331,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   public Response getResponse() {
     return response;
   }
-
 
   public static SuiteFilter createSuiteFilter(Request request, String suitePath) {
     return new SuiteFilter(getOrTagFilter(request),
@@ -371,7 +362,6 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     return request != null ? request.getInput(AND_FILTER_ARG) : null;
   }
 
-
   private static String getSuiteFirstTest(Request request, String suiteName) {
     String startTest = null;
     if (request != null) {
@@ -386,6 +376,5 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
 
     return startTest;
   }
-
 
 }

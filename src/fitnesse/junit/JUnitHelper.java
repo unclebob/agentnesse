@@ -1,6 +1,5 @@
 package fitnesse.junit;
 
-
 import fitnesse.ContextConfigurator;
 import fitnesse.FitNesseContext;
 import fitnesse.testrunner.MultipleTestsRunner;

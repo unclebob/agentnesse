@@ -16,4 +16,11 @@ public class FitNesseContextTest {
     assertEquals(context.rootPath + File.separator + FitNesseUtil.base, context.getRootPagePath());
   }
 
+  @Test
+  public void testProgressIsStoredUnderTheRoot() {
+    FitNesseContext context = FitNesseUtil.makeTestContext();
+    assertEquals(context.getRootPagePath() + File.separator + "files" + File.separator + "testProgress",
+      context.getTestProgressPath());
+  }
+
 }

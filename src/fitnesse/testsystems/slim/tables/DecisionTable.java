@@ -18,11 +18,9 @@ public class DecisionTable extends SlimTable {
   protected MethodExtractor getterMethodExtractor;
   protected boolean baselineDecisionTable = false;
 
-
   public DecisionTable(Table table, String id, SlimTestContext context) {
     super(table, id, context);
   }
-
 
   @Override
   protected String getTableType() {
@@ -131,7 +129,6 @@ public class DecisionTable extends SlimTable {
         }
         return assertion;
       }
-
 
     private Map<String, String> getArgumentsForRow(int row) {
       Map<String, String> scenarioArguments = new HashMap<>();
@@ -259,7 +256,6 @@ public class DecisionTable extends SlimTable {
     return ((useFirstDataRowForEmpty != null && !useFirstDataRowForEmpty.isEmpty())
 		  || baselineDecisionTable);
   }
-
 
   void setBaselineDecisionTable(boolean baselineDecisionTable) {
     this.baselineDecisionTable = baselineDecisionTable;

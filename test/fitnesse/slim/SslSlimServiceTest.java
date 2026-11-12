@@ -59,7 +59,6 @@ public class SslSlimServiceTest extends SlimServiceTestBase {
     return "ABORT_SLIM_TEST:fitnesse.slim.test.TestSlim$StopTestException: This is a stop test exception";
   }
 
-
   @Test
   public void definedStatementSsl_returnsSslClassName() {
     SlimService.Options options = SlimService.parseCommandLine(new String[]{"-ssl", "fitnesse.socketservice.SslParametersWiki", "8099"});

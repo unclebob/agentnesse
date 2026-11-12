@@ -25,4 +25,3 @@ public abstract class WikiPageFinder implements PageFinder {
   }
 }
 
-

@@ -2,7 +2,6 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse;
 
-import fitnesse.authentication.Authenticator;
 import fitnesse.components.Logger;
 import fitnesse.html.template.PageFactory;
 import fitnesse.reporting.FormatterFactory;
@@ -51,13 +50,12 @@ public class FitNesseContext {
   public final SystemVariableSource variableSource;
   public final WikiFiles versionsController;
   public final Logger logger;
-  public final Authenticator authenticator;
   private final Properties properties;
 
   protected FitNesseContext(FitNesseVersion version, WikiPageFactory wikiPageFactory, String rootPath,
                             String rootDirectoryName, int maximumWorkers, String contextRoot,
                             WikiFiles versionsController, int port,
-                            Authenticator authenticator, Logger logger,
+                            Logger logger,
                             TestSystemFactory testSystemFactory, TestSystemListener testSystemListener,
                             FormatterFactory formatterFactory,
                             Properties properties,
@@ -72,7 +70,6 @@ public class FitNesseContext {
     this.contextRoot = contextRoot;
     this.versionsController = versionsController;
     this.port = port;
-    this.authenticator = authenticator;
     this.logger = logger;
     this.testSystemFactory = testSystemFactory;
     this.testSystemListener = testSystemListener;

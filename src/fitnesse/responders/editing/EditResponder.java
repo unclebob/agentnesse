@@ -2,12 +2,10 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.editing;
 
+import fitnesse.Responder;
 import java.io.UnsupportedEncodingException;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.html.HtmlUtil;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
@@ -21,7 +19,7 @@ import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 
-public class EditResponder implements SecureResponder {
+public class EditResponder implements Responder {
   public static final String CONTENT_INPUT_NAME = "pageContent";
   public static final String TIME_STAMP = "editTime";
   public static final String TICKET_ID = "ticketId";
@@ -70,7 +68,6 @@ public class EditResponder implements SecureResponder {
     return response;
   }
 
-
   protected void initializeResponder(WikiPage root, Request request) {
     this.root = root;
     this.request = request;
@@ -112,8 +109,4 @@ public class EditResponder implements SecureResponder {
     html.put(CONTENT_INPUT_NAME, HtmlUtil.escapeHTML(firstTimeForNewPage ? defaultNewPageContent : content));
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
-  }
 }

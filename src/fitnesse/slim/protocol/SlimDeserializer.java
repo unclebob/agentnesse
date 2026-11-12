@@ -25,7 +25,6 @@ public class SlimDeserializer {
     this.serialized = serialized;
   }
 
-
   public List<Object> deserialize() {
     try {
       checkSerializedStringIsValid();

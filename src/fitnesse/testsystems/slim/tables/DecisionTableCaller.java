@@ -8,7 +8,6 @@ import java.util.Map;
 
 import fitnesse.testsystems.slim.Table;
 
-
 public class DecisionTableCaller {
   protected class ColumnHeaderStore {
     private Map<String, List<Integer>> columnNumbers = new HashMap<>();

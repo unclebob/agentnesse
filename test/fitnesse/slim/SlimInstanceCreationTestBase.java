@@ -66,7 +66,6 @@ public abstract class SlimInstanceCreationTestBase {
     caller.create("x", getTestClassName(), new Object[]{"3", "4"});
   }
 
-
   @Test(expected = SlimException.class)
   public void throwsInstanceNotCreatedErrorIfNoSuchClass() throws Exception {
     caller.create("x", getTestClassPath() + ".NoSuchClass", new Object[0]);

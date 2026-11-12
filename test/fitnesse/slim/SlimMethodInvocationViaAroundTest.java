@@ -8,7 +8,6 @@ import fitnesse.slim.test.TestSlimInvocationAware;
 
 import static org.junit.Assert.assertEquals;
 
-
 public class SlimMethodInvocationViaAroundTest extends SlimMethodInvocationTest {
   @Override
   protected String getTestClassName() {
@@ -38,7 +37,6 @@ public class SlimMethodInvocationViaAroundTest extends SlimMethodInvocationTest 
     super.throwMethodNotCalledErrorIfNoSuchMethodAndListAvailableMethodsSorted();
     validateNoMethodIntercepted();
   }
-
 
   @Override
   public void passManyArgs() throws Exception {

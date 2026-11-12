@@ -44,7 +44,6 @@ public class MethodExtractor {
     return configurations.add(config);
   }
 
-
   public MethodExtractorResult findRule(String methodName) {
     for (MethodExtractorRule configuration : configurations) {
       Matcher m = configuration.matcher(methodName);

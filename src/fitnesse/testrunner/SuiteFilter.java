@@ -82,7 +82,6 @@ public class SuiteFilter {
     return this;
   }
 
-
   @Override
   public String toString() {
     List<String> criterias = new LinkedList<>();

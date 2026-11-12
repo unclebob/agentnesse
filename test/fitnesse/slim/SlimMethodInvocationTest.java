@@ -10,7 +10,6 @@ import org.junit.Test;
 import fitnesse.slim.test.TestSlim;
 import fitnesse.slim.test.Zork;
 
-
 public class SlimMethodInvocationTest extends SlimMethodInvocationTestBase {
   @Override
   protected String getTestClassName() {

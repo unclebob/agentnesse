@@ -28,7 +28,6 @@ public class JavaFormatter extends BaseFormatter implements Closeable {
   private String mainPageName;
   private boolean isSuite = true;
 
-
   public interface ResultsRepository extends Closeable {
     void open(String string) throws IOException;
 

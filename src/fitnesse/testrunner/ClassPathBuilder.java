@@ -123,7 +123,6 @@ public class ClassPathBuilder {
     return Collections.emptyList();
   }
 
-
   public static class Wildcard implements FilenameFilter {
     private String pattern;
     private String prefix;

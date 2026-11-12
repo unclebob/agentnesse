@@ -10,7 +10,6 @@ public class JavaProperties {
     return Pattern.matches(pattern, value);
   }
 
-
   public String property(String property) {
     return System.getProperty(property);
   }

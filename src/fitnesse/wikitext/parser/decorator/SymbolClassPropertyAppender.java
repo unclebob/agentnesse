@@ -4,7 +4,6 @@ import fitnesse.wikitext.parser.Symbol;
 
 import static java.lang.String.format;
 
-
 public class SymbolClassPropertyAppender {
 
   public static final String CLASS_PROPERTY_NAME = "class";
@@ -29,7 +28,6 @@ public class SymbolClassPropertyAppender {
       setPropertyValue(symbol, propertyValue);
     }
   }
-
 
   private void setPropertyValue(Symbol symbol, String propertyValue) {
     symbol.putProperty(CLASS_PROPERTY_NAME, propertyValue);

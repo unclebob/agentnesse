@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 
 public class WikiPageDescriptorTest {
 
-
   private WikiPage root;
 
   @Before
@@ -41,7 +40,6 @@ public class WikiPageDescriptorTest {
     String testSystemType = wikiPageDescriptor.getTestSystemType();
     assertEquals("system", testSystemType);
   }
-
 
   @Test
   public void buildTestSystemTypeIsSlimByDefault() throws Exception {
@@ -76,6 +74,5 @@ public class WikiPageDescriptorTest {
     Descriptor descriptor = new WikiPageDescriptor(page, false, false, "");
     assertEquals("foo", descriptor.getVariable("TEST_PROPERTY"));
   }
-
 
 }

@@ -33,7 +33,6 @@ public class HtmlTableScannerTest {
     assertEquals("x", t.getCellContents(0, 0));
   }
 
-
   @Test
   public void canParseOneSimpleTableWithGunkAroundIt() throws Exception {
     scan(
@@ -128,7 +127,6 @@ public class HtmlTableScannerTest {
     assertHasRegexp("<table><tr><td>x</td></tr><tr><td>y</td><td>z</td></tr></table>",ts.toHtml().toLowerCase());
   }
 
-
   @Test
   public void canConvertGunkBackToHtml() throws Exception {
     String html = "gunk<body>gunk<table>gunk<tr>gunk<td>x</td>gunk<br>gunk</tr>gunk</table>gunk</body>";
@@ -157,7 +155,6 @@ public class HtmlTableScannerTest {
     String table1_fmt = "<body>GunkHeader gunk<table>gunk</table>gunk middle directions";
     String table2_fmt = "<table>gunk 2</table>gunk middle directions2";
     String table3_fmt = "<table>gunk 3</table>gunkend gunk</body>";
-
 
     String MULTI_TABLE_HTML = String.format(table1_fmt + table2_fmt + table3_fmt, "", "", "");
     scan(MULTI_TABLE_HTML);

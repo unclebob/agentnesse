@@ -5,9 +5,7 @@ package fitnesse.responders;
 import java.io.IOException;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.InsecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
+import fitnesse.Responder;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
@@ -16,7 +14,7 @@ import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 
-public class BasicResponder implements SecureResponder {
+public class BasicResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
@@ -69,8 +67,4 @@ public class BasicResponder implements SecureResponder {
     return Response.Format.HTML.getContentType();
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new InsecureOperation();
-  }
 }

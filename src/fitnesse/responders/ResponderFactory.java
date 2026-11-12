@@ -4,7 +4,6 @@ package fitnesse.responders;
 
 import fitnesse.Responder;
 import fitnesse.http.Request;
-import fitnesse.responders.account.SaveAccountResponder;
 import fitnesse.responders.editing.AddChildPageResponder;
 import fitnesse.responders.editing.EditResponder;
 import fitnesse.responders.editing.NewPageResponder;
@@ -12,7 +11,6 @@ import fitnesse.responders.editing.PropertiesResponder;
 import fitnesse.responders.editing.SavePropertiesResponder;
 import fitnesse.responders.editing.SaveResponder;
 import fitnesse.responders.editing.SymbolicLinkResponder;
-import fitnesse.responders.account.AccountResponder;
 import fitnesse.responders.files.CreateDirectoryResponder;
 import fitnesse.responders.files.DeleteConfirmationResponder;
 import fitnesse.responders.files.DeleteFileResponder;
@@ -69,8 +67,6 @@ public class ResponderFactory {
     addResponder("saveProperties", SavePropertiesResponder.class);
     addResponder("searchProperties", SearchPropertiesResponder.class);
     addResponder("variables", ScopeVariablesResponder.class);
-    addResponder("account", AccountResponder.class);
-    addResponder("saveAccount", SaveAccountResponder.class);
     addResponder("lazyPageTree", LazyPageTreeResponder.class);
     // Deprecated:
     addResponder("executeSearchProperties", SearchPropertiesResponder.class);

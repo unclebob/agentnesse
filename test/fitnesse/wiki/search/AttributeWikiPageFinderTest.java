@@ -77,7 +77,6 @@ public class AttributeWikiPageFinderTest {
     page.commit(pageData);
   }
 
-
   private void setPageProperty(WikiPage page, String propertyName,
       String propertyValue) {
     PageData pageData = page.getData();

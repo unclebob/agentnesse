@@ -28,7 +28,6 @@ public class WikiPageUtil {
     return wikiPage.getPageCrawler().getClosestInheritedPage(PAGE_FOOTER);
   }
 
-
   public static String getHeaderPageHtml(WikiPage wikiPage) {
     WikiPage header = getHeaderPage(wikiPage);
     return header == null ? "" : header.getHtml();

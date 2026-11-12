@@ -207,7 +207,6 @@ public class FileSystemPageTest {
     assertFalse(data.hasAttribute(SUITE.toString()));
   }
 
-
   @Test
   public void testDefaultAttributesForSuiteTearDownPageNames() throws Exception {
     WikiPage suiteTearDownPage = WikiPageUtil.addPage(root, PathParser.parse(SUITE_TEARDOWN_NAME));

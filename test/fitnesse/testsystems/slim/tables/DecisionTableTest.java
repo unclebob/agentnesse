@@ -184,7 +184,6 @@ public class DecisionTableTest extends SlimTableTestSupport<DecisionTable> {
     assertEquals(expectedInstructions, instructions);
   }
 
-
   @SuppressWarnings("unchecked")
   @Test
   public void settersAreFirstFunctionsAreLastLeftToRight() throws Exception {
@@ -217,8 +216,6 @@ public class DecisionTableTest extends SlimTableTestSupport<DecisionTable> {
     );
     assertEquals(expectedInstructions, instructions);
   }
-
-
 
   @Test
   public void canBuildInstructionsForTableWithVariables() throws Exception {

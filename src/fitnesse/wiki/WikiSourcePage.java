@@ -81,7 +81,6 @@ public class WikiSourcePage implements SourcePage {
         }
     }
 
-
   @Override
   public Collection<SourcePage> getChildren() {
         ArrayList<SourcePage> children = new ArrayList<>();

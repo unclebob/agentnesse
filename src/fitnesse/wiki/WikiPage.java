@@ -96,5 +96,3 @@ public interface WikiPage extends Comparable<WikiPage> {
   default boolean isSymbolicPage() { return this != getRealPage(); }
 }
 
-
-

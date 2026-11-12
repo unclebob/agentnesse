@@ -13,7 +13,6 @@ public class JavascriptUtil {
   private JavascriptUtil() {
   }
 
-
   public static String escapeHtmlForJavaScript(String html) {
     return StringUtils.replaceStrings(html, specialHtml, specialHtmlEscapes);
   }

@@ -16,8 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 public class SslSlimClientBuilderTest {
 
-
-
   private WikiPage root;
 
   @Before
@@ -76,5 +74,4 @@ public class SslSlimClientBuilderTest {
     assertTrue("Got connected to client", isConnected);
   }
 }
-
 

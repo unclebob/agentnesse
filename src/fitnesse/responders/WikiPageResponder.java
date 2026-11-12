@@ -2,10 +2,8 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders;
 
+import fitnesse.Responder;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
@@ -25,7 +23,7 @@ import fitnesse.wiki.WikiPageUtil;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-public class WikiPageResponder implements SecureResponder {
+public class WikiPageResponder implements Responder {
 
   private Request request;
 
@@ -95,11 +93,6 @@ public class WikiPageResponder implements SecureResponder {
     html.setFooterTemplate("wikiFooter");
     html.put("footerContent", new WikiPageFooterRenderer(page));
     return html.html(request);
-  }
-
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
   }
 
   public static class WikiPageRenderer {

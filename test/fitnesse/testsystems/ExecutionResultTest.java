@@ -5,7 +5,6 @@ import org.junit.Test;
 import static fitnesse.testsystems.ExecutionResult.*;
 import static org.junit.Assert.assertEquals;
 
-
 public class ExecutionResultTest {
 
 	  @Test

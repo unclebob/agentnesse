@@ -190,7 +190,6 @@ public class FitNesseMain {
 
     LOG.info("root page: " + context.getRootPage());
     LOG.info("logger: " + (context.logger == null ? "none" : context.logger.toString()));
-    LOG.info("authenticator: " + context.authenticator);
     LOG.info("page factory: " + context.pageFactory);
     LOG.info("page theme: " + context.pageFactory.getTheme());
   }

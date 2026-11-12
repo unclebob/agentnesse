@@ -4,8 +4,6 @@ import static fitnesse.wiki.PageData.PAGE_TYPE_ATTRIBUTES;
 
 import fitnesse.FitNesseContext;
 import fitnesse.Responder;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -89,10 +87,6 @@ public class NewPageResponder implements Responder {
     PageCrawler crawler = context.getRootPage().getPageCrawler();
     WikiPage page = crawler.getPage(parentPath);
     return page;
-  }
-
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
   }
 
 }

@@ -61,7 +61,6 @@ public class SuiteContentsFinderTest {
     assertTrue(testPages.contains(pageB));
   }
 
-
   private void setUpForGetAllTestPages() {
     testPage2 = addTestPage(suite, "TestPageTwo", "test page two");
     testChildPage = testPage2.addChildPage("ChildPage");
@@ -95,7 +94,6 @@ public class SuiteContentsFinderTest {
     assertEquals(testPage2, testPages.get(1));
     assertEquals(testChildPage, testPages.get(2));
   }
-
 
   @Test
   public void suiteTableDoesNotReplaceChildTests() {

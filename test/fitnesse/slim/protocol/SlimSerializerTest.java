@@ -74,5 +74,4 @@ public class SlimSerializerTest {
     assertEquals("[000001:000004:null:]", s);
   }
 
-
 }

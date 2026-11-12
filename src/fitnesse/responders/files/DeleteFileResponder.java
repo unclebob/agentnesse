@@ -2,18 +2,16 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.files;
 
+import fitnesse.Responder;
 import java.io.File;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
 import fitnesse.responders.ErrorResponder;
 
-public class DeleteFileResponder implements SecureResponder {
+public class DeleteFileResponder implements Responder {
   public String resource;
 
   @Override
@@ -34,8 +32,4 @@ public class DeleteFileResponder implements SecureResponder {
     return response;
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
 }

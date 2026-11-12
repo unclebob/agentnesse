@@ -64,15 +64,6 @@ public class PageData implements ReadOnlyPageData, Serializable {
       .flatMap(Stream::of).toArray(String[]::new);
 
   @Deprecated
-  public static final String PropertySECURE_READ = WikiPageProperty.SECURE_READ;
-  @Deprecated
-  public static final String PropertySECURE_WRITE = WikiPageProperty.SECURE_WRITE;
-  @Deprecated
-  public static final String PropertySECURE_TEST = WikiPageProperty.SECURE_TEST;
-  public static final String[] SECURITY_ATTRIBUTES = { WikiPageProperty.SECURE_READ,
-      WikiPageProperty.SECURE_WRITE, WikiPageProperty.SECURE_TEST };
-
-  @Deprecated
   public static final String LAST_MODIFYING_USER = WikiPageProperty.LAST_MODIFYING_USER;
 
   public static final String SUITE_SETUP_NAME = "SuiteSetUp";

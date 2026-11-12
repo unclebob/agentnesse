@@ -2,6 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.refactoring;
 
+import fitnesse.Responder;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
@@ -10,9 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
@@ -29,7 +27,7 @@ import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wiki.fs.WikiFilePage;
 import fitnesse.wiki.fs.WikiFiles;
 
-public class DeletePageResponder implements SecureResponder {
+public class DeletePageResponder implements Responder {
   private SimpleResponse response;
   private String qualifiedPageName;
   private WikiPagePath path;
@@ -112,8 +110,4 @@ public class DeletePageResponder implements SecureResponder {
     html.put("pageName", qualifiedPageName);
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
 }

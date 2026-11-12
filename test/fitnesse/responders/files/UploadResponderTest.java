@@ -138,7 +138,6 @@ public class UploadResponderTest {
     assertTrue(response.getContent(), response.getContent().contains("Invalid path: name"));
   }
 
-
   @Test
   public void canNotUploadInFilesFitNesseFolder() throws Exception {
     request.addUploadedFile("file", new UploadedFile("sourceFilename.txt", "plain/text", testFile));

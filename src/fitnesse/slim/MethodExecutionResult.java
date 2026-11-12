@@ -86,7 +86,6 @@ public class MethodExecutionResult {
     }
   };
 
-
   private final Object value;
   private final Class<?> type;
 

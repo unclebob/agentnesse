@@ -34,7 +34,6 @@ public class TestTextFormatterTest {
     Clock.restoreDefaultClock();
   }
 
-
   @Test
   public void testCompleteShouldAddPageAndSummaryAndTimingToResponse() throws Exception {
     WikiTestPage page = new WikiTestPage(new WikiPageDummy("page", "content", null));

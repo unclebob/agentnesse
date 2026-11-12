@@ -105,5 +105,4 @@ public class BaseWikiPageTest {
     assertFalse(linkingPage.isRoot());
   }
 
-
 }

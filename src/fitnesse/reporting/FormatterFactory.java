@@ -7,7 +7,6 @@ import fitnesse.components.ComponentFactory;
 
 public class FormatterFactory implements FormatterRegistry {
 
-
   private final ComponentFactory componentFactory;
   private List<Class<? extends Formatter>> formatters;
 

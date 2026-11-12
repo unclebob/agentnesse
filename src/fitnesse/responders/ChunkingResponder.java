@@ -94,7 +94,6 @@ public abstract class ChunkingResponder implements Responder, ChunkedDataProvide
       return request.getResource();
   }
 
-
   public void setRequest(Request request) {
     this.request = request;
   }

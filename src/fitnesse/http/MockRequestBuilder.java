@@ -29,7 +29,6 @@ public class MockRequestBuilder {
     else
       actualCommand = specification;
 
-
     if (actualCommand.startsWith("/"))
       return actualCommand;
     else

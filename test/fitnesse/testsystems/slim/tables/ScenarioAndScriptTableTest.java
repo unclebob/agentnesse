@@ -110,7 +110,6 @@ public class ScenarioAndScriptTableTest {
     assertEquals(expectedInstructions, instructions());
   }
 
-
   @Test
   public void simpleInputAndOutputPassing() throws Exception {
     SlimTestContextImpl testContext = makeTables(
@@ -329,7 +328,6 @@ public class ScenarioAndScriptTableTest {
             asList(new CallInstruction("scriptTable_id_0/scriptTable_s2_id_0", "scriptTableActor", "loginWithUsernameAndPassword", new Object[]{"Bob", "xyzzy"}));
     assertEquals(expectedInstructions, instructions());
   }
-
 
   @Test
   public void dontTryParameterizedForRowWithMultipleCells() throws Exception {

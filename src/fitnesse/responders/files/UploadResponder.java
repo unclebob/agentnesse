@@ -2,6 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.files;
 
+import fitnesse.Responder;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,9 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -24,7 +22,7 @@ import fitnesse.responders.ErrorResponder;
 import fitnesse.wiki.fs.FileVersion;
 import util.FileUtil;
 
-public class UploadResponder implements SecureResponder {
+public class UploadResponder implements Responder {
   private static final Pattern filenamePattern = Pattern.compile("([^/\\\\]*[/\\\\])*([^/\\\\]*)");
 
   private String rootPath;
@@ -111,8 +109,4 @@ public class UploadResponder implements SecureResponder {
     return "copy_" + copyId + "_of_" + filename;
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
 }

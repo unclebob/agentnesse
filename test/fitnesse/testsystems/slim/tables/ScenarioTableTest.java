@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-
 public class ScenarioTableTest {
     private WikiPage root;
     private List<Object> instructions;

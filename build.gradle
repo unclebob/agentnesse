@@ -245,7 +245,6 @@ jacocoTestReport {
 // to two decimal places so a one-line swing does not fail the build.
 def coverageFloors = [
   'fitnesse': [line: 0.85, branch: 0.80],
-  'fitnesse/authentication': [line: 0.82, branch: 0.73],
   'fitnesse/components': [line: 0.89, branch: 0.86],
   'fitnesse/fixtures': [line: 0.18, branch: 0.16],
   'fitnesse/html': [line: 0.85, branch: 0.78],
@@ -256,7 +255,6 @@ def coverageFloors = [
   'fitnesse/plugins': [line: 0.93, branch: 0.94],
   'fitnesse/reporting': [line: 0.95, branch: 0.90],
   'fitnesse/responders': [line: 0.94, branch: 0.84],
-  'fitnesse/responders/account': [line: 0.98, branch: 0.85],
   'fitnesse/responders/editing': [line: 0.95, branch: 0.86],
   'fitnesse/responders/files': [line: 0.79, branch: 0.79],
   'fitnesse/responders/refactoring': [line: 0.85, branch: 0.75],

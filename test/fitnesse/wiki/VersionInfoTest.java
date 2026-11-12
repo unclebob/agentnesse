@@ -56,5 +56,4 @@ public class VersionInfoTest {
     assertEquals("21 years", VersionInfo.howLongAgoString(now, years));
   }
 
-
 }

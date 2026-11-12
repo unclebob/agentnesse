@@ -97,8 +97,6 @@ public abstract class StatementExecutorTestBase {
     assertFalse(myFixture.getSystemUnderTest().speakCalled());
   }
 
-
-
   @Test
   public void shouldCallMethodOnFieldAnnotatedWithSystemUnderTestWhenFixtureDoesNotHaveMethod() throws Exception {
     MyAnnotatedSystemUnderTestFixture myFixture = createAnnotatedFixture();

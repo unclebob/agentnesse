@@ -15,7 +15,6 @@ public class SymbolClassPropertyAppenderTest {
 
   private SymbolClassPropertyAppender appender = classPropertyAppender();
 
-
   @Test
   public void should_have_no_class_prop_by_default() {
     assertThat(testSymbol.hasProperty(CLASS_PROPERTY_NAME), is(false));

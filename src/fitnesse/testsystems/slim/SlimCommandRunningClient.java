@@ -154,7 +154,6 @@ public class SlimCommandRunningClient implements SlimClient {
     LOG.fine("Got Slim Header: " + slimServerVersionMessage + ", and Version " + slimServerVersion);
   }
 
-
   public double getServerVersion() {
     return slimServerVersion;
   }

@@ -83,7 +83,6 @@ public class WikiTestPage implements TestPage {
     return separator;
   }
 
-
   public WikiPage getSourcePage() {
     return sourcePage;
   }

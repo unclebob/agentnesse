@@ -4,8 +4,6 @@
 package fitnesse.responders.editing;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -38,7 +36,6 @@ public class SavePropertiesResponder extends BasicResponder {
 
     List<String> attrs = new LinkedList<>();
     attrs.addAll(Arrays.asList(PageData.NON_SECURITY_ATTRIBUTES));
-    attrs.addAll(Arrays.asList(PageData.SECURITY_ATTRIBUTES));
     attrs.add(PageData.PropertyPRUNE);
 
     for (String attribute : attrs) {
@@ -81,8 +78,4 @@ public class SavePropertiesResponder extends BasicResponder {
     return (request.getInput(name) != null);
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
 }

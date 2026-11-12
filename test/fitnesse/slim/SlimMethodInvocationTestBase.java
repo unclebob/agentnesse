@@ -94,7 +94,6 @@ public abstract class SlimMethodInvocationTestBase {
     assertEquals(BooleanConverter.FALSE, retval);
   }
 
-
   @Test
   public void passOneString() throws Exception {
     caller.call("testSlim", "oneString", "string");

@@ -5,8 +5,6 @@ package fitnesse.responders;
 import fitnesse.FitNesseContext;
 import fitnesse.http.Request;
 import fitnesse.wiki.WikiPage;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
 
 public class PageDataWikiPageResponder extends BasicResponder {
   @Override
@@ -14,8 +12,4 @@ public class PageDataWikiPageResponder extends BasicResponder {
     return requestedPage.getData().getContent();
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
-  }
 }

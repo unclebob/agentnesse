@@ -74,8 +74,6 @@ public class ResponseExaminer {
     return matches;
   }
 
-
-
   public void extractValueFromResponse() throws Exception {
     setValue(null);
     if (type.equals("contents"))

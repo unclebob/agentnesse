@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
 import fitnesse.http.MockRequest;
 import fitnesse.http.RequestBuilder;
 import fitnesse.http.ResponseParser;
@@ -62,8 +61,4 @@ public class ShutdownResponderTest {
     assertFalse(context.fitNesse.isRunning());
   }
 
-  @Test
-  public void testIsSecure() throws Exception {
-    assertTrue((new ShutdownResponder().getSecureOperation() instanceof AlwaysSecureOperation));
-  }
 }

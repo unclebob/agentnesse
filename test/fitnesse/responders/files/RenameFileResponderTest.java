@@ -76,7 +76,6 @@ public class RenameFileResponderTest {
     assertTrue(response.getContent(), response.getContent().contains("Invalid path: files/../../"));
   }
 
-
   @Test
   public void canNotRenameToFileOutsideFilesSection() throws Exception {
     RenameFileResponder responder = new RenameFileResponder();
@@ -96,6 +95,5 @@ public class RenameFileResponderTest {
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
     assertTrue(response.getContent(), response.getContent().contains("Invalid path: ../../oldname"));
   }
-
 
 }

@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  * Scenario table acts as a factory for script tables. Those tables are created
  * where ever a scenario table is invoked. The type of table used to actually execute

@@ -2,10 +2,8 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.editing;
 
+import fitnesse.Responder;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureReadOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.html.HtmlUtil;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
@@ -37,7 +35,6 @@ import static fitnesse.wiki.PageData.ACTION_ATTRIBUTES;
 import static fitnesse.wiki.PageData.DISABLE_ATTRIBUTES;
 import static fitnesse.wiki.PageData.NAVIGATION_ATTRIBUTES;
 import static fitnesse.wiki.PageData.PAGE_TYPE_ATTRIBUTES;
-import static fitnesse.wiki.PageData.SECURITY_ATTRIBUTES;
 import static fitnesse.wiki.PageType.SUITE;
 import static fitnesse.wiki.PageType.TEST;
 import static fitnesse.wiki.WikiPageProperty.EDIT;
@@ -50,14 +47,11 @@ import static fitnesse.wiki.WikiPageProperty.PRUNE;
 import static fitnesse.wiki.WikiPageProperty.RECENT_CHANGES;
 import static fitnesse.wiki.WikiPageProperty.REFACTOR;
 import static fitnesse.wiki.WikiPageProperty.SEARCH;
-import static fitnesse.wiki.WikiPageProperty.SECURE_READ;
-import static fitnesse.wiki.WikiPageProperty.SECURE_TEST;
-import static fitnesse.wiki.WikiPageProperty.SECURE_WRITE;
 import static fitnesse.wiki.WikiPageProperty.SUITES;
 import static fitnesse.wiki.WikiPageProperty.VERSIONS;
 import static fitnesse.wiki.WikiPageProperty.WHERE_USED;
 
-public class PropertiesResponder implements SecureResponder {
+public class PropertiesResponder implements Responder {
   private WikiPage page;
   public PageData pageData;
   private String resource;
@@ -98,8 +92,7 @@ public class PropertiesResponder implements SecureResponder {
     String[] attributes = { TEST.toString(), SEARCH,
         EDIT, PROPERTIES, VERSIONS, REFACTOR,
         WHERE_USED, RECENT_CHANGES, SUITE.toString(),
-        PRUNE, SECURE_READ, SECURE_WRITE,
-        SECURE_TEST, FILES };
+        PRUNE, FILES };
     for (String attribute : attributes)
       addJsonAttribute(jsonObject, attribute);
     if (pageData.hasAttribute(HELP)) {
@@ -222,11 +215,6 @@ public class PropertiesResponder implements SecureResponder {
     return null;
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new SecureReadOperation();
-  }
-
   public void makeTestActionCheckboxesHtml() {
     html.put("actionTypes", ACTION_ATTRIBUTES);
   }
@@ -236,13 +224,12 @@ public class PropertiesResponder implements SecureResponder {
   }
 
   public void makeSecurityCheckboxesHtml() {
-    html.put("securityTypes", SECURITY_ATTRIBUTES);
+    html.put("securityTypes", new String[0]);
   }
   
   public void makeDisableCheckboxesHtml() {
     html.put("disableTypes", DISABLE_ATTRIBUTES);
   }
-
 
   public static class Symlink {
 

@@ -315,13 +315,11 @@ public abstract class QueryTableTestBase {
     assertEquals("1", result.getVariablesToStore().get("A"));
   }
 
-
   @Test
   public void commentColumn() throws Exception {
 	queryTableHeader =
 			      "|" + tableType() + ":fixture|argument|\n" +
 			        "|#comment1|n|#comment2|\n";
-
 
     assertQueryResults(
 		      "|first|1|comment|\n"+

@@ -11,7 +11,6 @@ import java.util.List;
 import fitnesse.wiki.fs.InMemoryPage;
 import org.junit.Test;
 
-
 public class PageTypeTest {
 
   @Test

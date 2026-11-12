@@ -138,7 +138,6 @@ public class ParsingPage implements VariableStore {
     }
   }
 
-
   private static class NamedPageVariableSource implements VariableSource {
 
     private final SourcePage namedPage;

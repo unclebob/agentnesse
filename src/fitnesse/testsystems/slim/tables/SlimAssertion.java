@@ -64,5 +64,4 @@ public class SlimAssertion implements Assertion {
     }
   }
 
-
 }

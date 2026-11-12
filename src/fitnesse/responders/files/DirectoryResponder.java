@@ -2,6 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.files;
 
+import fitnesse.Responder;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -13,9 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import util.FileUtil;
 import fitnesse.FitNesseContext;
-import fitnesse.authentication.AlwaysSecureOperation;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureResponder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -23,7 +21,7 @@ import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 
 // This responder is called from FileResponder in case
-class DirectoryResponder implements SecureResponder {
+class DirectoryResponder implements Responder {
   private String resource;
   private File requestedDirectory;
   private FitNesseContext context;
@@ -81,11 +79,6 @@ class DirectoryResponder implements SecureResponder {
     return simpleResponse;
   }
 
-  @Override
-  public SecureOperation getSecureOperation() {
-    return new AlwaysSecureOperation();
-  }
-
   private List<FileInfo> makeFileInfo(File[] files) {
     List<FileInfo> fileInfo = new ArrayList<>();
     for (File file : files) {
@@ -93,7 +86,6 @@ class DirectoryResponder implements SecureResponder {
     }
     return fileInfo;
   }
-
 
   public class FileInfo {
     private File file;

@@ -6,8 +6,6 @@ import java.io.IOException;
 
 import fitnesse.FitNesseContext;
 import fitnesse.Responder;
-import fitnesse.authentication.SecureOperation;
-import fitnesse.authentication.SecureTestOperation;
 import fitnesse.html.HtmlUtil;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
@@ -95,10 +93,6 @@ public abstract class SlimResponder implements Responder, TestSystemListener {
   }
 
   protected abstract SlimTestSystem getTestSystem() throws IOException;
-
-  public SecureOperation getSecureOperation() {
-    return new SecureTestOperation();
-  }
 
   public TestSummary getTestSummary() {
     return testSummary;

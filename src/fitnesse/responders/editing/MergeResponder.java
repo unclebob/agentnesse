@@ -70,7 +70,6 @@ public class MergeResponder implements Responder {
     return page.html(request);
   }
 
-
   private void addHiddenAttributes(HtmlPage page) {
     if (request.hasInput(PageData.PAGE_TYPE_ATTRIBUTE)) {
       page.put("pageType", request.getInput(PageData.PAGE_TYPE_ATTRIBUTE));

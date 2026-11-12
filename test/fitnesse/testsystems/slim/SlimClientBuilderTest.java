@@ -99,7 +99,6 @@ public class SlimClientBuilderTest {
     assertEquals(10, new SlimClientBuilder(descriptor).determineTimeout());
   }
 
-
   @Test
   public void slimDebugTimeoutIsUsedWhenExecutingWithDebugMode() throws Exception {
     Descriptor descriptor = mock(Descriptor.class);
@@ -107,6 +106,5 @@ public class SlimClientBuilderTest {
     when(descriptor.getVariable("slim.debug.timeout")).thenReturn("30");
     assertEquals(30, new SlimClientBuilder(descriptor).determineTimeout());
   }
-
 
 }

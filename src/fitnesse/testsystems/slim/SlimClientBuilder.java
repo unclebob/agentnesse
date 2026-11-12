@@ -26,7 +26,6 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
 
   private static final AtomicInteger slimPortOffset = new AtomicInteger(0);
 
-
   private int slimPort;
 
   public SlimClientBuilder(Descriptor descriptor) {

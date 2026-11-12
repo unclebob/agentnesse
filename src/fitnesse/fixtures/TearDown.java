@@ -8,7 +8,6 @@ import fitnesse.util.Clock;
 public class TearDown {
   public TearDown() throws Exception {
     context.fitNesse.stop();
-    authenticator = null;
     Clock.restoreDefaultClock();
     context = null;
   }

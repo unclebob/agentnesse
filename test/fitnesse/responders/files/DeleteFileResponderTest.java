@@ -79,5 +79,4 @@ public class DeleteFileResponderTest {
     assertTrue(response.getContent(), response.getContent().contains("Invalid path: dir"));
   }
 
-
 }

@@ -73,10 +73,7 @@ public class PropertiesResponderTest {
     for (String attribute : new String[]{"Search", "Edit", "Properties", "Versions", "Refactor", "WhereUsed", "RecentChanges"})
       assertCheckboxChecked(attribute, content);
 
-    for (String attribute : new String[] { "Prune",
-        WikiPageProperty.SECURE_READ, WikiPageProperty.SECURE_WRITE,
-        WikiPageProperty.SECURE_TEST })
-      assertCheckboxNotChecked(content, attribute);
+    assertCheckboxNotChecked(content, "Prune");
   }
 
   private void assertCheckboxNotChecked(String content, String attribute) {
@@ -117,9 +114,6 @@ public class PropertiesResponderTest {
     assertFalse(jsonObject.has("Help"));
     assertFalse(jsonObject.getBoolean("Suite"));
     assertFalse(jsonObject.getBoolean("Prune"));
-    assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_READ));
-    assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_WRITE));
-    assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_TEST));
   }
 
   @Test
@@ -149,11 +143,7 @@ public class PropertiesResponderTest {
     assertFalse(jsonObject.getBoolean("Test"));
     assertFalse(jsonObject.getBoolean("Suite"));
     assertFalse(jsonObject.getBoolean("Prune"));
-    assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_READ));
-    assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_WRITE));
-    assertFalse(jsonObject.getBoolean(WikiPageProperty.SECURE_TEST));
   }
-
 
   @Test
   public void testUsernameDisplayed() throws Exception {
@@ -326,16 +316,6 @@ public class PropertiesResponderTest {
     assertSubString("<input type=\"checkbox\" id=\"Search\" name=\"Search\" checked=\"checked\"/>", html);
   }
 
-  @Test
-  public void testMakeSecurityPropertiesHtml() throws Exception {
-    SimpleResponse response = (SimpleResponse) new PropertiesResponder().makeResponse(context, request);
-    String html = response.getContent();
-    assertSubString("Security:", html);
-    assertSubString("<input type=\"checkbox\" id=\"secure-read\" name=\"secure-read\"/>", html);
-    assertSubString("<input type=\"checkbox\" id=\"secure-write\" name=\"secure-write\"/>", html);
-    assertSubString("<input type=\"checkbox\" id=\"secure-test\" name=\"secure-test\"/>", html);
-  }
-  
   @Test
   public void testEmptySuitesForm() throws Exception {
     getContentFromSimplePropertiesPage();

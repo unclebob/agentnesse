@@ -5,7 +5,6 @@ package fitnesse.fixtures;
 import java.io.ByteArrayInputStream;
 import java.util.Properties;
 
-import fitnesse.authentication.Authenticator;
 import fitnesse.responders.editing.SaveRecorder;
 import fitnesse.testutil.FitNesseUtil;
 import util.FileUtil;
@@ -24,11 +23,7 @@ public class SetUp {
   private SetUp(Properties properties) throws Exception {
     final int port = 9123;
     properties.setProperty("FITNESSE_PORT", String.valueOf(port));
-    context = FitNesseUtil.makeTestContext(port, new Authenticator() {
-      @Override public boolean isAuthenticated(String username, String password) {
-        return FitnesseFixtureContext.authenticator == null || FitnesseFixtureContext.authenticator.isAuthenticated(username, password);
-      }
-    }, properties);
+    context = FitNesseUtil.makeTestContext(port, properties);
     SaveRecorder.clear();
     FitNesseUtil.startFitnesseWithContext(context);
   }

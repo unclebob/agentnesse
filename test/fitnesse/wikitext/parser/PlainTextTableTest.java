@@ -3,7 +3,6 @@ package fitnesse.wikitext.parser;
 import fitnesse.html.HtmlElement;
 import org.junit.Test;
 
-
 public class PlainTextTableTest {
     @Test
     public void scansPlainTextTables() {
