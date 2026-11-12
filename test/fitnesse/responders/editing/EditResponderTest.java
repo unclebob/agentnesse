@@ -4,7 +4,6 @@ package fitnesse.responders.editing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static util.RegexTestCase.assertMatches;
 import static util.RegexTestCase.assertNotSubString;
 import static util.RegexTestCase.assertSubString;
 
@@ -51,6 +50,11 @@ public class EditResponderTest {
     assertSubString("name=\"" + EditResponder.HELP_TEXT + "\"", body);
     assertNotSubString("templateMap", body);
     assertNotSubString("TemplateInserter.js", body);
+    assertNotSubString("WikiFormatter.js", body);
+    assertNotSubString("SpreadsheetTranslator.js", body);
+    assertNotSubString("wysiwyg.js", body);
+    assertNotSubString("jquery.tagsinput.js", body);
+    assertSubString("codemirror.js", body);
 
     assertSubString("type=\"submit\"", body);
     assertSubString("textarea", body);
@@ -93,20 +97,6 @@ public class EditResponderTest {
 
     String body = response.getContent();
     assertSubString("name=\"redirect\" value=\"http://fitnesse.org:8080/SomePage?boom\"", body);
-  }
-
-  @Test
-  public void testPasteFromExcelExists() throws Exception {
-    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-    String body = response.getContent();
-    assertMatches("SpreadsheetTranslator.js", body);
-  }
-
-  @Test
-  public void testFormatterScriptsExist() throws Exception {
-    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-    String body = response.getContent();
-    assertMatches("WikiFormatter.js", body);
   }
 
   @Test

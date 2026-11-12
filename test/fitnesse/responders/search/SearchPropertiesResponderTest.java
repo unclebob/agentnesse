@@ -60,7 +60,7 @@ public class SearchPropertiesResponderTest {
     request.addInput(PAGE_TYPE_ATTRIBUTE, TEST.toString());
 
     String content = invokeResponder(request);
-    String[] titles = { "Page", TEST.toString(), "PageOne"};
+    String[] titles = { TEST.toString(), "PageOne"};
 
     assertOutputHasRowWithLink(content, titles);
 
@@ -69,7 +69,7 @@ public class SearchPropertiesResponderTest {
     content = invokeResponder(request);
 
     assertHasRegexp("result for your search", content);
-    String[] titles1 = { "Page", TEST.toString(), "Tags", "PageOne" };
+    String[] titles1 = { TEST.toString(), "PageOne" };
     assertOutputHasRowWithLink(content, titles1);
     assertOutputHasRowWithLabels("filter1,filter2");
   }
@@ -80,7 +80,7 @@ public class SearchPropertiesResponderTest {
     request.addInput(LEGACY_PAGE_TYPE_ATTRIBUTE, TEST.toString());
 
     String content = invokeResponder(request);
-    String[] titles = { "Page", TEST.toString(), "PageOne"};
+    String[] titles = { TEST.toString(), "PageOne"};
 
     assertOutputHasRowWithLink(content, titles);
   }
@@ -176,7 +176,7 @@ public class SearchPropertiesResponderTest {
     request.addInput(PAGE_TYPE_ATTRIBUTE, "Test,Suite");
 
     String content = invokeResponder(request);
-    String[] titles = { "Page", TEST.toString(), "PageOne" };
+    String[] titles = { TEST.toString(), "PageOne" };
 
     assertOutputHasRowWithLink(content, titles);
 
@@ -185,7 +185,7 @@ public class SearchPropertiesResponderTest {
     content = invokeResponder(request);
 
     assertHasRegexp("result for your search", content);
-    String[] titles1 = { "Page", TEST.toString(), "Tags", "PageOne" };
+    String[] titles1 = { TEST.toString(), "PageOne" };
     assertOutputHasRowWithLink(content, titles1);
     assertOutputHasRowWithLabels(content, "filter1,filter2");
   }
@@ -196,7 +196,7 @@ public class SearchPropertiesResponderTest {
     request.addInput(PAGE_TYPE_ATTRIBUTE, "Test,Suite");
 
     String content = invokeResponder(request);
-    String[] titles = { "Page", TEST.toString(), "ObsoletePage" };
+    String[] titles = { TEST.toString(), "ObsoletePage" };
 
     assertOutputHasRowWithLink(content, titles);
 

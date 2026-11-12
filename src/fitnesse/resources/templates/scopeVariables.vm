@@ -3,9 +3,9 @@
 <table id="definedVariables" class="dirListing">
  <thead>
   <tr>
-   <th><a href="javascript:void(tableSorter.sort(0));">Variable name</a></th>
-   <th><a href="javascript:void(tableSorter.sort(1));">Variable value</a></th>
-   <th><a href="javascript:void(tableSorter.sort(2));">Variable location</a></th>
+   <th>Variable name</th>
+   <th>Variable value</th>
+   <th>Variable location</th>
   </tr>
  </thead>
  <tbody>
@@ -18,10 +18,6 @@
   #end
  </tbody>
 </table>
-<script src="/files/fitnesse/javascript/clientSideSort.js"> </script>
-<script language="javascript">
- tableSorter = new TableSorter('definedVariables', new DateParser(/^(\w+) (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec) (\d+) (\d+).(\d+).(\d+) (\w+) (\d+)$/,8,2,3,4,5,6));
-</script>
 #else
 <h2>There are no variables defined for page: $pageTitle.Title</h2>
 #end

@@ -2,18 +2,10 @@
 <table id="searchResultsTable" class="dirListing">
  <thead>
   <tr>
-   <th>
-	<a href="javascript:void(tableSorter.sort(0));">Type</a>
-   </th>
-   <th>
-	<a href="javascript:void(tableSorter.sort(1));">Page</a>
-   </th>
-   <th>
-	<a href="javascript:void(tableSorter.sort(2));">Tags</a>
-   </th>
-   <th>
-	<a href="javascript:void(tableSorter.sort(3, 'date'));">LastModified</a>
-   </th>
+   <th>Type</th>
+   <th>Page</th>
+   <th>Tags</th>
+   <th>LastModified</th>
   </tr>
  </thead>
  <tbody>
@@ -45,11 +37,6 @@
 
  </tbody>
 </table>
-
-<script src="/files/fitnesse/javascript/clientSideSort.js"> </script>
-<script language="javascript">
- tableSorter = new TableSorter('searchResultsTable', new DateParser(/^(\w+) (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec) (\d+) (\d+).(\d+).(\d+) (\w+) (\d+)$/,8,2,3,4,5,6));
-</script>
 
 <fieldset>
  <a class="button" href="$viewLocation">Back</a>

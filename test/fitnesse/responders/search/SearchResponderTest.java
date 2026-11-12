@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import static util.RegexTestCase.assertDoesntHaveRegexp;
 import static util.RegexTestCase.assertHasRegexp;
+import static util.RegexTestCase.assertNotSubString;
 import static util.RegexTestCase.assertSubString;
 
 public class SearchResponderTest {
@@ -133,25 +134,26 @@ public class SearchResponderTest {
   public void testTableSorterScript() throws Exception {
     String content = getResponseContentUsingSearchString("something");
     // test only small part, since output is chunked
-    assertSubString("tableSorter = new TableSorter('searchResultsTable'", content); //, new DateParser(/^(\\w+) (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec) (\\d+) (\\d+).(\\d+).(\\d+) (\\w+) (\\d+)$/,8,2,3,4,5,6));", content);
+    assertNotSubString("tableSorter", content);
   }
 
   @Test
   public void testClientSideSortScript() throws Exception {
     String content = getResponseContentUsingSearchString("something");
-    assertHasRegexp("<script src=\"/files/fitnesse/javascript/clientSideSort.js\"> </script>", content);
+    assertNotSubString("clientSideSort.js", content);
   }
 
   @Test
   public void testPageSortLink() throws Exception {
     String content = getResponseContentUsingSearchString("something");
-    assertSubString("<a href=\"javascript:void(tableSorter.sort(1));\">Page</a>", content);
+    assertSubString(">Page<", content);
+    assertNotSubString("tableSorter.sort", content);
   }
 
   @Test
   public void testLastModifiedSortLink() throws Exception {
     String content = getResponseContentUsingSearchString("something");
-    assertSubString("<a href=\"javascript:void(tableSorter.sort(3, 'date'));\">LastModified</a>", content);
+    assertSubString(">LastModified<", content);
   }
 
   @Test
