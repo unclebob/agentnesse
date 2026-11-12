@@ -18,13 +18,13 @@ import static org.junit.Assert.*;
 public class WikiFilePageTest {
 
   private FileSystem fileSystem;
-  private VersionsController versionsController;
+  private WikiFiles versionsController;
   private WikiPage root;
 
   @Before
   public void setUp() throws Exception {
     fileSystem = new MemoryFileSystem();
-    versionsController = new SimpleFileVersionsController(fileSystem);
+    versionsController = new WikiFiles(fileSystem);
     root = new FileSystemPageFactory(fileSystem, versionsController).makePage(new File("root"), "root", null, new SystemVariableSource());
   }
 

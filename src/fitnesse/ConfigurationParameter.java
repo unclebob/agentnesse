@@ -37,8 +37,6 @@ public enum ConfigurationParameter {
   AUTHENTICATOR("Authenticator"),
   CUSTOM_COMPARATORS("CustomComparators"),
   CONTENT_FILTER("ContentFilter"),
-  VERSIONS_CONTROLLER_CLASS("VersionsController"),
-  VERSIONS_CONTROLLER_DAYS("VersionsController.days"),
   RECENT_CHANGES_CLASS("RecentChanges"),
   CONTEXT_ROOT("ContextRoot"),
   LOCALHOST_ONLY("LocalhostOnly"),

@@ -12,7 +12,7 @@ import fitnesse.socketservice.PlainServerSocketFactory;
 import fitnesse.wiki.RecentChangesWikiPage;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.fs.FileSystem;
-import fitnesse.wiki.fs.ZipFileVersionsController;
+import fitnesse.wiki.fs.WikiFiles;
 import fitnesse.wiki.fs.InMemoryPage;
 import util.FileUtil;
 
@@ -89,7 +89,7 @@ public class FitNesseUtil {
               .withRootDirectoryName(rootDirectoryName)
               .withPort(port)
               .withAuthenticator(authenticator)
-              .withVersionsController(new ZipFileVersionsController())
+              .withVersionsController(new WikiFiles())
               .withRecentChanges(new RecentChangesWikiPage())
               .updatedWith(properties)
               .makeFitNesseContext();

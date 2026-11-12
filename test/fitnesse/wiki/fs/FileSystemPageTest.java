@@ -39,7 +39,7 @@ public class FileSystemPageTest {
     fileSystem.makeFile(new File("RooT", "content.txt"), "");
     Properties properties = new Properties();
     properties.setProperty("wiki.page.old.style", "true");
-    root = new FileSystemPageFactory(fileSystem, new SimpleFileVersionsController(fileSystem),
+    root = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem),
       FileSystemPageFactory.InnerFileSystemPageFactory.class).makePage(new File("RooT"), "RooT", null, new SystemVariableSource(properties));
   }
 
@@ -232,7 +232,7 @@ public class FileSystemPageTest {
   @Test
   public void testCanFindExistingPages() throws Exception {
     WikiPageUtil.addPage(root, PathParser.parse("FrontPage"), "front page");
-    WikiPage newRoot = new FileSystemPageFactory(fileSystem, new SimpleFileVersionsController(fileSystem)).makePage(new File("RooT"), "RooT", null, new SystemVariableSource());
+    WikiPage newRoot = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem)).makePage(new File("RooT"), "RooT", null, new SystemVariableSource());
     assertNotNull(newRoot.getChildPage("FrontPage"));
   }
 

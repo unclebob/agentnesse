@@ -25,3 +25,11 @@ ExecutionLogResponder
 PurgeHistoryResponder
 HistoryComparerResponder
 SuiteOverviewResponder
+
+ZipFileVersionsController
+SimpleFileVersionsController
+MemoryVersionsController
+VersionSelectionResponder
+VersionResponder
+RollbackResponder
+VersionComparerResponder

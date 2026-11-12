@@ -12,7 +12,7 @@ Slim only. Fit is gone.
 
 No test history. A run returns its results. Nothing is kept afterward.
 
-No page versions inside the tool. Pages are written in place. Git is the history. (Planned. The zip and in-memory version controllers are still in this tree.)
+No page versions inside the tool. Pages are written in place. Git is the history.
 
 Pages are Markdown files with front matter. (Planned. Pages are still FitNesse wiki text.)
 

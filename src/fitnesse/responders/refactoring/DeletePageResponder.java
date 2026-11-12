@@ -27,7 +27,7 @@ import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wiki.fs.WikiFilePage;
-import fitnesse.wiki.fs.ZipFileVersionsController;
+import fitnesse.wiki.fs.WikiFiles;
 
 public class DeletePageResponder implements SecureResponder {
   private SimpleResponse response;
@@ -56,23 +56,10 @@ public class DeletePageResponder implements SecureResponder {
       WikiPage parentOfPageToBeDeleted = context.getRootPage().getPageCrawler().getPage(path);
       if (parentOfPageToBeDeleted != null) {
         // Versions need to be deleted before the page gets removed
-        String deleteVersions = request.getInput("deleteVersions");
-        deleteVersions("yes".equalsIgnoreCase(deleteVersions), parentOfPageToBeDeleted);
         parentOfPageToBeDeleted.remove();
       }
       path.removeNameFromEnd();
       redirect(path, response);
-    }
-  }
-
-  private void deleteVersions(boolean deleteVersions, WikiPage pageToBeDeleted) {
-    if (deleteVersions && pageToBeDeleted instanceof WikiFilePage) {
-      ZipFileVersionsController versionsController = new ZipFileVersionsController();
-      File fileSystemPath = ((WikiFilePage) pageToBeDeleted).getFileSystemPath();
-      Collection<VersionInfo> history = versionsController.history(
-          Paths.get(fileSystemPath.getPath() + WikiFilePage.FILE_EXTENSION)
-              .toFile());
-      versionsController.deleteVersions(history.stream().collect(Collectors.toList()));
     }
   }
 

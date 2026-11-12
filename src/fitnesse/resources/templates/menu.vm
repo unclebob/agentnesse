@@ -40,9 +40,6 @@
             #if( $actions.withWhereUsed )
                 <li#group(1)><a class="dropdown-item" href="$localPath?whereUsed" accesskey="w">Where Used</a></li>
             #end
-            #if( $actions.withVersions )
-                <li#group(1)><a class="dropdown-item" href="$localPath?versions" accesskey="v">Versions</a></li>
-            #end
             #if( $actions.withRefactor )
                 <li#group(2)><a class="dropdown-item" href="$localPath?refactor&amp;type=rename">Rename</a></li>
                 <li><a class="dropdown-item" href="$localPath?refactor&amp;type=move">Move</a></li>

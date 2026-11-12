@@ -115,14 +115,12 @@ public class WikiPageResponderTest {
     SimpleResponse response = requestPage("NormalPage");
     assertSubString(">Edit</a>", response.getContent());
     assertSubString(">Search</a>", response.getContent());
-    assertSubString(">Versions</a>", response.getContent());
     assertNotSubString(">Suite</a>", response.getContent());
     assertNotSubString(">Test</a>", response.getContent());
 
     response = requestPage("NoButtonPage");
     assertNotSubString(">Edit</a>", response.getContent());
     assertNotSubString(">Search</a>", response.getContent());
-    assertNotSubString(">Versions</a>", response.getContent());
     assertNotSubString(">Suite</a>", response.getContent());
     assertNotSubString(">Test</a>", response.getContent());
   }

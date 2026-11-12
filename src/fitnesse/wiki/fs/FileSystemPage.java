@@ -28,13 +28,13 @@ public class FileSystemPage extends BaseWikitextPage implements FileBasedWikiPag
   static final String propertiesFilename = "properties.xml";
 
   private final File path;
-  private final transient VersionsController versionsController;
+  private final transient WikiFiles versionsController;
   private final transient SubWikiPageFactory subWikiPageFactory;
   private final String versionName;
   private transient PageData pageData;
 
   public FileSystemPage(final File path, final String name,
-                        final VersionsController versionsController, final SubWikiPageFactory subWikiPageFactory,
+                        final WikiFiles versionsController, final SubWikiPageFactory subWikiPageFactory,
                         final VariableSource variableSource) {
     super(name, variableSource);
     this.path = path;
@@ -53,7 +53,7 @@ public class FileSystemPage extends BaseWikitextPage implements FileBasedWikiPag
   }
 
   protected FileSystemPage(final File path, final String name, final WikiPage parent, final String versionName,
-                         final VersionsController versionsController, final SubWikiPageFactory subWikiPageFactory,
+                         final WikiFiles versionsController, final SubWikiPageFactory subWikiPageFactory,
                          final VariableSource variableSource) {
     super(name, parent, variableSource);
     this.path = path;
@@ -171,13 +171,7 @@ public class FileSystemPage extends BaseWikitextPage implements FileBasedWikiPag
 
   @Override
   public WikiPage getVersion(String versionName) {
-    // Just assert the version is valid
-    try {
-      versionsController.getRevisionData(versionName, contentFile(), propertiesFile());
-    } catch (IOException e) {
-      throw new WikiPageLoadException(format("Could not load version %s for page at %s", versionName, path.getPath()), e);
-    }
-    return new FileSystemPage(this, versionName);
+    throw new WikiPageLoadException("Page versions are not kept: " + versionName);
   }
 
   @Override

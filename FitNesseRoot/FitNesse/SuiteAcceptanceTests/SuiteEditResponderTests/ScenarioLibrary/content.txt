@@ -24,9 +24,6 @@
 !|scenario|it's last modified by should be|user|
 |check|last modified of page|$IT|@user|
 
-!|scenario|it's versions should contain|content|
-|page|$IT?versions|should contain|@content|
-
 
 
 

@@ -31,9 +31,6 @@ import fitnesse.responders.run.TestResponder;
 import fitnesse.responders.search.SearchPropertiesResponder;
 import fitnesse.responders.search.SearchResponder;
 import fitnesse.responders.search.WhereUsedResponder;
-import fitnesse.responders.versions.RollbackResponder;
-import fitnesse.responders.versions.VersionResponder;
-import fitnesse.responders.versions.VersionSelectionResponder;
 import org.junit.Before;
 import org.junit.Test;
 import util.FileUtil;
@@ -145,21 +142,6 @@ public class ResponderFactoryTest {
   @Test
   public void testSerializedPageResponder() throws Exception {
     assertResponderTypeMatchesInput("proxy", SerializedPageResponder.class);
-  }
-
-  @Test
-  public void testVersionSelectionResponder() throws Exception {
-    assertResponderTypeMatchesInput("versions", VersionSelectionResponder.class);
-  }
-
-  @Test
-  public void testVersionResponder() throws Exception {
-    assertResponderTypeMatchesInput("viewVersion", VersionResponder.class);
-  }
-
-  @Test
-  public void testRollbackResponder() throws Exception {
-    assertResponderTypeMatchesInput("rollback", RollbackResponder.class);
   }
 
   @Test

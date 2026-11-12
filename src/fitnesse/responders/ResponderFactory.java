@@ -34,10 +34,6 @@ import fitnesse.responders.run.TestResponder;
 import fitnesse.responders.search.SearchPropertiesResponder;
 import fitnesse.responders.search.SearchResponder;
 import fitnesse.responders.search.WhereUsedResponder;
-import fitnesse.responders.versions.RollbackResponder;
-import fitnesse.responders.versions.VersionComparerResponder;
-import fitnesse.responders.versions.VersionResponder;
-import fitnesse.responders.versions.VersionSelectionResponder;
 import fitnesse.wiki.PathParser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,9 +66,6 @@ public class ResponderFactory {
     addResponder("test", TestResponder.class);
     addResponder("suite", SuiteResponder.class);
     addResponder("proxy", SerializedPageResponder.class);
-    addResponder("versions", VersionSelectionResponder.class);
-    addResponder("viewVersion", VersionResponder.class);
-    addResponder("rollback", RollbackResponder.class);
     addResponder("names", NameWikiPageResponder.class);
     addResponder("properties", PropertiesResponder.class);
     addResponder("saveProperties", SavePropertiesResponder.class);
@@ -106,7 +99,6 @@ public class ResponderFactory {
     addResponder("packet", PacketResponder.class);
     addResponder("addChild", AddChildPageResponder.class);
     addResponder("replace", SearchReplaceResponder.class);
-    addResponder("compareVersions", VersionComparerResponder.class);
     addResponder("instruction", InstructionResponder.class);
     addResponder("publish", PublishResponder.class);
     filterMap = new HashMap<>();

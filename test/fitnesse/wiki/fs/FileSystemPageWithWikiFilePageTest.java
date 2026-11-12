@@ -21,7 +21,7 @@ public class FileSystemPageWithWikiFilePageTest {
   public void setUp() throws Exception {
     FileSystem fileSystem = new MemoryFileSystem();
     fileSystem.makeFile(new File("RooT", "content.txt"), "");
-    root = new FileSystemPageFactory(fileSystem, new SimpleFileVersionsController(fileSystem)).makePage(new File("RooT"), "RooT", null, new SystemVariableSource());
+    root = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem)).makePage(new File("RooT"), "RooT", null, new SystemVariableSource());
   }
 
   @Test

@@ -19,8 +19,7 @@ import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.WikiPageFactoryRegistry;
 import fitnesse.wiki.fs.FileSystemPageFactory;
-import fitnesse.wiki.fs.VersionsController;
-import fitnesse.wiki.fs.ZipFileVersionsController;
+import fitnesse.wiki.fs.WikiFiles;
 import fitnesse.wikitext.MarkUpSystems;
 import fitnesse.wikitext.parser.SymbolProvider;
 import fitnesse.wikitext.parser.decorator.SlimTableDefaultColoring;
@@ -36,8 +35,6 @@ import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
 import static fitnesse.ConfigurationParameter.RECENT_CHANGES_CLASS;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
 import static fitnesse.ConfigurationParameter.THEME;
-import static fitnesse.ConfigurationParameter.VERSIONS_CONTROLLER_CLASS;
-import static fitnesse.ConfigurationParameter.VERSIONS_CONTROLLER_DAYS;
 import static fitnesse.ConfigurationParameter.WIKI_PAGE_FACTORY_CLASS;
 
 /**
@@ -51,7 +48,6 @@ public class ContextConfigurator {
   private static final String DEFAULT_PATH = ".";
   public static final String DEFAULT_ROOT = "FitNesseRoot";
   public static final String DEFAULT_CONTEXT_ROOT = "/";
-  private static final int DEFAULT_VERSION_DAYS = 14;
   private static final int DEFAULT_COMMAND_PORT = 9123;
   public static final int DEFAULT_PORT = 80;
   public static final String DEFAULT_CONFIG_FILE = "plugins.properties";
@@ -67,7 +63,7 @@ public class ContextConfigurator {
   private String contextRoot;
   private Logger logger;
   private Authenticator authenticator;
-  private VersionsController versionsController;
+  private WikiFiles versionsController;
   private RecentChanges recentChanges;
   /** Others as name-value pairs: */
   private final Properties properties = new Properties();
@@ -87,7 +83,6 @@ public class ContextConfigurator {
       .withClassLoader(ClassUtils.getClassLoader())
       .withParameter(ROOT_DIRECTORY, DEFAULT_ROOT)
       .withParameter(CONTEXT_ROOT, DEFAULT_CONTEXT_ROOT)
-      .withParameter(VERSIONS_CONTROLLER_DAYS, Integer.toString(DEFAULT_VERSION_DAYS))
       .withParameter(CONFIG_FILE, DEFAULT_CONFIG_FILE);
   }
 
@@ -122,7 +117,7 @@ public class ContextConfigurator {
     }
 
     if (versionsController == null) {
-      versionsController = componentFactory.createComponent(VERSIONS_CONTROLLER_CLASS, ZipFileVersionsController.class);
+      versionsController = new WikiFiles();
     }
     if (recentChanges == null) {
       recentChanges = componentFactory.createComponent(RECENT_CHANGES_CLASS, RecentChangesWikiPage.class);
@@ -298,7 +293,7 @@ public class ContextConfigurator {
     return this;
   }
 
-  public ContextConfigurator withVersionsController(VersionsController versionsController) {
+  public ContextConfigurator withVersionsController(WikiFiles versionsController) {
     this.versionsController = versionsController;
     return this;
   }

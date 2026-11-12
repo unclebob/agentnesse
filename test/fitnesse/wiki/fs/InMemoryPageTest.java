@@ -26,37 +26,23 @@ public class InMemoryPageTest {
   }
 
   @Test
-  public void testVersions() throws Exception {
+  public void commitReplacesThePageInPlace() throws Exception {
     PageData data = page1.getData();
-    data.setContent("version 1");
-    page1.commit(data);
     data.setContent("version 2");
-    page1.commit(data);
+    VersionInfo saved = page1.commit(data);
 
-    Collection<VersionInfo> versions = page1.getVersions();
-
-    assertEquals(3, versions.size());
+    assertEquals("version 2", page1.getData().getContent());
+    assertEquals(0, page1.getVersions().size());
+    assertEquals(null, saved.getAuthor());
   }
 
   @Test
-  public void testVersionAuthor() throws Exception {
+  public void commitRecordsTheAuthorOnTheSave() throws Exception {
     PageData data = page1.getData();
-    Collection<VersionInfo> versions = page1.getVersions();
-    for (VersionInfo versionInfo : versions) {
-      assertEquals("", versionInfo.getAuthor());
-    }
-
     data.setAttribute(PageData.LAST_MODIFYING_USER, "Joe");
-    page1.commit(data);
-    page1.commit(data);
 
-    versions = page1.getVersions();
-    boolean joeFound = false;
-    for (VersionInfo versionInfo : versions) {
-      if ("Joe".equals(versionInfo.getAuthor()))
-        joeFound = true;
-    }
+    VersionInfo saved = page1.commit(data);
 
-    assertTrue(joeFound);
+    assertEquals("Joe", saved.getAuthor());
   }
 }

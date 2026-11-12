@@ -81,21 +81,6 @@ public class SerializedPageResponderTest {
   }
 
   @Test
-  public void testGetVersionOfPageData() throws Exception {
-    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("PageOne"), "some content");
-    VersionInfo commitRecord = page.commit(page.getData());
-
-    request.addInput("type", "meat");
-    request.addInput("version", commitRecord.getName());
-    request.setResource("PageOne");
-
-    Object obj = getObject(context, request);
-    assertEquals(PageData.class, obj.getClass());
-    PageData data = (PageData) obj;
-    assertEquals("some content", data.getContent());
-  }
-
-  @Test
   public void testGetPageHieratchyAsXml() throws Exception {
     WikiPageUtil.addPage(root, PathParser.parse("PageOne"), "");
     WikiPageUtil.addPage(root, PathParser.parse("PageOne.ChildOne"), "");

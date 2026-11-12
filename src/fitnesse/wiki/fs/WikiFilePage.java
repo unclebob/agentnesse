@@ -28,13 +28,13 @@ public class WikiFilePage extends BaseWikitextPage implements FileBasedWikiPage 
     FrontMatter.symbolType, SymbolType.Text});
 
   private final File path;
-  private final VersionsController versionsController;
+  private final WikiFiles versionsController;
   private final SubWikiPageFactory subWikiPageFactory;
   private final String versionName;
   private PageData pageData;
 
   protected WikiFilePage(final File path, final String name, final WikiPage parent,
-                      final String versionName, final VersionsController versionsController,
+                      final String versionName, final WikiFiles versionsController,
                       final SubWikiPageFactory subWikiPageFactory, final VariableSource variableSource) {
     super(name, parent, variableSource);
     this.path = path;
@@ -103,12 +103,7 @@ public class WikiFilePage extends BaseWikitextPage implements FileBasedWikiPage 
 
   @Override
   public WikiPage getVersion(final String versionName) {
-    try {
-      versionsController.getRevisionData(versionName, path);
-    } catch (IOException e) {
-      throw new WikiPageLoadException(format("Could not load version %s for page at %s", versionName, path.getPath()), e);
-    }
-    return new WikiFilePage(this, versionName);
+    throw new WikiPageLoadException("Page versions are not kept: " + versionName);
   }
 
   @Override

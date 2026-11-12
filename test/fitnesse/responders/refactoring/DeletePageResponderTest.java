@@ -26,7 +26,7 @@ import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wiki.fs.DiskFileSystem;
 import fitnesse.wiki.fs.FileSystemPageFactory;
 import fitnesse.wiki.fs.WikiFilePage;
-import fitnesse.wiki.fs.ZipFileVersionsController;
+import fitnesse.wiki.fs.WikiFiles;
 import org.junit.Test;
 
 public class DeletePageResponderTest extends ResponderTestCase {
@@ -78,75 +78,6 @@ public class DeletePageResponderTest extends ResponderTestCase {
     Response response = this.responder.makeResponse(context, this.request);
     assertEquals(303, response.getStatus());
     assertEquals("/FrontPage", response.getHeader("Location"));
-  }
-
-  @Test
-  public void testDeletePageWithDeleteVersionsYesDeletesZipFiles() throws Exception {
-    File rootPath = FitNesseUtil.createTemporaryFolder();
-    ZipFileVersionsController versionsController = new ZipFileVersionsController();
-    FileSystemPageFactory fileSystemPageFactory = new FileSystemPageFactory(new DiskFileSystem(), versionsController);
-    FitNesseContext fileSystemContext = FitNesseUtil.makeTestContext(fileSystemPageFactory, rootPath.getPath(), FitNesseUtil.base, FitNesseUtil.PORT);
-
-    try {
-      WikiPage fsRoot = fileSystemContext.getRootPage();
-      WikiFilePage pageToDelete = (WikiFilePage) WikiPageUtil.addPage(fsRoot, PathParser.parse("PageToDelete"), "content");
-      // Create a version of the page
-      pageToDelete.commit(pageToDelete.getData());
-
-      // Verify that the version exists before deletion
-      File pageWikiFile = new File(pageToDelete.getFileSystemPath().getPath() + WikiFilePage.FILE_EXTENSION);
-      File zipDir = pageWikiFile.getParentFile();
-      File[] zipsBefore = zipDir.listFiles(f -> f.getName().endsWith(".zip"));
-      assertTrue("Versions should exist before page deletion", zipsBefore != null && zipsBefore.length > 0);
-
-      MockRequest request = new MockRequest();
-      request.setResource("PageToDelete");
-      request.addInput("confirmed", "yes");
-      request.addInput("deleteVersions", "yes");
-      new DeletePageResponder().makeResponse(fileSystemContext, request);
-
-      // Verify that the version does not exist after deletion
-      File[] zipsAfter = zipDir.listFiles(f -> f.getName().endsWith(".zip"));
-      assertTrue("Versions should not exist anymore after page deletion",
-          zipsAfter == null || zipsAfter.length == 0);
-    } finally {
-      FitNesseUtil.destroyTestContext(fileSystemContext);
-    }
-  }
-
-  @Test
-  public void testDeletePageWithoutDeleteVersionsKeepsZipFiles() throws Exception {
-    File rootPath = FitNesseUtil.createTemporaryFolder();
-    ZipFileVersionsController versionsController = new ZipFileVersionsController();
-    FileSystemPageFactory fileSystemPageFactory = new FileSystemPageFactory(new DiskFileSystem(), versionsController);
-    FitNesseContext fileSystemContext = FitNesseUtil.makeTestContext(fileSystemPageFactory, rootPath.getPath(), FitNesseUtil.base, FitNesseUtil.PORT);
-
-    try {
-      WikiPage fsRoot = fileSystemContext.getRootPage();
-      WikiFilePage pageToDelete = (WikiFilePage) WikiPageUtil.addPage(fsRoot, PathParser.parse("PageToDelete"), "content");
-      // Create a version of the page
-      pageToDelete.commit(pageToDelete.getData());
-
-      // Verify that the version exists before deletion
-      File pageWikiFile = new File(pageToDelete.getFileSystemPath().getPath() + WikiFilePage.FILE_EXTENSION);
-      File zipDir = pageWikiFile.getParentFile();
-      File[] zipsBefore = zipDir.listFiles(f -> f.getName().endsWith(".zip"));
-      assertTrue("Versions should exist before page deletion", zipsBefore != null && zipsBefore.length > 0);
-      int zipCountBefore = zipsBefore.length;
-
-      MockRequest request = new MockRequest();
-      request.setResource("PageToDelete");
-      request.addInput("confirmed", "yes");
-      // deleteVersions is not set so Versions should be kept
-      new DeletePageResponder().makeResponse(fileSystemContext, request);
-
-      // Verify that the version still exists after deletion
-      File[] zipsAfter = zipDir.listFiles(f -> f.getName().endsWith(".zip"));
-      assertNotNull("Versions should still exist after page deletion", zipsAfter);
-      assertEquals("Number of ZIP version files should remain unchanged", zipCountBefore, zipsAfter.length);
-    } finally {
-      FitNesseUtil.destroyTestContext(fileSystemContext);
-    }
   }
 
   @Override

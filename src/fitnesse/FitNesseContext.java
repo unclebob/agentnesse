@@ -16,7 +16,7 @@ import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.UrlPathVariableSource;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
-import fitnesse.wiki.fs.VersionsController;
+import fitnesse.wiki.fs.WikiFiles;
 import fitnesse.wikitext.VariableSource;
 
 import java.io.File;
@@ -51,7 +51,7 @@ public class FitNesseContext {
   public final PageFactory pageFactory;
 
   public final SystemVariableSource variableSource;
-  public final VersionsController versionsController;
+  public final WikiFiles versionsController;
   public final RecentChanges recentChanges;
   public final Logger logger;
   public final Authenticator authenticator;
@@ -59,7 +59,7 @@ public class FitNesseContext {
 
   protected FitNesseContext(FitNesseVersion version, WikiPageFactory wikiPageFactory, String rootPath,
                             String rootDirectoryName, int maximumWorkers, String contextRoot,
-                            VersionsController versionsController, RecentChanges recentChanges, int port,
+                            WikiFiles versionsController, RecentChanges recentChanges, int port,
                             Authenticator authenticator, Logger logger,
                             TestSystemFactory testSystemFactory, TestSystemListener testSystemListener,
                             FormatterFactory formatterFactory,

@@ -261,7 +261,6 @@ def coverageFloors = [
   'fitnesse/responders/refactoring': [line: 0.85, branch: 0.75],
   'fitnesse/responders/run': [line: 0.77, branch: 0.75],
   'fitnesse/responders/search': [line: 0.91, branch: 0.82],
-  'fitnesse/responders/versions': [line: 0.88, branch: 0.64],
   'fitnesse/slim': [line: 0.79, branch: 0.77],
   'fitnesse/slim/converters': [line: 0.94, branch: 0.95],
   'fitnesse/slim/converters/beans': [line: 0.73, branch: 0.83],
@@ -357,7 +356,7 @@ task run(type: JavaExec) {
   dependsOn classes, copyRuntimeLibs
   classpath = sourceSets.main.runtimeClasspath
   mainClass = "fitnesseMain.FitNesseMain"
-  args "-p", "8001", "-e", "0"
+  args "-p", "8001"
 }
 
 jar {

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import fitnesse.ConfigurationParameter;
-import fitnesse.components.ComponentFactory;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
@@ -24,28 +22,23 @@ import fitnesse.wikitext.VariableSource;
  */
 public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRegistry {
   private final FileSystem fileSystem;
-  private final VersionsController versionsController;
+  private final WikiFiles versionsController;
   private final List<WikiPageFactory> wikiPageFactories = new ArrayList<>();
   private final WikiPageFactory fallbackPageFactory;
 
   public FileSystemPageFactory() {
-    this(new DiskFileSystem(), new ZipFileVersionsController());
+    this(new DiskFileSystem(), new WikiFiles());
   }
 
   public FileSystemPageFactory(Properties properties) {
-    this(new ComponentFactory(properties));
+    this();
   }
 
-  public FileSystemPageFactory(ComponentFactory componentFactory) {
-    this(new DiskFileSystem(), componentFactory.createComponent(
-      ConfigurationParameter.VERSIONS_CONTROLLER_CLASS, ZipFileVersionsController.class));
-  }
-
-  public FileSystemPageFactory(FileSystem fileSystem, VersionsController versionsController) {
+  public FileSystemPageFactory(FileSystem fileSystem, WikiFiles versionsController) {
     this(fileSystem, versionsController, RootWikiFilePageFactory.class);
   }
 
-  protected FileSystemPageFactory(FileSystem fileSystem, VersionsController versionsController, Class<? extends WikiPageFactory> fallbackPageFactoryClass) {
+  protected FileSystemPageFactory(FileSystem fileSystem, WikiFiles versionsController, Class<? extends WikiPageFactory> fallbackPageFactoryClass) {
     this.fileSystem = fileSystem;
     this.versionsController = versionsController;
     this.fallbackPageFactory = instantiateFallbackPageFactory(fallbackPageFactoryClass);
@@ -102,7 +95,7 @@ public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRe
     return fileSystem.isDirectory(path) && PathParser.isSingleWikiWord(path.getName());
   }
 
-  VersionsController getVersionsController() {
+  WikiFiles getVersionsController() {
     return versionsController;
   }
 

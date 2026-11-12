@@ -46,6 +46,6 @@ public class InMemoryPage {
   }
 
   public static WikiPageFactory newInstance(FileSystem fileSystem) {
-    return new FileSystemPageFactory(fileSystem, new MemoryVersionsController(fileSystem));
+    return new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem));
   }
 }

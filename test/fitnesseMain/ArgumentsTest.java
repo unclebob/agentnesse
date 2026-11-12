@@ -39,7 +39,7 @@ public class ArgumentsTest {
   @Test
   public void argumentsCanBeRepresentedByProperties() throws IOException, PluginException {
     Arguments args = new Arguments("-v", "-p", "81", "-d", "directory", "-r", "root", "-b", "someFile.txt",
-              "-l", "myLogDirectory", "-o", "-e", "22", "-f", "fitnesse.properties", "-i", "-c", "SomeCommand", "-a", "user:pass", "-lh", "-w", "42");
+              "-l", "myLogDirectory", "-o", "-f", "fitnesse.properties", "-i", "-c", "SomeCommand", "-a", "user:pass", "-lh", "-w", "42");
     Properties properties = args.update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
 
     assertEquals("verbose", properties.getProperty("LogLevel"));
@@ -49,7 +49,6 @@ public class ArgumentsTest {
     assertEquals("someFile.txt", properties.getProperty("RedirectOutput"));
     assertEquals("myLogDirectory", properties.getProperty("LogDirectory"));
     assertEquals("true", properties.getProperty("OmittingUpdates"));
-    assertEquals("22", properties.getProperty("VersionsController.days"));
     assertEquals("fitnesse.properties", properties.getProperty("ConfigFile"));
     assertEquals("true", properties.getProperty("InstallOnly"));
     assertEquals("SomeCommand", properties.getProperty("Command"));
@@ -70,7 +69,6 @@ public class ArgumentsTest {
     assertNull(properties.getProperty("RedirectOutput"));
     assertNull(properties.getProperty("LogDirectory"));
     assertNull(properties.getProperty("OmittingUpdates"));
-    assertNull(properties.getProperty("VersionsController.days"));
     assertNull(properties.getProperty("InstallOnly"));
     assertNull(properties.getProperty("Command"));
     assertNull(properties.getProperty("Credentials"));

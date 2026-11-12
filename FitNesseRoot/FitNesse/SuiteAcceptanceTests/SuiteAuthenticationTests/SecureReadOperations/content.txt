@@ -7,8 +7,6 @@
 |properties|
 |edit|
 |search|
-|versions|
-|viewVersion|
 |names|
 |executeSearchProperties|
 |whereUsed|

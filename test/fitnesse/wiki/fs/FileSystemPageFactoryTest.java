@@ -1,21 +1,13 @@
 package fitnesse.wiki.fs;
 
-import fitnesse.ConfigurationParameter;
-import fitnesse.components.ComponentFactory;
 import fitnesse.wiki.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Properties;
 
-import static fitnesse.ConfigurationParameter.VERSIONS_CONTROLLER_CLASS;
-import static fitnesse.ConfigurationParameter.WIKI_PAGE_FACTORY_CLASS;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 public class FileSystemPageFactoryTest {
   private FileSystem fileSystem;
@@ -25,20 +17,9 @@ public class FileSystemPageFactoryTest {
   @Before
   public void SetUp() throws Exception {
     fileSystem = new MemoryFileSystem();
-    fileSystemPageFactory = new FileSystemPageFactory(fileSystem, new ZipFileVersionsController());
+    fileSystemPageFactory = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem));
     fileSystem.makeFile(new File("./somepath/content.txt"), "");
     rootPage = fileSystemPageFactory.makePage(new File("./somepath"), "somepath", null, new SystemVariableSource());
-  }
-
-  @Test
-  public void getVersionControllerFromComponentFactoryWhenCreatedByComponentFactory() {
-    ComponentFactory c = new ComponentFactory(new Properties());
-
-    VersionsController vc = c.createComponent(VERSIONS_CONTROLLER_CLASS, ZipFileVersionsController.class);
-    FileSystemPageFactory f = c.createComponent(WIKI_PAGE_FACTORY_CLASS, FileSystemPageFactory.class);
-
-    assertSame("Did not use the version controller instance present in component factory",
-      vc, f.getVersionsController());
   }
 
   @Test
@@ -122,75 +103,6 @@ public class FileSystemPageFactoryTest {
     WikiPage child = page.getChildren().get(0);
     assertEquals(ExternalSuitePage.class, child.getClass());
     assertEquals("subsuite", child.getName());
-  }
-
-  @Test
-  public void testShouldUseZipFileRevisionControllerAsDefault() throws Exception {
-    VersionsController defaultRevisionController = fileSystemPageFactory.getVersionsController();
-    assertEquals(ZipFileVersionsController.class, defaultRevisionController.getClass());
-  }
-
-  @Test
-  public void testShouldUseSpecifiedRevisionController() throws Exception {
-    Properties testProperties = new Properties();
-    testProperties.setProperty(ConfigurationParameter.VERSIONS_CONTROLLER_CLASS.getKey(), NullVersionsController.class.getName());
-    fileSystemPageFactory = new FileSystemPageFactory(testProperties);
-
-    VersionsController defaultRevisionController = fileSystemPageFactory.getVersionsController();
-    assertEquals(NullVersionsController.class, defaultRevisionController.getClass());
-  }
-
-  @Test
-  public void testShouldUseSpecifiedRevisionControllerWithHistoryDepth() throws Exception {
-    Properties testProperties = new Properties();
-    testProperties.setProperty(ConfigurationParameter.VERSIONS_CONTROLLER_CLASS.getKey(), NullVersionsController.class.getName());
-    testProperties.setProperty(ConfigurationParameter.VERSIONS_CONTROLLER_DAYS.getKey(), "42");
-    fileSystemPageFactory = new FileSystemPageFactory(testProperties);
-
-    VersionsController defaultRevisionController = fileSystemPageFactory.getVersionsController();
-    assertEquals(NullVersionsController.class, defaultRevisionController.getClass());
-    assertEquals(42, ((NullVersionsController) defaultRevisionController).getHistoryDepth());
-  }
-
-  public static class NullVersionsController implements VersionsController {
-
-    private final int historyDepth;
-
-    public NullVersionsController(Properties properties) {
-      historyDepth = Integer.valueOf(properties.getProperty(ConfigurationParameter.VERSIONS_CONTROLLER_DAYS.getKey(), "0"));
-    }
-
-    public int getHistoryDepth() {
-      return historyDepth;
-    }
-
-    @Override
-    public FileVersion[] getRevisionData(final String label, final File... files) {
-      return null;
-    }
-
-    @Override
-    public Collection<VersionInfo> history(final File... files) {
-      return new HashSet<>();
-    }
-
-    @Override
-    public VersionInfo makeVersion(final FileVersion... fileVersions) {
-      return null;
-    }
-
-    @Override
-    public VersionInfo addDirectory(FileVersion filePath) {
-      return null;
-    }
-
-    @Override
-    public void rename(FileVersion fileVersion, File originalFile) {
-    }
-
-    @Override
-    public void delete(File... files) {
-    }
   }
 
 }

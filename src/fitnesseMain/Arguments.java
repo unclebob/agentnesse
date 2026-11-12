@@ -11,14 +11,13 @@ import static fitnesse.ContextConfigurator.*;
 public class Arguments {
 
   private final CommandLine commandLine = new CommandLine(
-          "[-v][-p port][-d dir][-r root][-l logDir][-f config][-e days][-o][-i][-a credentials][-c command][-b output][-lh][-w workers]");
+          "[-v][-p port][-d dir][-r root][-l logDir][-f config][-o][-i][-a credentials][-c command][-b output][-lh][-w workers]");
 
   private final String rootPath;
   private final Integer port;
   private final String rootDirectory;
   private final String logDirectory;
   private final boolean omitUpdate;
-  private final Integer daysTillVersionsExpire;
   private final String credentials;
   private final boolean installOnly;
   private final String command;
@@ -37,8 +36,6 @@ public class Arguments {
     this.rootPath = commandLine.getOptionArgument("d", "dir");
     this.rootDirectory = commandLine.getOptionArgument("r", "root");
     this.logDirectory = commandLine.getOptionArgument("l", "logDir");
-    final String days = commandLine.getOptionArgument("e", "days");
-    this.daysTillVersionsExpire = days != null ? Integer.valueOf(days) : null;
     this.credentials = commandLine.getOptionArgument("a", "credentials");
     this.command = commandLine.getOptionArgument("c", "command");
     this.output = commandLine.getOptionArgument("b", "output");
@@ -54,7 +51,7 @@ public class Arguments {
   static void printUsage() {
     ContextConfigurator defaults = ContextConfigurator.systemDefaults();
 
-    System.err.println("Usage: java -jar fitnesse.jar [-vpdrlfeoaicblh]");
+    System.err.println("Usage: java -jar fitnesse.jar [-vpdrlfoaicblh]");
     System.err.println("\t-p <port number> {" + DEFAULT_PORT + "}");
     System.err.println("\t-d <working directory> {" +
       defaults.get(ROOT_PATH) + "}");
@@ -63,8 +60,6 @@ public class Arguments {
     System.err.println("\t-l <log directory> {no logging}");
     System.err.println("\t-f <config properties file> {" +
       defaults.get(CONFIG_FILE) + "}");
-    System.err.println("\t-e <days> {" + defaults.get(VERSIONS_CONTROLLER_DAYS) +
-      "} Number of days before page versions expire");
     System.err.println("\t-o omit updates");
     System.err
       .println("\t-a {user:pwd | user-file-name} enable authentication.");
@@ -100,8 +95,6 @@ public class Arguments {
       result = result.withParameter(OUTPUT, output);
     if (logDirectory != null)
       result = result.withParameter(LOG_DIRECTORY, logDirectory);
-    if (daysTillVersionsExpire != null)
-      result = result.withParameter(VERSIONS_CONTROLLER_DAYS, daysTillVersionsExpire.toString());
     if (omitUpdate)
       result = result.withParameter(OMITTING_UPDATES, "true");
     if (installOnly)
