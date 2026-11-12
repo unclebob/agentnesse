@@ -8,7 +8,8 @@
 
 See ScriptLogin for a script.
 
-| decision:Division | numerator | denominator |
+| decision:Division | | |
 | --- | --- | --- |
-| quotient? | 10 | 2 |
-| quotient? | 5 | 2 |
+| numerator | denominator | quotient? |
+| 10 | 2 | 5.0 |
+| 5 | 2 | 2.5 |

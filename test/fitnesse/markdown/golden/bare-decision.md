@@ -1,3 +1,4 @@
-| Division | numerator |
+| Division | |
 | --- | --- |
-| 10 | 2 |
+| numerator | quotient? |
+| 10 | 5.0 |

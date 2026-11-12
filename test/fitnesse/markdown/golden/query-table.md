@@ -1,3 +1,4 @@
-| query:Employees | name |
+| query:Employees | |
 | --- | --- |
-| hired? | Bob |
+| name | hired |
+| Bob | 10-Oct-1974 |

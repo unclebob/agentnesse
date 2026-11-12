@@ -15,6 +15,7 @@ Run the sibling SetUp page first.
 include SetUp
 ```
 
-| query:Employees | name | hired |
-| --- | --- | --- |
-| hired before? | Bob | 10-Oct-1974 |
+| query:Employees | |
+| --- | --- |
+| name | hired |
+| Bob | 10-Oct-1974 |

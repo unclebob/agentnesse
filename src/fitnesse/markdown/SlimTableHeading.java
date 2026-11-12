@@ -27,23 +27,25 @@ public final class SlimTableHeading {
 
   private final String type;
   private final String name;
+  private final String error;
 
-  private SlimTableHeading(String type, String name) {
+  private SlimTableHeading(String type, String name, String error) {
     this.type = type;
     this.name = name;
+    this.error = error;
   }
 
   public static SlimTableHeading parse(String cell) {
     String text = cell == null ? "" : cell.trim();
     int colon = text.indexOf(':');
     if (colon >= 0) {
-      return new SlimTableHeading(css(text.substring(0, colon)), text.substring(colon + 1).trim());
+      return heading(text.substring(0, colon), text.substring(colon + 1).trim());
     }
     String known = TYPES.get(text.toLowerCase(Locale.ROOT));
     if (known != null) {
-      return new SlimTableHeading(known, "");
+      return new SlimTableHeading(known, "", null);
     }
-    return new SlimTableHeading("decision", text);
+    return new SlimTableHeading("decision", text, null);
   }
 
   public String type() {
@@ -54,8 +56,16 @@ public final class SlimTableHeading {
     return name;
   }
 
-  private static String css(String prefix) {
-    String known = TYPES.get(prefix.trim().toLowerCase(Locale.ROOT));
-    return known != null ? known : prefix.trim().toLowerCase(Locale.ROOT).replace(' ', '-');
+  public String error() {
+    return error;
   }
+
+  private static SlimTableHeading heading(String prefix, String name) {
+    String known = TYPES.get(prefix.trim().toLowerCase(Locale.ROOT));
+    if (known == null) {
+      return new SlimTableHeading("error", name, "unknown table type \"" + prefix.trim() + "\"");
+    }
+    return new SlimTableHeading(known, name, null);
+  }
+
 }
