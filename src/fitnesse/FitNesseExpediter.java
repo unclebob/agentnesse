@@ -78,9 +78,7 @@ public class FitNesseExpediter implements ResponseSender, Runnable {
   }
 
   private Request makeRequest() {
-    Request request = new Request(input);
-    request.setContextRoot(context.contextRoot);
-    return request;
+    return new Request(input);
   }
 
   private void sendResponse(Response response) throws IOException {
@@ -103,12 +101,7 @@ public class FitNesseExpediter implements ResponseSender, Runnable {
       }
 
       if (request.hasBeenParsed()) {
-        if (context.contextRoot.equals(request.getRequestUri() + "/")) {
-          response = new SimpleResponse();
-          response.redirect(context.contextRoot, "");
-        } else {
-          response = createGoodResponse(request);
-        }
+        response = createGoodResponse(request);
       } else {
         response = reportError(request, 400, "The request could not be parsed.");
       }

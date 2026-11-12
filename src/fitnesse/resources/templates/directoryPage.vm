@@ -17,7 +17,7 @@
   <tr >
    <td>
 	<a href="#escape($fileInfo.name)#if( $fileInfo.directory )/#end">
-	 #if( $fileInfo.directory )<img src="${contextRoot}files/fitnesse/images/folder.gif" alt="folder"/>#end #prettyPrint( $fileInfo.name )#if( $fileInfo.directory )/#end
+	 #if( $fileInfo.directory )<img src="/files/fitnesse/images/folder.gif" alt="folder"/>#end #prettyPrint( $fileInfo.name )#if( $fileInfo.directory )/#end
 	</a>
    </td>
    <td>$fileInfo.size</td>

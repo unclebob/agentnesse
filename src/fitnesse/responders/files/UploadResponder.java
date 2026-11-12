@@ -78,7 +78,7 @@ public class UploadResponder implements Responder {
       });
     }
 
-    response.redirect(context.contextRoot, request.getResource());
+    response.redirect(request.getResource());
     return response;
   }
 

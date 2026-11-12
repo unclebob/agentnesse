@@ -104,7 +104,7 @@
  </form>
 
 
-<script src="${contextRoot}files/fitnesse/javascript/jquery.tagsinput.js" type="text/javascript"></script>
+<script src="/files/fitnesse/javascript/jquery.tagsinput.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function () {
   /* Tags */

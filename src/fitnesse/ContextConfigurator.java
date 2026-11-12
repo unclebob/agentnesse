@@ -18,7 +18,6 @@ import java.util.Properties;
 
 import static fitnesse.ConfigurationParameter.COMMAND;
 import static fitnesse.ConfigurationParameter.CONFIG_FILE;
-import static fitnesse.ConfigurationParameter.CONTEXT_ROOT;
 import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
 import static fitnesse.ConfigurationParameter.THEME;
@@ -30,7 +29,6 @@ import static fitnesse.ConfigurationParameter.THEME;
 public class ContextConfigurator {
   private static final String DEFAULT_PATH = ".";
   public static final String DEFAULT_ROOT = "FitNesseRoot";
-  public static final String DEFAULT_CONTEXT_ROOT = "/";
   private static final int DEFAULT_COMMAND_PORT = 9123;
   public static final int DEFAULT_PORT = 80;
   public static final String DEFAULT_CONFIG_FILE = "plugins.properties";
@@ -43,7 +41,6 @@ public class ContextConfigurator {
   private String rootPath = DEFAULT_PATH;
   private String rootDirectoryName = DEFAULT_ROOT;
   private Integer maximumWorkers = DEFAULT_MAXIMUM_WORKERS;
-  private String contextRoot;
   private Logger logger;
   private WikiFiles versionsController;
   /** Others as name-value pairs: */
@@ -63,7 +60,6 @@ public class ContextConfigurator {
       .withRootPath(DEFAULT_PATH)
       .withClassLoader(ClassUtils.getClassLoader())
       .withParameter(ROOT_DIRECTORY, DEFAULT_ROOT)
-      .withParameter(CONTEXT_ROOT, DEFAULT_CONTEXT_ROOT)
       .withParameter(CONFIG_FILE, DEFAULT_CONFIG_FILE);
   }
 
@@ -122,7 +118,6 @@ public class ContextConfigurator {
           rootPath,
           rootDirectoryName,
           maximumWorkers,
-          contextRoot,
           versionsController,
           port,
           logger,
@@ -192,15 +187,6 @@ public class ContextConfigurator {
       case ROOT_DIRECTORY:
         rootDirectoryName = value;
         break;
-      case CONTEXT_ROOT:
-        contextRoot = value;
-        if (!contextRoot.startsWith("/")) {
-          contextRoot = "/" + contextRoot;
-        }
-        if (!contextRoot.endsWith("/")) {
-          contextRoot = contextRoot + "/";
-        }
-        break;
       case PORT:
         port = Integer.parseInt(value);
         break;
@@ -245,8 +231,6 @@ public class ContextConfigurator {
         return rootPath;
       case ROOT_DIRECTORY:
         return rootDirectoryName;
-      case CONTEXT_ROOT:
-        return contextRoot;
       case PORT:
         return String.valueOf(port);
       case MAXIMUM_WORKERS:

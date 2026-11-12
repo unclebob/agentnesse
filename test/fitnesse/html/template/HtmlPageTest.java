@@ -25,7 +25,7 @@ public class HtmlPageTest {
     Properties properties = new Properties();
     properties.setProperty(ConfigurationParameter.THEME.getKey(), "fitnesse_straight");
     FitNesseContext context = FitNesseUtil.makeTestContext(properties);
-    page = new HtmlPage(context.pageFactory.getVelocityEngine(), "skeleton.vm", "fitnesse_theme", "/");
+    page = new HtmlPage(context.pageFactory.getVelocityEngine(), "skeleton.vm", "fitnesse_theme");
     html = page.html(null);
   }
 

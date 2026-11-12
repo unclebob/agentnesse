@@ -79,27 +79,11 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void canSetContextRoot() throws IOException {
-    ContextConfigurator configurator = ContextConfigurator.empty();
+  public void aFormerMountPathStaysPartOfThePageName() throws Exception {
+    fitnesse.http.MockRequest request = new fitnesse.http.MockRequest();
+    request.parseRequestUri("/fitnesse/FrontPage");
 
-    configurator.withParameter(ConfigurationParameter.ROOT_PATH, ".");
-    configurator.withParameter(ConfigurationParameter.CONTEXT_ROOT, "fitnesse/");
-
-    String contextRoot = configurator.makeFitNesseContext().contextRoot;
-
-    assertThat(contextRoot, is("/fitnesse/"));
-  }
-
-  @Test
-  public void shouldSetTrailingSlashOnContextRoot() throws IOException {
-    ContextConfigurator configurator = ContextConfigurator.empty();
-
-    configurator.withParameter(ConfigurationParameter.ROOT_PATH, ".");
-    configurator.withParameter(ConfigurationParameter.CONTEXT_ROOT, "fitnesse");
-
-    String contextRoot = configurator.makeFitNesseContext().contextRoot;
-
-    assertThat(contextRoot, is("/fitnesse/"));
+    assertThat(request.getResource(), is("fitnesse/FrontPage"));
   }
 
   @Test

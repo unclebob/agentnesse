@@ -38,7 +38,6 @@ public class FitNesseContext {
   public final String rootPath;
   private final String rootDirectoryName;
   public final Integer maximumWorkers;
-  public final String contextRoot;
   public final ResponderFactory responderFactory;
   public final String theme;
   public final PageFactory pageFactory;
@@ -49,7 +48,7 @@ public class FitNesseContext {
   private final Properties properties;
 
   protected FitNesseContext(FitNesseVersion version, WikiPageFactory wikiPageFactory, String rootPath,
-                            String rootDirectoryName, int maximumWorkers, String contextRoot,
+                            String rootDirectoryName, int maximumWorkers,
                             WikiFiles versionsController, int port,
                             Logger logger,
                             TestSystemFactory testSystemFactory, TestSystemListener testSystemListener,
@@ -63,7 +62,6 @@ public class FitNesseContext {
     this.rootPath = rootPath;
     this.rootDirectoryName = rootDirectoryName;
     this.maximumWorkers = maximumWorkers;
-    this.contextRoot = contextRoot;
     this.versionsController = versionsController;
     this.port = port;
     this.logger = logger;

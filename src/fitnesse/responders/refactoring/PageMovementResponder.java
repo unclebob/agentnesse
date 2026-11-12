@@ -57,7 +57,7 @@ public abstract class PageMovementResponder implements Responder {
     execute();
 
     SimpleResponse response = new SimpleResponse();
-    response.redirect(context.contextRoot, createRedirectionUrl(newParentPage, getNewPageName()));
+    response.redirect(createRedirectionUrl(newParentPage, getNewPageName()));
 
     return response;
   }

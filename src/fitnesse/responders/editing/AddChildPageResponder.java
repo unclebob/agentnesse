@@ -64,7 +64,7 @@ public class AddChildPageResponder implements Responder {
     createChildPage(context);
     SimpleResponse response = new SimpleResponse();
     WikiPagePath fullPathOfCurrentPage = currentPage.getFullPath();
-    response.redirect(context.contextRoot, fullPathOfCurrentPage.toString());
+    response.redirect(fullPathOfCurrentPage.toString());
     return response;
   }
 

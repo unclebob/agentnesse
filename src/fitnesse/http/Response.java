@@ -149,9 +149,15 @@ public abstract class Response {
     contentType = format.getContentType();
   }
 
-  public void redirect(String contextRoot, String location) {
+  public void redirect(String location) {
     status = 303;
-    addHeader("Location", contextRoot + location);
+    if (location == null || location.isEmpty()) {
+      addHeader("Location", "/");
+    } else if (location.startsWith("/") || location.contains("://")) {
+      addHeader("Location", location);
+    } else {
+      addHeader("Location", "/" + location);
+    }
   }
 
   public void notModified(Date lastModified, Date date) {

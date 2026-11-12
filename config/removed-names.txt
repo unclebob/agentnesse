@@ -84,3 +84,6 @@ CustomScriptTableRenderingPlugin
 PluginsClassLoaderFactory
 
 WikiContentUpdater
+
+ContextRoot
+setContextRoot

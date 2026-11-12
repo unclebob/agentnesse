@@ -39,7 +39,7 @@ public class DeletePageResponder implements Responder {
     intializeResponse(request);
 
     if (shouldNotDelete())
-      response.redirect(context.contextRoot, WikiPageUtil.FRONT_PAGE);
+      response.redirect(WikiPageUtil.FRONT_PAGE);
     else
       tryToDeletePage(request);
 
@@ -74,9 +74,9 @@ public class DeletePageResponder implements Responder {
   private void redirect(final WikiPagePath path, final SimpleResponse response) {
     String location = PathParser.render(path);
     if (location == null || location.isEmpty()) {
-      response.redirect(context.contextRoot, "root");
+      response.redirect("root");
     } else {
-      response.redirect(context.contextRoot, location);
+      response.redirect(location);
     }
   }
 

@@ -36,7 +36,6 @@ public enum ConfigurationParameter {
   SLIM_TABLES("SlimTables"),
   AUTHENTICATOR("Authenticator"),
   CUSTOM_COMPARATORS("CustomComparators"),
-  CONTEXT_ROOT("ContextRoot"),
   LOCALHOST_ONLY("LocalhostOnly"),
   MAXIMUM_WORKERS("MaximumWorkers"),
   THEME("Theme");

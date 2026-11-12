@@ -46,7 +46,7 @@ class DirectoryResponder implements Responder {
 
   private Response setRedirectForDirectory(String queryString) {
     SimpleResponse simpleResponse = new SimpleResponse();
-    simpleResponse.redirect(context.contextRoot, resource + "/" + (queryString != null ? "?" + queryString : ""));
+    simpleResponse.redirect(resource + "/" + (queryString != null ? "?" + queryString : ""));
     return simpleResponse;
   }
 

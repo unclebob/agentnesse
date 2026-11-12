@@ -6,6 +6,7 @@ import fitnesse.http.MockRequest;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.ResponseParser;
+import fitnesse.http.SimpleResponse;
 import fitnesse.testutil.FitNesseUtil;
 import fitnesse.util.MockSocket;
 import fitnesse.wiki.WikiPage;
@@ -38,6 +39,23 @@ public class FitNesseExpediterTest {
     root.addChildPage("FrontPage");
     socket = new MockSocket();
     expediter = new FitNesseExpediter(socket, context, executorService);
+  }
+
+  @Test
+  public void writesARequestLineWhenLoggingIsConfigured() throws Exception {
+    FitNesseContext logged = ContextConfigurator.empty()
+      .withRootPath(".")
+      .withParameter(ConfigurationParameter.LOG_DIRECTORY, "build/test-logs")
+      .withPort(1)
+      .makeFitNesseContext();
+    FitNesseExpediter loggingExpediter = new FitNesseExpediter(new MockSocket(), logged, Executors.newSingleThreadExecutor());
+    MockRequest request = new MockRequest();
+    request.setResource("FrontPage");
+    SimpleResponse response = new SimpleResponse(200);
+    MockSocket client = new MockSocket();
+    client.setHost("127.0.0.1");
+    loggingExpediter.log(client, request, response);
+    assertTrue(logged.logger.getDirectory().exists());
   }
 
   @Test(expected = IOException.class)

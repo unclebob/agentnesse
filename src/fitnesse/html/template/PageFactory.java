@@ -14,17 +14,15 @@ import java.util.Properties;
 
 public class PageFactory {
   private final String theme;
-  private final String contextRoot;
   private VelocityEngine velocityEngine = null;
 
   public PageFactory(FitNesseContext context) {
     this.theme = context.theme;
     this.velocityEngine = newVelocityEngine(context.getRootPagePath(), this.theme);
-    this.contextRoot = context.contextRoot;
   }
 
   public HtmlPage newPage() {
-    return new HtmlPage(getVelocityEngine(), "skeleton.vm", theme, contextRoot);
+    return new HtmlPage(getVelocityEngine(), "skeleton.vm", theme);
   }
 
   public String render(VelocityContext context, String templateName) {

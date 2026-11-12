@@ -42,9 +42,9 @@ public class SaveResponder implements Responder {
       response.addHeader("Current-Version", commitRecord.getName());
     }
     if (request.hasInput("redirect"))
-      response.redirect("", request.getInput("redirect"));
+      response.redirect(request.getInput("redirect"));
     else
-      response.redirect(context.contextRoot, request.getResource());
+      response.redirect(request.getResource());
 
     return response;
   }

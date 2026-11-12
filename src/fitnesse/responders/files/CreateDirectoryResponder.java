@@ -53,7 +53,7 @@ public class CreateDirectoryResponder implements Responder {
         }
       });
 
-    response.redirect(context.contextRoot, resource);
+    response.redirect(resource);
     return response;
   }
 

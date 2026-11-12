@@ -102,5 +102,5 @@
  </fieldset>
 </form>
 <div id="configPath" data-path="$rootpath"></div>
-<script type="text/javascript" src="${contextRoot}files/fitnesse/javascript/refactorForm.js"></script>
+<script type="text/javascript" src="/files/fitnesse/javascript/refactorForm.js"></script>
 #end

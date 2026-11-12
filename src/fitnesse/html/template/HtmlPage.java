@@ -19,7 +19,7 @@ public class HtmlPage {
 
   private String templateFileName;
 
-  public HtmlPage(VelocityEngine velocityEngine, String templateFileName, String theme, String contextRoot) {
+  public HtmlPage(VelocityEngine velocityEngine, String templateFileName, String theme) {
     super();
 
     this.velocityEngine = velocityEngine;
@@ -30,7 +30,6 @@ public class HtmlPage {
     setHeaderTemplate(HEADER_TEMPLATE);
     setTitle(TITLE);
     velocityContext.put("theme", theme);
-    velocityContext.put("contextRoot", contextRoot);
   }
 
   public void setHeaderTemplate(String headerTemplate) {

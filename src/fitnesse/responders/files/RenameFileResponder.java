@@ -66,7 +66,7 @@ public class RenameFileResponder implements Responder {
       }
     }, oldFile);
 
-    response.redirect(context.contextRoot, resource);
+    response.redirect(resource);
     return response;
   }
 

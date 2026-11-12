@@ -41,7 +41,7 @@
                 <li><a class="dropdown-item" href="$localPath?deletePage">Delete</a></li>
             #end
             #if( $actions.withFiles )
-                <li #group(3)><a class="dropdown-item" href="${contextRoot}files" accesskey="f">Files</a></li>
+                <li #group(3)><a class="dropdown-item" href="/files" accesskey="f">Files</a></li>
             #end
             #if( $actions.withSearch )
                 <li#group(3)><a class="dropdown-item" href="?search" accesskey="s">Search</a></li>
@@ -57,7 +57,7 @@
                 <li#group(5)><a class="dropdown-item" href="$localPath?variables" accesskey="v">Variables</a></li>
             #end
             #if( $actions.withUserGuide )
-                <li#group(6)><a class="dropdown-item" href="${contextRoot}FitNesse.UserGuide" accesskey="">User Guide</a></li>
+                <li#group(6)><a class="dropdown-item" href="/FitNesse.UserGuide" accesskey="">User Guide</a></li>
             #end
         </ul>
     </li>

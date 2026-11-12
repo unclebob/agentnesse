@@ -28,7 +28,7 @@ public class DeleteFileResponder implements Responder {
 
     context.versionsController.delete(pathName);
 
-    response.redirect(context.contextRoot, resource);
+    response.redirect(resource);
     return response;
   }
 
