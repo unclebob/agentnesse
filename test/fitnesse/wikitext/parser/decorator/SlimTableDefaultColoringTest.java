@@ -5,6 +5,7 @@ import fitnesse.wikitext.ParsingPage;
 import fitnesse.wikitext.SourcePage;
 import fitnesse.wikitext.parser.Symbol;
 import fitnesse.wikitext.parser.Table;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,11 +29,17 @@ public class SlimTableDefaultColoringTest {
   private SourcePage sourcePage;
 
   private SlimTableDefaultColoring slimTableDefaultColoring = new SlimTableDefaultColoring(new SlimTableFactory());
+  private AutoCloseable mocks;
 
   @Before
   public void init() {
-    MockitoAnnotations.initMocks(this);
+    mocks = MockitoAnnotations.openMocks(this);
     when(variableSource.getPage()).thenReturn(sourcePage);
+  }
+
+  @After
+  public void releaseMocks() throws Exception {
+    mocks.close();
   }
 
   @Test

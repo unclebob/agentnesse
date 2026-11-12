@@ -1,5 +1,6 @@
 package fitnesse.slim;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -9,10 +10,10 @@ import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class StatementTimeoutExecutorTest {
 
@@ -28,11 +29,17 @@ public class StatementTimeoutExecutorTest {
   @Mock
   private ExecutorService executorService;
   private StatementExecutorInterface executor;
+  private AutoCloseable mocks;
 
   @Before
   public void setup() {
-    initMocks(this);
+    mocks = openMocks(this);
     executor = StatementTimeoutExecutor.decorate(inner, TIMEOUT);
+  }
+
+  @After
+  public void releaseMocks() throws Exception {
+    mocks.close();
   }
 
   @Test
