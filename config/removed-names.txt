@@ -37,3 +37,6 @@ VersionComparerResponder
 ExternalSuitePage
 ExternalTestPage
 ExternalSuitePageFactory
+
+PublishResponder
+Publisher
