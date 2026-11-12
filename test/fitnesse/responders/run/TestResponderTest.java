@@ -11,6 +11,7 @@ import fitnesse.html.HtmlUtil;
 import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
 import fitnesse.http.Response;
+import fitnesse.http.SimpleResponse;
 import fitnesse.testutil.FitNesseUtil;
 import fitnesse.util.Clock;
 import fitnesse.util.DateAlteringClock;
@@ -76,6 +77,20 @@ public class TestResponderTest {
   public void tearDown() throws Exception {
     FitNesseUtil.destroyTestContext();
     Clock.restoreDefaultClock();
+  }
+
+  @Test
+  public void xmlAndJunitFormatsAreRejected() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("TestPage"), passFixtureTable());
+    for (String format : new String[] {"xml", "junit"}) {
+      request = new MockRequest();
+      request.setResource("TestPage");
+      request.addInput("format", format);
+      Response rejected = new TestResponder().makeResponse(context, request);
+      assertEquals(400, rejected.getStatus());
+      assertEquals("text/plain", rejected.getContentType());
+      assertEquals(SuiteResponderTest.unsupportedFormatMessage(format), ((SimpleResponse) rejected).getContent());
+    }
   }
 
   @Test

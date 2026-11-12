@@ -154,6 +154,37 @@ public class FitNesseMainTest {
   }
 
   @Test
+  public void xmlAndJunitCommandsFailWithUnsupportedFormatMessage() throws Exception {
+    FileUtil.createFile(TEST_FITNESSE_ROOT + "/FormatPage.wiki",
+      "!define TEST_SYSTEM {slim}\n" +
+        "|script|fitnesse.fixtures.EchoFixture|\n" +
+        "|check|echo|hello|hello|\n");
+
+    assertUnsupportedFormatCommand("FormatPage?test&format=xml", "xml");
+    assertUnsupportedFormatCommand("FormatPage?suite&format=junit", "junit");
+  }
+
+  private void assertUnsupportedFormatCommand(String command, String format) throws Exception {
+    PrintStream original = System.out;
+    ByteArrayOutputStream captured = new ByteArrayOutputStream();
+    System.setOut(new PrintStream(captured, true, "UTF-8"));
+    int exitCode;
+    try {
+      try {
+        exitCode = new FitNesseMain().launchFitNesse(new Arguments(
+          "-o", "-r", TEST_FITNESSE_ROOT, "-c", command));
+      } catch (Exception e) {
+        exitCode = 1;
+      }
+    } finally {
+      System.setOut(original);
+    }
+    assertThat(exitCode, not(is(0)));
+    assertThat(captured.toString("UTF-8"), org.hamcrest.Matchers.containsString(
+      fitnesse.responders.run.SuiteResponderTest.unsupportedFormatMessage(format).trim()));
+  }
+
+  @Test
   public void commandExitCodeIsTheNumberOfFailingTests() throws Exception {
     FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestFail.wiki",
       "!define TEST_SYSTEM {slim}\n" +

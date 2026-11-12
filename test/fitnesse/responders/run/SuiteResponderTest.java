@@ -6,6 +6,7 @@ import fitnesse.FitNesseContext;
 import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
 import fitnesse.http.Response;
+import fitnesse.http.SimpleResponse;
 import fitnesse.reporting.BaseFormatter;
 import fitnesse.testutil.FitNesseUtil;
 import fitnesse.util.Clock;
@@ -88,6 +89,21 @@ public class SuiteResponderTest {
   @After
   public void tearDown() throws Exception {
     FitNesseUtil.destroyTestContext();
+  }
+
+  @Test
+  public void xmlAndJunitFormatsAreRejected() throws Exception {
+    for (String format : new String[] {"xml", "junit"}) {
+      request.addInput("format", format);
+      Response response = responder.makeResponse(context, request);
+      assertEquals(400, response.getStatus());
+      assertEquals("text/plain", response.getContentType());
+      assertEquals(unsupportedFormatMessage(format), ((SimpleResponse) response).getContent());
+    }
+  }
+
+  public static String unsupportedFormatMessage(String format) {
+    return "Result format " + format + " is not supported until JSON results land. format=text and HTML still work.\n";
   }
 
   @Test

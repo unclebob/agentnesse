@@ -10,6 +10,7 @@ import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
+import fitnesse.http.SimpleResponse;
 import fitnesse.reporting.BaseFormatter;
 import fitnesse.reporting.Formatter;
 import fitnesse.reporting.InteractiveFormatter;
@@ -51,6 +52,9 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
 
   static final RunningTestingTracker runningTestingTracker = new RunningTestingTracker();
 
+  static final String UNSUPPORTED_RESULT_FORMAT_MESSAGE =
+    "Result format %s is not supported until JSON results land. format=text and HTML still work.\n";
+
   private Formatter rerunFormatter;
 
   private PageData data;
@@ -74,6 +78,10 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    SimpleResponse rejected = unsupportedFormatResponse(request.getInput("format"));
+    if (rejected != null) {
+      return rejected;
+    }
     this.request = request;
     Response result = super.makeResponse(context, request);
     if (result != response){
@@ -184,6 +192,19 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     if (context.testSystemListener != null) {
       runner.addTestSystemListener(context.testSystemListener);
     }
+  }
+
+  static SimpleResponse unsupportedFormatResponse(String format) throws java.io.UnsupportedEncodingException {
+    if (format == null) {
+      return null;
+    }
+    if (!"xml".equalsIgnoreCase(format) && !"junit".equalsIgnoreCase(format)) {
+      return null;
+    }
+    SimpleResponse rejected = new SimpleResponse(400);
+    rejected.setContentType("text/plain");
+    rejected.setContent(String.format(UNSUPPORTED_RESULT_FORMAT_MESSAGE, format.toLowerCase()));
+    return rejected;
   }
 
   private void createMainFormatter() {
