@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import fitnesse.markdown.TableSeparators;
 import fitnesse.slim.instructions.Instruction;
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.slim.HtmlTable;
@@ -36,7 +37,7 @@ public abstract class SlimTableTestSupport<T extends SlimTable> {
   protected T tableUnderTest;
 
   public T createSlimTable(String tableText) {
-    WikiPageUtil.setPageContents(root, tableText);
+    WikiPageUtil.setPageContents(root, gfm(tableText));
     String html = root.getHtml();
     TableScanner<HtmlTable> ts = new HtmlTableScanner(html);
     Table t = ts.getTable(0);
@@ -50,6 +51,10 @@ public abstract class SlimTableTestSupport<T extends SlimTable> {
     root = InMemoryPage.makeRoot("root");
     instructions = new ArrayList<>();
     assertions = new ArrayList<>();
+  }
+
+  static String gfm(String wiki) {
+    return TableSeparators.supply(wiki);
   }
 
   protected T makeSlimTableAndBuildInstructions(String pageContents) throws Exception {

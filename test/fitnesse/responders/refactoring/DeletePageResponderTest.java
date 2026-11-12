@@ -24,8 +24,6 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wiki.fs.DiskFileSystem;
-import fitnesse.wiki.fs.FileSystemPageFactory;
-import fitnesse.wiki.fs.WikiFilePage;
 import fitnesse.wiki.fs.WikiFiles;
 import org.junit.Test;
 

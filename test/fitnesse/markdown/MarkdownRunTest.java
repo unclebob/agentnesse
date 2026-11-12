@@ -23,7 +23,7 @@ public class MarkdownRunTest {
   @Before
   public void setUp() throws Exception {
     fileSystem = new MemoryFileSystem();
-    fileSystem.makeFile(new File("root/content.txt"), "");
+    fileSystem.makeFile(new File("root/_root.md"), "");
     root = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
       .makePage(new File("root"), "root", null, new SystemVariableSource());
   }

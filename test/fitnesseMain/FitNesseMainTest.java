@@ -201,10 +201,18 @@ public class FitNesseMainTest {
 
   @Test
   public void xmlAndJunitCommandsFailWithUnsupportedFormatMessage() throws Exception {
-    FileUtil.createFile(TEST_FITNESSE_ROOT + "/FormatPage.wiki",
-      "!define TEST_SYSTEM {slim}\n" +
-        "|script|fitnesse.fixtures.EchoFixture|\n" +
-        "|check|echo|hello|hello|\n");
+    FileUtil.createFile(TEST_FITNESSE_ROOT + "/FormatPage.md",
+      """
+      { "type": "test" }
+      ```agentnesse
+      define TEST_SYSTEM
+      slim
+      ```
+
+      | script | fitnesse.fixtures.EchoFixture |
+      | --- | --- | --- |
+      | check | echo | hello | hello |
+      """);
 
     assertUnsupportedFormatCommand("FormatPage?test&format=xml", "xml");
     assertUnsupportedFormatCommand("FormatPage?suite&format=junit", "junit");
@@ -232,10 +240,18 @@ public class FitNesseMainTest {
 
   @Test
   public void commandExitCodeIsTheNumberOfFailingTests() throws Exception {
-    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestFail.wiki",
-      "!define TEST_SYSTEM {slim}\n" +
-        "|script|fitnesse.fixtures.EchoFixture|\n" +
-        "|check|echo|hello|goodbye|\n");
+    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestFail.md",
+      """
+      { "type": "test" }
+      ```agentnesse
+      define TEST_SYSTEM
+      slim
+      ```
+
+      | script | fitnesse.fixtures.EchoFixture |
+      | --- | --- | --- |
+      | check | echo | hello | goodbye |
+      """);
 
     int exitCode = launch(new String[]{"-r", TEST_FITNESSE_ROOT, "-c", "TestFail?test&format=text"});
     assertEquals(1, exitCode);
@@ -243,10 +259,18 @@ public class FitNesseMainTest {
 
   @Test
   public void passingCommandCanWriteResultsToAFile() throws Exception {
-    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestPass.wiki",
-      "!define TEST_SYSTEM {slim}\n" +
-        "|script|fitnesse.fixtures.EchoFixture|\n" +
-        "|check|echo|hello|hello|\n");
+    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestPass.md",
+      """
+      { "type": "test" }
+      ```agentnesse
+      define TEST_SYSTEM
+      slim
+      ```
+
+      | script | fitnesse.fixtures.EchoFixture |
+      | --- | --- | --- |
+      | check | echo | hello | hello |
+      """);
     File output = new File(TEST_FITNESSE_ROOT, "results.txt");
 
     int exitCode = launch(new String[]{

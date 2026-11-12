@@ -13,7 +13,6 @@ import java.util.Set;
 import fitnesse.components.TraversalListener;
 import fitnesse.markdown.MarkdownPage;
 import fitnesse.wiki.WikiPage;
-import fitnesse.wiki.WikitextPage;
 
 public class ClassPathBuilder {
 
@@ -116,11 +115,6 @@ public class ClassPathBuilder {
   }
 
   protected List<String> getItemsFromPage(WikiPage page) {
-    if (page instanceof WikitextPage) {
-      List<String> result = new ArrayList<>();
-      ((WikitextPage) page).getSyntaxTree().findPaths(result::add);
-      return result;
-    }
     if (page instanceof MarkdownPage) {
       return ((MarkdownPage) page).paths();
     }

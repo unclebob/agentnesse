@@ -1,7 +1,5 @@
 package fitnesse.wiki;
 
-import fitnesse.wikitext.VariableSource;
-
 import java.util.Optional;
 
 public class PageVariableSource implements VariableSource {

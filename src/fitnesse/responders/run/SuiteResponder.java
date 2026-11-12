@@ -217,7 +217,7 @@ public class SuiteResponder extends ChunkingResponder {
   }
 
   protected File getRerunPageFile() {
-    return new File(context.getRootPagePath(), getRerunPageName() + ".wiki");
+    return new File(context.getRootPagePath(), getRerunPageName() + ".md");
   }
 
   protected String getRerunPageName() {

@@ -68,24 +68,24 @@ public class RerunSuiteFormatter extends BaseFormatter implements Closeable {
   }
 
   protected void appendHeader(PrintWriter writer) {
-    writer.append("---\n" +
-      "Help: Lists tests failed during last run, so they can be run again (without running all tests that passed).\n" +
-      "Suite\n" +
-      "---\n" +
-      "\n");
-    writer.append("!note This page is automatically generated when running tests. ");
-    writer.append("It will be overwritten by the next Suite or Test execution.\n\n");
-    writer.append("Tests failed (first failure was at ");
+    writer.append("""
+      {
+        "type": "suite",
+        "help": "Lists tests failed during last run, so they can be run again (without running all tests that passed)."
+      }
+      This page is automatically generated when running tests. It will be overwritten by the next Suite or Test execution.
+
+      Tests failed (first failure was at """);
     writer.append(LocalDateTime.now().toString());
     writer.append("):\n\n");
   }
 
   protected void appendPageFailure(PrintWriter writer, TestPage testPage) {
     String pagePath = testPage.getFullPath();
-    writer.append("!see [[");
+    writer.append("- [");
     writer.append(pagePath);
-    writer.append("][.");
+    writer.append("](");
     writer.append(pagePath);
-    writer.append("]]\n");
+    writer.append(")\n");
   }
 }

@@ -122,3 +122,8 @@ all-interfaces
 
 class PropertiesResponder
 class SavePropertiesResponder
+
+content.txt
+properties.xml
+".wiki"
+fitnesse.wikitext

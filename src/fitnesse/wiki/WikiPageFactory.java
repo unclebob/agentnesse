@@ -2,8 +2,6 @@ package fitnesse.wiki;
 
 import java.io.File;
 
-import fitnesse.wikitext.VariableSource;
-
 public interface WikiPageFactory {
 
   /**
@@ -16,6 +14,4 @@ public interface WikiPageFactory {
    * @return a new wiki page or null if parent is not null no page exists
    */
   WikiPage makePage(File path, String pageName, WikiPage parent, VariableSource variableSource);
-
-  boolean supports(File path);
 }

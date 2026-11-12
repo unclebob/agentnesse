@@ -4,7 +4,7 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.fs.FileSystem;
 import fitnesse.wiki.fs.WikiFiles;
-import fitnesse.wikitext.VariableSource;
+import fitnesse.wiki.VariableSource;
 
 import java.io.File;
 
@@ -19,7 +19,6 @@ public class MarkdownPageFactory implements WikiPageFactory {
     this.pages = pages;
   }
 
-  @Override
   public boolean supports(File path) {
     return isPageFile(path) || isPageFile(siblingFile(path)) || isRootFile(new File(path, MarkdownPage.ROOT_FILE));
   }

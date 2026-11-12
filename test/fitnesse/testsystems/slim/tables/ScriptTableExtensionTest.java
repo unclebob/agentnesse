@@ -327,7 +327,7 @@ public class ScriptTableExtensionTest {
 
   @Test
   public void initialHashDoesNothing() throws Exception {
-    buildInstructionsFor("|!-#comment-!|blah|blah|\n");
+    buildInstructionsFor("|#comment|blah|blah|\n");
     List<Instruction> expectedInstructions = Collections.emptyList();
     assertEquals(expectedInstructions, instructions());
   }

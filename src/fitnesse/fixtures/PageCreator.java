@@ -14,37 +14,28 @@ public class PageCreator {
   public String pageAttributes;
 
   public boolean valid() throws Exception {
-    return store(false);
+    return markdown();
   }
 
   public boolean markdown() throws Exception {
-    return store(true);
+    return store();
   }
 
-  private boolean store(boolean markdown) throws Exception {
+  private boolean store() throws Exception {
     if (pageContents != null) {
       pageContents = pageContents.replaceAll("<br>", "\n");
       pageContents = pageContents.replaceAll("<br/>", "\n");
     }
     WikiPage root = FitnesseFixtureContext.context.getRootPage();
     WikiPagePath pagePath = PathParser.parse(pageName);
-    WikiPage thePage = markdown ? addMarkdown(root, pagePath) : WikiPageUtil.addPage(root, pagePath, pageContents);
-    if (markdown) {
-      PageData data = thePage.getData();
-      data.setContent(pageContents == null ? "" : pageContents);
-      if (pageAttributes != null && !pageAttributes.isEmpty()) {
-        setAttributes(data);
-      }
-      thePage.commit(data);
-      setPageAttributes("");
-      return true;
-    }
+    WikiPage thePage = addMarkdown(root, pagePath);
+    PageData data = thePage.getData();
+    data.setContent(pageContents == null ? "" : pageContents);
     if (pageAttributes != null && !pageAttributes.isEmpty()) {
-      PageData data = thePage.getData();
       setAttributes(data);
-      thePage.commit(data);
-      setPageAttributes("");
     }
+    thePage.commit(data);
+    setPageAttributes("");
     return true;
   }
 

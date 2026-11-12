@@ -77,7 +77,7 @@ public class MovePageResponderTest extends ResponderTestCase {
   @Test
   public void testMovePage() throws Exception {
     PageData data = pageA.getData();
-    data.setAttribute("someAttribute", "someValue");
+    data.setAttribute(WikiPageProperty.HELP, "someValue");
     pageA.commit(data);
 
     final String sourcePage = "PageOne.PageA";
@@ -95,7 +95,7 @@ public class MovePageResponderTest extends ResponderTestCase {
     WikiPage movedPage = crawler.getPage(destinationPath);
     data = movedPage.getData();
     assertEquals("content", data.getContent());
-    assertEquals("someValue", data.getAttribute("someAttribute"));
+    assertEquals("someValue", data.getAttribute(WikiPageProperty.HELP));
   }
 
   private SimpleResponse movePage(String pageToMove, String newParent, boolean refactorReferences) throws Exception  //todo RCM 2/8/05 Change all callers to use wikiPagePath version below.

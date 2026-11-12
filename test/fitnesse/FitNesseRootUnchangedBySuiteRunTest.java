@@ -50,22 +50,27 @@ public class FitNesseRootUnchangedBySuiteRunTest {
       assertEquals(changes, "", changes);
     } finally {
       deleteTree(suite);
+      Files.deleteIfExists(suite.getParent().resolve(suite.getFileName() + ".md"));
     }
   }
 
   private static void writePassingSuite(Path suite) throws IOException {
-    Files.createDirectories(suite.resolve("SampleTest"));
-    Files.writeString(suite.resolve("content.txt"), "!1 A suite that must not leave files behind\n");
-    Files.writeString(suite.resolve("properties.xml"), properties("Suite"));
-    Files.writeString(suite.resolve("SampleTest/content.txt"),
-      "!define TEST_SYSTEM {slim}\n" +
-        "|script|fitnesse.fixtures.EchoFixture|\n" +
-        "|check|echo|hello|hello|\n");
-    Files.writeString(suite.resolve("SampleTest/properties.xml"), properties("Test"));
-  }
+    Files.createDirectories(suite);
+    Files.writeString(suite.getParent().resolve(suite.getFileName() + ".md"), """
+      { "type": "suite" }
+      A suite that must not leave files behind
+      """);
+    Files.writeString(suite.resolve("SampleTest.md"), """
+      { "type": "test" }
+      ```agentnesse
+      define TEST_SYSTEM
+      slim
+      ```
 
-  private static String properties(String type) {
-    return "<?xml version=\"1.0\"?>\n<properties>\n<" + type + ">true</" + type + ">\n</properties>\n";
+      | script | fitnesse.fixtures.EchoFixture |
+      | --- | --- | --- |
+      | check | echo | hello | hello |
+      """);
   }
 
   private static Map<String, String> snapshot(Path root) throws IOException, NoSuchAlgorithmException {

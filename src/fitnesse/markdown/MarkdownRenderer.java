@@ -26,17 +26,23 @@ public final class MarkdownRenderer {
   }
 
   public static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children) {
-    return render(markdown, pageExists, children, null);
+    return render(markdown, pageExists, children, null, null);
   }
 
-  public static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
+  public static String render(String markdown, Function<String, String> pageTarget, List<ContentsLink> children,
                               Function<String, String> includedHtml) {
+    return render(markdown, word -> pageTarget.apply(word) != null, children, includedHtml, pageTarget);
+  }
+
+  private static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
+                              Function<String, String> includedHtml, Function<String, String> pageTarget) {
     Parser parser = Parser.builder().extensions(EXTENSIONS).build();
     Set<String> headingIds = new HashSet<>();
     HtmlRenderer html = HtmlRenderer.builder()
       .nodeRendererFactory(SlimTableRenderer::new)
       .extensions(EXTENSIONS)
-      .nodeRendererFactory(context -> new WikiWordNodeRenderer(context, pageExists))
+      .nodeRendererFactory(context -> new WikiWordNodeRenderer(context,
+        pageTarget != null ? pageTarget : word -> pageExists.test(word) ? word : null))
       .nodeRendererFactory(context -> new HeadingRenderer(context, headingIds))
       .nodeRendererFactory(context -> new AgentNesseBlockRenderer(context, children, includedHtml))
       .build();

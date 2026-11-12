@@ -279,10 +279,10 @@ public class DynamicDecisionTableTest extends SlimTableTestSupport<DynamicDecisi
   @Test
   public void commentColumn() throws Exception {
     String decisionTableWithComment =
-        "|DDT:fixture|argument||\n" +
+        "|DDT:fixture|argument|#|\n" +
           "|var|func?|#comment|\n" +
           "|3|5|comment|\n" +
-          "|7|9||\n";
+          "|7|9|.|\n";
     makeDynamicDecisionTableAndBuildInstructions(decisionTableWithComment);
     Map<String, Object> pseudoResults = makePseudoResultsForSimpleTable();
     SlimAssertion.evaluateExpectations(assertions, pseudoResults);
@@ -290,10 +290,10 @@ public class DynamicDecisionTableTest extends SlimTableTestSupport<DynamicDecisi
     String colorizedTable = dynamicDecisionTable.getTable().toString();
     String expectedColorizedTable =
       "[" +
-        "[pass(DDT:fixture), argument, ], " +
+        "[pass(DDT:fixture), argument, #], " +
         "[var, func?, #comment], " +
         "[3, pass(5), comment], " +
-        "[7, fail(a=5;e=9), ]" +
+        "[7, fail(a=5;e=9), .]" +
         "]";
     assertEquals(expectedColorizedTable, colorizedTable);
   }

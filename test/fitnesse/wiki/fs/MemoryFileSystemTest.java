@@ -12,7 +12,7 @@ import org.junit.Test;
 public class MemoryFileSystemTest {
 
   private static final File pageOne = new File("PageOne");
-  private static final File contentFile = new File(pageOne, "content.txt");
+  private static final File contentFile = new File(pageOne, "body.md");
 
   MemoryFileSystem fileSystem;
 

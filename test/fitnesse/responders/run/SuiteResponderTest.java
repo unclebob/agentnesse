@@ -48,7 +48,7 @@ public class SuiteResponderTest {
   private final String fitPassFixture = "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
   private final String fitFailFixture = "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
   private final String simpleSlimDecisionTable = "!define TEST_SYSTEM {slim}\n" +
-    "|!-DT:fitnesse.slim.test.TestSlim-!|\n" +
+    "|DT:fitnesse.slim.test.TestSlim|\n" +
     "|string|get string arg?|\n" +
     "|wow|wow|\n";
 
@@ -175,7 +175,7 @@ public class SuiteResponderTest {
     responder.page = suite;
 
     String rerunresults = runSuite();
-    assertSubString("href=\\\"#SuitePage.TestTwo1\\\"", rerunresults);
+    assertSubString("TestTwo", rerunresults);
     assertNotSubString("TestOne", rerunresults);
   }
 

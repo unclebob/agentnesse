@@ -27,11 +27,11 @@ public class PageCreatorTest {
 
   @Test
   public void testCreatePage() throws Exception {
-    WikiPage testPage = makePage("TestPage", "contents", "attr=val");
+    WikiPage testPage = makePage("TestPage", "contents", "Help=hello");
     assertNotNull(testPage);
     PageData data = testPage.getData();
     assertEquals("contents", data.getContent());
-    assertEquals("val", data.getAttribute("attr"));
+    assertEquals("hello", data.getAttribute("Help"));
   }
 
   private WikiPage makePage(String pageName, String pageContent, String pageAttributes) throws Exception {
@@ -71,9 +71,9 @@ public class PageCreatorTest {
 
   @Test
   public void testMultipleAttributes() throws Exception {
-    WikiPage testPage = makePage("TestPage", "Contents", "att1=one,att2=two");
+    WikiPage testPage = makePage("TestPage", "Contents", "Suites=one,Help=two");
     PageData data = testPage.getData();
-    assertEquals("one", data.getAttribute("att1"));
-    assertEquals("two", data.getAttribute("att2"));
+    assertEquals("one", data.getAttribute("Suites"));
+    assertEquals("two", data.getAttribute("Help"));
   }
 }

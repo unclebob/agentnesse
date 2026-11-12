@@ -24,7 +24,6 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiPageUtil;
-import fitnesse.wiki.fs.WikiFilePage;
 import fitnesse.wiki.fs.WikiFiles;
 
 public class DeletePageResponder implements Responder {

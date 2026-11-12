@@ -1,7 +1,7 @@
 package fitnesse.markdown;
 
 import fitnesse.html.HtmlTag;
-import fitnesse.wikitext.parser.TextMaker;
+import fitnesse.wiki.WikiWords;
 import org.commonmark.node.Link;
 import org.commonmark.node.Node;
 import org.commonmark.node.Text;
@@ -10,15 +10,15 @@ import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlWriter;
 
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 final class WikiWordNodeRenderer implements NodeRenderer {
   private final HtmlWriter writer;
-  private final Predicate<String> pageExists;
+  private final Function<String, String> pageTarget;
 
-  WikiWordNodeRenderer(HtmlNodeRendererContext context, Predicate<String> pageExists) {
+  WikiWordNodeRenderer(HtmlNodeRendererContext context, Function<String, String> pageTarget) {
     this.writer = context.getWriter();
-    this.pageExists = pageExists;
+    this.pageTarget = pageTarget;
   }
 
   @Override
@@ -39,13 +39,13 @@ final class WikiWordNodeRenderer implements NodeRenderer {
   private void write(String literal) {
     int index = 0;
     while (index < literal.length()) {
-      int length = TextMaker.findWikiWordLength(literal.substring(index));
+      int length = WikiWords.findWikiWordLength(literal.substring(index));
       if (length > 0) {
         writer.raw(link(literal.substring(index, index + length)));
         index += length;
       } else {
         int next = index + 1;
-        while (next < literal.length() && TextMaker.findWikiWordLength(literal.substring(next)) == 0) {
+        while (next < literal.length() && WikiWords.findWikiWordLength(literal.substring(next)) == 0) {
           next++;
         }
         writer.text(literal.substring(index, next));
@@ -55,15 +55,14 @@ final class WikiWordNodeRenderer implements NodeRenderer {
   }
 
   private String link(String word) {
-    if (pageExists.test(word)) {
+    String target = pageTarget.apply(word);
+    if (target != null) {
       HtmlTag link = new HtmlTag("a", word);
-      link.addAttribute("href", word);
+      link.addAttribute("href", target);
       return link.htmlInline();
     }
-    HtmlTag link = new HtmlTag("a", "[?]");
-    link.addAttribute("title", "create page");
-    link.addAttribute("href", word + "?edit&amp;nonExistent=true");
-    return word + link.htmlInline();
+    String shown = word.length() > 1 && "<^>".indexOf(word.charAt(0)) >= 0 ? word.substring(1) : word;
+    return shown + "<a title=\"create page\" href=\"" + shown + "?edit&nonExistent=true\">[?]</a>";
   }
 
   private static boolean insideLink(Node node) {

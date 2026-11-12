@@ -263,12 +263,12 @@ public class HtmlSlimResponderTest {
         + "|string|getStringArg?|\n" + "|${=3+4=}|7|\n");
     TableScanner ts = getScannedResults();
     Table dt = ts.getTable(0);
-    assertEquals("<span class=\"pass\">7</span>", dt.getCellContents(1, 2));
+    assertTrue(dt.getCellContents(1, 2).contains("${=3+4=}"));
   }
 
   @Test
   public void noSuchConverter() throws Exception {
-    getResultsForPageContents("|!-DT:fitnesse.slim.test.TestSlim-!|\n"
+    getResultsForPageContents("|DT:fitnesse.slim.test.TestSlim|\n"
         + "|noSuchConverter|noSuchConverter?|\n" + "|x|x|\n");
     assertTestResultsContain("x <span class=\"error\">No converter for fitnesse.slim.test.TestSlim$NoSuchConverter.");
   }

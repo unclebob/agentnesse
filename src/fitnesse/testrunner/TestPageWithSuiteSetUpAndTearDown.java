@@ -28,20 +28,6 @@ public class TestPageWithSuiteSetUpAndTearDown extends WikiTestPage {
     appendTearDowns(html, getSuiteTearDowns());
   }
 
-  @Override
-  protected void includeSetUps(StringBuilder decoratedContent) {
-    List<WikiPage> setups = getSuiteSetUps();
-    includePages("Suite Set Ups", setups, this::includeSetUp, decoratedContent);
-    super.includeSetUps(decoratedContent);
-  }
-
-  @Override
-  protected void includeTearDowns(StringBuilder decoratedContent) {
-    super.includeTearDowns(decoratedContent);
-    List<WikiPage> tearDowns = getSuiteTearDowns();
-    includePages("Suite Tear Downs", tearDowns, this::includeTearDown, decoratedContent);
-  }
-
   public List<WikiPage> getSuiteSetUps() {
     if (suiteSetUps == null && !isSuiteSetUpOrTearDownPage()) {
       if (includeAllSetupsAndTearDowns()) {

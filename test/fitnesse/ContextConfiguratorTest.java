@@ -3,7 +3,7 @@ package fitnesse;
 import fitnesse.util.ClassUtils;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
-import fitnesse.wikitext.VariableSource;
+import fitnesse.wiki.VariableSource;
 import org.junit.After;
 import org.junit.Test;
 
@@ -32,11 +32,6 @@ public class ContextConfiguratorTest {
       @Override
       public WikiPage makePage(File path, String pageName, WikiPage parent, VariableSource variableSource) {
         return null;
-      }
-
-      @Override
-      public boolean supports(File path) {
-        return false;
       }
     };
 

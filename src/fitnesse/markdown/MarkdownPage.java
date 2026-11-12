@@ -12,15 +12,16 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageLoadException;
 import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiPageFactory;
+import fitnesse.wiki.WikiWordReference;
+import fitnesse.wiki.CompositeVariableSource;
+import fitnesse.wiki.ParentPageVariableSource;
 import fitnesse.wiki.fs.FileBasedWikiPage;
 import fitnesse.wiki.fs.FileSystem;
 import fitnesse.wiki.fs.FileSystemSubWikiPageFactory;
 import fitnesse.wiki.fs.FileVersion;
 import fitnesse.wiki.fs.SubWikiPageFactory;
 import fitnesse.wiki.fs.WikiFiles;
-import fitnesse.wikitext.CompositeVariableSource;
-import fitnesse.wikitext.ParsingPage;
-import fitnesse.wikitext.VariableSource;
+import fitnesse.wiki.VariableSource;
 
 import org.commonmark.node.FencedCodeBlock;
 import org.commonmark.node.Node;
@@ -36,10 +37,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,7 +107,11 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   @Override
   public void remove() {
     try {
-      versions.delete(path);
+      if (ROOT_FILE.equals(path.getName())) {
+        versions.delete(path);
+      } else {
+        versions.delete(path, getFileSystemPath());
+      }
     } catch (IOException e) {
       throw new WikiPageLoadException("Could not remove " + getName(), e);
     }
@@ -157,7 +164,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private String render(String content) {
-    return MarkdownRenderer.render(expand(content), this::pageExists, contentsLinks(), this::includedHtml);
+    return MarkdownRenderer.render(expand(TableSeparators.supply(legacyWidgets(escapeWikiPrefixes(content)))), this::wikiWordTarget, contentsLinks(), this::includedHtml);
   }
 
   private String includedHtml(String name) {
@@ -203,9 +210,52 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     return expanded.toString();
   }
 
-  private boolean pageExists(String wikiWord) {
-    return PathParser.parse(wikiWord) != null
-      && getParent().getPageCrawler().getPage(PathParser.parse(wikiWord)) != null;
+  private static String escapeWikiPrefixes(String content) {
+    StringBuilder out = new StringBuilder();
+    boolean fence = false;
+    for (String line : content.split("\n", -1)) {
+      String trimmed = line.trim();
+      if (trimmed.startsWith("```")) {
+        fence = !fence;
+      }
+      if (!fence && !trimmed.startsWith("|")) {
+        line = line.replaceAll("<(?=[A-Z][a-zA-Z0-9])", "\\\\<");
+      }
+      out.append(line).append('\n');
+    }
+    return out.toString();
+  }
+
+  private String legacyWidgets(String content) {
+    StringBuilder out = new StringBuilder();
+    for (String line : content.split("\n", -1)) {
+      String trimmed = line.trim();
+      String lower = trimmed.toLowerCase();
+      if (lower.equals("!contents") || lower.startsWith("!contents ")) {
+        out.append("```agentnesse\ncontents\n```\n");
+      } else if (lower.equals("!lastmodified") || lower.startsWith("!lastmodified ")) {
+        String user = getData().getAttribute(WikiPageProperty.LAST_MODIFYING_USER);
+        out.append(user == null ? "" : user).append('\n');
+      } else {
+        out.append(line).append('\n');
+      }
+    }
+    return out.toString();
+  }
+
+  private String wikiWordTarget(String wikiWord) {
+    String expanded = WikiWordReference.expandPrefix(this, wikiWord);
+    WikiPagePath path = PathParser.parse(expanded);
+    if (path == null) {
+      return null;
+    }
+    WikiPage page = expanded.startsWith(".")
+      ? getPageCrawler().getPage(path)
+      : getParent().getPageCrawler().getPage(path);
+    if (page == null) {
+      return null;
+    }
+    return PathParser.render(page.getFullPath());
   }
 
   @Override
@@ -225,7 +275,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
       new ApplicationVariableSource(variableSource),
       new PageVariableSource(this),
       this::defined,
-      new ParsingPage.ParentPageVariableSource(this),
+      new ParentPageVariableSource(this),
       variableSource);
     return source.findVariable(name).orElse(null);
   }
@@ -241,13 +291,122 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private Optional<String> defined(String name) {
-    return Optional.ofNullable(defines().get(name));
+    return Optional.ofNullable(definedVariables().get(name));
+  }
+
+  public Map<String, String> definedVariables() {
+    Map<String, String> values = new LinkedHashMap<>();
+    collectDefined(this, values, new HashSet<>());
+    return values;
+  }
+
+  private static void collectDefined(WikiPage page, Map<String, String> values, Set<WikiPage> seen) {
+    if (!(page instanceof MarkdownPage markdown) || !seen.add(page)) {
+      return;
+    }
+    markdown.defines().forEach(values::putIfAbsent);
+    for (String name : markdown.includes()) {
+      WikiPagePath path = PathParser.parse(name.trim());
+      if (path == null) {
+        continue;
+      }
+      WikiPage included = page.getPageCrawler().getSiblingPage(path);
+      if (included != null) {
+        collectDefined(included, values, seen);
+      }
+    }
+  }
+
+  private List<String> includes() {
+    List<String> names = new ArrayList<>();
+    String content = getData().getContent();
+    collectIncludes(Parser.builder().build().parse(content), names);
+    for (String line : content.split("\n", -1)) {
+      String trimmed = line.trim();
+      if (trimmed.startsWith("!include ")) {
+        names.add(trimmed.substring("!include ".length()).trim());
+      }
+    }
+    return names;
+  }
+
+  private void collectIncludes(Node node, List<String> names) {
+    if (node instanceof FencedCodeBlock) {
+      FencedCodeBlock code = (FencedCodeBlock) node;
+      if ("agentnesse".equals(code.getInfo())) {
+        rememberInclude(names, code.getLiteral());
+      }
+    }
+    Node child = node.getFirstChild();
+    while (child != null) {
+      collectIncludes(child, names);
+      child = child.getNext();
+    }
+  }
+
+  private void rememberInclude(List<String> names, String literal) {
+    try {
+      AgentNesseBlock block = AgentNesseBlock.parse(literal);
+      if ("include".equals(block.command())) {
+        String name = block.argument().trim();
+        int split = firstBreak(name);
+        names.add(split < 0 ? name : name.substring(0, split).trim());
+      }
+    } catch (IllegalArgumentException ignored) {
+      // An unknown block is not an include.
+    }
   }
 
   private Map<String, String> defines() {
     Map<String, String> values = new LinkedHashMap<>();
-    collectDefines(Parser.builder().build().parse(getData().getContent()), values);
+    String content = getData().getContent();
+    collectDefines(Parser.builder().build().parse(content), values);
+    for (String line : content.split("\n", -1)) {
+      rememberBangDefine(values, line.trim());
+    }
+    expandDefines(values);
     return values;
+  }
+
+  private void expandDefines(Map<String, String> values) {
+    for (Map.Entry<String, String> entry : new ArrayList<>(values.entrySet())) {
+      String expanded = expandDefineValue(entry.getValue(), values);
+      entry.setValue(expanded);
+      values.put(entry.getKey(), expanded);
+    }
+  }
+
+  private String expandDefineValue(String value, Map<String, String> values) {
+    Matcher matcher = VARIABLE.matcher(value);
+    StringBuilder expanded = new StringBuilder();
+    while (matcher.find()) {
+      String name = matcher.group(1);
+      String replacement = values.get(name);
+      if (replacement == null && variableSource != null) {
+        replacement = variableSource.findVariable(name).orElse(null);
+      }
+      matcher.appendReplacement(expanded, Matcher.quoteReplacement(replacement == null ? matcher.group() : replacement));
+    }
+    matcher.appendTail(expanded);
+    return expanded.toString();
+  }
+
+  private static void rememberBangDefine(Map<String, String> values, String line) {
+    if (!line.startsWith("!define ")) {
+      return;
+    }
+    String rest = line.substring("!define ".length()).trim();
+    int space = rest.indexOf(' ');
+    if (space < 0) {
+      values.putIfAbsent(rest, "");
+      return;
+    }
+    String name = rest.substring(0, space);
+    String value = rest.substring(space + 1).trim();
+    if (value.length() >= 2 && ((value.startsWith("{") && value.endsWith("}")) || (value.startsWith("(") && value.endsWith(")")))) {
+      value = value.substring(1, value.length() - 1);
+    }
+    values.putIfAbsent(name, value);
   }
 
   private void collectDefines(Node node, Map<String, String> values) {
@@ -332,6 +491,9 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     if (matter.prune()) {
       properties.set(WikiPageProperty.PRUNE);
     }
+    if (matter.user() != null) {
+      properties.set(WikiPageProperty.LAST_MODIFYING_USER, matter.user());
+    }
     return properties;
   }
 
@@ -383,7 +545,8 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     @Override
     public InputStream getContent() {
       String text = FrontMatter.write(typeOf(data), tagsOf(data), data.getAttribute(WikiPageProperty.HELP),
-        data.hasAttribute(WikiPageProperty.PRUNE), data.getContent());
+        data.hasAttribute(WikiPageProperty.PRUNE), data.getAttribute(WikiPageProperty.LAST_MODIFYING_USER),
+        data.getContent());
       return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
     }
 

@@ -71,7 +71,7 @@ public class SearchPropertiesResponderTest {
     assertHasRegexp("result for your search", content);
     String[] titles1 = { TEST.toString(), "PageOne" };
     assertOutputHasRowWithLink(content, titles1);
-    assertOutputHasRowWithLabels("filter1,filter2");
+    assertOutputHasRowWithLabels("filter1, filter2");
   }
 
   @Test
@@ -187,7 +187,7 @@ public class SearchPropertiesResponderTest {
     assertHasRegexp("result for your search", content);
     String[] titles1 = { TEST.toString(), "PageOne" };
     assertOutputHasRowWithLink(content, titles1);
-    assertOutputHasRowWithLabels(content, "filter1,filter2");
+    assertOutputHasRowWithLabels(content, "filter1, filter2");
   }
 
   @Test

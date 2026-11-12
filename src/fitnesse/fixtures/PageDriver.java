@@ -37,13 +37,7 @@ public class PageDriver {
   }
 
   public void createPageWithContent(String pageName, String content) throws Exception {
-    creator.pageName = pageName;
-    creator.pageContents = content;
-    if (content != null && (content.contains("```") || content.contains("| ---"))) {
-      creator.markdown();
-    } else {
-      creator.valid();
-    }
+    createMarkdownPageWithContent(pageName, content);
   }
 
   public void createPageWithAuthentication(String pageName, String attributes) throws Exception {

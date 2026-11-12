@@ -196,22 +196,14 @@ task createUpdateLists(type: WikiFileListBuilderTask) {
   }
 
   doNotReplaceFiles = [
-    "FitNesseRoot/content.txt",
-    "FitNesseRoot/properties.xml",
-    "FitNesseRoot/FrontPage/content.txt",
-    "FitNesseRoot/FrontPage/properties.xml",
-    "FitNesseRoot/PageHeader/content.txt",
-    "FitNesseRoot/PageHeader/properties.xml",
-    "FitNesseRoot/PageFooter/content.txt",
-    "FitNesseRoot/PageFooter/properties.xml",
-    "FitNesseRoot/TemplateLibrary/content.txt",
-    "FitNesseRoot/TemplateLibrary/properties.xml",
-    "FitNesseRoot/TemplateLibrary/StaticPage/content.txt",
-    "FitNesseRoot/TemplateLibrary/StaticPage/properties.xml",
-    "FitNesseRoot/TemplateLibrary/SuitePage/content.txt",
-    "FitNesseRoot/TemplateLibrary/SuitePage/properties.xml",
-    "FitNesseRoot/TemplateLibrary/TestPage/content.txt",
-    "FitNesseRoot/TemplateLibrary/TestPage/properties.xml" ]
+    "FitNesseRoot/_root.md",
+    "FitNesseRoot/FrontPage.md",
+    "FitNesseRoot/PageHeader.md",
+    "FitNesseRoot/PageFooter.md",
+    "FitNesseRoot/TemplateLibrary.md",
+    "FitNesseRoot/TemplateLibrary/StaticPage.md",
+    "FitNesseRoot/TemplateLibrary/SuitePage.md",
+    "FitNesseRoot/TemplateLibrary/TestPage.md" ]
 }
 
 processResources.dependsOn "fitNesseVersion", "compileSass", "createUpdateLists"
@@ -282,10 +274,6 @@ def coverageFloors = [
   'fitnesse/wiki/fs': [line: 0.83, branch: 0.84],
   'fitnesse/wiki/refactoring': [line: 0.96, branch: 0.81],
   'fitnesse/wiki/search': [line: 0.97, branch: 0.90],
-  'fitnesse/wikitext': [line: 0.93, branch: 0.71],
-  'fitnesse/wikitext/parser': [line: 0.95, branch: 0.86],
-  'fitnesse/wikitext/parser/decorator': [line: 0.92, branch: 0.84],
-  'fitnesse/wikitext/shared': [line: 0.87, branch: 0.87],
   'fitnesseMain': [line: 0.68, branch: 0.72],
   'util': [line: 0.91, branch: 0.91],
 ]

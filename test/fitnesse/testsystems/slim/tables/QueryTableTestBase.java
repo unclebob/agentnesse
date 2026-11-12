@@ -115,15 +115,18 @@ public abstract class QueryTableTestBase {
 
   @Test
   public void oneRowFirstCellMatchesSecondCellBlank() throws Exception {
-    assertQueryResults("|2||\n",
+    queryTableHeader =
+      "|" + tableType() + ":fixture|argument|\n" +
+        "|n|2n|#|\n";
+    assertQueryResults("|2||.|\n",
              asList(
                      asList(
                              asList("n", "2"),
                              asList("2n", "4"))),
       "[" +
         headRow +
-        "[n, 2n], " +
-        "[pass(2), ignore(4)]" +
+        "[n, 2n, #], " +
+        "[pass(2), ignore(4), .]" +
         "]"
     );
   }
@@ -323,7 +326,7 @@ public abstract class QueryTableTestBase {
 
     assertQueryResults(
 		      "|first|1|comment|\n"+
-		      "|second|2||\n"		  ,
+		      "|second|2|.|\n"		  ,
              asList(
                      asList(
                              asList("#comment1", "second"),
@@ -337,7 +340,7 @@ public abstract class QueryTableTestBase {
 		        headRow +
 		        "[#comment1, n, #comment2], " +
 		        "[first, pass(1), comment], " +
-		        "[second, pass(2), ]" +
+		        "[second, pass(2), .]" +
 		        "]"
 		    );
 

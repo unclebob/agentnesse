@@ -6,7 +6,7 @@ import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.UrlPathVariableSource;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
-import fitnesse.wikitext.VariableSource;
+import fitnesse.wiki.VariableSource;
 
 import java.io.File;
 import java.util.Map;

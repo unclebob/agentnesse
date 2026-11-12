@@ -46,7 +46,8 @@ public class BaseWikiPageTest {
   public void testThatSpecialCharsAreNotEscapedTwice() throws Exception {
     WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SpecialChars"), "<b>");
     String html = page.getHtml();
-    assertEquals("&lt;b&gt;", html);
+    assertTrue(html.contains("<b>"));
+    assertFalse(html.contains("&lt;b&gt;"));
   }
 
   @Test

@@ -22,10 +22,10 @@ class WikiFileListBuilderTest {
   @Test
   public void shouldMakeUpdateListWithMultiLevelFolders() throws Exception {
     String content = runCreateFileAndGetContent(["MasterFolder"]);
-    assertSubString("MasterFolder/content.txt\n", content);
-    assertSubString("MasterFolder/TestFolder/content.txt\n", content);
-    assertSubString("MasterFolder/TestFolder2.wiki\n", content);
-    assertSubString("MasterFolder/TestFolder2/Page.wiki\n", content);
+    assertSubString("MasterFolder/_root.md\n", content);
+    assertSubString("MasterFolder/TestFolder/Page.md\n", content);
+    assertSubString("MasterFolder/TestFolder2.md\n", content);
+    assertSubString("MasterFolder/TestFolder2/Page.md\n", content);
   }
 
   @Test
@@ -37,23 +37,23 @@ class WikiFileListBuilderTest {
 
   @Test
   public void shouldKnowWhichSpecialFilesNotToInclude() throws Exception {
-    String arg1 = "MasterFolder/TestFolder/content.txt";
-    String arg2 = "MasterFolder/TestFolder/properties.xml";
+    String arg1 = "MasterFolder/TestFolder/Page.md";
+    String arg2 = "MasterFolder/TestFolder/Other.md";
     String content = runCreateFileAndGetContent(["MasterFolder/TestFolder"], [arg1, arg2]);
-    assertDoesntHaveRegexp("TestFolder/content.txt", content);
-    assertDoesntHaveRegexp("TestFolder/properties.xml", content);
+    assertDoesntHaveRegexp("TestFolder/Page.md", content);
+    assertDoesntHaveRegexp("TestFolder/Other.md", content);
   }
 
   @Test
   public void shouldPutSpecialFilesInDifferentList() throws Exception {
-    String arg1 = "MasterFolder/TestFolder/content.txt";
-    String arg2 = "MasterFolder/TestFolder/properties.xml";
+    String arg1 = "MasterFolder/TestFolder/Page.md";
+    String arg2 = "MasterFolder/TestFolder/Other.md";
     def updater = new WikiFileListBuilder(["MasterFolder/TestFolder"], [arg1, arg2], updateList, updateDoNotCopyOverList)
     File doNotUpdateFile = updater.createDoNotUpdateList();
     String doNotUpdateContent = doNotUpdateFile.text
     doNotUpdateFile.delete()
-    assertSubString("TestFolder/content.txt", doNotUpdateContent);
-    assertSubString("TestFolder/properties.xml", doNotUpdateContent);
+    assertSubString("TestFolder/Page.md", doNotUpdateContent);
+    assertSubString("TestFolder/Other.md", doNotUpdateContent);
   }
 
   class MockedWikiFileListBuilder extends WikiFileListBuilder {
@@ -80,12 +80,12 @@ class WikiFileListBuilderTest {
 
   private static void createMultiLevelDirectory() throws IOException {
     new File("MasterFolder/TestFolder2").mkdirs()
-    new File("MasterFolder/TestFolder2.wiki").text = ""
-    new File("MasterFolder/TestFolder2/Page.wiki").text = ""
+    new File("MasterFolder/TestFolder2.md").text = ""
+    new File("MasterFolder/TestFolder2/Page.md").text = ""
     new File("MasterFolder/TestFolder").mkdirs()
-    new File("MasterFolder/content.txt").text = ""
-    new File("MasterFolder/TestFolder/content.txt").text = ""
-    new File("MasterFolder/TestFolder/properties.xml").text = ""
+    new File("MasterFolder/_root.md").text = ""
+    new File("MasterFolder/TestFolder/Page.md").text = ""
+    new File("MasterFolder/TestFolder/Other.md").text = ""
     new File("MasterFolder/TestFolder/backup.zip").text = ""
     new File("MasterFolder/TestFolder/.DS_Store").text = ""
   }

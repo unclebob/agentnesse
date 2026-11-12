@@ -26,10 +26,19 @@ public class ScopeVariablesResponderTest {
     root = context.getRootPage();
     request = new MockRequest();
     responder = new ScopeVariablesResponder();
-    WikiPageUtil.addPage(root, PathParser.parse("SimplePageForInclude"), "!define y {Y}");
-    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SimplePage"), "!define x {X}\n!include .SimplePageForInclude");
-    WikiPage childPage = WikiPageUtil.addPage(page, PathParser.parse("ChildPage"), "!define z {Z}\n!define a {A}");
-    WikiPageUtil.addPage(childPage, PathParser.parse("GrandChildPage"), "!define a {B}\n!define b {BB}");
+    WikiPageUtil.addPage(root, PathParser.parse("SimplePageForInclude"), define("y", "Y"));
+    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SimplePage"),
+      define("x", "X") + """
+      ```agentnesse
+      include .SimplePageForInclude
+      ```
+      """);
+    WikiPage childPage = WikiPageUtil.addPage(page, PathParser.parse("ChildPage"), define("z", "Z") + define("a", "A"));
+    WikiPageUtil.addPage(childPage, PathParser.parse("GrandChildPage"), define("a", "B") + define("b", "BB"));
+  }
+
+  private static String define(String name, String value) {
+    return "```agentnesse\ndefine " + name + "\n" + value + "\n```\n";
   }
 
   @Test

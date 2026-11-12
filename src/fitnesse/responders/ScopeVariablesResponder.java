@@ -6,8 +6,8 @@ import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
+import fitnesse.markdown.MarkdownPage;
 import fitnesse.wiki.*;
-import fitnesse.wikitext.MarkUpSystem;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -38,7 +38,9 @@ public class ScopeVariablesResponder extends BasicResponder {
   }
 
   private void listVariablesLoc(WikiPage page) {
-    Map<String, String> variableList = MarkUpSystem.listVariables(page);
+    Map<String, String> variableList = page instanceof MarkdownPage
+      ? ((MarkdownPage) page).definedVariables()
+      : java.util.Map.of();
 
     for (Map.Entry<String, String> var : variableList.entrySet()) {
       if (variables.stream().noneMatch(variable -> var.getKey().equals(variable.getKey()))) {

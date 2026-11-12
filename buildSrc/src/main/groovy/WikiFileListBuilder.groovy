@@ -7,7 +7,7 @@ public class WikiFileListBuilder {
 
   private static final Logger LOG = Logger.getLogger(WikiFileListBuilder.class.getName());
 
-  private static final List<String> VALID_FILE_NAMES = Arrays.asList("content.txt", "properties.xml", ".gitignore");
+  private static final List<String> VALID_FILE_NAMES = Arrays.asList(".gitignore");
 
   private Collection<String> files = []
   private Collection<String> doNotReplaceFiles = []
@@ -58,7 +58,7 @@ public class WikiFileListBuilder {
 
   private boolean isWikiFile(File childFile) {
     String name = childFile.getName();
-    return childFile.isDirectory() || VALID_FILE_NAMES.contains(name) || name.endsWith(".wiki");
+    return childFile.isDirectory() || VALID_FILE_NAMES.contains(name) || name.endsWith(".md");
   }
 
   private void addFilePathToAppropriateList(String directoryPath, File childFile) {

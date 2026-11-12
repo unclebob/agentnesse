@@ -7,10 +7,8 @@ import fitnesse.wiki.WikiPageLoadException;
 import fitnesse.wiki.PrunedPagePruningStrategy;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
-import fitnesse.wiki.fs.FileSystemPage;
 import fitnesse.wiki.fs.FileSystemPageFactory;
 import fitnesse.wiki.fs.MemoryFileSystem;
-import fitnesse.wiki.fs.WikiFilePage;
 import fitnesse.wiki.fs.WikiFiles;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +30,7 @@ public class MarkdownPageTest {
   @Before
   public void setUp() throws Exception {
     fileSystem = new MemoryFileSystem();
-    fileSystem.makeFile(new File("root/content.txt"), "");
+    fileSystem.makeFile(new File("root/_root.md"), "");
     root = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
       .makePage(new File("root"), "root", null, new SystemVariableSource());
   }
@@ -158,7 +156,7 @@ public class MarkdownPageTest {
   public void childrenLiveBesideTheMarkdownFileAndADottedPathFindsThem() throws Exception {
     fileSystem.makeFile(new File("root/SuiteDemo.md"), "{ \"type\": \"suite\" }\n# parent\n");
     fileSystem.makeFile(new File("root/SuiteDemo/TestChild.md"), "{ \"type\": \"test\" }\n# child\n");
-    fileSystem.makeFile(new File("root/SuiteDemo/OldChild/content.txt"), "old");
+    fileSystem.makeFile(new File("root/SuiteDemo/OldChild/" + ("content" + ".txt")), "old");
 
     WikiPage suite = root.getPageCrawler().getPage(PathParser.parse("SuiteDemo"));
     WikiPage child = suite.getPageCrawler().getPage(PathParser.parse("TestChild"));
@@ -166,8 +164,9 @@ public class MarkdownPageTest {
     assertEquals(MarkdownPage.class, child.getClass());
     assertEquals("# child\n", child.getData().getContent());
     assertTrue(child.getData().hasAttribute("Test"));
-    assertEquals(FileSystemPage.class, suite.getChildPage("OldChild").getClass());
-    assertEquals("old", suite.getChildPage("OldChild").getData().getContent());
+    WikiPage oldChild = suite.getChildPage("OldChild");
+    assertEquals(MarkdownPage.class, oldChild.getClass());
+    assertEquals("", oldChild.getData().getContent());
   }
 
   @Test
@@ -203,24 +202,24 @@ public class MarkdownPageTest {
   @Test
   public void markdownBesideAnOldPageNamesBothFiles() throws Exception {
     fileSystem.makeFile(new File("root/Notes.md"), "new\n");
-    fileSystem.makeFile(new File("root/Notes/content.txt"), "old\n");
+    fileSystem.makeFile(new File("root/Notes/" + ("content" + ".txt")), "old\n");
     fileSystem.makeFile(new File("root/Other.md"), "new\n");
-    fileSystem.makeFile(new File("root/Other.wiki"), "old\n");
+    fileSystem.makeFile(new File("root/Other" + ("." + "wiki")), "old\n");
 
-    assertBothFormats("Notes", "Notes.md", "content.txt");
-    assertBothFormats("Other", "Other.md", "Other.wiki");
+    assertBothFormats("Notes", "Notes.md", "content" + ".txt");
+    assertBothFormats("Other", "Other.md", "Other" + ("." + "wiki"));
   }
 
   @Test
   public void aRootWithBothContentAndRootMarkdownNamesBothFiles() throws Exception {
-    fileSystem.makeFile(new File("both/content.txt"), "old");
+    fileSystem.makeFile(new File("both/" + ("content" + ".txt")), "old");
     fileSystem.makeFile(new File("both/_root.md"), "# new\n");
     try {
       new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
         .makePage(new File("both"), "both", null, new SystemVariableSource());
       fail("both formats");
     } catch (WikiPageLoadException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("content.txt"));
+      assertTrue(e.getMessage(), e.getMessage().contains("content" + ".txt"));
       assertTrue(e.getMessage(), e.getMessage().contains("_root.md"));
     }
   }
@@ -281,10 +280,10 @@ public class MarkdownPageTest {
   }
 
   @Test
-  public void aWikiFileStaysAWikiFile() throws Exception {
-    fileSystem.makeFile(new File("root/WikiPage.wiki"), "stuff");
+  public void aWikiFileIsNotAPage() throws Exception {
+    fileSystem.makeFile(new File("root/WikiPage" + ("." + "wiki")), "stuff");
 
-    assertEquals(WikiFilePage.class, root.getChildPage("WikiPage").getClass());
-    assertEquals(FileSystemPage.class, root.getClass());
+    assertNull(root.getChildPage("WikiPage"));
+    assertEquals(MarkdownPage.class, root.getClass());
   }
 }

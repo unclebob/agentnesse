@@ -10,8 +10,6 @@ import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.fs.FileSystemPageFactory;
 import fitnesse.wiki.fs.WikiFiles;
-import fitnesse.wikitext.parser.decorator.SlimTableDefaultColoring;
-
 import java.io.IOException;
 import java.util.Properties;
 
@@ -128,9 +126,6 @@ public class ContextConfigurator {
           properties,
           variableSource,
           theme);
-
-    SlimTableDefaultColoring.createInstanceIfNeeded(slimTableFactory);
-    SlimTableDefaultColoring.install();
 
     return context;
   }

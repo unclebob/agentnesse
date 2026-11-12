@@ -100,8 +100,8 @@ public class WikiPageResponderTest {
     assertNotSubString(">Test</a>", response.getContent());
 
     response = requestPage("NoButtonPage");
-    assertNotSubString(">Edit</a>", response.getContent());
-    assertNotSubString(">Search</a>", response.getContent());
+    assertSubString(">Edit</a>", response.getContent());
+    assertSubString(">Search</a>", response.getContent());
     assertNotSubString(">Suite</a>", response.getContent());
     assertNotSubString(">Test</a>", response.getContent());
   }

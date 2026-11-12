@@ -31,7 +31,7 @@ public class MapConverter implements Converter<Map> {
   }
 
   protected HtmlTag createTag(Map<?, ?> hash) {
-    // Use HtmlTag, same as we do for fitnesse.wikitext.parser.HashTable.
+    // Use HtmlTag, same as a hash table.
     HtmlTag table = new HtmlTag("table");
     table.addAttribute("class", "hash_table");
     for (Map.Entry<?, ?> entry : hash.entrySet()) {

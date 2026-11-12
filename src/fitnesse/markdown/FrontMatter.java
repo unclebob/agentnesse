@@ -13,7 +13,7 @@ import java.util.Set;
  * the object's closing brace, with one leading newline removed.
  */
 public final class FrontMatter {
-  private static final Set<String> KEYS = Set.of("type", "tags", "help", "prune");
+  private static final Set<String> KEYS = Set.of("type", "tags", "help", "prune", "user");
   private static final Set<String> TYPES = Set.of("test", "suite", "static");
 
   private final boolean present;
@@ -21,14 +21,16 @@ public final class FrontMatter {
   private final List<String> tags;
   private final String help;
   private final boolean prune;
+  private final String user;
   private final String body;
 
-  private FrontMatter(boolean present, String type, List<String> tags, String help, boolean prune, String body) {
+  private FrontMatter(boolean present, String type, List<String> tags, String help, boolean prune, String user, String body) {
     this.present = present;
     this.type = type;
     this.tags = tags;
     this.help = help;
     this.prune = prune;
+    this.user = user;
     this.body = body;
   }
 
@@ -42,16 +44,24 @@ public final class FrontMatter {
       throw new IllegalArgumentException("malformed JSON front matter");
     }
     JSONObject json = object(text.substring(start, end + 1));
-    return new FrontMatter(true, typeOf(json), tagsOf(json), helpOf(json), pruneOf(json), bodyAfter(text, end));
+    return new FrontMatter(true, typeOf(json), tagsOf(json), helpOf(json), pruneOf(json), userOf(json), bodyAfter(text, end));
   }
 
   public static String write(String type, List<String> tags, String help, boolean prune, String body) {
+    return write(type, tags, help, prune, null, body);
+  }
+
+  public static String write(String type, List<String> tags, String help, boolean prune, String user, String body) {
     StringBuilder json = new StringBuilder();
     json.append("{\n");
     json.append("  \"type\": ").append(JSONObject.quote(type)).append(",\n");
     json.append("  \"tags\": ").append(tagsJson(tags)).append(",\n");
     json.append("  \"help\": ").append(help == null ? "null" : JSONObject.quote(help)).append(",\n");
-    json.append("  \"prune\": ").append(prune).append("\n");
+    json.append("  \"prune\": ").append(prune);
+    if (user != null) {
+      json.append(",\n  \"user\": ").append(JSONObject.quote(user));
+    }
+    json.append("\n");
     json.append("}\n");
     if (body != null) {
       json.append(body);
@@ -79,12 +89,16 @@ public final class FrontMatter {
     return prune;
   }
 
+  public String user() {
+    return user;
+  }
+
   public String body() {
     return body;
   }
 
   private static FrontMatter absent(String text) {
-    return new FrontMatter(false, null, List.of(), null, false, text);
+    return new FrontMatter(false, null, List.of(), null, false, null, text);
   }
 
   private static int indexOfObject(String text) {
@@ -200,6 +214,10 @@ public final class FrontMatter {
 
   private static String helpOf(JSONObject json) {
     return value(json, "help", String.class, null, "front matter help must be a string");
+  }
+
+  private static String userOf(JSONObject json) {
+    return value(json, "user", String.class, null, "front matter user must be a string");
   }
 
   private static boolean pruneOf(JSONObject json) {

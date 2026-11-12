@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.*;
 
 import fitnesse.wiki.*;
-import fitnesse.wikitext.VariableSource;
+import fitnesse.wiki.VariableSource;
 
 public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
 
@@ -54,8 +54,8 @@ public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
       return;
     }
     File markdown = new File(parent, base + ".md");
-    File wiki = new File(parent, base + ".wiki");
-    File content = new File(new File(parent, base), "content.txt");
+    File wiki = new File(parent, base + OldPageFiles.WIKI);
+    File content = new File(new File(parent, base), OldPageFiles.CONTENT);
     if (isFile(markdown) && isFile(wiki)) {
       throw new WikiPageLoadException(markdown.getPath() + " and " + wiki.getPath() + " both exist");
     }
@@ -68,8 +68,8 @@ public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
     if (childName.endsWith(".md")) {
       return childName.substring(0, childName.length() - 3);
     }
-    if (childName.endsWith(".wiki")) {
-      return childName.substring(0, childName.length() - 5);
+    if (childName.endsWith(OldPageFiles.WIKI)) {
+      return childName.substring(0, childName.length() - OldPageFiles.WIKI.length());
     }
     if (childName.indexOf('.') >= 0) {
       return null;

@@ -27,7 +27,7 @@ public class RerunSuiteFormatterTest {
 
   @Before
   public void setUp() throws IOException {
-    targetFile = File.createTempFile("root", "rerun.wiki");
+    targetFile = File.createTempFile("root", "rerun.md");
     formatter = new RerunSuiteFormatter(targetFile);
   }
 
@@ -56,7 +56,7 @@ public class RerunSuiteFormatterTest {
     assertEquals(1, formatter.getErrorCount());
 
     List<String> xrefs = getReferencedPages();
-    assertEquals(".Suite.ErrorPage", xrefs.get(0));
+    assertEquals("Suite.ErrorPage", xrefs.get(0));
   }
 
   @Test
@@ -67,7 +67,7 @@ public class RerunSuiteFormatterTest {
     assertEquals(1, formatter.getErrorCount());
 
     List<String> xrefs = getReferencedPages();
-    assertEquals(".Suite.FailedPage", xrefs.get(0));
+    assertEquals("Suite.FailedPage", xrefs.get(0));
   }
 
   @Test
@@ -81,9 +81,9 @@ public class RerunSuiteFormatterTest {
     assertEquals(3, formatter.getErrorCount());
 
     List<String> xrefs = getReferencedPages();
-    assertEquals(".Suite.FailedPage", xrefs.get(0));
-    assertEquals(".Suite.ErrorPage", xrefs.get(1));
-    assertEquals(".Suite.FailedPage2", xrefs.get(2));
+    assertEquals("Suite.FailedPage", xrefs.get(0));
+    assertEquals("Suite.ErrorPage", xrefs.get(1));
+    assertEquals("Suite.FailedPage2", xrefs.get(2));
   }
 
   @Test
@@ -94,7 +94,7 @@ public class RerunSuiteFormatterTest {
     assertEquals(1, formatter.getErrorCount());
 
     List<String> xrefs = getReferencedPages();
-    assertEquals(".Suite.Failedpage", xrefs.get(0));
+    assertEquals("Suite.Failedpage", xrefs.get(0));
   }
 
   @Test
@@ -107,16 +107,18 @@ public class RerunSuiteFormatterTest {
     assertEquals(1, formatter.getErrorCount());
 
     List<String> xrefs = getReferencedPages();
-    assertEquals(".Suite.ErrorPage", xrefs.get(0));
+    assertEquals("Suite.ErrorPage", xrefs.get(0));
   }
 
   private List<String> getReferencedPages() throws IOException {
     String rerunPageContent = FileUtil.getFileContent(targetFile);
-    assertTrue(rerunPageContent.startsWith("---\nHelp: "));
-
-    WikiPage root = InMemoryPage.makeRoot("RooT");
-    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("PageName"), rerunPageContent);
-    return WikiPageUtil.getXrefPages(page);
+    assertTrue(rerunPageContent.contains("\"type\": \"suite\""));
+    List<String> pages = new java.util.ArrayList<>();
+    java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("\\]\\(([^)]+)\\)").matcher(rerunPageContent);
+    while (matcher.find()) {
+      pages.add(matcher.group(1));
+    }
+    return pages;
   }
 
   private void sendTestComplete(ExecutionResult result, String pageName) {

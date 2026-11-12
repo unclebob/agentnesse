@@ -49,8 +49,11 @@ public class MemoryFileSystem implements FileSystem {
     String path = file.getPath();
     for (String filePath: files.keySet()) {
       if (filePath.equals(path)) return files.get(filePath);
-      // Part is matching, assume a directory.
-      if (filePath.startsWith(path)) return new Payload(DIRECTORY_PLACEHOLDER);
+      // A longer path is a child only when the next character is a separator.
+      // Otherwise WikiPage.md would make WikiPage look like a directory.
+      if (filePath.startsWith(path + "/") || filePath.startsWith(path + File.separator)) {
+        return new Payload(DIRECTORY_PLACEHOLDER);
+      }
     }
     return null;
   }

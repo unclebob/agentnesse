@@ -7,6 +7,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WikiPageUtil {
 
@@ -85,12 +87,17 @@ public class WikiPageUtil {
   }
 
   public static List<String> getXrefPages(WikiPage page) {
-    if (page instanceof WikitextPage) {
-      List<String> result = new ArrayList<>();
-      ((WikitextPage) page).getSyntaxTree().findXrefs(result::add);
-      return result;
+    List<String> result = new ArrayList<>();
+    String content = page.getData().getContent();
+    Matcher link = Pattern.compile("\\]\\(([^)]+)\\)").matcher(content);
+    while (link.find()) {
+      result.add(link.group(1));
     }
-    return Collections.emptyList();
+    Matcher see = Pattern.compile("!see\\s+(?:\\[\\[[^\\]]*\\]\\[([^\\]]+)\\]\\]|([A-Za-z<.]\\S*))").matcher(content);
+    while (see.find()) {
+      result.add(see.group(1) != null ? see.group(1) : see.group(2));
+    }
+    return result;
   }
 
   public static boolean isTestPage(WikiPage page) {

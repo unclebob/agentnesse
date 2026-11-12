@@ -3,9 +3,6 @@ package fitnesse.wiki;
 import java.util.Map;
 import java.util.Optional;
 
-import fitnesse.wikitext.VariableSource;
-import fitnesse.wikitext.parser.Maybe;
-
 public class UrlPathVariableSource implements VariableSource {
   private final VariableSource systemVariables;
   private final Map<String,String> urlParams;
@@ -23,13 +20,4 @@ public class UrlPathVariableSource implements VariableSource {
 
     return systemVariables.findVariable(name);
   }
-
-  public Maybe<String> findUrlVariable(String name) {
-    if(urlParams != null && urlParams.containsKey(name)) {
-      return new Maybe<>(urlParams.get(name));
-    }
-
-    return Maybe.noString;
-  }
-
 }

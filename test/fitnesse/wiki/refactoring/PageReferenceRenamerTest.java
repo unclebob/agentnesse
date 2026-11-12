@@ -37,7 +37,7 @@ public class PageReferenceRenamerTest {
 
   @Test
   public void testReferencesOnPageOne_2() {
-    checkChangesOnPageOne("Stuff !-PageTwo-! Stuff\n", "Stuff !-PageTwo-! Stuff\n");
+    checkChangesOnPageOne("Stuff `PageTwo` Stuff\n", "Stuff `PageTwo` Stuff\n");
   }
 
   @Test
@@ -57,12 +57,12 @@ public class PageReferenceRenamerTest {
 
   @Test
   public void testReferencesOnPageOne_6() {
-    checkChangesOnPageOne("# Stuff PageTwo Stuff\n", "# Stuff PageTwo Stuff\n");
+    checkChangesOnPageOne("<!-- Stuff PageTwo Stuff -->\n", "<!-- Stuff PageTwo Stuff -->\n");
   }
 
   @Test
   public void testReferencesOnPageOne_7() {
-    checkChangesOnPageOne("{{{Stuff PageTwo Stuff}}}\n", "{{{Stuff PageTwo Stuff}}}\n");
+    checkChangesOnPageOne("```\nStuff PageTwo Stuff\n```\n", "```\nStuff PageTwo Stuff\n```\n");
   }
 
   @Test
@@ -174,7 +174,7 @@ public class PageReferenceRenamerTest {
 
   @Test
   public void testPathNotChanged() {
-    final String PATH_WIDGET = "!path PageTwo";
+    final String PATH_WIDGET = "```agentnesse\npath PageTwo\n```";
     checkChangesOnPageOne(PATH_WIDGET, PATH_WIDGET);
   }
 

@@ -281,10 +281,10 @@ public class DecisionTableTest extends SlimTableTestSupport<DecisionTable> {
   public void commentColumn() throws Exception {
     // TODO: a lot of copy and paste from the previous test
     String decisionTableWithComment =
-        "|DT:fixture|argument||\n" +
+        "|DT:fixture|argument|#|\n" +
           "|var|func?|#comment|\n" +
           "|3|5|comment|\n" +
-          "|7|9||\n";
+          "|7|9|.|\n";
     makeDecisionTableAndBuildInstructions(decisionTableWithComment);
     Map<String, Object> pseudoResults = makePseudoResultsForSimpleTable();
     SlimAssertion.evaluateExpectations(assertions, pseudoResults);
@@ -292,10 +292,10 @@ public class DecisionTableTest extends SlimTableTestSupport<DecisionTable> {
     String colorizedTable = decisionTable.getTable().toString();
     String expectedColorizedTable =
       "[" +
-        "[pass(DT:fixture), argument, ], " +
+        "[pass(DT:fixture), argument, #], " +
         "[var, func?, #comment], " +
         "[3, pass(5), comment], " +
-        "[7, fail(a=5;e=9), ]" +
+        "[7, fail(a=5;e=9), .]" +
         "]";
     assertEquals(expectedColorizedTable, colorizedTable);
   }

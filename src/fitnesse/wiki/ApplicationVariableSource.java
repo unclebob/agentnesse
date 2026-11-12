@@ -1,6 +1,5 @@
 package fitnesse.wiki;
 
-import fitnesse.wikitext.VariableSource;
 
 import java.util.Optional;
 
