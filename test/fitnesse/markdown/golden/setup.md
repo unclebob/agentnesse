@@ -1,4 +1,0 @@
-```agentnesse
-setup
-Import fixtures
-```

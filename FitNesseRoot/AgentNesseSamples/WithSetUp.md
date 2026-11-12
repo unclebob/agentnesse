@@ -7,11 +7,6 @@
 # With SetUp
 
 ```agentnesse
-setup
-Run the sibling SetUp page first.
-```
-
-```agentnesse
 include SetUp
 ```
 

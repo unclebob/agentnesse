@@ -18,10 +18,15 @@ public class MarkdownRenderTest {
 
   @Test
   public void eachAgentNesseCommandHasItsOwnClass() throws Exception {
-    for (String command : new String[] {"define", "setup", "teardown", "scenarios", "path", "contents", "alias"}) {
+    for (String command : new String[] {"define", "scenarios", "path", "contents", "alias"}) {
       assertGolden(command);
     }
     assertGolden("include");
+    for (String removed : new String[] {"setup", "teardown"}) {
+      String html = MarkdownRenderer.render("```agentnesse\n" + removed + "\nx\n```\n");
+      assertTrue(html, html.contains("unknown agentnesse command"));
+      assertTrue(html, html.contains(removed));
+    }
     String bad = MarkdownRenderer.render("```agentnesse\nnope\n```\n");
     assertTrue(bad.contains("agentnesse-error"));
     assertTrue(bad.contains("nope"));

@@ -1,4 +1,0 @@
-```agentnesse
-teardown
-| script |
-```

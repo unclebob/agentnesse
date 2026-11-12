@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public final class AgentNesseBlock {
   public static final Set<String> COMMANDS = Set.of(
-    "define", "include", "setup", "teardown", "scenarios", "path", "contents", "alias");
+    "define", "include", "scenarios", "path", "contents", "alias");
 
   private final String command;
   private final String argument;

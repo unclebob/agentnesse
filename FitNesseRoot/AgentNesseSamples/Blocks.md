@@ -12,16 +12,6 @@ define MAX
 ```
 
 ```agentnesse
-setup
-before the test
-```
-
-```agentnesse
-teardown
-after the test
-```
-
-```agentnesse
 scenarios
 Login
 ```
