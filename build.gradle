@@ -344,7 +344,27 @@ task verifyRemoved {
   }
 }
 
-check.dependsOn jacocoTestCoverageVerification, verifyRemoved
+task verifyNoIgnoredTests {
+  group = 'verification'
+  description = 'Fail the build if a unit test is ignored or disabled.'
+  doLast {
+    def failures = []
+    def root = file('test')
+    if (root.exists()) {
+      fileTree(dir: root, include: '**/*.java').each { javaFile ->
+        def text = javaFile.getText('UTF-8')
+        if (text.contains('@Ignore') || text.contains('@Disabled')) {
+          failures << javaFile.path
+        }
+      }
+    }
+    if (!failures.isEmpty()) {
+      throw new GradleException("Ignored or disabled tests are not allowed:\n" + failures.join('\n'))
+    }
+  }
+}
+
+check.dependsOn jacocoTestCoverageVerification, verifyRemoved, verifyNoIgnoredTests
 
 pitest {
   targetClasses = ['fit.*', 'fitnesse.*']
