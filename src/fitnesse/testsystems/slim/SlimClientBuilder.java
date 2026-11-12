@@ -190,31 +190,26 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
   }
 
   private int getSlimPortBase() {
-    try {
-      String port = getVariable("slim.port");
-      if (port == null) {
-        port = getVariable(SLIM_PORT);
-      }
-
-      if (port != null) {
-        return Integer.parseInt(port);
-      }
-    } catch (NumberFormatException e) {
-      // stick with default
-    }
-    return SLIM_USE_PIPE_PORT;
+    return integerVariable("slim.port", SLIM_PORT, SLIM_USE_PIPE_PORT);
   }
 
   private int getSlimPortPoolSize() {
+    return integerVariable("slim.pool.size", null, 10);
+  }
+
+  private int integerVariable(String primary, String alternate, int fallback) {
     try {
-      String poolSize = getVariable("slim.pool.size");
-      if (poolSize != null) {
-        return Integer.parseInt(poolSize);
+      String value = getVariable(primary);
+      if (value == null && alternate != null) {
+        value = getVariable(alternate);
+      }
+      if (value != null) {
+        return Integer.parseInt(value);
       }
     } catch (NumberFormatException e) {
       // stick with default
     }
-    return 10;
+    return fallback;
   }
 
   protected String determineSlimHost() {
@@ -235,24 +230,22 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
 
   protected int determineTimeout() {
     if (isDebug()) {
-      try {
-        String debugTimeout = getVariable("slim.debug.timeout");
-        if (debugTimeout != null) {
-          return Integer.parseInt(debugTimeout);
-        }
-      } catch (NumberFormatException e) {
-        // stick with default
+      Integer debugTimeout = optionalInteger("slim.debug.timeout");
+      if (debugTimeout != null) {
+        return debugTimeout;
       }
     }
+    Integer timeout = optionalInteger("slim.timeout");
+    return timeout == null ? 10 : timeout;
+  }
+
+  private Integer optionalInteger(String name) {
     try {
-      String timeout = getVariable("slim.timeout");
-      if (timeout != null) {
-        return Integer.parseInt(timeout);
-      }
+      String value = getVariable(name);
+      return value == null ? null : Integer.valueOf(value);
     } catch (NumberFormatException e) {
-      // stick with default
+      return null;
     }
-    return 10;
   }
 
   private boolean useManualStartForTestSystem() {

@@ -137,31 +137,38 @@ private List<String> pathsCache = new ArrayList<>();
    * names, so the result does not depend on {@link Class#getConstructors()} order.
    */
   Constructor<?> selectConstructor(Constructor<?>[] constructors, Object[] args) {
-    Constructor<?> bestByType = null;
-    int bestDiff = -1;
-    Constructor<?> bestByArity = null;
-
+    Choice choice = new Choice();
     for (Constructor<?> constructor : constructors) {
-      Class<?>[] constructorArgs = constructor.getParameterTypes();
-      if (constructorArgs.length != args.length) {
-        continue;
-      }
-      if (bestByArity == null || signatureComesFirst(constructor, bestByArity)) {
-        bestByArity = constructor;
-      }
+      consider(constructor, args, choice);
+    }
+    return choice.bestByType != null ? choice.bestByType : choice.bestByArity;
+  }
 
-      Object[] convertedArgs = getConvertedConstructorArgsTypes(constructor, args);
-      if (!hasConstructorArgsTypes(constructorArgs, convertedArgs)) {
-        continue;
-      }
-      int diff = getConstructorArgsConvertionDiff(args, convertedArgs);
-      if (bestByType == null || diff > bestDiff || (diff == bestDiff && signatureComesFirst(constructor, bestByType))) {
-        bestDiff = diff;
-        bestByType = constructor;
-      }
+  private void consider(Constructor<?> constructor, Object[] args, Choice choice) {
+    Class<?>[] constructorArgs = constructor.getParameterTypes();
+    if (constructorArgs.length != args.length) {
+      return;
+    }
+    if (choice.bestByArity == null || signatureComesFirst(constructor, choice.bestByArity)) {
+      choice.bestByArity = constructor;
     }
 
-    return bestByType != null ? bestByType : bestByArity;
+    Object[] convertedArgs = getConvertedConstructorArgsTypes(constructor, args);
+    if (!hasConstructorArgsTypes(constructorArgs, convertedArgs)) {
+      return;
+    }
+    int diff = getConstructorArgsConvertionDiff(args, convertedArgs);
+    if (choice.bestByType == null || diff > choice.bestDiff
+        || (diff == choice.bestDiff && signatureComesFirst(constructor, choice.bestByType))) {
+      choice.bestDiff = diff;
+      choice.bestByType = constructor;
+    }
+  }
+
+  private static final class Choice {
+    private Constructor<?> bestByType;
+    private int bestDiff = -1;
+    private Constructor<?> bestByArity;
   }
 
   private static boolean signatureComesFirst(Constructor<?> candidate, Constructor<?> incumbent) {
@@ -213,15 +220,18 @@ private List<String> pathsCache = new ArrayList<>();
     }
   }
 
+  private static final java.util.Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS = java.util.Map.of(
+    Long.TYPE, Long.class,
+    Double.TYPE, Double.class,
+    Float.TYPE, Float.class,
+    Integer.TYPE, Integer.class,
+    Character.TYPE, Character.class,
+    Short.TYPE, Short.class,
+    Byte.TYPE, Byte.class,
+    Boolean.TYPE, Boolean.class);
+
   private boolean isWrapper(Class<?> classArg, Class<?> classInputArg) {
-    return ((Long.TYPE.equals(classArg)) && (Long.class.equals(classInputArg)))
-            || ((Double.TYPE.equals(classArg)) && (Double.class.equals(classInputArg)))
-            || ((Float.TYPE.equals(classArg)) && (Float.class.equals(classInputArg)))
-            || ((Integer.TYPE.equals(classArg)) && (Integer.class.equals(classInputArg)))
-            || ((Character.TYPE.equals(classArg)) && (Character.class.equals(classInputArg)))
-            || ((Short.TYPE.equals(classArg)) && (Short.class.equals(classInputArg)))
-            || ((Byte.TYPE.equals(classArg)) && (Byte.class.equals(classInputArg)))
-            || ((Boolean.TYPE.equals(classArg)) && (Boolean.class.equals(classInputArg)));
+    return classInputArg.equals(PRIMITIVE_WRAPPERS.get(classArg));
   }
 
   protected Object newInstance(Constructor<?> constructor, Object... initargs) throws InvocationTargetException, InstantiationException, IllegalAccessException {

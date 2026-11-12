@@ -246,7 +246,9 @@ public abstract class SlimTable {
       return createEvaluationMessage(actual, expected);
     }
 
-    protected abstract SlimTestResult createEvaluationMessage(String actual, String expected);
+    protected SlimTestResult createEvaluationMessage(String actual, String expected) {
+      return null;
+    }
 
     @Override
     public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) {
@@ -591,24 +593,43 @@ public abstract class SlimTable {
     }
 
     private SlimTestResult doSimpleComparison() {
-      if (operation.equals("<") || operation.equals("!>="))
-        return simpleComparisonMessage(v < arg1);
-      else if (operation.equals(">") || operation.equals("!<="))
-        return simpleComparisonMessage(v > arg1);
-      else if (operation.equals(">=") || operation.equals("!<"))
-        return simpleComparisonMessage(v >= arg1);
-      else if (operation.equals("<=") || operation.equals("!>"))
-        return simpleComparisonMessage(v <= arg1);
-      else if (operation.equals("!="))
-        return simpleComparisonMessage(v != arg1);
-      else if (operation.equals("="))
-        return simpleComparisonMessage(v == arg1);
-      else if (operation.equals("~="))
-        return simpleComparisonMessage(approximatelyEqual(arg1Text, actual));
-      else if (operation.equals("!~="))
-        return simpleComparisonMessage(!approximatelyEqual(arg1Text, actual));
-      else
-        return null;
+      Boolean compared = compareOrdered();
+      if (compared == null) {
+        compared = compareEquality();
+      }
+      return compared == null ? null : simpleComparisonMessage(compared);
+    }
+
+    private Boolean compareOrdered() {
+      if ("<".equals(operation) || "!>=".equals(operation)) {
+        return v < arg1;
+      }
+      if (">".equals(operation) || "!<=".equals(operation)) {
+        return v > arg1;
+      }
+      if (">=".equals(operation) || "!<".equals(operation)) {
+        return v >= arg1;
+      }
+      if ("<=".equals(operation) || "!>".equals(operation)) {
+        return v <= arg1;
+      }
+      return null;
+    }
+
+    private Boolean compareEquality() {
+      if ("!=".equals(operation)) {
+        return v != arg1;
+      }
+      if ("=".equals(operation)) {
+        return v == arg1;
+      }
+      if ("~=".equals(operation)) {
+        return approximatelyEqual(arg1Text, actual);
+      }
+      if ("!~=".equals(operation)) {
+        return !approximatelyEqual(arg1Text, actual);
+      }
+      return null;
     }
 
     private SlimTestResult simpleComparisonMessage(boolean pass) {

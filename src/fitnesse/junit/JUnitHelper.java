@@ -8,10 +8,7 @@ import fitnesse.testrunner.run.TestRun;
 import fitnesse.testsystems.ConsoleExecutionLogListener;
 import fitnesse.testsystems.TestSummary;
 import fitnesse.testsystems.TestSystemListener;
-import fitnesse.wiki.PageCrawler;
-import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
-import fitnesse.wiki.WikiPagePath;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -105,9 +102,7 @@ public class JUnitHelper {
   }
 
   static WikiPage getSuiteRootPage(String suiteName, FitNesseContext context, Map<String, String> customProperties) {
-    WikiPagePath path = PathParser.parse(suiteName);
-    PageCrawler crawler = context.getRootPage(customProperties).getPageCrawler();
-    return crawler.getPage(path);
+    return context.getPage(suiteName, customProperties);
   }
 
   static MultipleTestsRunner createTestRunner(TestRun run, FitNesseContext context, boolean debugMode) {

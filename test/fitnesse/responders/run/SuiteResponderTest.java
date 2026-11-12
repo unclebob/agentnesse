@@ -3,9 +3,11 @@
 package fitnesse.responders.run;
 
 import fitnesse.FitNesseContext;
+import fitnesse.http.ChunkedResponse;
 import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
 import fitnesse.http.Response;
+import fitnesse.http.ResponseSender;
 import fitnesse.http.SimpleResponse;
 import fitnesse.reporting.BaseFormatter;
 import fitnesse.testutil.FitNesseUtil;
@@ -24,6 +26,7 @@ import util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import static fitnesse.wiki.WikiPageProperty.SUITES;
 import static org.junit.Assert.assertEquals;
@@ -435,6 +438,41 @@ public class SuiteResponderTest {
 
     String result = responder.getRerunPageName();
     assertEquals("RerunLastFailures_SuitePage_suiteFilter_smoke-foo", result);
+  }
+
+  @Test
+  public void outputIsSentUntilTheResponderCloses() throws Exception {
+    RecordingResponder responder = new RecordingResponder();
+    MockResponseSender sender = new MockResponseSender();
+    responder.attach(sender);
+    responder.addToResponse("hello");
+    assertSubString("hello", sender.sentData());
+
+    responder.setClosed();
+    responder.addToResponse("after");
+    assertNotSubString("after", sender.sentData());
+
+    responder = new RecordingResponder();
+    responder.attach(new ResponseSender() {
+      @Override
+      public void send(byte[] bytes) throws IOException {
+        throw new IOException("closed");
+      }
+
+      @Override
+      public void close() {
+      }
+    });
+    responder.addToResponse("boom");
+  }
+
+  private static class RecordingResponder extends SuiteResponder {
+    void attach(ResponseSender sender) throws Exception {
+      response = new ChunkedResponse("text", this);
+      Field field = ChunkedResponse.class.getDeclaredField("sender");
+      field.setAccessible(true);
+      field.set(response, sender);
+    }
   }
 
   private String runSuite() throws Exception {

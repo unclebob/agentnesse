@@ -1,5 +1,7 @@
 package fitnesse.testsystems.slim;
 
+import fitnesse.slim.SlimServer;
+import fitnesse.testsystems.slim.results.SlimExceptionResult;
 import fitnesse.testsystems.slim.results.SlimTestResult;
 import org.htmlparser.tags.TableColumn;
 import org.htmlparser.tags.TableRow;
@@ -11,6 +13,7 @@ import java.util.Collections;
 
 import static fitnesse.testsystems.slim.HtmlTable.qualifiesAsConvertedList;
 import static fitnesse.testsystems.slim.HtmlTable.qualifiesAsHtml;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -134,6 +137,19 @@ public class HtmlTableTest {
     cell.setTestResult(SlimTestResult.ignore("a message"));
 
     assertThat(cell.formatTestResult(), is("<span class=\"ignore\">a message</span>"));
+  }
+
+  @Test
+  public void anIgnoreExceptionMarksTheCellOnce() {
+    HtmlTable.Cell blank = new HtmlTable.Cell("was");
+    blank.setIgnoreResult(new SlimExceptionResult("id", null));
+    assertThat(blank.getContent(), is("was"));
+    blank.setIgnoreResult(new SlimExceptionResult("id", "again"));
+    assertThat(blank.getContent(), is("was"));
+
+    HtmlTable.Cell cell = new HtmlTable.Cell("was");
+    cell.setIgnoreResult(new SlimExceptionResult("id", SlimServer.EXCEPTION_IGNORE_SCRIPT_TEST_TAG));
+    assertThat(cell.getColumnNode().getChildrenHTML(), containsString("ignore"));
   }
 
   private HtmlTable getDummyTable() {

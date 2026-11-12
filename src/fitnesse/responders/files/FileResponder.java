@@ -145,27 +145,28 @@ public class FileResponder implements Responder {
   }
 
   public static String getContentType(String filename) {
-    String contentType = fileNameMap.getContentTypeFor(filename);
-    if (contentType == null) {
-      if (filename.endsWith(".css")) {
-        contentType = "text/css";
-      } else if (filename.endsWith(".js")) {
-        contentType = "text/javascript";
-      } else if (filename.endsWith(".jar")) {
-        contentType = "application/x-java-archive";
-      } else if ((filename.endsWith(".jpg")) || (filename.endsWith(".jpeg"))) {
-        contentType = "image/jpeg";
-      } else if (filename.endsWith(".png")) {
-        contentType = "image/png";
-      } else if (filename.endsWith(".gif")) {
-        contentType = "image/gif";
-      } else if (filename.endsWith(".svg")) {
-        contentType = "image/svg+xml";
-      } else {
-        contentType = "text/plain";
+    return contentType(filename, fileNameMap.getContentTypeFor(filename));
+  }
+
+  static String contentType(String filename, String fromMap) {
+    if (fromMap != null) {
+      return fromMap;
+    }
+    return contentTypeForExtension(filename);
+  }
+
+  private static String contentTypeForExtension(String filename) {
+    String[] suffixes = {".css", ".js", ".jar", ".jpg", ".jpeg", ".png", ".gif", ".svg"};
+    String[] types = {
+      "text/css", "text/javascript", "application/x-java-archive", "image/jpeg",
+      "image/jpeg", "image/png", "image/gif", "image/svg+xml"
+    };
+    for (int i = 0; i < suffixes.length; i++) {
+      if (filename.endsWith(suffixes[i])) {
+        return types[i];
       }
     }
-    return contentType;
+    return "text/plain";
   }
 
   public static boolean isInFilesDirectory(File rootPath, File file) throws IOException {

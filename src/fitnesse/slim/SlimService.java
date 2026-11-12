@@ -45,19 +45,22 @@ public class SlimService {
   private final Executor executor = Executors.newFixedThreadPool(5);
 
   public static void main(String[] args) throws IOException {
+    System.exit(run(args));
+  }
+
+  static int run(String[] args) throws IOException {
     Options options = parseCommandLine(args);
-    if (options != null) {
-      try {
-        startWithFactory(createJavaSlimFactory(options), options);
-        System.exit(0);
-      } catch (Exception e) {
-        e.printStackTrace();
-        System.err.println("Exiting as exception occured: " + e.getMessage());
-        System.exit(98);
-      }
-    } else {
+    if (options == null) {
       parseCommandLineFailed(args);
-      System.exit(97);
+      return 97;
+    }
+    try {
+      startWithFactory(createJavaSlimFactory(options), options);
+      return 0;
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.err.println("Exiting as exception occured: " + e.getMessage());
+      return 98;
     }
   }
 

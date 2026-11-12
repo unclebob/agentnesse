@@ -127,33 +127,33 @@ public class ScriptTable extends SlimTable {
   // returns a list of statements
   protected List<SlimAssertion> instructionsForRow(int row) throws TestExecutionException {
     String firstCell = table.getCellContents(0, row).trim();
-    List<SlimAssertion> assertions;
-    String match;
+    List<SlimAssertion> keyword = keywordInstructions(firstCell, row);
+    if (keyword != null)
+      return keyword;
+    String match = isSymbolAssignment(0, row);
+    if (match != null)
+      return actionAndAssign(match, row);
+    if (firstCell.isEmpty() || firstCell.trim().startsWith("#") || firstCell.trim().startsWith("*"))
+      return note(row);
+    return action(row);
+  }
+
+  private List<SlimAssertion> keywordInstructions(String firstCell, int row) throws TestExecutionException {
     if (firstCell.equalsIgnoreCase(getStartKeyword()))
-      assertions = startActor(row);
-    else if (firstCell.equalsIgnoreCase(getCheckKeyword()))
-      assertions = checkAction(row);
-    else if (firstCell.equalsIgnoreCase(getCheckNotKeyword()))
-      assertions = checkNotAction(row);
-    else if (firstCell.equalsIgnoreCase(getRejectKeyword()))
-      assertions = reject(row);
-    else if (firstCell.equalsIgnoreCase(getEnsureKeyword()))
-      assertions = ensure(row);
-    else if (firstCell.equalsIgnoreCase(getShowKeyword()))
-      assertions = show(row);
-    else if (firstCell.equalsIgnoreCase(getNoteKeyword()))
-      assertions = note(row);
-    else if ((match = isSymbolAssignment(0, row)) != null)
-      assertions = actionAndAssign(match, row);
-    else if (firstCell.isEmpty())
-      assertions = note(row);
-    else if (firstCell.trim().startsWith("#") || firstCell.trim().startsWith("*"))
-      assertions = note(row);
-    else {
-      // action() is for now the only function that returns a list of statements
-      assertions = action(row);
-    }
-    return assertions;
+      return startActor(row);
+    if (firstCell.equalsIgnoreCase(getCheckKeyword()))
+      return checkAction(row);
+    if (firstCell.equalsIgnoreCase(getCheckNotKeyword()))
+      return checkNotAction(row);
+    if (firstCell.equalsIgnoreCase(getRejectKeyword()))
+      return reject(row);
+    if (firstCell.equalsIgnoreCase(getEnsureKeyword()))
+      return ensure(row);
+    if (firstCell.equalsIgnoreCase(getShowKeyword()))
+      return show(row);
+    if (firstCell.equalsIgnoreCase(getNoteKeyword()))
+      return note(row);
+    return null;
   }
 
   protected List<SlimAssertion> actionAndAssign(String symbolName, int row) throws SyntaxError {
@@ -430,11 +430,6 @@ public class ScriptTable extends SlimTable {
     @Override
     public TestResult evaluateExpectation(Object returnValue) {
       table.substitute(getCol(), getRow(), replaceSymbolsWithFullExpansion(getExpected()));
-      return null;
-    }
-
-    @Override
-    protected SlimTestResult createEvaluationMessage(String actual, String expected) {
       return null;
     }
   }

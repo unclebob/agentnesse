@@ -198,17 +198,20 @@ public class WikiTestPage implements TestPage {
   }
 
   public WikiPage getSetUp() {
-    if (setUp == null && !isSuiteSetUpOrTearDownPage()) {
-      setUp = findInheritedPage(SET_UP);
-    }
+    setUp = inheritedPage(setUp, SET_UP);
     return setUp;
   }
 
   public WikiPage getTearDown() {
-    if (tearDown == null && !isSuiteSetUpOrTearDownPage()) {
-      tearDown = findInheritedPage(TEAR_DOWN);
-    }
+    tearDown = inheritedPage(tearDown, TEAR_DOWN);
     return tearDown;
+  }
+
+  private WikiPage inheritedPage(WikiPage cached, String pageName) {
+    if (cached == null && !isSuiteSetUpOrTearDownPage()) {
+      return findInheritedPage(pageName);
+    }
+    return cached;
   }
 
   protected boolean isSuiteSetUpOrTearDownPage() {

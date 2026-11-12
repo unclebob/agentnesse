@@ -29,31 +29,48 @@ public class CommandLine extends Option {
     boolean successfulParse = true;
     Option currentOption = this;
     for (int i = 0; successfulParse && i < args.length; i++) {
-      String arg = args[i];
-
-      if (currentOption != this && !currentOption.needsMoreArguments())
-        currentOption = this;
-
-      if (arg.startsWith("-")) {
-        if (currentOption.needsMoreArguments() && currentOption != this)
-          successfulParse = false;
-        else {
-          String argName = arg.startsWith("--") ? arg.substring(2) : arg.substring(1);
-          currentOption = possibleOptions.get(argName);
-          if (currentOption != null)
-            currentOption.active = true;
-          else
-            successfulParse = false;
-        }
-      } else if (currentOption.needsMoreArguments())
-        currentOption.addArgument(arg);
-      else // too many args
-        successfulParse = false;
-
+      Token token = readToken(currentOption, args[i]);
+      successfulParse = token.ok;
+      currentOption = token.option;
     }
-    if (successfulParse && currentOption.needsMoreArguments())
-      successfulParse = false;
-    return successfulParse;
+    return successfulParse && !currentOption.needsMoreArguments();
+  }
+
+  private Token readToken(Option currentOption, String arg) {
+    if (currentOption != this && !currentOption.needsMoreArguments()) {
+      currentOption = this;
+    }
+    if (arg.startsWith("-")) {
+      return readOption(currentOption, arg);
+    }
+    if (currentOption.needsMoreArguments()) {
+      currentOption.addArgument(arg);
+      return new Token(true, currentOption);
+    }
+    return new Token(false, currentOption);
+  }
+
+  private Token readOption(Option currentOption, String arg) {
+    if (currentOption.needsMoreArguments() && currentOption != this) {
+      return new Token(false, currentOption);
+    }
+    String argName = arg.startsWith("--") ? arg.substring(2) : arg.substring(1);
+    Option option = possibleOptions.get(argName);
+    if (option == null) {
+      return new Token(false, currentOption);
+    }
+    option.active = true;
+    return new Token(true, option);
+  }
+
+  private static final class Token {
+    private final boolean ok;
+    private final Option option;
+
+    private Token(boolean ok, Option option) {
+      this.ok = ok;
+      this.option = option;
+    }
   }
 
   public boolean hasOption(String optionName) {

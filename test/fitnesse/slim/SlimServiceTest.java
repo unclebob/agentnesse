@@ -114,6 +114,22 @@ public class SlimServiceTest extends SlimServiceTestBase {
   }
 
   @Test
+  public void badArgumentsExitWith97AndABadPortWith98() throws Exception {
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    PrintStream previous = System.err;
+    System.setErr(new PrintStream(err));
+    try {
+      assertEquals(97, SlimService.run(new String[]{"-not-an-option"}));
+      assertEquals(98, SlimService.run(new String[]{"99999"}));
+    } finally {
+      System.setErr(previous);
+    }
+    String text = err.toString();
+    assertTrue(text.contains("Invalid command line arguments"));
+    assertTrue(text.contains("Exiting as exception occured"));
+  }
+
+  @Test
   public void refusesAPortThatIsAlreadyTaken() throws Exception {
     try (ServerSocket held = new ServerSocket(0)) {
       SlimService.Options options = SlimService.parseCommandLine(new String[]{

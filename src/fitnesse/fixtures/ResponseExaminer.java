@@ -75,28 +75,36 @@ public class ResponseExaminer {
   }
 
   public void extractValueFromResponse() throws Exception {
-    setValue(null);
+    setValue(valueFor(type));
+  }
+
+  private String valueFor(String type) throws Exception {
     if (type.equals("contents"))
-      setValue(HtmlUtil.unescapeHTML(FitnesseFixtureContext.sender.sentData()));
-    else if (type.equals("fullContents"))
-      setValue(fullContents());
-    else if (type.equals("rawContents"))
-      setValue(FitnesseFixtureContext.sender.sentData());
-    else if (type.equals("stringContents"))
-      setValue(FitnesseFixtureContext.sender.toString());
-    else if (type.equals("pageContents"))
-      setValue(FitnesseFixtureContext.page.toString());
-    else if (type.equals("pageHtml"))
-      setValue(FitnesseFixtureContext.page.getHtml());
-    else if (type.equals("matchers"))
-      setValue(matcher.group(group));
-    else if (type.equals("status"))
-      setValue("" + FitnesseFixtureContext.response.getStatus());
-    else if (type.equals("headers")) {
+      return HtmlUtil.unescapeHTML(FitnesseFixtureContext.sender.sentData());
+    if (type.equals("fullContents"))
+      return fullContents();
+    if (type.equals("rawContents"))
+      return FitnesseFixtureContext.sender.sentData();
+    if (type.equals("stringContents"))
+      return FitnesseFixtureContext.sender.toString();
+    return pageValue(type);
+  }
+
+  private String pageValue(String type) throws Exception {
+    if (type.equals("pageContents"))
+      return FitnesseFixtureContext.page.toString();
+    if (type.equals("pageHtml"))
+      return FitnesseFixtureContext.page.getHtml();
+    if (type.equals("matchers"))
+      return matcher.group(group);
+    if (type.equals("status"))
+      return "" + FitnesseFixtureContext.response.getStatus();
+    if (type.equals("headers")) {
       String text = FitnesseFixtureContext.sender.sentData();
       int headerEnd = text.indexOf("\r\n\r\n");
-      setValue(text.substring(0, headerEnd + 2));
+      return text.substring(0, headerEnd + 2);
     }
+    return null;
   }
 
   public boolean matches() throws Exception {

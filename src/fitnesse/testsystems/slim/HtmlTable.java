@@ -407,56 +407,71 @@ public class HtmlTable implements Table {
               : originalContent;
       switch (testResult.getExecutionResult()) {
         case PASS:
-          if (testResult.hasExpected()) {
-            if (qualifiesAsHtml(testResult.getActual()) || qualifiesAsHtml(testResult.getExpected())) {
-              return String.format("<span class=\"pass\">%s</span>",
-                asHtml(testResult.getExpected()));
-            } else {
-              String[] expected = parseSymbol(testResult.getExpected());
-              return String.format("<span class=\"pass\">%s</span>",
-                HtmlUtil.escapeHTML(expected[0]) +
-                  HtmlUtil.escapeHTML(expected[1]) +
-                  HtmlUtil.escapeHTML(expected[2]));
-            }
-          } else {
-            return String.format("<span class=\"pass\">%s</span>", message);
-          }
+          return formatPass(message);
         case FAIL:
-          if (testResult.hasActual() && testResult.hasExpected()) {
-            if (qualifiesAsHtml(testResult.getActual()) || qualifiesAsHtml(testResult.getExpected())) {
-              return String.format("[%s] <span class=\"fail\">expected [%s]</span>",
-                  asHtml(testResult.getActual()),
-                  asHtml(testResult.getExpected()));
-            } else {
-              String[] actual = parseSymbol(testResult.getActual());
-              String[] expected = parseSymbol(testResult.getExpected());
-              return String.format("[%s] <span class=\"fail\">expected [%s]</span>",
-                HtmlUtil.escapeHTML(actual[0]) +
-                  HtmlDiffUtil.buildActual(actual[1], expected[1]) +
-                  HtmlUtil.escapeHTML(actual[2]),
-                HtmlUtil.escapeHTML(expected[0]) +
-                  new HtmlDiffUtil.ExpectedBuilder(testResult.getActual(), expected[1])
-                    .setOpeningTag("<span class=\"diff\">")
-                    .setClosingTag("</span>").build() +
-                  HtmlUtil.escapeHTML(expected[2]));
-            }
-          } else if ((testResult.hasActual() || testResult.hasExpected()) && testResult.hasMessage()) {
-            return String.format("[%s] <span class=\"fail\">%s</span>",
-                    asHtml(testResult.hasActual() ? testResult.getActual() : testResult.getExpected()),
-                    message);
-          }
-          return String.format("<span class=\"fail\">%s</span>", message);
+          return formatFail(message);
         case IGNORE:
-          // IGNORE + does not count === Test Not Run
-          if (testResult.doesCount()) {
-            return String.format("<span class=\"ignore\">%s</span>", message);
-          } else {
-            return String.format("%s <span class=\"ignore\">%s</span>", originalContent, message);
-          }
+          return formatIgnore(message);
         case ERROR:
-          return String.format("%s <span class=\"error\">%s</span>", originalContent, message);
+          return formatError(message);
       }
       return "Should not be here";
+    }
+
+    private String formatPass(String message) {
+      if (!testResult.hasExpected()) {
+        return String.format("<span class=\"pass\">%s</span>", message);
+      }
+      if (qualifiesAsHtml(testResult.getActual()) || qualifiesAsHtml(testResult.getExpected())) {
+        return String.format("<span class=\"pass\">%s</span>", asHtml(testResult.getExpected()));
+      }
+      String[] expected = parseSymbol(testResult.getExpected());
+      return String.format("<span class=\"pass\">%s</span>",
+        HtmlUtil.escapeHTML(expected[0]) +
+          HtmlUtil.escapeHTML(expected[1]) +
+          HtmlUtil.escapeHTML(expected[2]));
+    }
+
+    private String formatFail(String message) {
+      if (testResult.hasActual() && testResult.hasExpected()) {
+        return formatComparedFailure();
+      }
+      if ((testResult.hasActual() || testResult.hasExpected()) && testResult.hasMessage()) {
+        return String.format("[%s] <span class=\"fail\">%s</span>",
+                asHtml(testResult.hasActual() ? testResult.getActual() : testResult.getExpected()),
+                message);
+      }
+      return String.format("<span class=\"fail\">%s</span>", message);
+    }
+
+    private String formatComparedFailure() {
+      if (qualifiesAsHtml(testResult.getActual()) || qualifiesAsHtml(testResult.getExpected())) {
+        return String.format("[%s] <span class=\"fail\">expected [%s]</span>",
+            asHtml(testResult.getActual()),
+            asHtml(testResult.getExpected()));
+      }
+      String[] actual = parseSymbol(testResult.getActual());
+      String[] expected = parseSymbol(testResult.getExpected());
+      return String.format("[%s] <span class=\"fail\">expected [%s]</span>",
+        HtmlUtil.escapeHTML(actual[0]) +
+          HtmlDiffUtil.buildActual(actual[1], expected[1]) +
+          HtmlUtil.escapeHTML(actual[2]),
+        HtmlUtil.escapeHTML(expected[0]) +
+          new HtmlDiffUtil.ExpectedBuilder(testResult.getActual(), expected[1])
+            .setOpeningTag("<span class=\"diff\">")
+            .setClosingTag("</span>").build() +
+          HtmlUtil.escapeHTML(expected[2]));
+    }
+
+    private String formatIgnore(String message) {
+      if (testResult.doesCount()) {
+        return String.format("<span class=\"ignore\">%s</span>", message);
+      }
+      return String.format("%s <span class=\"ignore\">%s</span>", originalContent, message);
+    }
+
+    private String formatError(String message) {
+      return String.format("%s <span class=\"error\">%s</span>", originalContent, message);
     }
   }
 

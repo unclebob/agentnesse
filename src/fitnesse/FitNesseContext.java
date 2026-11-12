@@ -10,6 +10,7 @@ import fitnesse.testrunner.run.TestRunFactoryRegistry;
 import fitnesse.testsystems.TestSystemFactory;
 import fitnesse.testsystems.TestSystemListener;
 import fitnesse.util.StringUtils;
+import fitnesse.wiki.PathParser;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.UrlPathVariableSource;
 import fitnesse.wiki.WikiPage;
@@ -83,6 +84,10 @@ public class FitNesseContext {
 
   public WikiPage getRootPage(Map<String, String> customProperties) {
     return getRootPage(new UrlPathVariableSource(variableSource, customProperties));
+  }
+
+  public WikiPage getPage(String pageName, Map<String, String> customProperties) {
+    return getRootPage(customProperties).getPageCrawler().getPage(PathParser.parse(pageName));
   }
 
   private WikiPage getRootPage(VariableSource variableSource) {

@@ -117,82 +117,116 @@ public abstract class SlimTestSystem implements TestSystem {
 
   protected void processTable(SlimTable table, boolean isSuiteTearDownPage) throws TestExecutionException {
     List<SlimAssertion> assertions = table.getAssertions();
-    final Map<String, Object> instructionResults;
-    if (stopTestCalled && !table.isTearDown()) {
-      instructionResults = Collections.emptyMap();
-    } else if (ignoreAllTestsCalled && !table.isTearDown()){
-      instructionResults = Collections.emptyMap();
-    } else {
-      boolean tearDownOfAlreadyStartedTest = stopTestCalled && table.isTearDown();
-      if(ignoreAllTestsCalled && table.isTearDown()){
-        ignoreAllTestsCalled = false;
-      }
-      if (stopSuiteCalled && !isSuiteTearDownPage && !tearDownOfAlreadyStartedTest) {
-        instructionResults = Collections.emptyMap();
-      } else {
-        instructionResults = slimClient.invokeAndGetResponse(SlimAssertion.getInstructions(assertions));
-      }
-    }
+    evaluateTables(assertions, resultsFor(table, isSuiteTearDownPage, assertions));
+  }
 
-    evaluateTables(assertions, instructionResults);
+  private Map<String, Object> resultsFor(SlimTable table, boolean isSuiteTearDownPage, List<SlimAssertion> assertions) throws SlimCommunicationException {
+    if (skipBecauseStopped(table)) {
+      return Collections.emptyMap();
+    }
+    return resultsAfterStopFlags(table, isSuiteTearDownPage, assertions);
+  }
+
+  private boolean skipBecauseStopped(SlimTable table) {
+    return (stopTestCalled || ignoreAllTestsCalled) && !table.isTearDown();
+  }
+
+  private Map<String, Object> resultsAfterStopFlags(SlimTable table, boolean isSuiteTearDownPage, List<SlimAssertion> assertions) throws SlimCommunicationException {
+    boolean tearDownOfAlreadyStartedTest = stopTestCalled && table.isTearDown();
+    if (ignoreAllTestsCalled && table.isTearDown()) {
+      ignoreAllTestsCalled = false;
+    }
+    if (stopSuiteCalled && !isSuiteTearDownPage && !tearDownOfAlreadyStartedTest) {
+      return Collections.emptyMap();
+    }
+    return slimClient.invokeAndGetResponse(SlimAssertion.getInstructions(assertions));
   }
 
   protected void evaluateTables(List<SlimAssertion> assertions, Map<String, Object> instructionResults) throws SlimCommunicationException {
-    boolean IgnoreTestTable = false;
-    for (SlimAssertion a : assertions) {
-      final String key = a.getInstruction().getId();
-      Object returnValue = instructionResults.get(key);
-
-      //Ignore management
-      if(!ignoreAllTestsCalled) {
-        if (returnValue != null && returnValue.toString().contains(EXCEPTION_IGNORE_ALL_TESTS_TAG)) {
-          ignoreAllTestsCalled = IgnoreTestTable = true;
-        } else if (returnValue != null && returnValue.toString().contains(EXCEPTION_IGNORE_SCRIPT_TEST_TAG)) {
-          IgnoreTestTable = true;
-        } else if (IgnoreTestTable) {
-          returnValue = "IGNORE_SCRIPT_TEST";
-        }
+    boolean ignoreTestTable = false;
+    for (SlimAssertion assertion : assertions) {
+      final String key = assertion.getInstruction().getId();
+      Ignored ignored = applyIgnore(instructionResults.get(key), ignoreTestTable);
+      ignoreTestTable = ignored.ignoreTable;
+      if (isExceptionResult(ignored.value)) {
+        noteException(assertion, key, (String) ignored.value);
       } else {
-        returnValue = "IGNORE_SCRIPT_TEST";
+        noteResult(assertion, ignored.value);
       }
-      //Exception management
-      if (returnValue != null && returnValue instanceof String && ((String) returnValue).startsWith(EXCEPTION_TAG)) {
-        SlimExceptionResult exceptionResult = new SlimExceptionResult(key, (String) returnValue);
-        if (exceptionResult.isStopTestException()) {
-          stopTestCalled = true;
-          stopSuiteCalled = PageData.SUITE_SETUP_NAME.equals(testContext.getPageToTest().getName());
-        }
-        if (exceptionResult.isStopSuiteException()) {
-          stopTestCalled = stopSuiteCalled = true;
-        }
-        exceptionResult = a.getExpectation().evaluateException(exceptionResult);
-        if (exceptionResult != null) {
-          if (!exceptionResult.isCatchException())
-            testExceptionOccurred(a, exceptionResult);
-          else
-            testAssertionVerified(a, exceptionResult.catchTestResult());
-        }
-      } else {
-        //Normal results
-        TestResult testResult = a.getExpectation().evaluateExpectation(returnValue);
-        testAssertionVerified(a, testResult);
+    }
+  }
 
-        //Retrieve variables set during expectation step
-        if (testResult != null) {
-          Map<String, ?> variables = testResult.getVariablesToStore();
-          if (variables != null) {
-            List<Instruction> instructions = new ArrayList<>(variables.size());
-            int i = 0;
-            for (Entry<String, ?> variable : variables.entrySet()) {
-              instructions.add(new AssignInstruction("assign_" + i++, variable.getKey(), variable.getValue()));
-            }
-            //Store variables in context
-            if (i > 0) {
-              slimClient.invokeAndGetResponse(instructions);
-            }
-          }
-        }
-      }
+  private Ignored applyIgnore(Object returnValue, boolean ignoreTestTable) {
+    if (ignoreAllTestsCalled) {
+      return new Ignored("IGNORE_SCRIPT_TEST", true);
+    }
+    if (returnValue != null && returnValue.toString().contains(EXCEPTION_IGNORE_ALL_TESTS_TAG)) {
+      ignoreAllTestsCalled = true;
+      return new Ignored(returnValue, true);
+    }
+    if (returnValue != null && returnValue.toString().contains(EXCEPTION_IGNORE_SCRIPT_TEST_TAG)) {
+      return new Ignored(returnValue, true);
+    }
+    if (ignoreTestTable) {
+      return new Ignored("IGNORE_SCRIPT_TEST", true);
+    }
+    return new Ignored(returnValue, false);
+  }
+
+  private static boolean isExceptionResult(Object returnValue) {
+    return returnValue instanceof String && ((String) returnValue).startsWith(EXCEPTION_TAG);
+  }
+
+  private void noteException(SlimAssertion assertion, String key, String returnValue) throws SlimCommunicationException {
+    SlimExceptionResult exceptionResult = new SlimExceptionResult(key, returnValue);
+    if (exceptionResult.isStopTestException()) {
+      stopTestCalled = true;
+      stopSuiteCalled = PageData.SUITE_SETUP_NAME.equals(testContext.getPageToTest().getName());
+    }
+    if (exceptionResult.isStopSuiteException()) {
+      stopTestCalled = true;
+      stopSuiteCalled = true;
+    }
+    exceptionResult = assertion.getExpectation().evaluateException(exceptionResult);
+    if (exceptionResult == null) {
+      return;
+    }
+    if (exceptionResult.isCatchException()) {
+      testAssertionVerified(assertion, exceptionResult.catchTestResult());
+    } else {
+      testExceptionOccurred(assertion, exceptionResult);
+    }
+  }
+
+  private void noteResult(SlimAssertion assertion, Object returnValue) throws SlimCommunicationException {
+    TestResult testResult = assertion.getExpectation().evaluateExpectation(returnValue);
+    testAssertionVerified(assertion, testResult);
+    storeVariables(testResult);
+  }
+
+  private void storeVariables(TestResult testResult) throws SlimCommunicationException {
+    if (testResult == null) {
+      return;
+    }
+    Map<String, ?> variables = testResult.getVariablesToStore();
+    if (variables == null || variables.isEmpty()) {
+      return;
+    }
+    List<Instruction> instructions = new ArrayList<>(variables.size());
+    int i = 0;
+    for (Entry<String, ?> variable : variables.entrySet()) {
+      instructions.add(new AssignInstruction("assign_" + i++, variable.getKey(), variable.getValue()));
+    }
+    slimClient.invokeAndGetResponse(instructions);
+  }
+
+  private static final class Ignored {
+    private final Object value;
+    private final boolean ignoreTable;
+
+    private Ignored(Object value, boolean ignoreTable) {
+      this.value = value;
+      this.ignoreTable = ignoreTable;
     }
   }
 

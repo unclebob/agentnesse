@@ -13,7 +13,6 @@ import fitnesse.responders.editing.EditResponder;
 import fitnesse.testrunner.TestPageWithSuiteSetUpAndTearDown;
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testrunner.WikiTestPageUtil;
-import fitnesse.wiki.PageCrawler;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
@@ -38,9 +37,7 @@ public class WikiPageResponder implements Responder {
   }
 
   protected WikiPage loadPage(FitNesseContext context, String pageName, Map<String,String> inputs) {
-    WikiPagePath path = PathParser.parse(pageName);
-    PageCrawler crawler = context.getRootPage(inputs).getPageCrawler();
-    return crawler.getPage(path);
+    return context.getPage(pageName, inputs);
   }
 
   private Response notFoundResponse(FitNesseContext context, Request request) throws Exception {

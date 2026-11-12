@@ -22,6 +22,24 @@ public class WikiPagePropertyTest {
   }
 
   @Test
+  public void textShowsTheValueAndEachChild() {
+    property.set("child", new WikiPageProperty("nested"));
+    property.set("missing", (WikiPageProperty) null);
+
+    String text = property.toString();
+
+    assertTrue(text.contains("WikiPageProperty root = some value"));
+    assertTrue(text.contains("\tchild = nested"));
+    assertFalse(text.contains("missing"));
+  }
+
+  @Test
+  public void textOmitsTheValueWhenThereIsNone() {
+    WikiPageProperty empty = new WikiPageProperty();
+    assertEquals("WikiPageProperty root\n", empty.toString());
+  }
+
+  @Test
   public void testIsSerializable() throws Exception {
     assertTrue(property instanceof Serializable);
   }

@@ -163,43 +163,44 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     super.collectInitializationErrors(errors);
 
     this.suiteClass = getTestClass().getJavaClass();
+    readSuiteIdentity(errors);
+    readRunOptions(errors);
+  }
 
+  private void readSuiteIdentity(List<Throwable> errors) {
     try {
       this.suiteName = getSuiteName(suiteClass);
     } catch (Exception e) {
       errors.add(e);
     }
-
     try {
       this.outputDir = getOutputDir(suiteClass);
     } catch (Exception e) {
       errors.add(e);
     }
-
     try {
       this.suiteFilter = getSuiteFilter(suiteClass);
     } catch (Exception e) {
       errors.add(e);
     }
-
     try {
       this.suiteFilterAndStrategy = getSuiteFilterAndStrategy(suiteClass);
     } catch (Exception e) {
       errors.add(e);
     }
+  }
 
+  private void readRunOptions(List<Throwable> errors) {
     try {
       this.excludeSuiteFilter = getExcludeSuiteFilter(suiteClass);
     } catch (Exception e) {
       errors.add(e);
     }
-
     try {
       this.debugMode = useDebugMode(suiteClass);
     } catch (Exception e) {
       errors.add(e);
     }
-
     try {
       this.context = createContext(suiteClass);
     } catch (Exception e) {
@@ -217,15 +218,8 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     if (suiteAnnotation == null) {
       throw new InitializationError("There must be a @Suite annotation");
     }
-
-    if (!"".equals(suiteAnnotation.value())) {
-      return suiteAnnotation.value();
-    }
-    if (!"".equals(suiteAnnotation.systemProperty())) {
-      return System.getProperty(suiteAnnotation.systemProperty());
-    }
-    throw new InitializationError(
-            "In annotation @Suite you have to specify either 'value' or 'systemProperty'");
+    return requiredSetting(suiteAnnotation.value(), suiteAnnotation.systemProperty(),
+      "In annotation @Suite you have to specify either 'value' or 'systemProperty'");
   }
 
   protected String getOutputDir(Class<?> klass) throws InitializationError {
@@ -233,32 +227,15 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     if (outputDirAnnotation == null) {
       throw new InitializationError("There must be a @OutputDir annotation");
     }
-    if (!"".equals(outputDirAnnotation.value())) {
-      return outputDirAnnotation.value();
-    }
-    if (!"".equals(outputDirAnnotation.systemProperty())) {
-      String baseDir = System.getProperty(outputDirAnnotation.systemProperty());
-      File outputDir = new File(baseDir, outputDirAnnotation.pathExtension());
-      return outputDir.getAbsolutePath();
-    }
-    throw new InitializationError(
-            "In annotation @OutputDir you have to specify either 'value' or 'systemProperty'");
+    return requiredSetting(outputDirAnnotation.value(), outputDirAnnotation.systemProperty(),
+      "In annotation @OutputDir you have to specify either 'value' or 'systemProperty'",
+      property -> new File(System.getProperty(property), outputDirAnnotation.pathExtension()).getAbsolutePath());
   }
 
-  protected String getSuiteFilter(Class<?> klass)
-          throws Exception {
-    SuiteFilter suiteFilterAnnotation = klass.getAnnotation(SuiteFilter.class);
-    if (suiteFilterAnnotation == null) {
-      return null;
-    }
-    if (!"".equals(suiteFilterAnnotation.value())) {
-      return suiteFilterAnnotation.value();
-    }
-    if (!"".equals(suiteFilterAnnotation.systemProperty())) {
-      return System.getProperty(suiteFilterAnnotation.systemProperty());
-    }
-    throw new InitializationError(
-            "In annotation @SuiteFilter you have to specify either 'value' or 'systemProperty'");
+  protected String getSuiteFilter(Class<?> klass) throws Exception {
+    SuiteFilter annotation = klass.getAnnotation(SuiteFilter.class);
+    return annotation == null ? null : requiredSetting(annotation.value(), annotation.systemProperty(),
+      "In annotation @SuiteFilter you have to specify either 'value' or 'systemProperty'");
   }
 
   protected boolean getSuiteFilterAndStrategy(Class<?> klass) throws Exception {
@@ -269,20 +246,10 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     return suiteFilterAnnotation.andStrategy();
   }
 
-  protected String getExcludeSuiteFilter(Class<?> klass)
-          throws Exception {
-    ExcludeSuiteFilter excludeSuiteFilterAnnotation = klass.getAnnotation(ExcludeSuiteFilter.class);
-    if (excludeSuiteFilterAnnotation == null) {
-      return null;
-    }
-    if (!"".equals(excludeSuiteFilterAnnotation.value())) {
-      return excludeSuiteFilterAnnotation.value();
-    }
-    if (!"".equals(excludeSuiteFilterAnnotation.systemProperty())) {
-      return System.getProperty(excludeSuiteFilterAnnotation.systemProperty());
-    }
-    throw new InitializationError(
-            "In annotation @ExcludeSuiteFilter you have to specify either 'value' or 'systemProperty'");
+  protected String getExcludeSuiteFilter(Class<?> klass) throws Exception {
+    ExcludeSuiteFilter annotation = klass.getAnnotation(ExcludeSuiteFilter.class);
+    return annotation == null ? null : requiredSetting(annotation.value(), annotation.systemProperty(),
+      "In annotation @ExcludeSuiteFilter you have to specify either 'value' or 'systemProperty'");
   }
 
   protected boolean useDebugMode(Class<?> klass) throws Exception {
@@ -299,16 +266,24 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     if (fitnesseDirAnnotation == null) {
       throw new InitializationError("There must be a @FitnesseDir annotation");
     }
-    if (!"".equals(fitnesseDirAnnotation.value())) {
-      return fitnesseDirAnnotation.value();
+    return requiredSetting(fitnesseDirAnnotation.value(), fitnesseDirAnnotation.systemProperty(),
+      "In annotation @FitnesseDir you have to specify either 'value' or 'systemProperty'",
+      property -> new File(System.getProperty(property)).getAbsolutePath());
+  }
+
+  private String requiredSetting(String value, String systemProperty, String message) throws InitializationError {
+    return requiredSetting(value, systemProperty, message, System::getProperty);
+  }
+
+  private String requiredSetting(String value, String systemProperty, String message,
+                                 java.util.function.Function<String, String> fromProperty) throws InitializationError {
+    if (!"".equals(value)) {
+      return value;
     }
-    if (!"".equals(fitnesseDirAnnotation.systemProperty())) {
-      String baseDir = System.getProperty(fitnesseDirAnnotation.systemProperty());
-      File outputDir = new File(baseDir);
-      return outputDir.getAbsolutePath();
+    if (!"".equals(systemProperty)) {
+      return fromProperty.apply(systemProperty);
     }
-    throw new InitializationError(
-            "In annotation @FitnesseDir you have to specify either 'value' or 'systemProperty'");
+    throw new InitializationError(message);
   }
 
   protected String getFitNesseRoot(Class<?> klass) {

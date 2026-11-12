@@ -104,6 +104,49 @@ public class SimpleInteractionTest {
   }
 
   @Test
+  public void methodInvokeRethrowsTheTargetAndWrapsABadCall() throws Throwable {
+    SimpleInteraction interaction = new SimpleInteraction();
+    Method boom = Throws.class.getMethod("boom");
+    try {
+      interaction.methodInvoke(boom, new Throws());
+      fail("expected the target exception");
+    } catch (IllegalStateException e) {
+      assertEquals("boom", e.getMessage());
+    }
+
+    Method plus = Throws.class.getMethod("plus", int.class);
+    try {
+      interaction.methodInvoke(plus, null, "nope");
+      fail("expected a bad call");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("Bad call of:"));
+      assertFalse(e.getMessage().contains("On instance"));
+    }
+
+    Method hidden = Throws.class.getDeclaredMethod("hidden");
+    try {
+      interaction.methodInvoke(hidden, new Throws());
+      fail("expected an invocation failure");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("Exception when invoking:"));
+      assertTrue(e.getMessage().contains("On instance"));
+    }
+  }
+
+  public static class Throws {
+    public void boom() {
+      throw new IllegalStateException("boom");
+    }
+
+    public static int plus(int value) {
+      return value + 1;
+    }
+
+    private void hidden() {
+    }
+  }
+
+  @Test
   public void canCreateAndUseATestObject() throws Throwable {
     Integer expectedInt = new Integer(7);
     SimpleInteraction interaction = new SimpleInteraction();

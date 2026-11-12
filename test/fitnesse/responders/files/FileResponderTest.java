@@ -153,6 +153,20 @@ public class FileResponderTest {
   }
 
   @Test
+  public void extensionIsUsedWhenThePlatformHasNoType() {
+    assertEquals("text/css", FileResponder.contentType("a.css", null));
+    assertEquals("text/javascript", FileResponder.contentType("a.js", null));
+    assertEquals("application/x-java-archive", FileResponder.contentType("a.jar", null));
+    assertEquals("image/jpeg", FileResponder.contentType("a.jpg", null));
+    assertEquals("image/jpeg", FileResponder.contentType("a.jpeg", null));
+    assertEquals("image/png", FileResponder.contentType("a.png", null));
+    assertEquals("image/gif", FileResponder.contentType("a.gif", null));
+    assertEquals("image/svg+xml", FileResponder.contentType("a.svg", null));
+    assertEquals("text/plain", FileResponder.contentType("a.zz", null));
+    assertEquals("from-map", FileResponder.contentType("a.css", "from-map"));
+  }
+
+  @Test
   public void testCssMimeType() throws Exception {
     SampleFileUtility.addFile(context.getRootPagePath(), "/files/fitnesse.css", "body{color: red;}");
     request.setResource("files/fitnesse.css");

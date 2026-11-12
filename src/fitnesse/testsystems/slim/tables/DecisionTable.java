@@ -66,23 +66,25 @@ public class DecisionTable extends SlimTable {
     return callAndAssign(symbolName, getTableName(), functionName);
   }
 
-  private MethodExtractor prepareMethodExtractorIfNull(MethodExtractor current, String sourceVariableName) throws SyntaxError{
+  private MethodExtractor prepareMethodExtractorIfNull(MethodExtractor current, String sourceVariableName) throws SyntaxError {
+    if (current != null) {
+      return current;
+    }
+    return methodExtractor(sourceVariableName);
+  }
 
-  	if (current == null){
-  		String setterString = this.getTestContext().getPageToTest().getVariable(sourceVariableName);
-  		try{
-  		    if (setterString != null && !setterString.isEmpty() ) current = new MethodExtractor(setterString);
-  		    else{
-  		        current = new MethodExtractor();
-  		    }
-
-  		}catch (Exception cause ){
-  			SyntaxError sE =  new SyntaxError(sourceVariableName+ " variable could not be parsed:\n"+setterString+"\nCause:"+cause.getMessage());
-  			sE.initCause(cause);
-  			throw sE;
-  		}
-  	}
-  	return current;
+  private MethodExtractor methodExtractor(String sourceVariableName) throws SyntaxError {
+    String setterString = this.getTestContext().getPageToTest().getVariable(sourceVariableName);
+    try {
+      if (setterString != null && !setterString.isEmpty()) {
+        return new MethodExtractor(setterString);
+      }
+      return new MethodExtractor();
+    } catch (Exception cause) {
+      SyntaxError sE = new SyntaxError(sourceVariableName + " variable could not be parsed:\n" + setterString + "\nCause:" + cause.getMessage());
+      sE.initCause(cause);
+      throw sE;
+    }
   }
 
   private class ScenarioCaller extends DecisionTableCaller {

@@ -303,10 +303,6 @@ public class ScenarioTable extends SlimTable {
       return null;
     }
 
-    @Override
-    protected SlimTestResult createEvaluationMessage(String actual, String expected) {
-      return null;
-    }
   }
 
   // This context is mainly used to determine if the scenario table evaluated successfully

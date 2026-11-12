@@ -1,10 +1,17 @@
 package fitnesse.testsystems.slim;
 
+import fitnesse.testsystems.ClassPath;
+import fitnesse.testsystems.CommandRunner;
 import fitnesse.testsystems.Descriptor;
+import fitnesse.testsystems.MockCommandRunner;
+
+import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -97,6 +104,35 @@ public class SlimClientBuilderTest {
     Descriptor descriptor = mock(Descriptor.class);
     when(descriptor.getVariable("slim.debug.timeout")).thenReturn("30");
     assertEquals(10, new SlimClientBuilder(descriptor).determineTimeout());
+  }
+
+  @Test
+  public void manualStartConnectsToARunningSlimService() throws Exception {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.getVariable("SLIM_PORT")).thenReturn("9001");
+    when(descriptor.getVariable("MANUALLY_START_TEST_RUNNER")).thenReturn("true");
+    CommandRunner runner = new SlimClientBuilder(descriptor).determineCommandRunner();
+    assertTrue(runner instanceof MockCommandRunner);
+  }
+
+  @Test
+  public void manualStartOnDebugUsesTheDebugVariable() throws Exception {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.isDebug()).thenReturn(true);
+    when(descriptor.getVariable("SLIM_PORT")).thenReturn("9002");
+    when(descriptor.getVariable("manually.start.test.runner.on.debug")).thenReturn("true");
+    CommandRunner runner = new SlimClientBuilder(descriptor).determineCommandRunner();
+    assertTrue(runner instanceof MockCommandRunner);
+  }
+
+  @Test
+  public void manualStartIsOffWhenTheVariableIsNotTrue() throws Exception {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.getVariable("SLIM_PORT")).thenReturn("9003");
+    when(descriptor.getVariable("MANUALLY_START_TEST_RUNNER")).thenReturn("false");
+    when(descriptor.getClassPath()).thenReturn(new ClassPath(Collections.singletonList("."), System.getProperty("path.separator")));
+    CommandRunner runner = new SlimClientBuilder(descriptor).determineCommandRunner();
+    assertFalse(runner instanceof MockCommandRunner);
   }
 
   @Test

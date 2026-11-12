@@ -70,6 +70,46 @@ public class RequestTest {
   }
 
   @Test
+  public void cookieIsReadByNameAndMissingCookiesAreEmpty() throws Exception {
+    appendToMessage("GET /page HTTP/1.1\r\n");
+    appendToMessage("Cookie: session=abc; Theme=Dark; bare\r\n");
+    appendToMessage("\r\n");
+    parseMessage();
+
+    assertEquals("abc", request.getCookie("Session"));
+    assertEquals("Dark", request.getCookie("theme"));
+    assertEquals("", request.getCookie("missing"));
+  }
+
+  @Test
+  public void cookieHeaderCanBeAbsent() throws Exception {
+    appendToMessage("GET /page HTTP/1.1\r\n\r\n");
+    parseMessage();
+    assertEquals("", request.getCookie("session"));
+  }
+
+  @Test
+  public void requestTextListsHeadersAndInputs() throws Exception {
+    appendToMessage("GET /page?name=a%0Ab HTTP/1.1\r\n");
+    appendToMessage("X-Trace: hello\r\n");
+    appendToMessage("\r\n");
+    parseMessage();
+
+    String text = request.toString();
+    assertTrue(text.contains("x-trace"));
+    assertTrue(text.contains("hello"));
+    assertTrue(text.contains("name"));
+    assertTrue(text.contains("a|b"));
+  }
+
+  @Test
+  public void requestTextMarksEmptyHeaders() throws Exception {
+    appendToMessage("GET /page HTTP/1.1\r\n\r\n");
+    parseMessage();
+    assertTrue(request.toString().contains("Headers: (0)\n\tempty"));
+  }
+
+  @Test
   public void testSimpleRequest() throws Exception {
     appendToMessage("GET /request-uri HTTP/1.1\r\n");
     appendToMessage("\r\n");

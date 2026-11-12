@@ -218,33 +218,47 @@ public class WikiFilePage extends BaseWikitextPage implements FileBasedWikiPage 
   }
 
   private String propertiesYaml(final WikiPageProperty pageProperties) {
-    final WikiPageProperty defaultProperties = defaultPageProperties();
     final List<String> lines = new ArrayList<>();
-    for (String key : pageProperties.keySet()) {
-      if (isBooleanProperty(key)) {
-        if (!defaultProperties.has(key)) {
-          lines.add(key);
-        }
-      } else if (!WikiPageProperty.LAST_MODIFIED.equals(key)) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(key);
-        if (!isBlank(pageProperties.get(key))) {
-          builder.append(": ").append(pageProperties.get(key));
-        }
-        final WikiPageProperty subProperty = pageProperties.getProperty(key);
-        for (String pageName: subProperty.keySet()) {
-          builder.append("\n  ").append(pageName).append(": ").append(subProperty.get(pageName));
-        }
-        lines.add(builder.toString());
-      }
-    }
-    for (String key : defaultProperties.keySet()) {
-        if (isBooleanProperty(key) && !pageProperties.has(key)) {
-          lines.add(key + ": no");
-        }
-    }
+    collectPropertyLines(pageProperties, defaultPageProperties(), lines);
     Collections.sort(lines);
     return lines.isEmpty() ? "" : "---\n" + StringUtils.join(lines, '\n') + "\n---\n";
+  }
+
+  private void collectPropertyLines(WikiPageProperty pageProperties, WikiPageProperty defaults, List<String> lines) {
+    for (String key : pageProperties.keySet()) {
+      String line = lineFor(key, pageProperties, defaults);
+      if (line != null) {
+        lines.add(line);
+      }
+    }
+    for (String key : defaults.keySet()) {
+      if (isBooleanProperty(key) && !pageProperties.has(key)) {
+        lines.add(key + ": no");
+      }
+    }
+  }
+
+  private String lineFor(String key, WikiPageProperty pageProperties, WikiPageProperty defaults) {
+    if (isBooleanProperty(key)) {
+      return defaults.has(key) ? null : key;
+    }
+    if (WikiPageProperty.LAST_MODIFIED.equals(key)) {
+      return null;
+    }
+    return valuedLine(key, pageProperties);
+  }
+
+  private String valuedLine(String key, WikiPageProperty pageProperties) {
+    final StringBuilder builder = new StringBuilder();
+    builder.append(key);
+    if (!isBlank(pageProperties.get(key))) {
+      builder.append(": ").append(pageProperties.get(key));
+    }
+    final WikiPageProperty subProperty = pageProperties.getProperty(key);
+    for (String pageName : subProperty.keySet()) {
+      builder.append("\n  ").append(pageName).append(": ").append(subProperty.get(pageName));
+    }
+    return builder.toString();
   }
 
   private class WikiFilePageVersion implements FileVersion {
