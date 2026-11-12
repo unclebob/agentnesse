@@ -123,8 +123,8 @@ Test symbols by string comparison.
 |               | $symbol          | |
 
 
-Test custom comparator.
-The inverse comparator fitnesse.slim.test.InverseComparator negates the method String.equals(String).
+Test an unregistered comparator prefix.
+The inverse: prefix is not registered, so these cells fail as plain text.
 
 | script | Detailed Diff |
 | note  | everything not equals to 'abc' is ok |
