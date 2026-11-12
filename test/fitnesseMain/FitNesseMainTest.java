@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
 
@@ -257,7 +258,7 @@ public class FitNesseMainTest {
 
   @Test
   public void occupiedPortReturnsExitCodeOne() throws Exception {
-    try (ServerSocket socket = new ServerSocket(0)) {
+    try (ServerSocket socket = new ServerSocket(0, 50, InetAddress.getByName("127.0.0.1"))) {
       int exitCode = launch(new String[]{
         "-r", TEST_FITNESSE_ROOT, "-p", Integer.toString(socket.getLocalPort())});
       assertEquals(1, exitCode);
