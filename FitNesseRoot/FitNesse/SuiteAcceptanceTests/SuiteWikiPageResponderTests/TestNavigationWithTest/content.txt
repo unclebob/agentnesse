@@ -22,4 +22,4 @@ Examine the requested page to ensure the correct links are displayed in the corr
 |<a class="dropdown-item" href="/files" accesskey="f">Files</a>                     |true    |
 |<a class="dropdown-item" href="?search" accesskey="s">Search</a>                   |true    |
 |<a class="dropdown-item" href="?test&amp;remote_debug">Remote Debug</a>            |true    |
-|<a class="dropdown-item" href="/FitNesse.UserGuide" accesskey="">User Guide</a>    |true    |
+|<a class="dropdown-item" href="/FitNesse.UserGuide" accesskey="">User Guide</a>    |false   |

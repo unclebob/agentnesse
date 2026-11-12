@@ -125,7 +125,7 @@ The flexible pattern matching of the hybrid table can also be used to document y
  * describe the business logic for a column
  * or use GIVEN, WHEN, THEN verbosity in the table header directly
 
-compare the below two tables with the standard one on this page .FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable 
+compare the two tables below with a standard decision table 
 
 
 |should I buy milk|

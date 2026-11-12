@@ -1,7 +1,7 @@
 !2 The aim of the baseline decision table is to make tests easier to read.
 
 !3 Background
-The idea of a [[decision table][.FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable]] is to demonstrate how different combinations of input parameters generate different results.
+The idea of a decision table is to demonstrate how different combinations of input parameters generate different results.
 To make the impact of each parameter to the output results transparent it is good practice to modify just one parameter from row to row.
 For big tables with many input parameters it is often not immediately visible to the reader which parameter changes from row to row.
 
@@ -16,10 +16,10 @@ Don't repeat yourself is a good rule even when you write test cases. :)
 !3 Fixture Code
 When the baseline decision table is tested all empty columns are filled by the Slim test system with the corresponding values from the ''base scenario''. 
 In all other aspects the bahviour is identical to the decision table. 
-Your fixture code is identical to a [[decision table][.FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable]]. The fixture will not be able to identif any difference between a baseline decision table and a normal [[decision table][.FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable]].  
+Your fixture code is identical to a decision table. The fixture will not be able to identif any difference between a baseline decision table and a normal decision table.  
 
 !3 Example
-Let's look at an example which you know already from the [[Decision Table][.FitNesse.UserGuide.WritingAcceptanceTests.SliM.DecisionTable]]
+Let's look at an example of a decision table.
 
 !*>  Dependencies
 

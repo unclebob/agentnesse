@@ -1,5 +1,5 @@
 If a decision table is implemented with a class you can specify constructor arguments.
-See  .FitNesse.UserGuide.WritingAcceptanceTests.SliM.ConstructorArguments for details.
+Constructor arguments can be supplied on the decision table that calls a scenario.
 
 If a decision table is implemented with a scenario you can specify constructor arguments as well they have the following meaning:
  

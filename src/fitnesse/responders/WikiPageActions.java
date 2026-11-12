@@ -45,10 +45,6 @@ public class WikiPageActions {
 
   public boolean isWithVariablesScope() { return page != null; }
 
-  public boolean isWithUserGuide() {
-    return page != null;
-  }
-
   private boolean hasAction(String action) {
     PageData data = getData();
     return data != null && data.hasAttribute(action);

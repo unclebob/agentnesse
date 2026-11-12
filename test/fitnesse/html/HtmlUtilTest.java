@@ -101,7 +101,6 @@ public class HtmlUtilTest {
     assertSubString("<a class=\"dropdown-item\" href=\"" + pageName + "?refactor&amp;type=move\">Move</a>", html);
     assertSubString("<a class=\"dropdown-item\" href=\"/files\" accesskey=\"f\">Files</a>", html);
     assertSubString("<a class=\"dropdown-item\" href=\"?search\" accesskey=\"s\">Search</a>", html);
-    assertSubString("<a class=\"dropdown-item\" href=\"/FitNesse.UserGuide\" accesskey=\"\">User Guide</a>", html);
   }
 
   @Test

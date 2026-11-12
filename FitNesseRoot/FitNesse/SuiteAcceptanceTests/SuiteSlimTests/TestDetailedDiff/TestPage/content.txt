@@ -57,7 +57,7 @@ In this case detailed diff ist wanted.
 | 1          | 10            | partially different |
 |            | 1             | completly different |
 
-Test integers by value comparison, see <FitNesse.UserGuide.WritingAcceptanceTests.SliM.ValueComparisons
+Test integers by value comparison.
 In this case no detailed diff is wanted.
 
 | Detailed Diff |
@@ -83,7 +83,7 @@ In this case detailed diff is wanted.
 | 1.0           | 10               | partially different |
 |               | 1.0              | partially different |
 
-Test doubles by value comparison, see <FitNesse.UserGuide.WritingAcceptanceTests.SliM.ValueComparisons
+Test doubles by value comparison.
 In this case no detailed diff is wanted.
 
 | Detailed Diff |
@@ -123,7 +123,7 @@ Test symbols by string comparison.
 |               | $symbol          | |
 
 
-Test custom comparator, see <FitNesse.UserGuide.AdministeringFitNesse.ConfigurationFile
+Test custom comparator.
 The inverse comparator fitnesse.slim.test.InverseComparator negates the method String.equals(String).
 
 | script | Detailed Diff |

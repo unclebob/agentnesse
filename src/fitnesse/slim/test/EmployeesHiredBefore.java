@@ -6,7 +6,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
- * Used by FitNesse.UserGuide.SliM.QueryTable.
+ * Query-table fixture used by the acceptance tests.
  */
 public class EmployeesHiredBefore {
 

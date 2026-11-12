@@ -1,7 +1,7 @@
-!3 This page tests that [[!-TodaysDate-!][.FitNesse.UserGuide.FitNesseWiki.MarkupLanguageReference.TodaysDate]] (!-!today-!) renders in a preformatted text block
+!3 This page tests that !-!today-! renders in a preformatted text block
 
 #
- * First create a page with a preformatted text in it using [[!-TodaysDate-!][.FitNesse.UserGuide.FitNesseWiki.MarkupLanguageReference.TodaysDate]]
+ * First create a page with a preformatted text in it using !-!today-!
 #
 |script                                |
 |start|Page Builder                    |

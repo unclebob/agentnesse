@@ -3,7 +3,7 @@
 
 !1 Symbol Handling by Fixtures
 
-If you need advanced symbol handling in your [[!-TableTable-!][.FitNesse.FullReferenceGuide.UserGuide.WritingAcceptanceTests.SliM.TableTable]] fixtures than your fixture code must handle this.
+If you need advanced symbol handling in your table-table fixtures then your fixture code must handle this.
 Advanced means that you assign to a symbol a value and need to reference this new value again in the same table.
 Think if you really need this as it makes your code more complicated.
 
