@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -89,6 +90,28 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void commitWritesTheFrontMatterAndTheBody() throws Exception {
+    fileSystem.makeFile(new File("root/Notes.md"), "body\n");
+    WikiPage page = root.getChildPage("Notes");
+    PageData data = page.getData();
+    data.setContent("changed\n");
+    data.setAttribute("Test");
+    data.setAttribute("Suites", "smoke, slow");
+    data.setAttribute("Help", "helps");
+    data.setAttribute("Prune");
+    page.commit(data);
+
+    FrontMatter matter = FrontMatter.read(fileSystem.getContent(new File("root/Notes.md")));
+    assertEquals("test", matter.type());
+    assertEquals(List.of("smoke", "slow"), matter.tags());
+    assertEquals("helps", matter.help());
+    assertTrue(matter.prune());
+    assertEquals("changed\n", matter.body());
+    assertEquals("changed\n", page.getData().getContent());
+    assertTrue(page.getData().hasAttribute("Test"));
+  }
+
+  @Test
   public void aNamedChildHasNoFileUntilSomethingWritesIt() throws Exception {
     fileSystem.makeFile(new File("root/Notes.md"), "body\n");
     WikiPage page = root.getChildPage("Notes");
@@ -97,15 +120,13 @@ public class MarkdownPageTest {
     WikiPage child = page.addChildPage("Child");
     assertEquals("Child", child.getName());
     assertEquals("", child.getData().getContent());
+    PageData childData = child.getData();
+    childData.setContent("kid\n");
+    child.commit(childData);
+    assertEquals("kid\n", FrontMatter.read(fileSystem.getContent(new File("root/Notes/Child.md"))).body());
     page.removeChildPage("Child");
     page.remove();
     assertFalse(fileSystem.exists(new File("root/Notes.md")));
-    try {
-      page.commit(page.getData());
-      fail("markdown pages are not written yet");
-    } catch (RuntimeException expected) {
-      assertTrue(expected.getMessage().contains("not written"));
-    }
   }
 
   @Test
