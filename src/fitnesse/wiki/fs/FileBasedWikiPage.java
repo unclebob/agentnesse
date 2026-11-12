@@ -13,4 +13,5 @@ public interface FileBasedWikiPage extends WikiPage {
      */
   File getFileSystemPath();
 
+  WikiPage addMarkdownChild(String name);
 }

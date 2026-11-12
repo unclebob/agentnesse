@@ -29,6 +29,15 @@ public class PageBuilder {
     writer.println(line);
   }
 
+  public void markdownPage(String name) throws Exception {
+    PageCreator creator = new PageCreator();
+    creator.setPageName(name);
+    creator.setPageContents(stringWriter.toString());
+    creator.setPageAttributes(pageAttributes);
+    creator.markdown();
+    pageAttributes = null;
+  }
+
   public void page(String name) throws Exception {
     String content = stringWriter.toString();
     WikiPagePath path = PathParser.parse(name);

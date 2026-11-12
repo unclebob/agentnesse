@@ -2,9 +2,11 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.fixtures;
 
+import java.util.List;
 import java.util.StringTokenizer;
 
 import fitnesse.wiki.*;
+import fitnesse.wiki.fs.FileBasedWikiPage;
 
 public class PageCreator {
   public String pageName;
@@ -12,13 +14,31 @@ public class PageCreator {
   public String pageAttributes;
 
   public boolean valid() throws Exception {
+    return store(false);
+  }
+
+  public boolean markdown() throws Exception {
+    return store(true);
+  }
+
+  private boolean store(boolean markdown) throws Exception {
     if (pageContents != null) {
       pageContents = pageContents.replaceAll("<br>", "\n");
       pageContents = pageContents.replaceAll("<br/>", "\n");
     }
     WikiPage root = FitnesseFixtureContext.context.getRootPage();
     WikiPagePath pagePath = PathParser.parse(pageName);
-    WikiPage thePage = WikiPageUtil.addPage(root, pagePath, pageContents);
+    WikiPage thePage = markdown ? addMarkdown(root, pagePath) : WikiPageUtil.addPage(root, pagePath, pageContents);
+    if (markdown) {
+      PageData data = thePage.getData();
+      data.setContent(pageContents == null ? "" : pageContents);
+      if (pageAttributes != null && !pageAttributes.isEmpty()) {
+        setAttributes(data);
+      }
+      thePage.commit(data);
+      setPageAttributes("");
+      return true;
+    }
     if (pageAttributes != null && !pageAttributes.isEmpty()) {
       PageData data = thePage.getData();
       setAttributes(data);
@@ -26,6 +46,23 @@ public class PageCreator {
       setPageAttributes("");
     }
     return true;
+  }
+
+  private WikiPage addMarkdown(WikiPage root, WikiPagePath path) {
+    List<String> names = path.getNames();
+    WikiPage parent = root;
+    for (int i = 0; i < names.size() - 1; i++) {
+      parent = markdownChild(parent, names.get(i));
+    }
+    return markdownChild(parent, names.get(names.size() - 1));
+  }
+
+  private WikiPage markdownChild(WikiPage parent, String name) {
+    WikiPage existing = parent.getChildPage(name);
+    if (existing != null) {
+      return existing;
+    }
+    return ((FileBasedWikiPage) parent).addMarkdownChild(name);
   }
 
   private void setAttributes(PageData data) throws Exception {

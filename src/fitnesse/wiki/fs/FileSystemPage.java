@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import fitnesse.markdown.MarkdownPage;
 import fitnesse.wiki.*;
 import fitnesse.wikitext.VariableSource;
 import util.FileUtil;
@@ -80,6 +81,12 @@ public class FileSystemPage extends BaseWikitextPage implements FileBasedWikiPag
   }
 
   @Override
+  public WikiPage addMarkdownChild(String name) {
+    FileSystemSubWikiPageFactory children = (FileSystemSubWikiPageFactory) subWikiPageFactory;
+    return new MarkdownPage(new File(getFileSystemPath(), name + MarkdownPage.EXTENSION), name, this,
+      children.fileSystem(), versionsController, getVariableSource(), children.pages());
+  }
+
   public WikiPage addChildPage(String pageName) {
     WikiPage page = getChildPage(pageName);
     if (page == null) {

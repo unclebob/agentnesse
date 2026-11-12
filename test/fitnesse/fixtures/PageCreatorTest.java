@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import fitnesse.markdown.MarkdownPage;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
 import org.junit.After;
@@ -41,6 +42,17 @@ public class PageCreatorTest {
     assertTrue(creator.valid());
     WikiPage testPage = FitnesseFixtureContext.context.getRootPage().getChildPage("TestPage");
     return testPage;
+  }
+
+  @Test
+  public void aMarkdownPageIsStoredWithJsonFrontMatter() throws Exception {
+    PageDriver driver = new PageDriver();
+    driver.createMarkdownPageWithContent("MarkdownNotes", "# Hello");
+    WikiPage page = FitnesseFixtureContext.context.getRootPage().getChildPage("MarkdownNotes");
+
+    assertEquals(MarkdownPage.class, page.getClass());
+    assertEquals("# Hello", page.getData().getContent());
+    assertTrue(page.getHtml().contains("Hello"));
   }
 
   @Test

@@ -48,6 +48,14 @@ public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
     return makeChildPage(new File(parent, childName), childName, page);
   }
 
+  public FileSystem fileSystem() {
+    return fileSystem;
+  }
+
+  public WikiPageFactory pages() {
+    return factory;
+  }
+
   private WikiPage makeChildPage(File path, String childName, FileBasedWikiPage parent) {
      return factory.makePage(path, childName, parent, variableSource);
   }

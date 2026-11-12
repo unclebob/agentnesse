@@ -30,6 +30,12 @@ public class PageDriver {
   private ResponseRequester requester = new ResponseRequester();
   private ResponseExaminer examiner = new ResponseExaminer();
 
+  public void createMarkdownPageWithContent(String pageName, String content) throws Exception {
+    creator.pageName = pageName;
+    creator.pageContents = content;
+    creator.markdown();
+  }
+
   public void createPageWithContent(String pageName, String content) throws Exception {
     creator.pageName = pageName;
     creator.pageContents = content;

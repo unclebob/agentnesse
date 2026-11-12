@@ -32,8 +32,8 @@ import java.util.List;
  * One Markdown file. Children are not stored on this page yet.
  */
 public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
-  static final String EXTENSION = ".md";
-  static final String ROOT_FILE = "_root.md";
+  public static final String EXTENSION = ".md";
+  public static final String ROOT_FILE = "_root.md";
 
   private final File path;
   private final FileSystem fileSystem;
@@ -42,7 +42,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   private final WikiPageFactory pages;
   private PageData pageData;
 
-  MarkdownPage(File path, String name, WikiPage parent, FileSystem fileSystem, WikiFiles versions,
+  public MarkdownPage(File path, String name, WikiPage parent, FileSystem fileSystem, WikiFiles versions,
                VariableSource variableSource, WikiPageFactory pages) {
     super(name, parent);
     this.path = path;
@@ -63,6 +63,11 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   @Override
   public WikiPage addChildPage(String name) {
+    return addMarkdownChild(name);
+  }
+
+  @Override
+  public WikiPage addMarkdownChild(String name) {
     return new MarkdownPage(new File(getFileSystemPath(), name + EXTENSION), name, this, fileSystem, versions, variableSource, pages);
   }
 

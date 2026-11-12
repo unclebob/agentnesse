@@ -1,5 +1,6 @@
 package fitnesse.wiki.fs;
 
+import fitnesse.markdown.MarkdownPage;
 import fitnesse.wiki.*;
 import fitnesse.wikitext.ParsingPage;
 import fitnesse.wikitext.VariableSource;
@@ -49,6 +50,12 @@ public class WikiFilePage extends BaseWikitextPage implements FileBasedWikiPage 
   }
 
   @Override
+  public WikiPage addMarkdownChild(String name) {
+    FileSystemSubWikiPageFactory children = (FileSystemSubWikiPageFactory) subWikiPageFactory;
+    return new MarkdownPage(new File(getFileSystemPath(), name + MarkdownPage.EXTENSION), name, this,
+      children.fileSystem(), versionsController, getVariableSource(), children.pages());
+  }
+
   public WikiPage addChildPage(final String childName) {
     return new WikiFilePage(new File(getFileSystemPath(), childName + FILE_EXTENSION), childName, this, null, this.versionsController, this.subWikiPageFactory, this.getVariableSource());
   }
