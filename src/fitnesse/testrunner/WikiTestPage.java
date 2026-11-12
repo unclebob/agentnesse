@@ -1,5 +1,6 @@
 package fitnesse.testrunner;
 
+import fitnesse.markdown.MarkdownPage;
 import fitnesse.testsystems.ClassPath;
 import fitnesse.testsystems.TestPage;
 import fitnesse.wiki.BaseWikitextPage;
@@ -39,12 +40,52 @@ public class WikiTestPage implements TestPage {
   public String getHtml() {
 
     // -AJM- Okay, this is not as clean as I'd like it to be, but for now it does the trick
+    if (sourcePage instanceof MarkdownPage) {
+      return markdownHtml();
+    }
     if (containsWikitext()) {
       String content = getDecoratedContent();
       return MarkUpSystem.make(content).parse(BaseWikitextPage.makeParsingPage((BaseWikitextPage) sourcePage), content).translateToHtml();
     } else {
       return sourcePage.getHtml();
     }
+  }
+
+  private String markdownHtml() {
+    StringBuilder html = new StringBuilder();
+    addLeadingHtml(html);
+    html.append(sourcePage.getHtml());
+    addTrailingHtml(html);
+    return html.toString();
+  }
+
+  protected void addLeadingHtml(StringBuilder html) {
+    appendPages(html, getScenarioLibraries());
+    appendPage(html, getSetUp());
+  }
+
+  protected void addTrailingHtml(StringBuilder html) {
+    appendPage(html, getTearDown());
+  }
+
+  protected void appendPages(StringBuilder html, List<WikiPage> pages) {
+    if (pages == null) {
+      return;
+    }
+    for (WikiPage page : pages) {
+      appendPage(html, page);
+    }
+  }
+
+  private void appendPage(StringBuilder html, WikiPage page) {
+    if (page == null) {
+      return;
+    }
+    html.append("<details class=\"agentnesse-include\"><summary>")
+      .append(page.getName())
+      .append("</summary>")
+      .append(page.getHtml())
+      .append("</details>\n");
   }
 
   private boolean containsWikitext() {

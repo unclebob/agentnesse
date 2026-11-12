@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import fitnesse.components.TraversalListener;
+import fitnesse.markdown.MarkdownPage;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikitextPage;
 
@@ -119,6 +120,9 @@ public class ClassPathBuilder {
       List<String> result = new ArrayList<>();
       ((WikitextPage) page).getSyntaxTree().findPaths(result::add);
       return result;
+    }
+    if (page instanceof MarkdownPage) {
+      return ((MarkdownPage) page).paths();
     }
     return Collections.emptyList();
   }

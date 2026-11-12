@@ -6,6 +6,7 @@ import fitnesse.wiki.PageData;
 import fitnesse.wiki.PageType;
 import fitnesse.wiki.PageVariableSource;
 import fitnesse.wiki.PathParser;
+import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.VersionInfo;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageLoadException;
@@ -135,9 +136,38 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     throw new WikiPageLoadException("Page versions are not kept: " + versionName);
   }
 
+  public List<String> paths() {
+    return PathLines.from(expand(getData().getContent()));
+  }
+
   @Override
   public String getHtml() {
-    return MarkdownRenderer.render(expand(getData().getContent()), this::pageExists, contentsLinks());
+    return render(getData().getContent());
+  }
+
+  private String render(String content) {
+    return MarkdownRenderer.render(expand(content), this::pageExists, contentsLinks(), this::includedHtml);
+  }
+
+  private String includedHtml(String name) {
+    String pageName = name;
+    int breakAt = pageName.indexOf('\n');
+    if (breakAt >= 0) {
+      pageName = pageName.substring(0, breakAt);
+    }
+    WikiPagePath includedPath = PathParser.parse(pageName.trim());
+    if (includedPath == null) {
+      return "";
+    }
+    WikiPage included = getPageCrawler().getSiblingPage(includedPath);
+    if (included == null || samePage(included)) {
+      return "";
+    }
+    return included.getHtml();
+  }
+
+  private boolean samePage(WikiPage included) {
+    return PathParser.render(included.getFullPath()).equals(PathParser.render(getFullPath()));
   }
 
   private List<ContentsLink> contentsLinks() {

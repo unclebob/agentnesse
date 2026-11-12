@@ -76,6 +76,17 @@ public final class AgentNesseBlock {
     return div.htmlInline() + "\n";
   }
 
+  public String includeWith(String body) {
+    HtmlTag summary = new HtmlTag("summary");
+    summary.add(new HtmlText(includeName()));
+    return "<details class=\"agentnesse-include\">" + summary.htmlInline() + body + "</details>\n";
+  }
+
+  private String includeName() {
+    int newline = argument.indexOf('\n');
+    return (newline < 0 ? argument : argument.substring(0, newline)).trim();
+  }
+
   private String includeHtml() {
     String name = argument;
     String more = "";

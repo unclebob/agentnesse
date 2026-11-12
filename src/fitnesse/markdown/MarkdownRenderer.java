@@ -8,6 +8,7 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public final class MarkdownRenderer {
@@ -25,6 +26,11 @@ public final class MarkdownRenderer {
   }
 
   public static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children) {
+    return render(markdown, pageExists, children, null);
+  }
+
+  public static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
+                              Function<String, String> includedHtml) {
     Parser parser = Parser.builder().extensions(EXTENSIONS).build();
     Set<String> headingIds = new HashSet<>();
     HtmlRenderer html = HtmlRenderer.builder()
@@ -32,7 +38,7 @@ public final class MarkdownRenderer {
       .extensions(EXTENSIONS)
       .nodeRendererFactory(context -> new WikiWordNodeRenderer(context, pageExists))
       .nodeRendererFactory(context -> new HeadingRenderer(context, headingIds))
-      .nodeRendererFactory(context -> new AgentNesseBlockRenderer(context, children))
+      .nodeRendererFactory(context -> new AgentNesseBlockRenderer(context, children, includedHtml))
       .build();
     return html.render(parser.parse(markdown == null ? "" : markdown));
   }

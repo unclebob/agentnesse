@@ -17,6 +17,18 @@ public class TestPageWithSuiteSetUpAndTearDown extends WikiTestPage {
   }
 
   @Override
+  protected void addLeadingHtml(StringBuilder html) {
+    appendPages(html, getSuiteSetUps());
+    super.addLeadingHtml(html);
+  }
+
+  @Override
+  protected void addTrailingHtml(StringBuilder html) {
+    super.addTrailingHtml(html);
+    appendPages(html, getSuiteTearDowns());
+  }
+
+  @Override
   protected void includeSetUps(StringBuilder decoratedContent) {
     List<WikiPage> setups = getSuiteSetUps();
     includePages("Suite Set Ups", setups, this::includeSetUp, decoratedContent);

@@ -8,14 +8,18 @@ import org.commonmark.renderer.html.HtmlWriter;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 final class AgentNesseBlockRenderer implements NodeRenderer {
   private final HtmlWriter writer;
   private final List<ContentsLink> children;
+  private final Function<String, String> includedHtml;
 
-  AgentNesseBlockRenderer(HtmlNodeRendererContext context, List<ContentsLink> children) {
+  AgentNesseBlockRenderer(HtmlNodeRendererContext context, List<ContentsLink> children,
+                          Function<String, String> includedHtml) {
     this.writer = context.getWriter();
     this.children = children;
+    this.includedHtml = includedHtml;
   }
 
   @Override
@@ -32,12 +36,20 @@ final class AgentNesseBlockRenderer implements NodeRenderer {
     }
     try {
       AgentNesseBlock block = AgentNesseBlock.parse(code.getLiteral());
-      writer.raw("contents".equals(block.command())
-        ? AgentNesseBlock.contentsHtml(children)
-        : block.html());
+      writer.raw(html(block));
     } catch (IllegalArgumentException e) {
       writer.raw("<div class=\"agentnesse-error\">" + e.getMessage() + "</div>\n");
     }
+  }
+
+  private String html(AgentNesseBlock block) {
+    if ("contents".equals(block.command())) {
+      return AgentNesseBlock.contentsHtml(children);
+    }
+    if ("include".equals(block.command()) && includedHtml != null) {
+      return block.includeWith(includedHtml.apply(block.argument()));
+    }
+    return block.html();
   }
 
   private void renderCode(FencedCodeBlock code) {
