@@ -197,6 +197,30 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void aDefineIsAVariableHereAndOnAChild() throws Exception {
+    fileSystem.makeFile(new File("root/SuiteDemo.md"), """
+      { "type": "suite" }
+      ```agentnesse
+      define MAX
+      3
+      ```
+      limit ${MAX}
+      """);
+    fileSystem.makeFile(new File("root/SuiteDemo/TestChild.md"), "child ${MAX} ${PAGE_NAME}\n");
+
+    WikiPage parent = root.getChildPage("SuiteDemo");
+    WikiPage child = parent.getChildPage("TestChild");
+
+    assertEquals("3", parent.getVariable("MAX"));
+    assertTrue(parent.getHtml().contains("limit 3"));
+    assertEquals("3", child.getVariable("MAX"));
+    assertEquals("TestChild", child.getVariable("PAGE_NAME"));
+    String html = child.getHtml();
+    assertTrue(html, html.contains("child 3"));
+    assertTrue(html, html.contains(">TestChild</a>"));
+  }
+
+  @Test
   public void aWikiFileStaysAWikiFile() throws Exception {
     fileSystem.makeFile(new File("root/WikiPage.wiki"), "stuff");
 

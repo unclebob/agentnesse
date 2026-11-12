@@ -1,8 +1,10 @@
 package fitnesse.markdown;
 
+import fitnesse.wiki.ApplicationVariableSource;
 import fitnesse.wiki.BaseWikiPage;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PageType;
+import fitnesse.wiki.PageVariableSource;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.VersionInfo;
 import fitnesse.wiki.WikiPage;
@@ -15,7 +17,13 @@ import fitnesse.wiki.fs.FileSystemSubWikiPageFactory;
 import fitnesse.wiki.fs.FileVersion;
 import fitnesse.wiki.fs.SubWikiPageFactory;
 import fitnesse.wiki.fs.WikiFiles;
+import fitnesse.wikitext.CompositeVariableSource;
+import fitnesse.wikitext.ParsingPage;
 import fitnesse.wikitext.VariableSource;
+
+import org.commonmark.node.FencedCodeBlock;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -26,7 +34,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * One Markdown file. Children are not stored on this page yet.
@@ -34,6 +47,7 @@ import java.util.List;
 public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   public static final String EXTENSION = ".md";
   public static final String ROOT_FILE = "_root.md";
+  private static final Pattern VARIABLE = Pattern.compile("\\$\\{([^}]+)}");
 
   private final File path;
   private final FileSystem fileSystem;
@@ -122,7 +136,18 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   @Override
   public String getHtml() {
-    return MarkdownRenderer.render(getData().getContent(), this::pageExists);
+    return MarkdownRenderer.render(expand(getData().getContent()), this::pageExists);
+  }
+
+  private String expand(String content) {
+    Matcher matcher = VARIABLE.matcher(content);
+    StringBuilder expanded = new StringBuilder();
+    while (matcher.find()) {
+      String value = getVariable(matcher.group(1));
+      matcher.appendReplacement(expanded, Matcher.quoteReplacement(value == null ? matcher.group() : value));
+    }
+    matcher.appendTail(expanded);
+    return expanded.toString();
   }
 
   private boolean pageExists(String wikiWord) {
@@ -142,7 +167,78 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   @Override
   public String getVariable(String name) {
-    return null;
+    VariableSource source = new CompositeVariableSource(
+      this::pageNames,
+      new ApplicationVariableSource(variableSource),
+      new PageVariableSource(this),
+      this::defined,
+      new ParsingPage.ParentPageVariableSource(this),
+      variableSource);
+    return source.findVariable(name).orElse(null);
+  }
+
+  private Optional<String> pageNames(String name) {
+    if ("PAGE_NAME".equals(name)) {
+      return Optional.of(getName());
+    }
+    if ("PAGE_PATH".equals(name)) {
+      return Optional.of(getFullPath().parentPath().toString());
+    }
+    return Optional.empty();
+  }
+
+  private Optional<String> defined(String name) {
+    return Optional.ofNullable(defines().get(name));
+  }
+
+  private Map<String, String> defines() {
+    Map<String, String> values = new LinkedHashMap<>();
+    collectDefines(Parser.builder().build().parse(getData().getContent()), values);
+    return values;
+  }
+
+  private void collectDefines(Node node, Map<String, String> values) {
+    if (node instanceof FencedCodeBlock) {
+      FencedCodeBlock code = (FencedCodeBlock) node;
+      if ("agentnesse".equals(code.getInfo())) {
+        rememberDefine(values, code.getLiteral());
+      }
+    }
+    Node child = node.getFirstChild();
+    while (child != null) {
+      collectDefines(child, values);
+      child = child.getNext();
+    }
+  }
+
+  private static int firstBreak(String argument) {
+    int space = argument.indexOf(' ');
+    int newline = argument.indexOf('\n');
+    if (space < 0) {
+      return newline;
+    }
+    if (newline < 0) {
+      return space;
+    }
+    return Math.min(space, newline);
+  }
+
+  private void rememberDefine(Map<String, String> values, String literal) {
+    try {
+      AgentNesseBlock block = AgentNesseBlock.parse(literal);
+      if (!"define".equals(block.command())) {
+        return;
+      }
+      String argument = block.argument().trim();
+      int split = firstBreak(argument);
+      if (split < 0) {
+        values.put(argument, "");
+      } else {
+        values.put(argument.substring(0, split).trim(), argument.substring(split + 1).trim());
+      }
+    } catch (IllegalArgumentException ignored) {
+      // An unknown block does not define a variable.
+    }
   }
 
   private PageData load() {
