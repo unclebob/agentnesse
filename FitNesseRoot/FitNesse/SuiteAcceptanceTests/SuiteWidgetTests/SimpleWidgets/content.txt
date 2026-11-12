@@ -21,7 +21,7 @@
 | !-This is normal, ''italic'', and '''bold''' text-! | This is normal, <i>italic</i>, and <b>bold</b> text | Mixed Italic and Bold |
 | !-!note hello-! | <p class="note">hello</p> |
 | !-{{{prefomatted text}}}-! | <pre>prefomatted text</pre> |
-| !-''x''-! | <i>x</i> | ''David Hookers bug.  Single character italics didn't parse correctly.'' |
+| !-''x''-! | <i>x</i> | single-character italics |
 | !---strike---! | <strike>strike</strike> |
 | !-!style_myStyle(hello)-! | <span class="myStyle">hello</span> |
 | !-!style_myStyle[hello]-! | <span class="myStyle">hello</span> |
@@ -34,5 +34,3 @@
 | ^SubPage | \^SubPage<a title="create page" href="WidgetPage.SubPage\?edit&nonExistent=true">\[\?\]</a> | DEPRECATED |
 | >SubPage | >SubPage<a title="create page" href="WidgetPage.SubPage\?edit&nonExistent=true">\[\?\]</a> |
 | This is an@email.com text | This is <a href="mailto:an@email.com">an@email.com</a> text | email widget |
-
->DavidHookersBug
