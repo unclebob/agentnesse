@@ -13,14 +13,12 @@ import java.util.concurrent.Executors;
 import fitnesse.slim.fixtureInteraction.FixtureInteraction;
 import fitnesse.socketservice.PlainServerSocketFactory;
 import fitnesse.socketservice.ServerSocketFactory;
-import fitnesse.socketservice.SslParameters;
-import fitnesse.socketservice.SslServerSocketFactory;
 import util.CommandLine;
 
 import static fitnesse.slim.JavaSlimFactory.*;
 
 public class SlimService {
-  private static final String OPTION_DESCRIPTOR = "[-v] [-i interactionClass] [-s statementTimeout] [-d] [-ssl parameterClass] port";
+  private static final String OPTION_DESCRIPTOR = "[-v] [-i interactionClass] [-s statementTimeout] [-d] port";
 
   public static class Options {
     public final boolean verbose;
@@ -31,17 +29,13 @@ public class SlimService {
      */
     public final boolean daemon;
     public final Integer statementTimeout;
-    final boolean useSSL;
-    final String sslParameterClassName;
 
-    public Options(boolean verbose, int port, FixtureInteraction interaction, boolean daemon, Integer statementTimeout, boolean useSSL, String sslParameterClassName) {
+    public Options(boolean verbose, int port, FixtureInteraction interaction, boolean daemon, Integer statementTimeout) {
       this.verbose = verbose;
       this.port = port;
       this.interaction = interaction;
       this.daemon = daemon;
       this.statementTimeout = statementTimeout;
-      this.useSSL = useSSL;
-      this.sslParameterClassName = sslParameterClassName;
     }
   }
 
@@ -82,8 +76,7 @@ public class SlimService {
             .println("Warning: in Slim Pipe mode the daemon flag is not supported.");
       }
     } else {
-      ServerSocketFactory serverSocketFactory = options.useSSL ? new SslServerSocketFactory(
-          true, SslParameters.createSslParameters(options.sslParameterClassName)) : new PlainServerSocketFactory();
+      ServerSocketFactory serverSocketFactory = new PlainServerSocketFactory();
       socket = serverSocketFactory.createServerSocket(options.port);
     }
     try {
@@ -112,10 +105,8 @@ public class SlimService {
       String statementTimeoutString = commandLine.getOptionArgument("s", "statementTimeout");
       Integer statementTimeout = (statementTimeoutString == null) ? null : Integer.parseInt(statementTimeoutString);
       boolean daemon = commandLine.hasOption("d");
-      String sslParameterClassName = commandLine.getOptionArgument("ssl", "parameterClass");
-      boolean useSSL = commandLine.hasOption("ssl");
       FixtureInteraction interaction = createInteraction(interactionClassName);
-      return new Options(verbose, port, interaction, daemon, statementTimeout, useSSL, sslParameterClassName);
+      return new Options(verbose, port, interaction, daemon, statementTimeout);
     }
     return null;
   }

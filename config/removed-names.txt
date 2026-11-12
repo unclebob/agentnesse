@@ -67,3 +67,8 @@ HashingCipher
 AccountResponder
 SaveAccountResponder
 AuthenticatorSetup
+
+SslClientSocketFactory
+SslServerSocketFactory
+SslParameters
+SLIM_SSL

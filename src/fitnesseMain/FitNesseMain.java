@@ -8,8 +8,6 @@ import fitnesse.Updater;
 import fitnesse.components.PluginsClassLoaderFactory;
 import fitnesse.reporting.ExitCodeListener;
 import fitnesse.socketservice.PlainServerSocketFactory;
-import fitnesse.socketservice.SslParameters;
-import fitnesse.socketservice.SslServerSocketFactory;
 import fitnesse.updates.WikiContentUpdater;
 import fitnesse.wiki.PathParser;
 
@@ -144,20 +142,11 @@ public class FitNesseMain {
   }
 
   private ServerSocket createServerSocket(FitNesseContext context, ClassLoader classLoader) throws IOException {
-    String protocol = context.getProperty(FitNesseContext.WIKI_PROTOCOL_PROPERTY);
-    boolean useHTTPS = (protocol != null && protocol.equalsIgnoreCase("https"));
-    String clientAuth = context.getProperty(FitNesseContext.SSL_CLIENT_AUTH_PROPERTY);
-    final boolean sslClientAuth = (clientAuth != null && clientAuth.equalsIgnoreCase("required"));
-    final String sslParameterClassName = context.getProperty(FitNesseContext.SSL_PARAMETER_CLASS_PROPERTY);
+    PlainServerSocketFactory sockets = new PlainServerSocketFactory();
     if ("true".equalsIgnoreCase(context.getProperty(LOCALHOST_ONLY.getKey()))) {
-      return (useHTTPS
-        ? new SslServerSocketFactory(sslClientAuth, SslParameters.createSslParameters(sslParameterClassName, classLoader))
-        : new PlainServerSocketFactory()).createLocalOnlyServerSocket(context.port);
-    } else {
-      return (useHTTPS
-        ? new SslServerSocketFactory(sslClientAuth, SslParameters.createSslParameters(sslParameterClassName, classLoader))
-        : new PlainServerSocketFactory()).createServerSocket(context.port);
+      return sockets.createLocalOnlyServerSocket(context.port);
     }
+    return sockets.createServerSocket(context.port);
   }
 
   private void executeSingleCommand(FitNesse fitNesse, String command, String outputFile) throws Exception {

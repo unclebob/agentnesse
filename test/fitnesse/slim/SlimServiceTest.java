@@ -74,13 +74,11 @@ public class SlimServiceTest extends SlimServiceTestBase {
   }
 
   @Test
-  public void verboseDaemonAndSslFlagsAreParsed() {
+  public void verboseAndDaemonFlagsAreParsed() {
     SlimService.Options options = SlimService.parseCommandLine(new String[]{
-      "-v", "-d", "-ssl", "com.example.SslParams", "8099"});
+      "-v", "-d", "8099"});
     assertTrue(options.verbose);
     assertTrue(options.daemon);
-    assertTrue(options.useSSL);
-    assertEquals("com.example.SslParams", options.sslParameterClassName);
     assertEquals(8099, options.port);
   }
 

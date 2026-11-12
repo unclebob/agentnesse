@@ -21,7 +21,6 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
   private static final String SLIM_VERSION = "SLIM_VERSION";
   public static final String MANUALLY_START_TEST_RUNNER_ON_DEBUG = "MANUALLY_START_TEST_RUNNER_ON_DEBUG";
   public static final String MANUALLY_START_TEST_RUNNER = "MANUALLY_START_TEST_RUNNER";
-  public static final String SLIM_SSL = "SLIM_SSL";
   public static final int SLIM_USE_PIPE_PORT = 1;
 
   private static final AtomicInteger slimPortOffset = new AtomicInteger(0);
@@ -106,25 +105,8 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
   protected ClientSocketFactory determineSocketFactory(CommandRunner commandRunner) {
     if (getSlimPort() == SLIM_USE_PIPE_PORT) {
       return new PipeBasedSocketFactory(commandRunner);
-    } else if ((determineClientSSLParameterClass() != null)) {
-      return new SslClientSocketFactory(determineHostSSLParameters());
-    } else {
-      return new PlainClientSocketFactory();
     }
-  }
-
-  protected String determineClientSSLParameterClass() {
-      String sslParameterClassName = getVariable("slim.ssl");
-      if (sslParameterClassName == null) {
-    	  sslParameterClassName = getVariable(SLIM_SSL);
-      }
-      if (sslParameterClassName != null && sslParameterClassName.equalsIgnoreCase("false")) sslParameterClassName=null;
-      return sslParameterClassName;
-  }
-
-  protected SslParameters determineHostSSLParameters() {
-    String val = getVariable(FitNesseContext.SSL_PARAMETER_CLASS_PROPERTY);
-    return SslParameters.createSslParameters(val);
+    return new PlainClientSocketFactory();
   }
 
   public double getSlimVersion() {
@@ -153,11 +135,6 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
 
   protected String[] buildArguments() {
     String[] arguments = new String[] {};
-    String useSSL =  determineClientSSLParameterClass();
-    if (useSSL != null){
-    	arguments = ArrayUtils.add(arguments, "-ssl");
-    	arguments = ArrayUtils.add(arguments, useSSL);
-    }
     String[] slimFlags = getSlimFlags();
     if (slimFlags != null)
     	for (String flag : slimFlags)

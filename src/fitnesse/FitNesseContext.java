@@ -22,10 +22,6 @@ import java.util.Map;
 import java.util.Properties;
 
 public class FitNesseContext {
-  public static final String WIKI_PROTOCOL_PROPERTY = "wiki.protocol";
-  public static final String SSL_PARAMETER_CLASS_PROPERTY = "wiki.protocol.ssl.parameter.class";
-  public static final String SSL_CLIENT_AUTH_PROPERTY = "wiki.protocol.ssl.client.auth";
-
   public static final String rfcCompliantDateFormat = "EEE, d MMM yyyy HH:mm:ss Z";
 
   public final FitNesseVersion version;
