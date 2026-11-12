@@ -1,0 +1,51 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| import |
+| --- |
+| fitnesse.slim.test |
+| fitnesse.fixtures |
+
+
+| script | echo fixture | |
+| --- | --- | --- |
+| $TEST_SLIM= | echo | TestSlim |
+
+
+| script | $TEST_SLIM | |
+| --- | --- | --- |
+| ensure | echo boolean | true |
+
+
+| $TEST_SLIM | |
+| --- | --- |
+| string | get string arg? |
+| Bob | Bob |
+
+
+| script | echo fixture | |
+| --- | --- | --- |
+| $QUERY= | echo | Query |
+
+
+| Query:Test$QUERY | 1 |
+| --- | --- |
+| n | 2n |
+| 1 | 2 |
+
+
+
+
+
+
+
+
+
+
+
+
+

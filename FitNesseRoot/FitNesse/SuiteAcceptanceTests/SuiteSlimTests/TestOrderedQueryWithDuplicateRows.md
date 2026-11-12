@@ -1,0 +1,30 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| Ordered Query:duplicate rows | A |
+| --- | --- |
+| x | |
+| SuiteChildOne.SuiteSetUp | |
+| SuiteChildOne.TestOneOne | |
+| SuiteChildOne.TestOneTwo | |
+| SuiteChildOne.SuiteTearDown | |
+| SuiteChildOne.SuiteSetUp | |
+| SuiteChildOne.TestOneThree | |
+| SuiteChildOne.SuiteTearDown | |
+
+
+| Ordered Query:duplicate rows | B |
+| --- | --- |
+| x | |
+| SuiteChildOne.SuiteSetUp | |
+| SuiteChildOne.TestOneThree | |
+| SuiteChildOne.SuiteTearDown | |
+| SuiteChildOne.SuiteSetUp | |
+| SuiteChildOne.TestOneOne | |
+| SuiteChildOne.TestOneTwo | |
+| SuiteChildOne.SuiteTearDown | |
+

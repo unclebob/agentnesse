@@ -1,0 +1,12 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| script | library fixture |
+| --- | --- |
+| given a library installed in the setup page | |
+| when a method not present on the fixture is called | |
+| then is should have been invoked on the library in the setup page | |

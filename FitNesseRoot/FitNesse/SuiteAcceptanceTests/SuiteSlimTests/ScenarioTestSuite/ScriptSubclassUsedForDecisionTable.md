@@ -1,0 +1,54 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+Scenarios can be called from decision tables. They should respect the actor (i.e. fixture instance) and Slim table type (i.e. script table or a subclass) of the last script created.
+
+## When we create a script using Slim's standard script table, the decision table should use that subtype also.
+
+
+| scenario | my division1 | numerator | | denominator | | expected |
+| --- | --- | --- | --- | --- | --- | --- |
+| setNumerator | @numerator | | | | | |
+| setDenominator | @denominator | | | | | |
+| check | quotient | @expected | | | | |
+
+
+Get the Division implementation from the eg package, and use a script subclass that uses 'verify' instead of the 'check' keyword.
+
+| script | fitnesse.slim.test.Division |
+| --- | --- |
+
+
+
+
+| my division1 | | |
+| --- | --- | --- |
+| numerator | denominator | expected |
+| 10 | 2 | 5.0 |
+
+
+## When we create a script using a subclass of Slim's standard script table, the decision table should use that subtype also.
+
+
+| scenario | my division2 | numerator | | denominator | | expected |
+| --- | --- | --- | --- | --- | --- | --- |
+| setNumerator | @numerator | | | | | |
+| setDenominator | @denominator | | | | | |
+| verify | quotient | @expected | | | | |
+
+
+Get the Division implementation from the eg package, and use a script subclass that uses 'verify' instead of the 'check' keyword.
+
+| verify script | fitnesse.slim.test.Division |
+| --- | --- |
+
+
+
+
+| my division2 | | |
+| --- | --- | --- |
+| numerator | denominator | expected |
+| 10 | 2 | 5.0 |

@@ -1,0 +1,21 @@
+{
+  "type": "static",
+  "tags": [],
+  "help": null,
+  "prune": true
+}
+```agentnesse
+define TEST_SYSTEM
+SLIM
+```
+
+# How to enforce that a test command takes only a limited amount of time during testing
+
+The slim client needs an extra parrameter -s timeoutLimit but this is not passed by default
+
+Please run each page seperately. If you run this as a suite the Slim Server is started only once taking the slim_flags from the first page created. 
+The results from the second page are then misleading.
+
+```agentnesse
+contents
+```

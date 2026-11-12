@@ -1,0 +1,39 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| import |
+| --- |
+| fitnesse.slim.test |
+
+
+| script | test slim |
+| --- | --- |
+
+
+| scenario | should be bill | value | |
+| --- | --- | --- | --- |
+| check | echo string | @value | bill |
+
+
+| script | | |
+| --- | --- | --- |
+| $x= | echo string | bill |
+| should be bill | $x | |
+
+
+| script | | |
+| --- | --- | --- |
+| $x= | echo string | bob |
+
+
+| script | | |
+| --- | --- | --- |
+| $x= | echo string | bill |
+| should be bill | $x | |
+
+
+

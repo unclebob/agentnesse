@@ -1,0 +1,18 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+<!-- This will make it fail: -->
+<!-- !define COMMAND_PATTERN {java -Dfile.encoding=GBK -cp %p %m} -->
+
+
+| import |
+| --- |
+| fitnesse.slim.test |
+
+
+| script: echo script | | | |
+| --- | --- | --- | --- |
+| check | echo to stdout | 这是中文 | 这是中文 |

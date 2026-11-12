@@ -1,0 +1,16 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| script | | | |
+| --- | --- | --- | --- |
+| check | echo | Bob | =~/Bob/ |
+| check | echo | My name is Bob Martin. | =~/Bob/ |
+| check | echo | The name of Bob shall persist. | =~/B.b/ |
+| check not | echo | Pete | =~/Bob/ |
+
+
+

@@ -1,0 +1,18 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+
+| Library |
+| --- |
+| echo support |
+
+
+| script |
+| --- |
+| given multiple libraries with the same methods |
+| when such a method is called |
+| then the one one installed in this page takes precedence over the one in the setup page |
+

@@ -1,0 +1,24 @@
+{
+  "type": "test",
+  "tags": [],
+  "help": null,
+  "prune": false
+}
+!note Lighthouse #126
+*There was a bug that caused tests to silently fail, and suites to abort without notification if there were two tables on a page that were identical in every way.  This was discovered when a Scenario Library was included twice.*
+
+
+| import |
+| --- |
+| me |
+
+
+| import |
+| --- |
+| me |
+
+
+| script |
+| --- |
+| pass |
+
