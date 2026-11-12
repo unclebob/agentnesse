@@ -114,6 +114,10 @@ DeleteConfirmationResponder
 RenameFileConfirmationResponder
 AddChildPageResponder
 LocalhostOnly
+CustomComparatorRegistry
+InverseComparator
+GlobComparator
+interface CustomComparator
 all-interfaces
 
 class PropertiesResponder

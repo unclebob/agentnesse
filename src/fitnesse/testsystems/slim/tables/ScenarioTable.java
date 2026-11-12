@@ -200,7 +200,6 @@ public class ScenarioTable extends SlimTable {
     } else {
       scriptTable = createChild(getTestContext().getCurrentScriptClass(), newTable, testContext);
     }
-    scriptTable.setCustomComparatorRegistry(customComparatorRegistry);
     return scriptTable;
   }
 

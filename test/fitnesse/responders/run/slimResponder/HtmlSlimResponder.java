@@ -2,7 +2,6 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.run.slimResponder;
 
-import fitnesse.testsystems.slim.CustomComparatorRegistry;
 import fitnesse.testsystems.slim.SlimClient;
 import fitnesse.testsystems.slim.HtmlSlimTestSystem;
 import fitnesse.testsystems.slim.InProcessSlimClientBuilder;
@@ -13,10 +12,7 @@ import fitnesse.testsystems.slim.tables.SlimTableFactory;
 import java.io.IOException;
 
 public class HtmlSlimResponder extends SlimResponder {
-  private final CustomComparatorRegistry customComparatorRegistry;
-
-  public HtmlSlimResponder(CustomComparatorRegistry customComparatorRegistry) {
-    this.customComparatorRegistry = customComparatorRegistry;
+  public HtmlSlimResponder() {
   }
 
   @Override
@@ -29,7 +25,7 @@ public class HtmlSlimResponder extends SlimResponder {
       slimClient = new SlimClientBuilder(getDescriptor()).build();
     }
     SlimTestSystem testSystem = new HtmlSlimTestSystem("slim", slimClient,
-            new SlimTableFactory(), customComparatorRegistry);
+            new SlimTableFactory());
     testSystem.addTestSystemListener(this);
     return testSystem;
   }

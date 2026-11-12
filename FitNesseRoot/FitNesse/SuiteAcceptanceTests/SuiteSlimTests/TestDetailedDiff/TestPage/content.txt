@@ -123,20 +123,6 @@ Test symbols by string comparison.
 |               | $symbol          | |
 
 
-Test an unregistered comparator prefix.
-The inverse: prefix is not registered, so these cells fail as plain text.
-
-| script | Detailed Diff |
-| note  | everything not equals to 'abc' is ok |
-| check | echo | abc | inverse:xyz |
-| note  | everything not equals to 'abc' is ok |
-| check | echo | abc | inverse:ABC | 
-| note  | everthing not equals to 'abc' is ok |
-| check | echo | abc | inverse:cba | 
-| note  | only 'abc' is nok |
-| check | echo | abc | inverse:abc |
-
-
 Test Scenario and Script
 
 !| Scenario | Detailed Diff Scenario Test |

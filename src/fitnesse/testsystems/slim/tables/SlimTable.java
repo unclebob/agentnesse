@@ -14,8 +14,6 @@ import fitnesse.testsystems.ExecutionResult;
 import fitnesse.testsystems.TableCell;
 import fitnesse.testsystems.TestExecutionException;
 import fitnesse.testsystems.TestResult;
-import fitnesse.testsystems.slim.CustomComparator;
-import fitnesse.testsystems.slim.CustomComparatorRegistry;
 import fitnesse.testsystems.slim.SlimTestContext;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.results.SlimExceptionResult;
@@ -48,7 +46,6 @@ public abstract class SlimTable {
 
   protected final Table table;
   protected String id;
-  protected CustomComparatorRegistry customComparatorRegistry;
 
   private final Map<String, String> symbolsToStore = new HashMap<>();
 
@@ -205,10 +202,6 @@ public abstract class SlimTable {
 
   public List<SlimTable> getChildren() {
     return children;
-  }
-
-  public void setCustomComparatorRegistry(CustomComparatorRegistry customComparatorRegistry) {
-    this.customComparatorRegistry = customComparatorRegistry;
   }
 
   /**
@@ -512,7 +505,6 @@ public abstract class SlimTable {
     );
 
     private final Pattern regexPattern = Pattern.compile("\\s*=~/(.*)/");
-    private final Pattern customComparatorPattern = Pattern.compile("\\s*(\\w*):(.*)", Pattern.DOTALL);
     private double v;
     private double arg1;
     private double arg2;
@@ -541,10 +533,6 @@ public abstract class SlimTable {
       if (message != null)
         return message;
 
-      message = evaluateCustomComparatorIfPresent();
-      if (message != null)
-        return message;
-
       operation = matchSimpleComparison();
       if (operation != null)
         return doSimpleComparison();
@@ -554,31 +542,6 @@ public abstract class SlimTable {
         return doRange(matcher);
       } else
         return null;
-    }
-
-    private SlimTestResult evaluateCustomComparatorIfPresent() {
-      SlimTestResult message = null;
-      if (customComparatorRegistry == null) {
-        return null;
-      }
-      Matcher customComparatorMatcher = customComparatorPattern.matcher(expression);
-      if (customComparatorMatcher.matches()) {
-        String prefix = customComparatorMatcher.group(1);
-        CustomComparator customComparator = customComparatorRegistry.getCustomComparatorForPrefix(prefix);
-        if (customComparator != null) {
-          String expectedString = customComparatorMatcher.group(2);
-          try {
-            if (customComparator.matches(actual, expectedString)) {
-              message = SlimTestResult.pass(expectedString + " matches " + actual);
-            } else {
-              message = SlimTestResult.fail(expectedString + " doesn't match " + actual);
-            }
-          } catch (Exception e) {
-            message = SlimTestResult.fail(expectedString + " doesn't match " + actual + ":\n" + e.getMessage());
-          }
-        }
-      }
-      return message;
     }
 
     private SlimTestResult evaluateRegularExpressionIfPresent() {

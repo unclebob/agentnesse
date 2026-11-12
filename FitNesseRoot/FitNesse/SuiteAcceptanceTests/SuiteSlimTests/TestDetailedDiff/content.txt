@@ -11,7 +11,7 @@
 |and Test content is                |!include -seamless >TestPage                                                                                    |
 |when page                          |${TestPageName}                                      |is tested and HTML is extracted                           |
 |#when page                          |${TestPageName}                                      |is tested|
-|then                               |25                                                    |assertions pass,|50|fail,|1|are ignored|0|exceptions thrown|
+|then                               |25                                                    |assertions pass,|46|fail,|1|are ignored|0|exceptions thrown|
 |note| !4 Tests of strings|
 |ensure| content contains|!-<span class="pass">abc</span>-!|
 |ensure| content contains|!-[<span class="diff">abc</span>] <span class="fail">expected [<span class="diff">xyz</span>]</span>-!|

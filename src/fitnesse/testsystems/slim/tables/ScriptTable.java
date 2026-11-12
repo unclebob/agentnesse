@@ -195,7 +195,6 @@ public class ScriptTable extends SlimTable {
       }
     }
     if (scenario != null) {
-      scenario.setCustomComparatorRegistry(customComparatorRegistry);
       assertions.addAll(scenario.call(args, this, row));
     }
     return assertions;

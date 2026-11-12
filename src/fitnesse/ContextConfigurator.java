@@ -4,7 +4,6 @@ import fitnesse.components.Logger;
 import fitnesse.reporting.FormatterFactory;
 import fitnesse.testrunner.MultipleTestSystemFactory;
 import fitnesse.testsystems.TestSystemListener;
-import fitnesse.testsystems.slim.CustomComparatorRegistry;
 import fitnesse.testsystems.slim.tables.SlimTableFactory;
 import fitnesse.util.ClassUtils;
 import fitnesse.wiki.SystemVariableSource;
@@ -110,9 +109,8 @@ public class ContextConfigurator {
     }
 
     SlimTableFactory slimTableFactory = new SlimTableFactory();
-    CustomComparatorRegistry customComparatorRegistry = new CustomComparatorRegistry();
 
-    MultipleTestSystemFactory testSystemFactory = new MultipleTestSystemFactory(slimTableFactory, customComparatorRegistry, classLoader);
+    MultipleTestSystemFactory testSystemFactory = new MultipleTestSystemFactory(slimTableFactory, classLoader);
 
     FormatterFactory formatterFactory = new FormatterFactory();
 

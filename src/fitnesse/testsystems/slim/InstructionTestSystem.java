@@ -39,7 +39,7 @@ public class InstructionTestSystem implements TestSystem {
 
   @Override
   public void runTests(TestPage page) throws TestExecutionException {
-    List<SlimTable> tables = SlimPage.Make(page, new SlimTestContextImpl(page), new SlimTableFactory(), new CustomComparatorRegistry()).getTables();
+    List<SlimTable> tables = SlimPage.Make(page, new SlimTestContextImpl(page), new SlimTableFactory()).getTables();
     for (SlimTable table: tables) {
       List<Instruction> instructions = SlimAssertion.getInstructions(table.getAssertions());
       String serial = SlimSerializer.serialize(new SlimListBuilder(Double.parseDouble(SlimVersion.VERSION)).toList(instructions));

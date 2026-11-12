@@ -18,20 +18,17 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
   private static final SlimTable END_OF_TEST = null;
 
   private final SlimTableFactory slimTableFactory;
-  private final CustomComparatorRegistry customComparatorRegistry;
   private SlimPage slimPage;
 
   public HtmlSlimTestSystem(String testSystemName, SlimClient slimClient,
-                            SlimTableFactory slimTableFactory,
-                            CustomComparatorRegistry customComparatorRegistry) {
+                            SlimTableFactory slimTableFactory) {
     super(testSystemName, slimClient);
     this.slimTableFactory = slimTableFactory;
-    this.customComparatorRegistry = customComparatorRegistry;
   }
 
   @Override
   protected void processAllTablesOnPage(TestPage pageToTest) throws TestExecutionException {
-    slimPage = SlimPage.Make(pageToTest, getTestContext(), slimTableFactory, customComparatorRegistry);
+    slimPage = SlimPage.Make(pageToTest, getTestContext(), slimTableFactory);
     List<SlimTable> allTables = slimPage.getTables();
     boolean isSuiteTearDownPage = PageData.SUITE_TEARDOWN_NAME.equals(pageToTest.getName());
 

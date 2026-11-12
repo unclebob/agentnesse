@@ -15,8 +15,8 @@ import java.util.List;
 
 public class SlimPage {
 
-  public static SlimPage Make(TestPage testPage, SlimTestContext testContext, SlimTableFactory slimTableFactory, CustomComparatorRegistry customComparatorRegistry) {
-    SlimPage page = new SlimPage(slimTableFactory, customComparatorRegistry);
+  public static SlimPage Make(TestPage testPage, SlimTestContext testContext, SlimTableFactory slimTableFactory) {
+    SlimPage page = new SlimPage(slimTableFactory);
     page.createSlimTables(testPage, testContext);
     return page;
   }
@@ -24,9 +24,8 @@ public class SlimPage {
   public List<SlimTable> getTables() { return tables; }
   public HtmlTableScanner getTableScanner() { return tableScanner; }
 
-  private SlimPage(SlimTableFactory slimTableFactory, CustomComparatorRegistry customComparatorRegistry) {
+  private SlimPage(SlimTableFactory slimTableFactory) {
     this.slimTableFactory = slimTableFactory;
-    this.customComparatorRegistry = customComparatorRegistry;
   }
 
   private void createSlimTables(TestPage testPage, SlimTestContext testContext) {
@@ -56,15 +55,12 @@ public class SlimPage {
   private void createSlimTable(List<SlimTable> allTables, Table table, SlimTestContext testContext) {
     String tableId = "" + allTables.size();
     SlimTable slimTable = slimTableFactory.makeSlimTable(table, tableId, testContext);
-    // TODO: should customComparatorRegistry be baked into the slimTableFactory?
     if (slimTable != null) {
-      slimTable.setCustomComparatorRegistry(customComparatorRegistry);
       allTables.add(slimTable);
     }
   }
 
   private final SlimTableFactory slimTableFactory;
-  private final CustomComparatorRegistry customComparatorRegistry;
 
   private HtmlTableScanner tableScanner;
   private List<SlimTable> tables;

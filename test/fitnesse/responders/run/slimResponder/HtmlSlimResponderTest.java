@@ -23,7 +23,6 @@ public class HtmlSlimResponderTest {
   private WikiPage testPage;
   public String testResults;
   protected SimpleResponse response;
-  private CustomComparatorRegistry customComparatorRegistry;
 
   private void assertTestResultsContain(String fragment) {
     String unescapedResults = unescape(testResults);
@@ -48,9 +47,7 @@ public class HtmlSlimResponderTest {
   public void setUp() throws Exception {
     context = FitNesseUtil.makeTestContext();
     request = new MockRequest();
-    customComparatorRegistry = new CustomComparatorRegistry();
-
-    responder = getSlimResponder(customComparatorRegistry);
+    responder = getSlimResponder();
     responder.setFastTest(true);
     // Enforce the test runner here, to make sure we're talking to the right
     // system
@@ -59,8 +56,8 @@ public class HtmlSlimResponderTest {
     SlimClientBuilder.clearSlimPortOffset();
   }
 
-  protected SlimResponder getSlimResponder(CustomComparatorRegistry customComparatorRegistry) {
-    return new HtmlSlimResponder(customComparatorRegistry);
+  protected SlimResponder getSlimResponder() {
+    return new HtmlSlimResponder();
   }
 
   @Test
@@ -342,53 +339,4 @@ public class HtmlSlimResponderTest {
         .getScenarios().iterator().next().getScenarioName().equals("myScenario"));
   }
 
-  @Test
-  public void customComparatorReturnsPass() throws Exception {
-    customComparatorRegistry.addCustomComparator("equalsIgnoreCase", new EqualsIgnoreCaseComparator());
-    getResultsForPageContents("!|script|\n"
-        + "|start|fitnesse.slim.test.TestSlim|\n"
-        + "|check|return string|equalsIgnoreCase:STRING|\n");
-    assertTestResultsContain("<td><span class=\"pass\">STRING matches string</span></td>");
-  }
-
-  @Test
-  public void customComparatorMultilineReturnsPass() throws Exception {
-    customComparatorRegistry.addCustomComparator("equalsIgnoreCase", new EqualsIgnoreCaseComparator());
-    getResultsForPageContents("!|script|\n"
-        + "|start|fitnesse.slim.test.TestSlim|\n"
-        + "|check|echo string|{{{!-hello\nworld-!}}}|equalsIgnoreCase:{{{!-HELLO\nWORLD-!}}}|\n");
-    assertTestResultsContain("<td><span class=\"pass\">{{{HELLO\nWORLD}}} matches {{{hello\nworld}}}</span></td>");
-  }
-
-  @Test
-  public void customComparatorReturnsFail() throws Exception {
-    customComparatorRegistry.addCustomComparator("equalsIgnoreCase", new EqualsIgnoreCaseComparator());
-    getResultsForPageContents("!|script|\n"
-        + "|start|fitnesse.slim.test.TestSlim|\n"
-        + "|check|return string|equalsIgnoreCase:STRINGS|\n");
-    assertTestResultsContain("<td><span class=\"fail\">STRINGS doesn't match string</span></td>");
-  }
-
-  @Test
-  public void customComparatorReturnsMessage() throws Exception {
-    customComparatorRegistry.addCustomComparator("exceptionMessage", new ExceptionMessageComparator());
-    getResultsForPageContents("!|script|\n"
-        + "|start|fitnesse.slim.test.TestSlim|\n"
-        + "|check|return string|exceptionMessage:STRINGS|\n");
-    assertTestResultsContain("<td><span class=\"fail\">STRINGS doesn't match string:\nexception message</span></td>");
-  }
-
-  class EqualsIgnoreCaseComparator implements CustomComparator {
-    @Override
-    public boolean matches(String actual, String expected) {
-      return expected.equalsIgnoreCase(actual);
-    }
-  }
-	  
-  class ExceptionMessageComparator implements CustomComparator {
-    @Override
-    public boolean matches(String actual, String expected) {
-      throw new RuntimeException("exception message");
-    }
-  }
 }
