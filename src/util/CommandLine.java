@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandLine extends Option {
-  private static final Pattern optionPattern = Pattern.compile("\\[-(\\w+)((?: \\w+)*)\\]");
+  private static final Pattern optionPattern = Pattern.compile("\\[-{1,2}(\\w[\\w-]*)((?: \\w+)*)\\]");
   private Map<String, Option> possibleOptions = new ConcurrentHashMap<>();
 
   public CommandLine(String optionDescriptor) {
@@ -38,7 +38,7 @@ public class CommandLine extends Option {
         if (currentOption.needsMoreArguments() && currentOption != this)
           successfulParse = false;
         else {
-          String argName = arg.substring(1);
+          String argName = arg.startsWith("--") ? arg.substring(2) : arg.substring(1);
           currentOption = possibleOptions.get(argName);
           if (currentOption != null)
             currentOption.active = true;

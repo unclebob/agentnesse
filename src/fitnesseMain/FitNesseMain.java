@@ -109,13 +109,13 @@ public class FitNesseMain {
         } else {
           LOG.info("Starting FitNesse on port: " + context.port);
         }
-        ServerSocket serverSocket = createServerSocket(context, classLoader);
+        ServerSocket serverSocket = openSocket(context);
         context.fitNesse.start(serverSocket);
       }
     return null;
   }
 
-  private ServerSocket createServerSocket(FitNesseContext context, ClassLoader classLoader) throws IOException {
+  static ServerSocket openSocket(FitNesseContext context) throws IOException {
     PlainServerSocketFactory sockets = new PlainServerSocketFactory();
     if ("true".equalsIgnoreCase(context.getProperty(LOCALHOST_ONLY.getKey()))) {
       return sockets.createLocalOnlyServerSocket(context.port);

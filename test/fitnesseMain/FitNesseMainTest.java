@@ -122,15 +122,19 @@ public class FitNesseMainTest {
   }
 
   @Test
-  public void localhostOnlyFlagResultsInConnectableFitnesseOnLocalHost() throws Exception {
-    String[] args = {"-p", "1999", "-lh"};
-    new FitNesseMain().launchFitNesse(new Arguments(args));
-    URL url = new URL("http://localhost:1999/?shutdown");
-    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-    con.setRequestMethod("GET");
-    int responseCode = con.getResponseCode();
-    con.disconnect();
-    assertEquals(200, responseCode);
+  public void bindsLoopbackByDefaultAndEveryAddressOnlyWithTheFlag() throws Exception {
+    try (java.net.ServerSocket loopback = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0")))) {
+      assertTrue(loopback.getInetAddress().isLoopbackAddress());
+    }
+    try (java.net.ServerSocket all = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--all-interfaces")))) {
+      assertTrue(all.getInetAddress().isAnyLocalAddress());
+    }
+  }
+
+  private FitNesseContext contextFor(Arguments arguments) throws Exception {
+    return arguments.update(ContextConfigurator.systemDefaults()
+      .withRootPath(".")
+      .withRootDirectoryName(TEST_FITNESSE_ROOT)).makeFitNesseContext();
   }
 
   @Test

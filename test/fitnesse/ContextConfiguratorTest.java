@@ -13,6 +13,7 @@ import java.io.IOException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -99,6 +100,16 @@ public class ContextConfiguratorTest {
     String contextRoot = configurator.makeFitNesseContext().contextRoot;
 
     assertThat(contextRoot, is("/fitnesse/"));
+  }
+
+  @Test
+  public void maximumWorkersCanBeSetFromProperties() throws IOException {
+    FitNesseContext context = ContextConfigurator.empty()
+      .withParameter(ConfigurationParameter.MAXIMUM_WORKERS, "12")
+      .withPort(9127)
+      .makeFitNesseContext();
+
+    assertEquals(12, (int) context.maximumWorkers);
   }
 
   @Test
