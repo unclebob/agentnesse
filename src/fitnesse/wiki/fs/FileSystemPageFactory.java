@@ -60,7 +60,7 @@ public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRe
     registerWikiPageFactory(new WikiFilePageFactory());
     registerWikiPageFactory(new ChildWikiFilePageFactory());
     registerWikiPageFactory(new RootWikiFilePageFactory());
-    registerWikiPageFactory(new MarkdownPageFactory(fileSystem, versionsController));
+    registerWikiPageFactory(new MarkdownPageFactory(fileSystem, versionsController, this));
   }
 
   @Override // from WikiPageFactoryRegistry

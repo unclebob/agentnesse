@@ -7,10 +7,14 @@ import fitnesse.wiki.VersionInfo;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageLoadException;
 import fitnesse.wiki.WikiPageProperty;
+import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.fs.FileBasedWikiPage;
 import fitnesse.wiki.fs.FileSystem;
+import fitnesse.wiki.fs.FileSystemSubWikiPageFactory;
 import fitnesse.wiki.fs.FileVersion;
+import fitnesse.wiki.fs.SubWikiPageFactory;
 import fitnesse.wiki.fs.WikiFiles;
+import fitnesse.wikitext.VariableSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,37 +32,50 @@ import java.util.List;
  */
 public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   static final String EXTENSION = ".md";
+  static final String ROOT_FILE = "_root.md";
 
   private final File path;
   private final FileSystem fileSystem;
   private final WikiFiles versions;
+  private final VariableSource variableSource;
+  private final WikiPageFactory pages;
   private PageData pageData;
 
-  MarkdownPage(File path, String name, WikiPage parent, FileSystem fileSystem, WikiFiles versions) {
+  MarkdownPage(File path, String name, WikiPage parent, FileSystem fileSystem, WikiFiles versions,
+               VariableSource variableSource, WikiPageFactory pages) {
     super(name, parent);
     this.path = path;
     this.fileSystem = fileSystem;
     this.versions = versions;
+    this.variableSource = variableSource;
+    this.pages = pages;
   }
 
   @Override
   public File getFileSystemPath() {
+    if (ROOT_FILE.equals(path.getName())) {
+      return path.getParentFile();
+    }
     String pathStr = path.getPath();
     return new File(pathStr.substring(0, pathStr.length() - EXTENSION.length()));
   }
 
   @Override
   public WikiPage addChildPage(String name) {
-    return new MarkdownPage(new File(getFileSystemPath(), name + EXTENSION), name, this, fileSystem, versions);
+    return new MarkdownPage(new File(getFileSystemPath(), name + EXTENSION), name, this, fileSystem, versions, variableSource, pages);
   }
 
   @Override
   public WikiPage getChildPage(String name) {
-    return null;
+    return subPages().getChildPage(this, name);
   }
 
   @Override
   public void removeChildPage(String name) {
+    WikiPage child = getChildPage(name);
+    if (child != null) {
+      child.remove();
+    }
   }
 
   @Override
@@ -72,7 +89,11 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   @Override
   public List<WikiPage> getChildren() {
-    return List.of();
+    return subPages().getChildren(this);
+  }
+
+  private SubWikiPageFactory subPages() {
+    return new FileSystemSubWikiPageFactory(getFileSystemPath(), fileSystem, variableSource, pages);
   }
 
   @Override

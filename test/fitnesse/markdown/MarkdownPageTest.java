@@ -1,6 +1,9 @@
 package fitnesse.markdown;
 
+import fitnesse.components.TraversalListener;
 import fitnesse.wiki.PageData;
+import fitnesse.wiki.PathParser;
+import fitnesse.wiki.PrunedPagePruningStrategy;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.fs.FileSystemPage;
@@ -12,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -127,6 +131,66 @@ public class MarkdownPageTest {
     page.removeChildPage("Child");
     page.remove();
     assertFalse(fileSystem.exists(new File("root/Notes.md")));
+  }
+
+  @Test
+  public void childrenLiveBesideTheMarkdownFileAndADottedPathFindsThem() throws Exception {
+    fileSystem.makeFile(new File("root/SuiteDemo.md"), "{ \"type\": \"suite\" }\n# parent\n");
+    fileSystem.makeFile(new File("root/SuiteDemo/TestChild.md"), "{ \"type\": \"test\" }\n# child\n");
+    fileSystem.makeFile(new File("root/SuiteDemo/OldChild/content.txt"), "old");
+
+    WikiPage suite = root.getPageCrawler().getPage(PathParser.parse("SuiteDemo"));
+    WikiPage child = suite.getPageCrawler().getPage(PathParser.parse("TestChild"));
+
+    assertEquals(MarkdownPage.class, child.getClass());
+    assertEquals("# child\n", child.getData().getContent());
+    assertTrue(child.getData().hasAttribute("Test"));
+    assertEquals(FileSystemPage.class, suite.getChildPage("OldChild").getClass());
+    assertEquals("old", suite.getChildPage("OldChild").getData().getContent());
+  }
+
+  @Test
+  public void theRootPageIsStoredAsRootMarkdown() throws Exception {
+    fileSystem.makeFile(new File("wiki/_root.md"), "{ \"help\": \"home\" }\n# Home\n");
+    WikiPage markdownRoot = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
+      .makePage(new File("wiki"), "wiki", null, new SystemVariableSource());
+
+    assertEquals(MarkdownPage.class, markdownRoot.getClass());
+    assertEquals("home", markdownRoot.getData().getAttribute("Help"));
+    assertEquals("# Home\n", markdownRoot.getData().getContent());
+    assertTrue(markdownRoot.getChildren().isEmpty());
+  }
+
+  @Test
+  public void anOldRootWinsWhenBothFormatsArePresent() throws Exception {
+    fileSystem.makeFile(new File("both/content.txt"), "old");
+    fileSystem.makeFile(new File("both/_root.md"), "# new\n");
+    WikiPage both = new FileSystemPageFactory(fileSystem, new WikiFiles(fileSystem))
+      .makePage(new File("both"), "both", null, new SystemVariableSource());
+
+    assertEquals(FileSystemPage.class, both.getClass());
+    assertEquals("old", both.getData().getContent());
+  }
+
+  @Test
+  public void aPrunedMarkdownPageHidesItsChildren() throws Exception {
+    fileSystem.makeFile(new File("root/Pruned.md"), "{ \"prune\": true }\nsecret\n");
+    fileSystem.makeFile(new File("root/Pruned/Hidden.md"), "nope\n");
+    fileSystem.makeFile(new File("root/Kept.md"), "yes\n");
+    List<String> names = new ArrayList<>();
+
+    root.getPageCrawler().traverse(new TraversalListener<WikiPage>() {
+      @Override
+      public void process(WikiPage page) {
+        if (!page.isRoot()) {
+          names.add(page.getName());
+        }
+      }
+    }, new PrunedPagePruningStrategy());
+
+    assertFalse(names.contains("Pruned"));
+    assertFalse(names.contains("Hidden"));
+    assertTrue(names.contains("Kept"));
   }
 
   @Test

@@ -6,7 +6,7 @@ import java.util.*;
 import fitnesse.wiki.*;
 import fitnesse.wikitext.VariableSource;
 
-class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
+public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
 
   private final File rootPath;
   private final FileSystem fileSystem;
