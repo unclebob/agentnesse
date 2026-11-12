@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MarkdownRenderTest {
 
@@ -13,6 +14,17 @@ public class MarkdownRenderTest {
   public void aHeadingRendersAsHtml() throws Exception {
     assertGolden("heading");
     assertGolden("headings");
+  }
+
+  @Test
+  public void eachAgentNesseCommandHasItsOwnClass() throws Exception {
+    for (String command : new String[] {"define", "setup", "teardown", "scenarios", "path", "contents", "alias"}) {
+      assertGolden(command);
+    }
+    assertGolden("include");
+    String bad = MarkdownRenderer.render("```agentnesse\nnope\n```\n");
+    assertTrue(bad.contains("agentnesse-error"));
+    assertTrue(bad.contains("nope"));
   }
 
   @Test

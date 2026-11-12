@@ -1,0 +1,4 @@
+```agentnesse
+path
+fitnesse.jar
+```
