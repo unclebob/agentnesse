@@ -260,14 +260,7 @@ public final class WikiToMarkdown {
     }
 
     private static boolean tableLine(String line) {
-      String trimmed = line.trim();
-      if (trimmed.startsWith("-!")) {
-        trimmed = trimmed.substring(2).trim();
-      }
-      if (trimmed.startsWith("!")) {
-        trimmed = trimmed.substring(1).trim();
-      }
-      return trimmed.startsWith("|");
+      return tableBody(line).startsWith("|");
     }
 
     private static int literals(String line) {
@@ -400,6 +393,7 @@ public final class WikiToMarkdown {
       private int depth;
       private boolean literal;
       private boolean finished;
+      private boolean skipMarker;
 
       private Frame(char open) {
         this.open = open;
@@ -407,7 +401,20 @@ public final class WikiToMarkdown {
       }
 
       private boolean keep(String rest, int i) {
-        literal = mark(rest, i, literal);
+        if (skipMarker) {
+          skipMarker = false;
+          return !finished;
+        }
+        if (!literal && rest.startsWith("!-", i)) {
+          literal = true;
+          skipMarker = true;
+          return true;
+        }
+        if (literal && rest.startsWith("-!", i)) {
+          literal = false;
+          skipMarker = true;
+          return !finished;
+        }
         if (literal || finished) {
           return !finished;
         }
@@ -432,16 +439,6 @@ public final class WikiToMarkdown {
       }
     }
 
-    private static boolean mark(String rest, int i, boolean literal) {
-      if (!literal && rest.startsWith("!-", i)) {
-        return true;
-      }
-      if (literal && rest.startsWith("-!", i)) {
-        return false;
-      }
-      return literal;
-    }
-
     private static char close(char open) {
       if (open == '{') {
         return '}';
@@ -451,6 +448,27 @@ public final class WikiToMarkdown {
       }
       return ']';
     }
+  }
+
+  private static String tableBody(String line) {
+    String trimmed = line.trim();
+    if (trimmed.startsWith("-")) {
+      trimmed = trimmed.substring(1);
+    }
+    if (!trimmed.isEmpty() && (trimmed.charAt(0) == '!' || trimmed.charAt(0) == '^')) {
+      trimmed = trimmed.substring(1).trim();
+    }
+    return trimmed;
+  }
+
+  private static int markerEnd(String text, int index, boolean literal) {
+    if (!literal && text.startsWith("!-", index)) {
+      return index + 1;
+    }
+    if (literal && text.startsWith("-!", index)) {
+      return index + 1;
+    }
+    return -1;
   }
 
   private static boolean looksLikeWiki(String text) {
@@ -522,10 +540,12 @@ public final class WikiToMarkdown {
       StringBuilder row = new StringBuilder();
       boolean literal = false;
       for (int i = 0; i < raw.length(); i++) {
-        if (!literal && raw.startsWith("!-", i)) {
-          literal = true;
-        } else if (literal && raw.startsWith("-!", i)) {
-          literal = false;
+        int marker = markerEnd(raw, i, literal);
+        if (marker >= 0) {
+          literal = !literal;
+          row.append(raw, i, marker + 1);
+          i = marker;
+          continue;
         }
         if (!literal && raw.charAt(i) == '\n') {
           rows.add(row.toString());
@@ -545,7 +565,13 @@ public final class WikiToMarkdown {
       boolean literal = false;
       boolean started = false;
       for (int i = 0; i < line.length(); i++) {
-        literal = literal(line, i, literal);
+        int marker = markerEnd(line, i, literal);
+        if (marker >= 0) {
+          literal = !literal;
+          cell.append(line, i, marker + 1);
+          i = marker;
+          continue;
+        }
         if (!literal && line.charAt(i) == '|') {
           started = cell(cells, cell, started, notes);
           continue;
@@ -555,21 +581,8 @@ public final class WikiToMarkdown {
       return cells;
     }
 
-    private static boolean literal(String line, int i, boolean literal) {
-      if (!literal && line.startsWith("!-", i)) {
-        return true;
-      }
-      if (literal && line.startsWith("-!", i)) {
-        return false;
-      }
-      return literal;
-    }
-
     private static String withoutBang(String line) {
-      if (line.startsWith("-!")) {
-        line = line.substring(2).trim();
-      }
-      return line.startsWith("!") ? line.substring(1).trim() : line;
+      return tableBody(line);
     }
 
     private static boolean cell(List<String> cells, StringBuilder cell, boolean started, List<String> notes) {
@@ -588,10 +601,24 @@ public final class WikiToMarkdown {
     }
 
     private static String wholeLiteral(String text) {
-      if (text.startsWith("!-") && text.endsWith("-!") && text.indexOf("-!") == text.length() - 2) {
-        return text.substring(2, text.length() - 2);
+      if (!text.startsWith("!-") || !text.endsWith("-!")) {
+        return null;
       }
-      return null;
+      boolean literal = false;
+      int closeAt = -1;
+      for (int i = 0; i < text.length(); i++) {
+        int marker = markerEnd(text, i, literal);
+        if (marker < 0) {
+          continue;
+        }
+        closeAt = literal ? i : closeAt;
+        literal = !literal;
+        i = marker;
+      }
+      if (literal || closeAt != text.length() - 2) {
+        return null;
+      }
+      return text.substring(2, text.length() - 2);
     }
 
     private static String literalText(String inner, List<String> notes) {
@@ -603,7 +630,7 @@ public final class WikiToMarkdown {
 
     private static String escape(String text) {
       StringBuilder out = new StringBuilder();
-      String source = text.replace("\n", "{{n}}");
+      String source = text.replace("\n", "<br>");
       for (int i = 0; i < source.length(); i++) {
         char current = source.charAt(i);
         if (current == '\\' || current == '|' || current == '*' || current == '_' || current == '`') {
@@ -617,7 +644,7 @@ public final class WikiToMarkdown {
     private static List<String> pad(List<String> row, int width) {
       List<String> padded = new ArrayList<>(row);
       while (padded.size() < width) {
-        padded.add("{{pad}}");
+        padded.add("");
       }
       return padded;
     }

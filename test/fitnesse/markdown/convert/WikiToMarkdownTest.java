@@ -17,7 +17,7 @@ public class WikiToMarkdownTest {
       | check | echo | Hello | Hello |
       """, "");
     assertTrue(markdown.contains("""
-      | script | echo fixture | {{pad}} | {{pad}} |
+      | script | echo fixture | | |
       | --- | --- | --- | --- |
       | check | echo | Hello | Hello |
       """));
@@ -160,8 +160,32 @@ public class WikiToMarkdownTest {
       | fitnesse.slim.test |
       -! |
       """, "");
-    assertTrue(markdown.contains("{{n}}"));
-    assertTrue(markdown.contains("\\| import \\|") || markdown.contains("import"));
+    assertTrue(markdown.contains("<br>"));
+    assertTrue(markdown.contains("\\| import \\|"));
+  }
+
+  @Test
+  public void aLiteralThatStartsWithABangStaysOneCell() {
+    String markdown = convert("Secret", """
+      !| script |
+      |given page|P|with content|!-!define TEST_SYSTEM {slim}
+      |import|
+      |fitnesse.slim.test|
+      -! |
+      """, "");
+    assertTrue(markdown.contains("define TEST\\_SYSTEM"));
+    assertTrue(markdown.contains("<br>"));
+    assertTrue(markdown.contains("\\| import \\|"));
+    assertTrue(!markdown.contains("\n| import |"));
+  }
+
+  @Test
+  public void aHiddenFirstRowIsStillATable() {
+    String markdown = convert("Libs", """
+      -| script |
+      | given installed library echo support |
+      """, "");
+    assertTrue(markdown.contains("| script |\n| --- |\n| given installed library echo support |"));
   }
 
   @Test

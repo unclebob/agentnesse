@@ -59,11 +59,24 @@ public class SlimTableBridgeTest {
     String html = MarkdownRenderer.render("""
       | script | with content |
       | --- | --- |
-      | given page | line one{{n}}\\| import \\| |
+      | given page | line one<br>\\| import \\| |
       """);
 
     HtmlTableScanner scanner = new HtmlTableScanner(html);
     assertEquals("line one\n| import |", scanner.getTable(0).getCellContents(1, 1));
+  }
+
+  @Test
+  public void emptyCellsAtTheEndOfARowAreNotSlimCells() {
+    String html = MarkdownRenderer.render("""
+      | script | echo fixture | | |
+      | --- | --- | --- | --- |
+      | check | echo | Hello | |
+      """);
+    HtmlTableScanner scanner = new HtmlTableScanner(html);
+    assertEquals(2, scanner.getTable(0).getColumnCountInRow(0));
+    assertEquals(3, scanner.getTable(0).getColumnCountInRow(1));
+    assertEquals("Hello", scanner.getTable(0).getCellContents(2, 1));
   }
 
   @Test
