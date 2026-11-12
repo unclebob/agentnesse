@@ -23,20 +23,6 @@ public class FileSystemPageFactoryTest {
   }
 
   @Test
-  public void DirectoryOfHtmlFilesIsExternalSuitePage() throws Exception {
-    fileSystem.makeFile(new File("./somepath/ExternalSuite/myfile.html"), "stuff");
-    WikiPage page = rootPage.addChildPage("ExternalSuite");
-    assertEquals(ExternalSuitePage.class, page.getClass());
-  }
-
-  @Test
-  public void DirectoryOfDirectoryOfHtmlFilesIsExternalSuitePage() throws Exception {
-    fileSystem.makeFile(new File("./somepath/ExternalSuite/subsuite/myfile.html"), "stuff");
-    WikiPage page = rootPage.addChildPage("ExternalSuite");
-    assertEquals(ExternalSuitePage.class, page.getClass());
-  }
-
-  @Test
   public void DirectoryWithoutHtmlFilesIsWikiFilePage() throws Exception {
     fileSystem.makeFile(new File("./somepath/WikiPage/myfile.txt"), "stuff");
     fileSystem.makeFile(new File("./somepath/OtherPage/myfile.html"), "stuff");
@@ -85,24 +71,6 @@ public class FileSystemPageFactoryTest {
     fileSystem.makeFile(new File("./somepath/WikiPage/SubPage/subsuite/myfile.html"), "stuff");
     WikiPage page = rootPage.getPageCrawler().getPage(PathParser.parse("WikiPage.SubPage"));
     assertEquals(FileSystemPage.class, page.getClass());
-  }
-
-  @Test
-  public void HtmlFileIsExternalSuitePageChild() throws Exception {
-    fileSystem.makeFile(new File("./somepath/ExternalSuite/myfile.html"), "stuff");
-    ExternalSuitePage page = (ExternalSuitePage) rootPage.addChildPage("ExternalSuite");
-    WikiPage child = page.getChildren().get(0);
-    assertEquals(ExternalTestPage.class, child.getClass());
-    assertEquals("myfile", child.getName());
-  }
-
-  @Test
-  public void DirectoryOfHtmlFilesIsExternalSuitePageChild() throws Exception {
-    fileSystem.makeFile(new File("./somepath/ExternalSuite/subsuite/myfile.html"), "stuff");
-    ExternalSuitePage page = (ExternalSuitePage) rootPage.addChildPage("ExternalSuite");
-    WikiPage child = page.getChildren().get(0);
-    assertEquals(ExternalSuitePage.class, child.getClass());
-    assertEquals("subsuite", child.getName());
   }
 
 }

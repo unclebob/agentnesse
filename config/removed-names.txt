@@ -33,3 +33,7 @@ VersionSelectionResponder
 VersionResponder
 RollbackResponder
 VersionComparerResponder
+
+ExternalSuitePage
+ExternalTestPage
+ExternalSuitePageFactory

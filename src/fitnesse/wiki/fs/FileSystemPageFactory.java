@@ -18,7 +18,7 @@ import fitnesse.wikitext.VariableSource;
  * This is the general factory used to load and create wiki pages.
  *
  * For historic reasons it's still called FileSystemPageFactory, although it deals with all
- * file based page types (FileSystemPage, WikiFilePage, ExternalSuitePage).
+ * file based page types (FileSystemPage, WikiFilePage).
  */
 public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRegistry {
   private final FileSystem fileSystem;
@@ -59,8 +59,6 @@ public class FileSystemPageFactory implements WikiPageFactory, WikiPageFactoryRe
     registerWikiPageFactory(new WikiFilePageFactory());
     registerWikiPageFactory(new ChildWikiFilePageFactory());
     registerWikiPageFactory(new RootWikiFilePageFactory());
-    // Note: ExternalSuitePageFactory should be last in line: it traverses the remainder of the tree looking for .html files.
-    registerWikiPageFactory(new ExternalSuitePageFactory(fileSystem));
   }
 
   @Override // from WikiPageFactoryRegistry
