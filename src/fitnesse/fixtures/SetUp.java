@@ -5,7 +5,6 @@ package fitnesse.fixtures;
 import java.io.ByteArrayInputStream;
 import java.util.Properties;
 
-import fitnesse.responders.editing.SaveRecorder;
 import fitnesse.testutil.FitNesseUtil;
 import util.FileUtil;
 
@@ -24,7 +23,6 @@ public class SetUp {
     final int port = 9123;
     properties.setProperty("FITNESSE_PORT", String.valueOf(port));
     context = FitNesseUtil.makeTestContext(port, properties);
-    SaveRecorder.clear();
     FitNesseUtil.startFitnesseWithContext(context);
   }
 

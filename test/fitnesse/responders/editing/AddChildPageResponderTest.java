@@ -196,8 +196,6 @@ public class AddChildPageResponderTest {
     request.setResource("");
     request.addInput(EditResponder.PAGE_NAME, "TestChildPage");
     request.addInput(EditResponder.CONTENT_INPUT_NAME, newContent);
-    request.addInput(EditResponder.TIME_STAMP, "" + SaveRecorder.timeStamp());
-    request.addInput(EditResponder.TICKET_ID, "" + SaveRecorder.newTicket());
     request.addInput(NewPageResponder.PAGE_TEMPLATE, ".TemplatePage");
 
     responder.makeResponse(context, request);

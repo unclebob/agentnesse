@@ -21,8 +21,6 @@ import fitnesse.wiki.WikiPagePath;
 
 public class EditResponder implements Responder {
   public static final String CONTENT_INPUT_NAME = "pageContent";
-  public static final String TIME_STAMP = "editTime";
-  public static final String TICKET_ID = "ticketId";
   public static final String HELP_TEXT = "helpText";
   public static final String SUITES = "suites";
   public static final String PAGE_TYPE = "pageType";
@@ -91,8 +89,6 @@ public class EditResponder implements Responder {
 
   private void makeEditForm(HtmlPage html, String resource, boolean firstTimeForNewPage, String defaultNewPageContent) {
     html.put("resource", resource);
-    html.put(TIME_STAMP, String.valueOf(SaveRecorder.timeStamp()));
-    html.put(TICKET_ID, String.valueOf(SaveRecorder.newTicket()));
 
     if (request.hasInput("redirectToReferer") && request.hasHeader("Referer")) {
       String redirectUrl = request.getHeader("Referer");

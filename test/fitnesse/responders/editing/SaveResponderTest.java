@@ -33,7 +33,6 @@ public class SaveResponderTest {
     root = context.getRootPage();
     request = new MockRequest();
     responder = new SaveResponder();
-    SaveRecorder.clear();
   }
 
   @Test
@@ -51,10 +50,8 @@ public class SaveResponderTest {
 
   private void prepareRequest(String pageName) {
     request.setResource(pageName);
-    request.addInput(EditResponder.TIME_STAMP, "12345");
     request.addInput(EditResponder.CONTENT_INPUT_NAME, "some new content");
     request.addInput(EditResponder.HELP_TEXT, "some help");
-    request.addInput(EditResponder.TICKET_ID, "" + SaveRecorder.newTicket());
   }
 
   @Test
@@ -127,12 +124,11 @@ public class SaveResponderTest {
 
     request.setResource(simplePageName);
     request.addInput(EditResponder.CONTENT_INPUT_NAME, "some new content");
-    request.addInput(EditResponder.TIME_STAMP, "" + (SaveRecorder.timeStamp() - 10000));
-    request.addInput(EditResponder.TICKET_ID, "" + SaveRecorder.newTicket());
 
-    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+    Response response = responder.makeResponse(context, request);
 
-    assertHasRegexp("Merge", response.getContent());
+    assertEquals(303, response.getStatus());
+    assertEquals("some new content", root.getChildPage(simplePageName).getData().getContent());
   }
 
   @Test
@@ -142,14 +138,11 @@ public class SaveResponderTest {
     String newContent = "some new Content work damn you!";
     request.setResource(pageName);
     request.addInput(EditResponder.CONTENT_INPUT_NAME, newContent);
-    request.addInput(EditResponder.TIME_STAMP, "" + SaveRecorder.timeStamp());
-    request.addInput(EditResponder.TICKET_ID, "" + SaveRecorder.newTicket());
 
     Response response = responder.makeResponse(context, request);
     assertEquals(303, response.getStatus());
 
     request.addInput(EditResponder.CONTENT_INPUT_NAME, newContent + " Ok I'm working now");
-    request.addInput(EditResponder.TIME_STAMP, "" + SaveRecorder.timeStamp());
     response = responder.makeResponse(context, request);
     assertEquals(303, response.getStatus());
   }
@@ -168,7 +161,6 @@ public class SaveResponderTest {
     WikiPage simplePage = WikiPageUtil.addPage(root, PathParser.parse(pageName));
 
     PageData data = simplePage.getData();
-    SaveRecorder.pageSaved(simplePage, 0);
     simplePage.commit(data);
   }
 

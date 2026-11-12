@@ -59,8 +59,6 @@ public class PageDriver {
     if (username != null)
       request.setCredentials(username, password);
     request.addInput("responder", "saveData");
-    request.addInput(EditResponder.TIME_STAMP, "9999999999999");
-    request.addInput(EditResponder.TICKET_ID, "321");
     request.addInput("pageContent", contents);
     request.parseRequestUri("/" + pageName);
     WikiPagePath path = PathParser.parse(request.getResource()); // uri;

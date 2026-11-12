@@ -89,3 +89,6 @@ ContextRoot
 setContextRoot
 
 fitnesse.Shutdown
+
+MergeResponder
+SaveRecorder

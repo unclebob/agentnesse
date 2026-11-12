@@ -48,8 +48,6 @@ public class EditResponderTest {
     assertSubString("method=\"post\"", body);
     assertSubString("child content with &lt;html&gt;", body);
     assertSubString("name=\"responder\"", body);
-    assertSubString("name=\"" + EditResponder.TIME_STAMP + "\"", body);
-    assertSubString("name=\"" + EditResponder.TICKET_ID + "\"", body);
     assertSubString("name=\"" + EditResponder.HELP_TEXT + "\"", body);
     assertSubString("select id=\"" + EditResponder.TEMPLATE_MAP + "\"", body);
 
@@ -77,8 +75,6 @@ public class EditResponderTest {
     assertSubString("method=\"post\"", body);
     assertSubString(NewPageResponder.DEFAULT_PAGE_CONTENT, body);
     assertSubString("name=\"responder\"", body);
-    assertSubString("name=\"" + EditResponder.TIME_STAMP + "\"", body);
-    assertSubString("name=\"" + EditResponder.TICKET_ID + "\"", body);
     assertSubString("type=\"submit\"", body);
     assertNotSubString("<h5> </h5>", body);
   }
@@ -115,8 +111,6 @@ public class EditResponderTest {
     assertSubString("method=\"post\"", body);
     assertSubString("child content with &lt;html&gt;", body);
     assertSubString("name=\"responder\"", body);
-    assertSubString("name=\"" + EditResponder.TIME_STAMP + "\"", body);
-    assertSubString("name=\"" + EditResponder.TICKET_ID + "\"", body);
     assertSubString("name=\"" + EditResponder.HELP_TEXT + "\"", body);
     assertSubString("select id=\"" + EditResponder.TEMPLATE_MAP + "\"", body);
     assertSubString("option value=\"" + ".TemplateLibrary.TemplateOne" + "\"", body);

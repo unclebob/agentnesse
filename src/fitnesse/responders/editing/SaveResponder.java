@@ -9,25 +9,16 @@ import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
 import fitnesse.wiki.*;
 
-import static fitnesse.responders.editing.SaveRecorder.changesShouldBeMerged;
-
 public class SaveResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
-    long editTimeStamp = getEditTime(request);
-    long ticketId = getTicketId(request);
     String resource = request.getResource();
     WikiPage page = getPage(resource, context);
-
-    if (changesShouldBeMerged(editTimeStamp, ticketId, page))
-      return new MergeResponder(request).makeResponse(context, request);
-    else {
-      return saveEdits(context, request, page, ticketId);
-    }
+    return saveEdits(context, request, page);
   }
 
-  private Response saveEdits(FitNesseContext context, Request request, WikiPage page, long ticketId) {
+  private Response saveEdits(FitNesseContext context, Request request, WikiPage page) {
     String savedContent = request.getInput(EditResponder.CONTENT_INPUT_NAME);
     String helpText = request.getInput(EditResponder.HELP_TEXT);
     String suites = request.getInput(EditResponder.SUITES);
@@ -36,7 +27,6 @@ public class SaveResponder implements Responder {
 
     Response response = new SimpleResponse();
     setData(data, savedContent, helpText, suites, user);
-    SaveRecorder.pageSaved(page, ticketId);
     VersionInfo commitRecord = page.commit(data);
     if (commitRecord != null) {
       response.addHeader("Current-Version", commitRecord.getName());
@@ -47,20 +37,6 @@ public class SaveResponder implements Responder {
       response.redirect(request.getResource());
 
     return response;
-  }
-
-  private long getTicketId(Request request) {
-    if (!request.hasInput(EditResponder.TICKET_ID))
-      return 0;
-    String ticketIdString = request.getInput(EditResponder.TICKET_ID);
-    return Long.parseLong(ticketIdString);
-  }
-
-  private long getEditTime(Request request) {
-    if (!request.hasInput(EditResponder.TIME_STAMP))
-      return 0;
-    String editTimeStampString = request.getInput(EditResponder.TIME_STAMP);
-    return Long.parseLong(editTimeStampString);
   }
 
   private WikiPage getPage(String resource, FitNesseContext context) {
