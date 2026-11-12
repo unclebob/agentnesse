@@ -3,6 +3,7 @@ package fitnesse.markdown;
 import fitnesse.wiki.BaseWikiPage;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PageType;
+import fitnesse.wiki.PathParser;
 import fitnesse.wiki.VersionInfo;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageLoadException;
@@ -116,7 +117,12 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   @Override
   public String getHtml() {
-    return MarkdownRenderer.render(getData().getContent());
+    return MarkdownRenderer.render(getData().getContent(), this::pageExists);
+  }
+
+  private boolean pageExists(String wikiWord) {
+    return PathParser.parse(wikiWord) != null
+      && getParent().getPageCrawler().getPage(PathParser.parse(wikiWord)) != null;
   }
 
   @Override

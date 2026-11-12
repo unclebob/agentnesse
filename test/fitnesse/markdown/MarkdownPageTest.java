@@ -59,7 +59,10 @@ public class MarkdownPageTest {
     assertEquals("the suite", data.getAttribute("Help"));
     assertTrue(data.hasAttribute("Prune"));
     assertEquals("SuiteDemo", page.getName());
-    assertEquals("<h1>Suite</h1>\n", page.getHtml());
+    assertEquals("<h1 id=\"suite\">Suite</h1>\n", page.getHtml());
+    fileSystem.makeFile(new File("root/FrontPage.md"), "there\n");
+    fileSystem.makeFile(new File("root/Notes.md"), "See FrontPage.\n");
+    assertTrue(root.getChildPage("Notes").getHtml().contains("<a href=\"FrontPage\">FrontPage</a>"));
     assertNull(page.getVariable("anything"));
     assertTrue(page.getVersions().isEmpty());
     try {

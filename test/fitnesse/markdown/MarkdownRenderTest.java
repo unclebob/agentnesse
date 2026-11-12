@@ -12,6 +12,16 @@ public class MarkdownRenderTest {
   @Test
   public void aHeadingRendersAsHtml() throws Exception {
     assertGolden("heading");
+    assertGolden("headings");
+  }
+
+  @Test
+  public void aWikiWordBecomesALinkAndAMissingPageOffersToCreateIt() throws Exception {
+    assertGolden("wiki-word");
+    String linked = MarkdownRenderer.render("Open FrontPage.\n", word -> "FrontPage".equals(word));
+    assertEquals("<p>Open <a href=\"FrontPage\">FrontPage</a>.</p>\n", linked);
+    String code = MarkdownRenderer.render("Use `FrontPage` literally.\n");
+    assertEquals("<p>Use <code>FrontPage</code> literally.</p>\n", code);
   }
 
   static void assertGolden(String name) throws Exception {
