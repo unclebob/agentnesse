@@ -71,14 +71,6 @@ public class WikiPageActions {
     return hasAction("Files");
   }
 
-  public boolean isWithVersions() {
-    return hasAction("Versions");
-  }
-
-  public boolean isWithRecentChanges() {
-    return hasAction("RecentChanges");
-  }
-
   public boolean isWithVariablesScope() { return page != null; }
 
   public boolean isWithUserGuide() {

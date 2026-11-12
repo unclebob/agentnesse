@@ -88,8 +88,6 @@ public class AddChildPageResponder implements SecureResponder {
   private void createChildPage(FitNesseContext context) {
     WikiPage childPage = WikiPageUtil.addPage(currentPage, childPath, childContent);
     setAttributes(childPage);
-    context.recentChanges.updateRecentChanges(childPage);
-
   }
 
   private void setAttributes(WikiPage childPage) {

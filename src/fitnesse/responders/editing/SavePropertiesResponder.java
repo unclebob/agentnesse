@@ -28,7 +28,6 @@ public class SavePropertiesResponder extends BasicResponder {
     if (commitRecord != null) {
       response.addHeader("Current-Version", commitRecord.getName());
     }
-    context.recentChanges.updateRecentChanges(page);
     response.redirect(context.contextRoot, request.getResource());
 
     return response;

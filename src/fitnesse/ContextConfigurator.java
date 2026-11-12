@@ -13,8 +13,6 @@ import fitnesse.testsystems.TestSystemListener;
 import fitnesse.testsystems.slim.CustomComparatorRegistry;
 import fitnesse.testsystems.slim.tables.SlimTableFactory;
 import fitnesse.util.ClassUtils;
-import fitnesse.wiki.RecentChanges;
-import fitnesse.wiki.RecentChangesWikiPage;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.WikiPageFactoryRegistry;
@@ -32,7 +30,6 @@ import static fitnesse.ConfigurationParameter.CONFIG_FILE;
 import static fitnesse.ConfigurationParameter.CONTEXT_ROOT;
 import static fitnesse.ConfigurationParameter.CREDENTIALS;
 import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
-import static fitnesse.ConfigurationParameter.RECENT_CHANGES_CLASS;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
 import static fitnesse.ConfigurationParameter.THEME;
 import static fitnesse.ConfigurationParameter.WIKI_PAGE_FACTORY_CLASS;
@@ -64,7 +61,6 @@ public class ContextConfigurator {
   private Logger logger;
   private Authenticator authenticator;
   private WikiFiles versionsController;
-  private RecentChanges recentChanges;
   /** Others as name-value pairs: */
   private final Properties properties = new Properties();
   private TestSystemListener testSystemListener;
@@ -119,9 +115,6 @@ public class ContextConfigurator {
     if (versionsController == null) {
       versionsController = new WikiFiles();
     }
-    if (recentChanges == null) {
-      recentChanges = componentFactory.createComponent(RECENT_CHANGES_CLASS, RecentChangesWikiPage.class);
-    }
 
     PluginsLoader pluginsLoader = new PluginsLoader(componentFactory, classLoader);
 
@@ -156,7 +149,6 @@ public class ContextConfigurator {
           maximumWorkers,
           contextRoot,
           versionsController,
-          recentChanges,
           port,
           authenticator,
           logger,
@@ -295,11 +287,6 @@ public class ContextConfigurator {
 
   public ContextConfigurator withVersionsController(WikiFiles versionsController) {
     this.versionsController = versionsController;
-    return this;
-  }
-
-  public ContextConfigurator withRecentChanges(RecentChanges recentChanges) {
-    this.recentChanges = recentChanges;
     return this;
   }
 

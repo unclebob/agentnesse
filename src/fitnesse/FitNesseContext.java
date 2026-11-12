@@ -11,7 +11,6 @@ import fitnesse.testrunner.run.TestRunFactoryRegistry;
 import fitnesse.testsystems.TestSystemFactory;
 import fitnesse.testsystems.TestSystemListener;
 import fitnesse.util.StringUtils;
-import fitnesse.wiki.RecentChanges;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.UrlPathVariableSource;
 import fitnesse.wiki.WikiPage;
@@ -28,7 +27,6 @@ public class FitNesseContext {
   public static final String SSL_PARAMETER_CLASS_PROPERTY = "wiki.protocol.ssl.parameter.class";
   public static final String SSL_CLIENT_AUTH_PROPERTY = "wiki.protocol.ssl.client.auth";
 
-  public static final String recentChangesDateFormat = "kk:mm:ss EEE, MMM dd, yyyy";
   public static final String rfcCompliantDateFormat = "EEE, d MMM yyyy HH:mm:ss Z";
 
   public final FitNesseVersion version;
@@ -52,14 +50,13 @@ public class FitNesseContext {
 
   public final SystemVariableSource variableSource;
   public final WikiFiles versionsController;
-  public final RecentChanges recentChanges;
   public final Logger logger;
   public final Authenticator authenticator;
   private final Properties properties;
 
   protected FitNesseContext(FitNesseVersion version, WikiPageFactory wikiPageFactory, String rootPath,
                             String rootDirectoryName, int maximumWorkers, String contextRoot,
-                            WikiFiles versionsController, RecentChanges recentChanges, int port,
+                            WikiFiles versionsController, int port,
                             Authenticator authenticator, Logger logger,
                             TestSystemFactory testSystemFactory, TestSystemListener testSystemListener,
                             FormatterFactory formatterFactory,
@@ -74,7 +71,6 @@ public class FitNesseContext {
     this.maximumWorkers = maximumWorkers;
     this.contextRoot = contextRoot;
     this.versionsController = versionsController;
-    this.recentChanges = recentChanges;
     this.port = port;
     this.authenticator = authenticator;
     this.logger = logger;

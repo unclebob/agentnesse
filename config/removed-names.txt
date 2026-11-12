@@ -42,3 +42,6 @@ PublishResponder
 Publisher
 
 RssResponder
+
+RecentChangesWikiPage
+updateRecentChanges

@@ -52,10 +52,6 @@
             #if( $actions.withSearch )
                 <li#group(3)><a class="dropdown-item" href="?search" accesskey="s">Search</a></li>
             #end
-            #if( $actions.withRecentChanges )
-                <li#group(3)><a class="dropdown-item" href="${contextRoot}RecentChanges" accesskey="">Recent Changes</a></li>
-            #end
-
             #if( $actions.testPage )
                 <li#group(4)><a class="dropdown-item" href="?test&amp;remote_debug">Remote Debug</a></li>
             #end

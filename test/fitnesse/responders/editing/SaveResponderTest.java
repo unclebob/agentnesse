@@ -47,8 +47,6 @@ public class SaveResponderTest {
 
     String newContent = root.getChildPage("ChildPage").getData().getContent();
     assertEquals("some new content", newContent);
-
-    checkRecentChanges(root, "ChildPage");
   }
 
   private void prepareRequest(String pageName) {
@@ -70,12 +68,6 @@ public class SaveResponderTest {
     assertHasRegexp("Location: http://fitnesse.org:8080/SomePage", response.makeHttpHeaders());
   }
 
-  private void checkRecentChanges(WikiPage source, String changedPage) throws Exception {
-    assertTrue("RecentChanges should exist", source.hasChildPage("RecentChanges"));
-    String recentChanges = source.getChildPage("RecentChanges").getData().getContent();
-    assertTrue("ChildPage should be in RecentChanges", recentChanges.contains(changedPage));
-  }
-
   @Test
   public void testCanCreatePage() throws Exception {
     prepareRequest("ChildPageTwo");
@@ -85,8 +77,6 @@ public class SaveResponderTest {
     assertEquals(true, root.hasChildPage("ChildPageTwo"));
     String newContent = root.getChildPage("ChildPageTwo").getData().getContent();
     assertEquals("some new content", newContent);
-    assertTrue("RecentChanges should exist", root.hasChildPage("RecentChanges"));
-    checkRecentChanges(root, "ChildPageTwo");
   }
 
   @Test
@@ -98,8 +88,6 @@ public class SaveResponderTest {
     assertEquals(true, root.hasChildPage("child_page_two"));
     String newContent = root.getChildPage("child_page_two").getData().getContent();
     assertEquals("some new content", newContent);
-    assertTrue("RecentChanges should exist", root.hasChildPage("RecentChanges"));
-    checkRecentChanges(root, "child_page_two");
   }
 
   @Test
@@ -117,8 +105,6 @@ public class SaveResponderTest {
     assertEquals("some new content", newContent);
     assertEquals("some help", pageData.getAttribute(PageData.PropertyHELP));
     assertEquals("some suite", pageData.getAttribute(PageData.PropertySUITES));
-    assertTrue("RecentChanges should exist", root.hasChildPage("RecentChanges"));
-    checkRecentChanges(root, "ChildPageTwo");
   }
 
   @Test

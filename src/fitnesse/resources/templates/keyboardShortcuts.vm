@@ -37,10 +37,6 @@
     <kbd>g f</kbd>
     <span class="help-key-def">Full Reference Guide</span>
    </li>
-   <li>
-    <kbd>g c</kbd>
-    <span class="help-key-def">Recent Changes</span>
-   </li>
   </ul>
   <ul class="help-list">
    <li><h4>Edit Mode</h4></li>
@@ -114,7 +110,6 @@
     Mousetrap.bind('g u', function() { window.location.href =".FitNesse.UserGuide"; });
     Mousetrap.bind('g q', function() { window.open(".FitNesse.UserGuide.QuickReferenceGuide", "_blank"); });
     Mousetrap.bind('g f', function() { window.open(".FitNesse.FullReferenceGuide", "_blank"); });
-    Mousetrap.bind('g c', function() { window.location.href ="RecentChanges"; });
   #end
 
  Mousetrap.bind('?', function() { window.location.hash = "-shortcut-keys"; });

@@ -18,7 +18,6 @@ import fitnesse.testrunner.WikiTestPageUtil;
 import fitnesse.wiki.PageCrawler;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
-import fitnesse.wiki.RecentChanges;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageUtil;
@@ -41,15 +40,9 @@ public class WikiPageResponder implements SecureResponder {
   }
 
   protected WikiPage loadPage(FitNesseContext context, String pageName, Map<String,String> inputs) {
-    WikiPage page;
-    if (RecentChanges.RECENT_CHANGES.equals(pageName)) {
-      page = context.recentChanges.toWikiPage(context.getRootPage());
-    } else {
-      WikiPagePath path = PathParser.parse(pageName);
-      PageCrawler crawler = context.getRootPage(inputs).getPageCrawler();
-      page = crawler.getPage(path);
-    }
-    return page;
+    WikiPagePath path = PathParser.parse(pageName);
+    PageCrawler crawler = context.getRootPage(inputs).getPageCrawler();
+    return crawler.getPage(path);
   }
 
   private Response notFoundResponse(FitNesseContext context, Request request) throws Exception {

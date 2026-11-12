@@ -9,7 +9,6 @@ import fitnesse.plugins.PluginException;
 import fitnesse.authentication.Authenticator;
 import fitnesse.authentication.PromiscuousAuthenticator;
 import fitnesse.socketservice.PlainServerSocketFactory;
-import fitnesse.wiki.RecentChangesWikiPage;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.fs.FileSystem;
 import fitnesse.wiki.fs.WikiFiles;
@@ -90,7 +89,6 @@ public class FitNesseUtil {
               .withPort(port)
               .withAuthenticator(authenticator)
               .withVersionsController(new WikiFiles())
-              .withRecentChanges(new RecentChangesWikiPage())
               .updatedWith(properties)
               .makeFitNesseContext();
     } catch (IOException | PluginException e) {
