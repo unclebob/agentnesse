@@ -3,7 +3,6 @@ package fitnesse.testsystems.slim;
 import fitnesse.html.HtmlUtil;
 import fitnesse.markdown.SlimMarkdownTable;
 import fitnesse.markdown.TableSeparators;
-import fitnesse.testsystems.ExecutionResult;
 import fitnesse.testsystems.TestResult;
 import fitnesse.testsystems.slim.results.SlimExceptionResult;
 import fitnesse.testsystems.slim.results.SlimTestResult;
@@ -19,7 +18,7 @@ import java.util.List;
  */
 public final class MarkdownTable implements Table {
   private final List<List<Cell>> rows = new ArrayList<>();
-  private final List<Table> children = new ArrayList<>();
+  private final List<PlacedChild> children = new ArrayList<>();
   private boolean tearDown;
 
   public static MarkdownTable parse(String markdown) {
@@ -76,7 +75,9 @@ public final class MarkdownTable implements Table {
 
   @Override
   public void appendChildTable(int row, Table table) {
-    children.add(table);
+    if (table instanceof MarkdownTable child) {
+      children.add(new PlacedChild(row, child));
+    }
   }
 
   @Override
@@ -128,12 +129,23 @@ public final class MarkdownTable implements Table {
 
   public String toHtml() {
     StringBuilder html = new StringBuilder("<table class=\"agentnesse-table\">\n");
-    for (List<Cell> row : rows) {
+    for (int row = 0; row < rows.size(); row++) {
       html.append("<tr>");
-      for (Cell cell : row) {
-        html.append("<td>").append(cell.html()).append("</td>");
+      for (Cell cell : rows.get(row)) {
+        html.append("<td>");
+        html.append(cell.html());
+        html.append("</td>");
       }
       html.append("</tr>\n");
+      for (PlacedChild child : children) {
+        if (child.row == row) {
+          html.append("<tr class=\"scenario closed\"></tr><tr class=\"scenario-detail closed-detail\"><td colspan=\"")
+            .append(rows.get(row).size())
+            .append("\">")
+            .append(child.table.toHtml())
+            .append("</td></tr>\n");
+        }
+      }
     }
     return html.append("</table>\n").toString();
   }
@@ -182,29 +194,29 @@ public final class MarkdownTable implements Table {
         return escape(content) + " <span class=\"" + cls + "\">" + rendered + "</span>";
       }
       if (result != null && result.getExecutionResult() != null) {
-        return resultHtml(result);
+        HtmlTable.Cell formatted = new HtmlTable.Cell(content);
+        formatted.setTestResult(result);
+        String rendered = formatted.formatTestResult();
+        return rendered == null ? escape(content) : rendered;
       }
       if (rowResult != null) {
-        return "<span class=\"" + rowResult + "\">" + escape(content) + "</span>";
+        return "<span class=\"" + rowResult + "\">" + (HtmlUtil.isValidTableCellContent(content) ? content : escape(content)) + "</span>";
       }
       return HtmlUtil.isValidTableCellContent(content) ? content : escape(content);
     }
 
-    private String resultHtml(SlimTestResult result) {
-      ExecutionResult status = result.getExecutionResult();
-      if (status == ExecutionResult.FAIL && result.hasExpected()) {
-        String actual = result.hasActual() ? result.getActual() : "";
-        return "[" + escape(actual) + "] <span class=\"fail\">expected [" + escape(result.getExpected()) + "]</span>";
-      }
-      String body = result.hasExpected() ? result.getExpected() : content;
-      if (result.hasMessage() && status != ExecutionResult.PASS) {
-        body = result.getMessage();
-      }
-      return "<span class=\"" + status + "\">" + (HtmlUtil.isValidTableCellContent(body) ? body : escape(body)) + "</span>";
-    }
-
     private static String escape(String text) {
       return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+  }
+
+  private static final class PlacedChild {
+    private final int row;
+    private final MarkdownTable table;
+
+    private PlacedChild(int row, MarkdownTable table) {
+      this.row = row;
+      this.table = table;
     }
   }
 }

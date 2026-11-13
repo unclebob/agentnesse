@@ -14,15 +14,14 @@ public final class TableSeparators {
   public static String supply(String markdown) {
     StringBuilder out = new StringBuilder();
     List<String> table = new ArrayList<>();
-    boolean fence = false;
+    MarkdownFences fence = new MarkdownFences();
     for (String line : markdown.split("\n", -1)) {
-      if (line.trim().startsWith("```")) {
+      if (fence.boundary(line) || fence.inside()) {
         flush(table, out);
-        fence = !fence;
         out.append(line).append('\n');
         continue;
       }
-      if (!fence && isRow(line)) {
+      if (isRow(line)) {
         table.add(row(line));
         continue;
       }

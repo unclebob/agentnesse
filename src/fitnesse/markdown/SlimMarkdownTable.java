@@ -40,7 +40,8 @@ public final class SlimMarkdownTable {
     if (table != null) {
       collect(table, rows);
     }
-    SlimTableHeading heading = SlimTableHeading.parse(rows.isEmpty() ? "" : rows.get(0).get(0));
+    String first = rows.isEmpty() || rows.get(0).isEmpty() ? "" : rows.get(0).get(0);
+    SlimTableHeading heading = SlimTableHeading.parse(first);
     return new SlimMarkdownTable(rows, heading.type(), heading.name(), heading.error());
   }
 

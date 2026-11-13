@@ -64,8 +64,10 @@ define SLIM_DT_GETTER
   }
  ]
 }
+```
 
 </details>
+
 ```agentnesse
 define SLIM_DT_SETTER
 {
@@ -93,7 +95,6 @@ define SLIM_DT_SETTER
  ]
 }
 ```
-```
 
 ### Based on your test cases you might expect or need to add a varying number of properties to a collection.
 #### Test Case with 2 properties
@@ -109,7 +110,7 @@ define SLIM_DT_SETTER
 
 | Properties | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| # | property NEW | property a | property b | size? | property NEW? | property b? | has Value '123456789' ? | has Value '\`FitNesse\`'? |
+| # | property NEW | property a | property b | size? | property NEW? | property b? | has Value '123456789' ? | has Value 'FitNesse' ? |
 | | Hello | $S1 | $S2 | 3 | Hello | 123456789 | true | false |
 | | FitNesse | $S2 | $S3 | 3 | | $S3 | true | true |
 | | World | $S3 | $S1 | 3 | World | $S1 | false | false |
@@ -147,7 +148,7 @@ compare the two tables below with a standard decision table
 
 | should I buy milk | | | |
 | --- | --- | --- | --- |
-| GIVEN I have **ZERO** *pints of milk remaining* in my fridge | WHEN I have **AT LEAST** 3$<sup>1</sup> *cash in wallet* ----- <sup>1</sup>: the price for <br>a bottle of milk | OR I **HAVE** a *credit card* | THEN I *go to store* and buy milk! |
+| pints of milk remaining<br>GIVEN I have **ZERO** pints of milk remaining in my fridge | cash in wallet<br>WHEN I have **AT LEAST** 3 dollars. The price for a bottle of milk | credit card<br>OR I **HAVE** a credit card | go to store<br>THEN I go to the store and buy milk! |
 | 0 | 0 | no | no |
 | 0 | 1 | no | no |
 | 0 | 2 | no | no |
@@ -163,7 +164,7 @@ compare the two tables below with a standard decision table
 
 | baseline: should I buy milk | | | | |
 | --- | --- | --- | --- | --- |
-| GIVEN I have **zero** *pints of milk remaining* in my fridge | WHEN I have **AT LEAST 3$**<sup>1</sup> *cash in wallet* ----- <sup>1</sup>: the price for <br>a bottle of milk | OR I **have** a <u>*credit card*</u> | THEN I *go to store* and buy milk! | # |
+| pints of milk remaining<br>GIVEN I have **zero** pints of milk remaining in my fridge | cash in wallet<br>WHEN I have **AT LEAST** 3 dollars. The price for a bottle of milk | credit card<br>OR I **have** a credit card | go to store<br>THEN I go to the store and buy milk! | # |
 | 0 | 0 | no | no | . |
 | | 1 | | | . |
 | | 2 | | | . |

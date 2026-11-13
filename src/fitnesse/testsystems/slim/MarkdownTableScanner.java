@@ -1,5 +1,6 @@
 package fitnesse.testsystems.slim;
 
+import fitnesse.markdown.MarkdownFences;
 import fitnesse.markdown.TableSeparators;
 
 import java.util.ArrayList;
@@ -17,17 +18,37 @@ public final class MarkdownTableScanner implements TableScanner<MarkdownTable> {
     String prepared = TableSeparators.supply(markdown == null ? "" : markdown);
     StringBuilder current = new StringBuilder();
     boolean inTable = false;
+    boolean tearDown = false;
+    MarkdownFences fence = new MarkdownFences();
     for (String line : prepared.split("\n", -1)) {
+      if (fence.boundary(line) || fence.inside()) {
+        if (inTable) {
+          add(current, tearDown);
+          inTable = false;
+        }
+        continue;
+      }
+      if (line.contains("agentnesse-break") || line.contains("agentnesse-teardown")) {
+        if (inTable) {
+          add(current, tearDown);
+          inTable = false;
+        }
+        fence = new MarkdownFences();
+        if (line.contains("agentnesse-teardown")) {
+          tearDown = true;
+        }
+        continue;
+      }
       if (isRow(line)) {
         inTable = true;
         current.append(line).append('\n');
       } else if (inTable) {
-        add(current);
+        add(current, tearDown);
         inTable = false;
       }
     }
     if (inTable) {
-      add(current);
+      add(current, tearDown);
     }
   }
 
@@ -36,8 +57,14 @@ public final class MarkdownTableScanner implements TableScanner<MarkdownTable> {
     return trimmed.startsWith("|") || trimmed.startsWith("!|");
   }
 
-  private void add(StringBuilder current) {
-    tables.add(MarkdownTable.parse(current.toString()));
+  private void add(StringBuilder current, boolean tearDown) {
+    MarkdownTable table = MarkdownTable.parse(current.toString());
+    if (table.getRowCount() == 0 || table.getColumnCountInRow(0) == 0) {
+      current.setLength(0);
+      return;
+    }
+    table.setTearDown(tearDown);
+    tables.add(table);
     current.setLength(0);
   }
 
