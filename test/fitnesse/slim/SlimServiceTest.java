@@ -144,6 +144,44 @@ public class SlimServiceTest extends SlimServiceTestBase {
   }
 
   @Test
+  public void daemonAcceptsAConnectionUntilTheSocketCloses() throws Exception {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
+    try (ServerSocket socket = new ServerSocket(0)) {
+      int port = socket.getLocalPort();
+      SlimService service = new SlimService(
+        JavaSlimFactory.createJavaSlimFactory(options).getSlimServer(), socket, true);
+      Thread server = new Thread(() -> {
+        try {
+          service.accept();
+        } catch (IOException ignored) {
+          // Closing the socket ends the daemon loop.
+        }
+      });
+      server.setDaemon(true);
+      server.start();
+
+      SlimCommandRunningClient client = new SlimCommandRunningClient(
+        new MockCommandRunner(new CompositeExecutionLogListener()),
+        "localhost", port, 20,
+        SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION,
+        new PlainClientSocketFactory());
+      for (int attempt = 0; attempt < 50 && !client.isConnected(); attempt++) {
+        try {
+          client.connect();
+        } catch (Exception ignored) {
+          Thread.sleep(20);
+        }
+      }
+      assertTrue(client.isConnected());
+      client.bye();
+      client.kill();
+      socket.close();
+      server.join(5000);
+      assertFalse(server.isAlive());
+    }
+  }
+
+  @Test
   public void servesOneConnectionThenStops() throws Exception {
     int port;
     try (ServerSocket probe = new ServerSocket(0)) {

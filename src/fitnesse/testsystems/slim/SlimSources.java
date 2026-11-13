@@ -44,6 +44,14 @@ public final class SlimSources {
     static Item error(String error) {
       return new Item(null, null, null, error);
     }
+
+    public String alias() {
+      return alias;
+    }
+
+    public String target() {
+      return target;
+    }
   }
 
   private final List<Item> items = new ArrayList<>();

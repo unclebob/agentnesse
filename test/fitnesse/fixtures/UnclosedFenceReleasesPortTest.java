@@ -35,6 +35,25 @@ public class UnclosedFenceReleasesPortTest {
   }
 
   @Test
+  public void anAliasBlockIsRegisteredInDocumentOrder() {
+    WikiPage root = InMemoryPage.makeRoot("RooT");
+    WikiPageUtil.addPage(root, PathParser.parse("Aliased"), """
+      ```agentnesse
+      alias add change
+      add up change
+      ```
+
+      | ddt: add change |
+      | --- |
+      | total? |
+      | 1 |
+      """);
+    SlimSources sources = SlimSources.collect(new WikiTestPage(root.getChildPage("Aliased")));
+    assertTrue(sources.items().stream().anyMatch(item -> "add change".equals(item.alias()) && "add up change".equals(item.target())));
+    assertTrue(sources.tables().stream().anyMatch(table -> table.getCellContents(0, 0).startsWith("ddt:")));
+  }
+
+  @Test
   public void tearDownIsASeparateDocumentAfterAnUnclosedFence() {
     WikiPage root = wiki();
     SlimSources sources = SlimSources.collect(new WikiTestPage(root.getChildPage("Broken")));
