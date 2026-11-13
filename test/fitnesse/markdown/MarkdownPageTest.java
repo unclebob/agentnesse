@@ -200,14 +200,11 @@ public class MarkdownPageTest {
   }
 
   @Test
-  public void markdownBesideAnOldPageNamesBothFiles() throws Exception {
+  public void markdownBesideAnOldContentFileNamesBothFiles() throws Exception {
     fileSystem.makeFile(new File("root/Notes.md"), "new\n");
     fileSystem.makeFile(new File("root/Notes/" + ("content" + ".txt")), "old\n");
-    fileSystem.makeFile(new File("root/Other.md"), "new\n");
-    fileSystem.makeFile(new File("root/Other" + ("." + "wiki")), "old\n");
 
     assertBothFormats("Notes", "Notes.md", "content" + ".txt");
-    assertBothFormats("Other", "Other.md", "Other" + ("." + "wiki"));
   }
 
   @Test

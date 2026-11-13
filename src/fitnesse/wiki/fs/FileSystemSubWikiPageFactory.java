@@ -54,11 +54,7 @@ public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
       return;
     }
     File markdown = new File(parent, base + ".md");
-    File wiki = new File(parent, base + OldPageFiles.WIKI);
     File content = new File(new File(parent, base), OldPageFiles.CONTENT);
-    if (isFile(markdown) && isFile(wiki)) {
-      throw new WikiPageLoadException(markdown.getPath() + " and " + wiki.getPath() + " both exist");
-    }
     if (isFile(markdown) && isFile(content)) {
       throw new WikiPageLoadException(markdown.getPath() + " and " + content.getPath() + " both exist");
     }
@@ -67,9 +63,6 @@ public class FileSystemSubWikiPageFactory implements SubWikiPageFactory {
   private String pageBase(String childName) {
     if (childName.endsWith(".md")) {
       return childName.substring(0, childName.length() - 3);
-    }
-    if (childName.endsWith(OldPageFiles.WIKI)) {
-      return childName.substring(0, childName.length() - OldPageFiles.WIKI.length());
     }
     if (childName.indexOf('.') >= 0) {
       return null;

@@ -88,12 +88,6 @@
 | page | $IT | should not contain | @text |
 
 
-| scenario | it should contain | text | in line | symbol |
-| --- | --- | --- | --- | --- |
-| check | request page | $IT | 200 | |
-| $@symbol= | line number containing | @text | | |
-
-
 | scenario | it should match | text | |
 | --- | --- | --- | --- |
 | page | $IT | should match | @text |

@@ -5,7 +5,6 @@ package fitnesse.fixtures;
 import fitnesse.FitNesseExpediter;
 import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
-import fitnesse.responders.editing.EditResponder;
 import fitnesse.util.MockSocket;
 import fitnesse.util.SerialExecutorService;
 import fitnesse.wiki.PageCrawler;
@@ -18,12 +17,10 @@ import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.Tag;
 import org.htmlparser.filters.AndFilter;
-import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.util.NodeList;
-import org.json.JSONObject;
 
 public class PageDriver {
   private PageCreator creator = new PageCreator();
@@ -86,13 +83,6 @@ public class PageDriver {
     return data.getAttribute(PageData.LAST_MODIFYING_USER);
   }
 
-  public boolean pageExists(String pageName) {
-	    WikiPage root = FitnesseFixtureContext.context.getRootPage();
-	    WikiPagePath pagePath = PathParser.parse(pageName);
-	    WikiPage thePage = root.getPageCrawler().getPage(pagePath);
-	    return thePage != null;
-  }
-
   public void makeATestPage(String pageName) throws Exception {
 	onPageSetAttribute(pageName, "Test");
   }
@@ -128,54 +118,8 @@ public class PageDriver {
     return examiner.getValue().contains(subString);
   }
 
-  public boolean htmlContains(String subString) throws Exception {
-    String html = requester.html();
-    html = html.replaceAll("\n", " ");
-    html = html.replaceAll("\r", " ");
-    html = html.replaceAll("\\s+", " ");
-    System.out.println("html = " + html);
-    System.out.println("subString = " + subString);
-    return (html.contains(subString));
-  }
-
-  public boolean htmlWithoutContains(String strip, String subString)
-      throws Exception {
-    String html = requester.html();
-    html = html.replaceAll(strip, "");
-    subString = subString.replaceAll(strip, "");
-    return (html.contains(subString));
-  }
-
-  public boolean containsJsonPacket(String packet) throws Exception {
-    packet = ResponseExaminer.convertBreaksToLineSeparators(packet);
-    JSONObject expected = new JSONObject(packet);
-    String contentString = requester.contents();
-    int jsonStart = contentString.indexOf("{");
-    if (jsonStart == -1)
-      return false;
-    contentString = contentString.substring(jsonStart);
-    JSONObject actual = new JSONObject(contentString);
-    return expected.toString(1).equals(actual.toString(1));
-  }
-
   public String content() throws Exception {
     return requester.html();
-  }
-
-  public String lineIs(int lineNumber) throws Exception {
-    examiner.type = "line";
-    examiner.number = lineNumber;
-    return examiner.string();
-  }
-
-  public int lineNumberContaining(String text) throws Exception {
-    String content = requester.html();
-    int textPosition = content.indexOf(text);
-    if (textPosition == -1)
-      return -1;
-    String priorToContent = content.substring(0, textPosition);
-    String[] lines = priorToContent.split("\n");
-    return lines.length;
   }
 
   public int countOfTagWithIdPrefix(String tag, String idPrefix) throws Exception {
@@ -194,48 +138,7 @@ public class PageDriver {
     return matches;
   }
 
-  public int countOfTagWithClassBelowTagWithIdPrefix(String childTag, String tagClass, String parentTag, String parentIdPrefix) throws Exception {
-    NodeList parents = getMatchingTags(
-            new AndFilter(
-                    new TagNameFilter(parentTag),
-                    new HasAttributePrefixFilter("id", parentIdPrefix))
-    );
-
-    NodeFilter[] predicates = {
-            new TagNameFilter(childTag),
-            new HasAttributeFilter("class", tagClass)
-    };
-    NodeFilter filter = new AndFilter(predicates);
-    NodeList matches = parents.extractAllNodesThatMatch(filter, true);
-    return matches.size();
-  }
-
-  public String valueOfTagWithIdIs(String id) throws Exception {
-    return getValueOfTagWithAttributeValue("id", id);
-  }
-
-  private String getValueOfTagWithAttributeValue(String attribute, String value) throws Exception {
-    NodeList matches = getMatchingTags(new HasAttributeFilter(attribute, value));
-    if (matches.size() != 1)
-      return String.format("There are %d matches, there should be 1.", matches.size());
-    else
-      return matches.elementAt(0).toHtml();
-  }
-
-  public String valueOfTagWithClassIs(String classValue) throws Exception {
-    return getValueOfTagWithAttributeValue("class", classValue);
-  }
-
-  public boolean contentOfTagWithIdContains(String id, String contents) throws Exception {
-    String html = getValueOfTagWithAttributeValue("id", id);
-    return (html.contains(contents));
-  }
-
-  public String contentOfTagWithId(String id) throws Exception {
-    return getValueOfTagWithAttributeValue("id", id);
-  }
-
-  private static class HasAttributePrefixFilter extends HasAttributeFilter {
+  private static class HasAttributePrefixFilter extends org.htmlparser.filters.HasAttributeFilter {
     private static final long serialVersionUID = 1L;
 
     public HasAttributePrefixFilter(String attribute, String prefix) {
