@@ -194,6 +194,17 @@ public class ReturnedValueExpectationTest {
   }
 
   @Test
+  public void aRangeWhoseActualIsNotANumberIsAPlainFailure() throws Exception {
+    assertExpectationMessage(" 2.1 < _ < 5.9", "nope", "fail(a=nope;e= 2.1 < _ < 5.9)");
+  }
+
+  @Test
+  public void aRangeBoundTooLargeForALongStillComparesAsADouble() throws Exception {
+    String huge = "1" + "0".repeat(400);
+    assertExpectationMessage(" 2.1 < _ < 5.9", huge, "fail(2.1 < " + huge + " < 5.9)");
+  }
+
+  @Test
   public void simpleRegularExpression() throws Exception {
     assertExpectationMessage("=~/Bob/", "Bob", "pass(/Bob/ found in: Bob)");
   }
