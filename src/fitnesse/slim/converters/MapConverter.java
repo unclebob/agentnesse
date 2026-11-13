@@ -4,34 +4,22 @@ import fitnesse.html.HtmlTag;
 import fitnesse.html.HtmlUtil;
 import fitnesse.slim.Converter;
 import fitnesse.testsystems.slim.HtmlTable;
-import org.htmlparser.Node;
-import org.htmlparser.Parser;
-import org.htmlparser.filters.TagNameFilter;
-import org.htmlparser.tags.CompositeTag;
-import org.htmlparser.util.NodeList;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MapConverter implements Converter<Map> {
 
-  private NodeList nodes;
-
-  private NodeList tables;
-
   @Override
   public String toString(Map hash) {
     if (hash == null) {
       return NULL_VALUE;
     }
-
-    HtmlTag table = createTag(hash);
-
-    return table.html().trim();
+    return createTag(hash).html().trim();
   }
 
   protected HtmlTag createTag(Map<?, ?> hash) {
-    // Use HtmlTag, same as a hash table.
     HtmlTag table = new HtmlTag("table");
     table.addAttribute("class", "hash_table");
     for (Map.Entry<?, ?> entry : hash.entrySet()) {
@@ -61,85 +49,24 @@ public class MapConverter implements Converter<Map> {
   }
 
   @Override
-  public Map<String, String> fromString(String possibleTable) {
+  public Map<String, String> fromString(String source) {
     Map<String, String> map = new HashMap<>();
-    if (tableIsValid(possibleTable))
-      extractRowsIntoMap(map, tables);
-
+    if (source == null) {
+      return map;
+    }
+    String text = source.trim();
+    if (!text.startsWith("{") || !text.endsWith("}")) {
+      return map;
+    }
+    try {
+      JSONObject object = new JSONObject(text);
+      for (String key : object.keySet()) {
+        Object value = object.get(key);
+        map.put(key, value == null || JSONObject.NULL.equals(value) ? null : String.valueOf(value));
+      }
+    } catch (RuntimeException ignored) {
+      return new HashMap<>();
+    }
     return map;
   }
-
-  private boolean tableIsValid(String possibleTable) {
-    if (isValidHtml(possibleTable)) {
-      return hasOneTable();
-    } else {
-      return false;
-    }
-  }
-
-  private boolean hasOneTable() {
-    TagNameFilter tableFilter = new TagNameFilter("table");
-    tables = nodes.extractAllNodesThatMatch(tableFilter);
-    return tables.size() == 1;
-  }
-
-  private boolean isValidHtml(String possibleTable) {
-    nodes = parseHtml(possibleTable);
-    return nodes != null;
-  }
-
-  private void extractRowsIntoMap(Map<String, String> map, NodeList tables) {
-    extractRows(map, getRows(tables));
-  }
-
-  private void extractRows(Map<String, String> map, NodeList rows) {
-    for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
-      extractRow(map, rows, rowIndex);
-    }
-  }
-
-  private void extractRow(Map<String, String> map, NodeList rows, int rowIndex) {
-    Node row = rows.elementAt(rowIndex);
-    if (row != null)
-      extractColumns(map, row);
-  }
-
-  private void extractColumns(Map<String, String> map, Node row) {
-    TagNameFilter tdFilter = new TagNameFilter("td");
-    if (row.getChildren() != null) {
-      NodeList cols = row.getChildren().extractAllNodesThatMatch(tdFilter);
-      if (cols.size() == 2)
-        addColsToMap(map, cols);
-    }
-  }
-
-  private void addColsToMap(Map<String, String> map, NodeList cols) {
-    String key = getText(cols.elementAt(0));
-    String value = getText(cols.elementAt(1));
-    map.put(key, value);
-  }
-
-  private NodeList getRows(NodeList tables) {
-    TagNameFilter trFilter = new TagNameFilter("tr");
-    Node table = tables.elementAt(0);
-
-    if (table.getChildren() != null)
-      return table.getChildren().extractAllNodesThatMatch(trFilter);
-
-    return new NodeList();
-  }
-
-  private String getText(Node compositeNode) {
-    return HtmlUtil.unescapeHTML(((CompositeTag) compositeNode).getChildrenHTML());
-  }
-
-  private NodeList parseHtml(String possibleTable) {
-      try {
-        Parser parser = Parser.createParser(possibleTable, null);
-        return parser.parse(null);
-      } catch (Exception e) {
-        return null;
-      }
-  }
-
 }

@@ -70,6 +70,10 @@ public class SlimExceptionResult implements ExceptionResult {
     return exceptionValue;
   }
 
+  public SlimFailure failure() {
+    return SlimFailure.parse(exceptionValue);
+  }
+
   public boolean isCatchException() {
     return catchException != null;
   }

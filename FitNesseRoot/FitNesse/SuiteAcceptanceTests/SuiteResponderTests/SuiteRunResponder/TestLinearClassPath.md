@@ -54,3 +54,4 @@ fitnesse-standalone.jar
 | script | | | |
 | --- | --- | --- | --- |
 | page | ParentPage.TestPage?test | should contain | classes${path.separator}fitnesse-standalone.jar${path.separator}parentPath |
+```

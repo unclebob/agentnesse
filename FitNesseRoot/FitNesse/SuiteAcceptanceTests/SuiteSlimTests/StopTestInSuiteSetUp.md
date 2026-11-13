@@ -17,7 +17,7 @@ Raising an exception with the term "StopTest" in it during "SuiteSetUp" will mak
 | given page | MySuite.SuiteTearDown | with content | \| import \|<br>\| --- \|<br>\| fitnesse.slim.test \|<br><br><br>\| script \| echo script \| \| \|<br>\| --- \| --- \| --- \| --- \|<br>\| check \| echo \| suite tear down executed \| suite tear down executed \| |
 | test results for suite | MySuite | should contain | table in page setup never to be executed <span class="ignore">Test not run</span> |
 | ensure | content contains | table in page A never to be executed <span class="ignore">Test not run</span> | |
-| ensure | content contains | tear down after <a href="MySuite.TestPageA">TestPageA</a> <span class="ignore">Test not run</span> | |
+| ensure | content contains | tear down after TestPageA <span class="ignore">Test not run</span> | |
 | ensure | content contains | table in page B never to be executed <span class="ignore">Test not run</span> | |
-| ensure | content contains | tear down after <a href="MySuite.TestPageB">TestPageB</a> <span class="ignore">Test not run</span> | |
+| ensure | content contains | tear down after TestPageB <span class="ignore">Test not run</span> | |
 | ensure | content contains | <span class="pass">suite tear down executed</span> | |

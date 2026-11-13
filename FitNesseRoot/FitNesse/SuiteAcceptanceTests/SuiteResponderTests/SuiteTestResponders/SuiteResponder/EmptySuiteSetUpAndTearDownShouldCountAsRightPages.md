@@ -59,4 +59,5 @@ For normal (HTML) responses:
 | ensure | content contains | <strong>Test Pages:</strong>&nbsp;4 right, 0 wrong, 0 ignored, 0 exceptions | |
 | ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.\*>SuiteSetUp</a> | |
 | ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.\*>SuiteTearDown</a> | |
+```
 

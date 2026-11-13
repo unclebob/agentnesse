@@ -82,47 +82,23 @@ public class MapConverterTest {
   }
 
   @Test
-  public void fromEmptyTable_shouldCreateEmptyMap() throws Exception {
-    makeMap("<table></table>");
-    assertEquals(0, result.size());
-  }
-
-  @Test
-  public void fromTableWithNoColumns_shouldCreateEmptyMap() throws Exception {
-    makeMap("<table><tr></tr><tr></tr></table>");
-    assertEquals(0, result.size());
-  }
-
-  @Test
-  public void fromTableWithOneColumn_shouldCreateEmptyMap() throws Exception {
-    makeMap("<table><tr><td>0</td></tr></table>");
-    assertEquals(0, result.size());
-  }
-
-  @Test
-  public void fromTableWithMoreThanTwoColumns_shouldCreateEmptyMap() throws Exception {
-    makeMap("<table>" + "<tr>" + "  <td>0</td>" + "  <td>0</td>" + "  <td>0</td>" + "</tr>" + "</table>");
-    assertEquals(0, result.size());
-  }
-
-  @Test
-  public void fromTableWithTwoColumnsAndOneRow_shouldCreateMapWithOneEntry() throws Exception {
-    makeMap("<table>" + "<tr>" + "  <td>name</td>" + "  <td>Bob</td>" + "</tr>" + "</table>");
-    assertEquals(1, result.size());
-    assertEquals("Bob", result.get("name"));
-  }
-
-  @Test
-  public void fromTableWithTwoColumnsAndTwoRows_shouldCreateMapWithTwoEntries() throws Exception {
-    makeMap("<table>" + "<tr>" + "  <td>name</td>" + "  <td>Bob</td>" + "</tr>" + "<tr>" + "  <td>address</td>" + "  <td>here</td>" + "</tr>" + "</table>");
+  public void fromJsonObject_shouldCreateMap() throws Exception {
+    makeMap("{\"name\":\"Bob\",\"address\":\"here\"}");
     assertEquals(2, result.size());
     assertEquals("Bob", result.get("name"));
     assertEquals("here", result.get("address"));
   }
 
   @Test
-  public void fromTwoValidTables_shouldCreateEmptyMap() throws Exception {
-    makeMap("<table>" + "<tr>" + "  <td>name</td>" + "  <td>Bob</td>" + "</tr>" + "</table>" + "<table>" + "<tr>" + "  <td>name</td>" + "  <td>Bob</td>" + "</tr>" + "</table>");
+  public void fromJsonWithNull_shouldKeepTheKey() throws Exception {
+    makeMap("{\"name\":null}");
+    assertEquals(1, result.size());
+    assertEquals(null, result.get("name"));
+  }
+
+  @Test
+  public void htmlHashTable_isNotAMap() throws Exception {
+    makeMap("<table><tr><td>name</td><td>Bob</td></tr></table>");
     assertEquals(0, result.size());
   }
 

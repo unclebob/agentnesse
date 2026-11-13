@@ -163,6 +163,35 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     }
   }
 
+  /**
+   * This page's markdown for Slim. Variables are expanded, and a pipe or a
+   * newline inside a value stays inside the cell that names it. Includes are
+   * not inlined; each included page is its own document.
+   */
+  public String expandedForSlim(WikiPage context) {
+    String previous = renderingName;
+    renderingName = context == null ? null : context.getName();
+    try {
+      return expandSlim(getData().getContent());
+    } finally {
+      renderingName = previous;
+    }
+  }
+
+  private String expandSlim(String content) {
+    Matcher matcher = VARIABLE.matcher(content);
+    StringBuilder expanded = new StringBuilder();
+    while (matcher.find()) {
+      String value = getVariable(matcher.group(1));
+      if (value != null) {
+        value = value.replace("|", "\\|").replace("\n", "<br>");
+      }
+      matcher.appendReplacement(expanded, Matcher.quoteReplacement(value == null ? matcher.group() : value));
+    }
+    matcher.appendTail(expanded);
+    return expanded.toString();
+  }
+
   private String render(String content) {
     return MarkdownRenderer.render(expand(TableSeparators.supply(escapeWikiPrefixes(content))), this::wikiWordTarget, contentsLinks(), this::includedHtml);
   }

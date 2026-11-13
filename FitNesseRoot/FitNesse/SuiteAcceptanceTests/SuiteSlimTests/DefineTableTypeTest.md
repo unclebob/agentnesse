@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-Purpose:  Checks that the Define Table Type table works
+Purpose: An alias can choose the table type for a fixture name.
 
 By default table should be parsed as a decision table.
 
@@ -17,9 +17,10 @@ By default table should be parsed as a decision table.
 However after this table it should be parsed as a **Table: table**.
 
 
-| Define Table Type | |
-| --- | --- |
-| Table or Decision Fixture | as Table |
+```agentnesse
+alias Table or Decision Fixture
+table:
+```
 
 
 
@@ -30,9 +31,10 @@ However after this table it should be parsed as a **Table: table**.
 The same works for script tables (which parse as decision tables in many respects).
 
 
-| Define Table Type | |
-| --- | --- |
-| Table or Decision Fixture | as Script |
+```agentnesse
+alias Table or Decision Fixture
+script:
+```
 
 
 | Table Or Decision Fixture | | |

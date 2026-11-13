@@ -58,17 +58,6 @@ public class SlimTableFactory {
     SlimTable newTable;
     TableTypeAndName nameAndType = getTableNameAndType(table.getCellContents(0, 0));
 
-    // First the "exceptions to the rule"
-    if (nameAndType.hasTableName("define alias")) {
-      parseDefineAliasTable(table);
-      return null;
-    } else if (nameAndType.hasTableName("define table type")) {
-      parseDefineTableTypeTable(table);
-      return null;
-    } else if (nameAndType.hasTableType("comment") || nameAndType.hasTableName("comment")) {
-      return null;
-    }
-
     Class<? extends SlimTable> tableClass = getTableType(nameAndType.tableType);
 
     if (tableClass != null) {
@@ -140,20 +129,6 @@ public class SlimTableFactory {
     return nameAndType;
   }
 
-  private void parseDefineTableTypeTable(Table table) {
-    for (int rowIndex = 1; rowIndex < table.getRowCount(); rowIndex++)
-      parseDefineTableTypeRow(table, rowIndex);
-  }
-
-  private void parseDefineTableTypeRow(Table table, int rowIndex) {
-    if (table.getColumnCountInRow(rowIndex) >= 2) {
-      String fixtureName = table.getCellContents(0, rowIndex);
-      String fixture = Disgracer.disgraceClassName(fixtureName);
-      String tableSpecifier = table.getCellContents(1, rowIndex).toLowerCase();
-      tableTypeArrays.put(fixture, makeTableType(tableSpecifier));
-    }
-  }
-
   public void addDefaultTableType(String fixture, String tableType) {
 	 tableTypeArrays.put(fixture, tableType);
   }
@@ -161,27 +136,6 @@ public class SlimTableFactory {
   public void addAlias(String alias, String fixture) {
     String disgracedAlias = Disgracer.disgraceClassName(alias);
     aliasArrays.put(disgracedAlias, fixture);
-  }
-
-  private String makeTableType(String tableSpecifier) {
-    tableSpecifier = tableSpecifier.replace(':', ' ');
-    if (tableSpecifier.startsWith("as"))
-    	tableSpecifier = tableSpecifier.substring(2);
-
-    return tableSpecifier.trim();
-  }
-
-  private void parseDefineAliasTable(Table table) {
-    for (int rowIndex = 1; rowIndex < table.getRowCount(); rowIndex++)
-      parseDefineAliasRow(table, rowIndex);
-  }
-
-  private void parseDefineAliasRow(Table table, int rowIndex) {
-    if (table.getColumnCountInRow(rowIndex) >= 2) {
-      String fixtureName = table.getCellContents(0, rowIndex);
-      String tableSpecifier = table.getCellContents(1, rowIndex).trim();
-      addAlias(fixtureName, tableSpecifier);
-    }
   }
 
   public SlimTableFactory copy() {

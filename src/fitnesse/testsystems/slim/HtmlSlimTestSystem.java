@@ -4,6 +4,7 @@ package fitnesse.testsystems.slim;
 
 import java.util.List;
 
+import fitnesse.html.HtmlUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.testsystems.TestExecutionException;
 import fitnesse.testsystems.TestPage;
@@ -31,6 +32,10 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
     slimPage = SlimPage.Make(pageToTest, getTestContext(), slimTableFactory);
     List<SlimTable> allTables = slimPage.getTables();
     boolean isSuiteTearDownPage = PageData.SUITE_TEARDOWN_NAME.equals(pageToTest.getName());
+    for (String error : slimPage.pageErrors()) {
+      getTestContext().incrementErroredTestsCount();
+      testOutputChunk(pageToTest, "<span class=\"error\">" + HtmlUtil.escapeHTML(error) + "</span>\n");
+    }
 
     if (allTables.isEmpty()) {
       String html = createHtmlResults(START_OF_TEST, END_OF_TEST);
@@ -56,8 +61,24 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
   }
 
   private String createHtmlResults(SlimTable startWithTable, SlimTable stopBeforeTable) {
-    HtmlTable start = (startWithTable != null) ? (HtmlTable) startWithTable.getTable() : null;
-    HtmlTable end = (stopBeforeTable != null) ? (HtmlTable) stopBeforeTable.getTable() : null;
-    return slimPage.getTableScanner().toHtml(start, end);
+    MarkdownTableScanner scanner = slimPage.getTableScanner();
+    if (startWithTable == null && stopBeforeTable == null) {
+      return scanner.toHtml();
+    }
+    StringBuilder html = new StringBuilder();
+    boolean started = startWithTable == null;
+    for (MarkdownTable table : scanner) {
+      if (!started && startWithTable != null && table == startWithTable.getTable()) {
+        started = true;
+      }
+      if (!started) {
+        continue;
+      }
+      if (stopBeforeTable != null && table == stopBeforeTable.getTable()) {
+        break;
+      }
+      html.append(table.toHtml());
+    }
+    return html.toString();
   }
 }

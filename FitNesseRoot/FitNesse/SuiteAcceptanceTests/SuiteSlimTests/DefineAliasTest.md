@@ -31,9 +31,11 @@ Below is a dynamic decision table without any alias. This will be used in the fo
 The business expects a different name "add change" than your class name "add up change"
 
 
-| Define alias | |
-| --- | --- |
-| add change | add up change |
+```agentnesse
+alias add change
+add up change
+```
+
 
 
 | ddt: add change | | | | | | | | |
@@ -47,9 +49,11 @@ and in addition the test case is defined as decision table but you implemented i
 You can overwrite the table type and the name.
 
 
-| Define alias | |
-| --- | --- |
-| add up | ddt: add up change |
+```agentnesse
+alias add up
+ddt: add up change
+```
+
 
 
 | dt: add up | | | | | | | | |
@@ -62,9 +66,11 @@ The names are matching but you need to overwrite the table type.
 Note that the DefineTableType table will not overwrite type definitions given in the test.
 
 
-| Define alias | |
-| --- | --- |
-| add up change | ddt: |
+```agentnesse
+alias add up change
+ddt:
+```
+
 
 
 | dt: add up change | | | | | | | | |
@@ -83,9 +89,11 @@ Your implementation requires that you prepare the test fixture in a script.
 | $myfixture= | get fixture |
 
 
-| Define alias | |
-| --- | --- |
-| add money | $myfixture |
+```agentnesse
+alias add money
+$myfixture
+```
+
 
 
 | ddt: add money | | | | | | | | |
@@ -97,9 +105,11 @@ It doesn't matters if you define the alias before or after you create the fixtur
 Again you can add a table type definition if required
 
 
-| Define alias | |
-| --- | --- |
-| add more money | ddt: $anotherFixture |
+```agentnesse
+alias add more money
+ddt: $anotherFixture
+```
+
 
 
 | script | add up change |
@@ -122,9 +132,11 @@ Another example with a constructor parameter
 | $tq= | get fixture | |
 
 
-| Define alias | |
-| --- | --- |
-| my query | query: $tq |
+```agentnesse
+alias my query
+query: $tq
+```
+
 
 
 | my query | |
@@ -140,9 +152,11 @@ Another example with a constructor parameter
 | $tq= | get fixture | |
 
 
-| Define alias | |
-| --- | --- |
-| my query | subset query: $tq |
+```agentnesse
+alias my query
+subset query: $tq
+```
+
 
 
 | my query | |
@@ -156,9 +170,11 @@ If you can't use an [Import](ImportTable) statement or you have import conflicts
 The alias can help you to get around these.
 
 
-| Define alias | |
-| --- | --- |
-| what is in my pocket | ddt: fitnesse.slim.test.AddUpChange |
+```agentnesse
+alias what is in my pocket
+ddt: fitnesse.slim.test.AddUpChange
+```
+
 
 
 

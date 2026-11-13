@@ -193,6 +193,9 @@ public final class MarkdownTable implements Table {
         String cls = exception.getExecutionResult() == null ? "error" : exception.getExecutionResult().toString();
         return escape(content) + " <span class=\"" + cls + "\">" + rendered + "</span>";
       }
+      if (result != null && result.getExecutionResult() == null && result.hasMessage()) {
+        return escape(result.getMessage());
+      }
       if (result != null && result.getExecutionResult() != null) {
         HtmlTable.Cell formatted = new HtmlTable.Cell(content);
         formatted.setTestResult(result);

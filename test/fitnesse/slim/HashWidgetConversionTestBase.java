@@ -80,28 +80,12 @@ public abstract class HashWidgetConversionTestBase {
 
   @Test
   public void fromTableWithTwoColumnsAndOneRow_shouldCreateMapWithOneEntry() throws Exception {
-    assertConvertsTo(
-      "<table>" +
-        "<tr>" +
-        "  <td>name</td>" +
-        "  <td>Bob</td>" +
-        "</tr>" +
-        "</table>", asList(asList("name", "Bob")));
+    assertConvertsTo("{\"name\":\"Bob\"}", asList(asList("name", "Bob")));
   }
 
   @Test
   public void fromTableWithTwoColumnsAndTwoRows_shouldCreateMapWithTwoEntries() throws Exception {
-    assertConvertsTo(
-      "<table>" +
-        "<tr>" +
-        "  <td>name</td>" +
-        "  <td>Bob</td>" +
-        "</tr>" +
-        "<tr>" +
-        "  <td>address</td>" +
-        "  <td>here</td>" +
-        "</tr>" +
-        "</table>", asList(asList("address", "here"), asList("name", "Bob")));
+    assertConvertsTo("{\"name\":\"Bob\",\"address\":\"here\"}", asList(asList("address", "here"), asList("name", "Bob")));
   }
 
   @Test

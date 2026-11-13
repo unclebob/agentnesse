@@ -17,5 +17,5 @@ Raising an exception with the term "StopSuite" in it will make sure all remainin
 | test results for suite | MySuite | should contain | table in page A never to be executed <span class="ignore">Test not run</span> |
 | ensure | content contains | <span class="pass">tear down after TestPageA</span> | |
 | ensure | content contains | table in page B never to be executed <span class="ignore">Test not run</span> | |
-| ensure | content contains | tear down after <a href="MySuite.TestPageB">TestPageB</a> <span class="ignore">Test not run</span> | |
+| ensure | content contains | tear down after TestPageB <span class="ignore">Test not run</span> | |
 | ensure | content contains | <span class="pass">suite tear down executed</span> | |

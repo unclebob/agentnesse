@@ -121,7 +121,7 @@ public class HtmlSlimResponderTest {
   @Test
   public void emptyTableTable() throws Exception {
     getResultsForPageContents("!|Table:TableFixture|\n");
-    assertTestResultsContain("<span class=\"error\">Could not invoke constructor for TableFixture[0]</span>");
+    assertTestResultsContain("tableTable_0.doTable. does not exist");
   }
 
   @Test
@@ -218,12 +218,10 @@ public class HtmlSlimResponderTest {
         + "| should fail1| true           |\n" + "\n\n"
         + "!|DT:fitnesse.slim.test.ThrowException|\n" + "|throwNormal?|\n"
         + "| should fail2|\n");
-    assertTestResultsContain("<tr class=\"exception closed\">");
-    assertTestResultsContain("<td> <span class=\"error\">first</span></td>");
-    assertTestResultsContain("<td> <span class=\"fail\">second</span></td>");
-    assertTestResultsContain("<tr class=\"exception-detail closed-detail\">");
-    assertTestResultsContain("<td>should fail1 <span class=\"ignore\">Test not run</span></td>");
-    assertTestResultsContain("<td>should fail2 <span class=\"ignore\">Test not run</span></td>");
+    assertTestResultsContain("first <span class=\"error\">");
+    assertTestResultsContain("second <span class=\"fail\">");
+    assertTestResultsContain("should fail1 <span class=\"ignore\">Test not run</span>");
+    assertTestResultsContain("should fail2 <span class=\"ignore\">Test not run</span>");
   }
 
   @Test

@@ -1,15 +1,11 @@
 package fitnesse.testsystems.slim;
 
-import fitnesse.slim.SlimError;
+import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.TestPage;
 import fitnesse.testsystems.slim.tables.SlimTable;
 import fitnesse.testsystems.slim.tables.SlimTableFactory;
-import org.htmlparser.Parser;
-import org.htmlparser.lexer.Lexer;
-import org.htmlparser.lexer.Page;
-import org.htmlparser.util.NodeList;
-import org.htmlparser.util.ParserException;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,26 +18,36 @@ public class SlimPage {
   }
 
   public List<SlimTable> getTables() { return tables; }
-  public HtmlTableScanner getTableScanner() { return tableScanner; }
+  public MarkdownTableScanner getTableScanner() { return tableScanner; }
+  public List<String> pageErrors() { return pageErrors; }
 
   private SlimPage(SlimTableFactory slimTableFactory) {
     this.slimTableFactory = slimTableFactory;
   }
 
   private void createSlimTables(TestPage testPage, SlimTestContext testContext) {
-    NodeList nodeList = makeNodeList(testPage);
-    tableScanner = new HtmlTableScanner(nodeList);
-    tables =  createSlimTables(tableScanner, testContext);
+    if (testPage instanceof WikiTestPage wiki) {
+      SlimSources sources = SlimSources.collect(wiki);
+      pageErrors = sources.errors();
+      tableScanner = new MarkdownTableScanner(sources.tables());
+      tables = createFromSources(sources, testContext);
+    } else {
+      pageErrors = Collections.emptyList();
+      tableScanner = new MarkdownTableScanner(testPage.getContent());
+      tables = createSlimTables(tableScanner, testContext);
+    }
   }
 
-  private NodeList makeNodeList(TestPage pageToTest) {
-    String html = pageToTest.getHtml();
-    Parser parser = new Parser(new Lexer(new Page(html)));
-    try {
-      return parser.parse(null);
-    } catch (ParserException e) {
-      throw new SlimError(e);
+  private List<SlimTable> createFromSources(SlimSources sources, SlimTestContext testContext) {
+    List<SlimTable> allTables = new LinkedList<>();
+    for (SlimSources.Item item : sources.items()) {
+      if (item.alias != null) {
+        slimTableFactory.addAlias(item.alias, item.target);
+      } else if (item.table != null) {
+        createSlimTable(allTables, item.table, testContext);
+      }
     }
+    return allTables;
   }
 
   private List<SlimTable> createSlimTables(TableScanner<? extends Table> tableScanner, SlimTestContext testContext) {
@@ -62,6 +68,7 @@ public class SlimPage {
 
   private final SlimTableFactory slimTableFactory;
 
-  private HtmlTableScanner tableScanner;
+  private MarkdownTableScanner tableScanner;
   private List<SlimTable> tables;
+  private List<String> pageErrors = Collections.emptyList();
 }

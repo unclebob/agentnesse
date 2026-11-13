@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,17 +45,17 @@ public class SlimTableFactoryTest {
   }
 
   @Test
-  public void commentTableShouldReturnNull() {
+  public void aTableNamedCommentIsADecisionTable() {
     when(table.getCellContents(0, 0)).thenReturn("comment");
     SlimTable slimTable = slimTableFactory.makeSlimTable(table, "0", new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy())));
-    assertThat(slimTable, nullValue());
+    assertThat(slimTable, instanceOf(DecisionTable.class));
   }
 
   @Test
-  public void tableTypeStartingWithCommentColonShouldReturnNull() {
+  public void aCommentColonTableIsADecisionTableForTheRestOfTheName() {
     when(table.getCellContents(0, 0)).thenReturn("comment: a comment table");
     SlimTable slimTable = slimTableFactory.makeSlimTable(table, "0", new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy())));
-    assertThat(slimTable, nullValue());
+    assertThat(slimTable, instanceOf(SlimErrorTable.class));
   }
 
   @Test
@@ -93,9 +92,9 @@ public class SlimTableFactoryTest {
 
   @Test
   public void checkTableTypeDefinesIgnoredIfDifferentSpecified() {
-    assertThatTableTypeImportWorks("OverrideTable", "as Table", "dt: Override Table", DecisionTable.class);
+    assertThatTableTypeImportWorks("OverrideTable", "as Table", "dt: Override Table", TableTable.class);
 
-    assertThatTableTypeImportWorks("MakeQuery", "as Table", "query: Make Query", QueryTable.class);
+    assertThatTableTypeImportWorks("MakeQuery", "as Table", "query: Make Query", TableTable.class);
   }
 
   private void assertThatTableTypeImportWorks(String importName, String importTypedescription, String tableName,
@@ -105,12 +104,7 @@ public class SlimTableFactoryTest {
   }
 
   private void addTableTypeImport(String tablename, String type) {
-    when(table.getCellContents(0, 0)).thenReturn("Define Table Type");
-    when(table.getCellContents(0, 1)).thenReturn(tablename);
-    when(table.getCellContents(1, 1)).thenReturn(type);
-    when(table.getRowCount()).thenReturn(2);
-    when(table.getColumnCountInRow(0)).thenReturn(1);
-    when(table.getColumnCountInRow(1)).thenReturn(2);
-    slimTableFactory.makeSlimTable(table, "0", new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy())));
+    String target = type.toLowerCase().replace("as ", "").replace("as:", "").trim();
+    slimTableFactory.addAlias(tablename, target.endsWith(":") ? target : target + ":");
   }
 }

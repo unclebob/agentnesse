@@ -14,6 +14,10 @@ import java.util.List;
 public final class MarkdownTableScanner implements TableScanner<MarkdownTable> {
   private final List<MarkdownTable> tables = new ArrayList<>();
 
+  public MarkdownTableScanner(List<MarkdownTable> parsed) {
+    tables.addAll(parsed);
+  }
+
   public MarkdownTableScanner(String markdown) {
     String prepared = TableSeparators.supply(markdown == null ? "" : markdown);
     StringBuilder current = new StringBuilder();
