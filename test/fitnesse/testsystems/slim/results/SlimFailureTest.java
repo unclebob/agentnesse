@@ -7,6 +7,7 @@ import static fitnesse.slim.SlimServer.EXCEPTION_IGNORE_ALL_TESTS_TAG;
 import static fitnesse.slim.SlimServer.EXCEPTION_IGNORE_SCRIPT_TEST_TAG;
 import static fitnesse.slim.SlimServer.EXCEPTION_TAG;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SlimFailureTest {
 
@@ -45,6 +46,7 @@ public class SlimFailureTest {
     assertEquals("java.lang.IllegalStateException", failure.type());
     assertEquals("boom", failure.message());
     assertEquals("at fitnesse.Pay.bill(Pay.java:4)", failure.stack());
+    assertTrue(failure.dump().contains("\"stackTrace\":\"at fitnesse.Pay.bill(Pay.java:4)\""));
   }
 
   @Test

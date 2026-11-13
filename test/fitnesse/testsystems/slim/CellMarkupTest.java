@@ -38,6 +38,45 @@ public class CellMarkupTest {
   }
 
   @Test
+  public void aPlainSymbolPassSplitsThePrefixAndTheValue() {
+    SlimTestResult result = (SlimTestResult) SlimTestResult.pass("$S->[cat]", "$S->[cat]");
+    assertEquals("<span class=\"pass\">$S-&gt;[cat]</span>", CellMarkup.format("x", result));
+  }
+
+  @Test
+  public void htmlQualificationMatchesTheCellsSlimStillRenders() {
+    assertFalse(CellMarkup.qualifiesAsHtml("Some text"));
+    assertFalse(CellMarkup.qualifiesAsHtml("less < more"));
+    assertTrue(CellMarkup.qualifiesAsHtml("<table><tr><td>blah etc.</td></tr></table>"));
+    assertTrue(CellMarkup.qualifiesAsHtml("<table>\n\t<tr>\n\t\t<td>table2</td>\n\t</tr>\n</table>"));
+    assertTrue(CellMarkup.qualifiesAsHtml("<img src='http://fitnesse.org'/>"));
+    assertFalse(CellMarkup.qualifiesAsHtml("<table><tr><td>blah etc.</td></tr></table>And extra text"));
+    assertTrue(CellMarkup.qualifiesAsHtml("<div>less < more</div>"));
+    assertTrue(CellMarkup.qualifiesAsHtml("$foo->[<div>less < more</div>]"));
+    assertFalse(CellMarkup.qualifiesAsHtml("<content>blah</content>"));
+    assertFalse(CellMarkup.qualifiesAsHtml("<html><head></head><body></body></html>"));
+  }
+
+  @Test
+  public void aConvertedListKeepsAHashTableAndEscapesOtherHtml() {
+    String hash = "$list<-[[a, b, <table class=\"hash_table\"><tr><td>first</td><td>1</td></tr></table>]]";
+    String image = "$list<-[[a, b, <img src='http://fitnesse.org'/>]]";
+    assertTrue(CellMarkup.qualifiesAsConvertedList("[a, b, c]"));
+    assertTrue(CellMarkup.qualifiesAsConvertedList(hash));
+    assertTrue(CellMarkup.qualifiesAsConvertedList("$list<-[[a, b]]"));
+    assertFalse(CellMarkup.format("x", SlimTestResult.plain(hash)).contains("&lt;"));
+    assertTrue(CellMarkup.format("x", SlimTestResult.plain(image)).contains("&lt;"));
+  }
+
+  @Test
+  public void anIgnoredCellRendersTheMessageOrTheOriginalText() {
+    assertEquals("<span class=\"ignore\">original content</span>",
+      CellMarkup.format("original content", SlimTestResult.ignore()));
+    assertEquals("<span class=\"ignore\">a message</span>",
+      CellMarkup.format("original content", SlimTestResult.ignore("a message")));
+  }
+
+  @Test
   public void aListWrappedInASymbolIsStillAList() {
     assertTrue(CellMarkup.qualifiesAsConvertedList("$S->[[a]]"));
     assertFalse(CellMarkup.qualifiesAsConvertedList("plain"));

@@ -113,7 +113,7 @@ public final class CellMarkup {
     return text.startsWith("$") && SYMBOL_REPLACEMENT_PATTERN.matcher(text).matches();
   }
 
-  private static boolean qualifiesAsHtml(String text) {
+  static boolean qualifiesAsHtml(String text) {
     return text != null && (text.startsWith("<") || text.startsWith("$")) && HTML_PATTERN.matcher(text).matches();
   }
 

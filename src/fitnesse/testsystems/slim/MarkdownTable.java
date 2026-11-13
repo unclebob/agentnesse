@@ -6,6 +6,7 @@ import fitnesse.markdown.TableSeparators;
 import fitnesse.testsystems.TestResult;
 import fitnesse.testsystems.slim.results.CellRecord;
 import fitnesse.testsystems.slim.results.SlimExceptionResult;
+import fitnesse.testsystems.slim.results.SlimFailure;
 import fitnesse.testsystems.slim.results.SlimTestResult;
 import fitnesse.testsystems.slim.tables.SyntaxError;
 
@@ -120,13 +121,14 @@ public final class MarkdownTable implements Table {
     Cell cell = rows.get(row).get(column);
     cell.result = testResult;
     cell.record = CellRecord.from(testResult, cell.content);
+    noteIgnoredRow(row, cell.record);
     noteTable(cell.record);
   }
 
   @Override
   public void updateContent(int column, int row, SlimExceptionResult exceptionResult) {
     if (exceptionResult.failure().page() == null) {
-      exceptionResult.failure().at(pageName, blockName, row, column < 0 ? null : column);
+      exceptionResult.failure().at(pageName, blockName, SlimFailure.oneBased(row), SlimFailure.oneBased(column));
     }
     CellRecord recorded = CellRecord.error(exceptionResult);
     if (column < 0) {
@@ -140,7 +142,14 @@ public final class MarkdownTable implements Table {
     Cell cell = rows.get(row).get(column);
     cell.exception = exceptionResult;
     cell.record = recorded;
+    noteIgnoredRow(row, recorded);
     noteTable(recorded);
+  }
+
+  private void noteIgnoredRow(int row, CellRecord recorded) {
+    if ("ignore".equals(recorded.status()) && rowRecords.get(row).status() == null) {
+      rowRecords.set(row, recorded);
+    }
   }
 
   private void noteTable(CellRecord recorded) {

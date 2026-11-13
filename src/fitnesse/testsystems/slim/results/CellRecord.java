@@ -12,19 +12,27 @@ public final class CellRecord {
   private final String actual;
   private final String expected;
   private final SlimFailure failure;
+  private final String symbol;
+  private final String value;
 
-  private CellRecord(String status, String actual, String expected, SlimFailure failure) {
+  private CellRecord(String status, String actual, String expected, SlimFailure failure, String symbol, String value) {
     this.status = status;
     this.actual = actual;
     this.expected = expected;
     this.failure = failure;
+    this.symbol = symbol;
+    this.value = value;
   }
 
   public static CellRecord from(SlimTestResult result, String original) {
+    Assignment assignment = Assignment.read(result.getMessage());
+    if (assignment != null) {
+      return new CellRecord("symbol", assignment.value, original, null, assignment.name, assignment.value);
+    }
     ExecutionResult execution = result.getExecutionResult();
     String actual = result.hasActual() ? result.getActual() : result.getMessage();
     String expected = result.hasExpected() ? result.getExpected() : original;
-    return new CellRecord(execution == null ? null : execution.toString(), actual, expected, null);
+    return new CellRecord(execution == null ? null : execution.toString(), actual, expected, null, null, null);
   }
 
   public static CellRecord from(TestResult result) {
@@ -32,17 +40,17 @@ public final class CellRecord {
     return new CellRecord(execution == null ? null : execution.toString(),
       result.hasActual() ? result.getActual() : null,
       result.hasExpected() ? result.getExpected() : null,
-      null);
+      null, null, null);
   }
 
   public static CellRecord error(SlimExceptionResult exception) {
     ExecutionResult execution = exception.getExecutionResult();
     return new CellRecord(execution == null ? "error" : execution.toString(),
-      null, null, exception.failure());
+      null, null, exception.failure(), null, null);
   }
 
   public static CellRecord status(String status) {
-    return new CellRecord(status, null, null, null);
+    return new CellRecord(status, null, null, null, null, null);
   }
 
   public String status() {
@@ -61,28 +69,47 @@ public final class CellRecord {
     return failure;
   }
 
+  public String symbol() {
+    return symbol;
+  }
+
+  public String value() {
+    return value;
+  }
+
   public String dump() {
     StringBuilder out = new StringBuilder();
-    out.append("{\"status\":").append(quote(status));
-    out.append(",\"actual\":").append(quote(actual));
-    out.append(",\"expected\":").append(quote(expected));
+    out.append("{\"status\":").append(SlimFailure.json(status));
+    out.append(",\"actual\":").append(SlimFailure.json(actual));
+    out.append(",\"expected\":").append(SlimFailure.json(expected));
+    if (symbol != null) {
+      out.append(",\"symbol\":").append(SlimFailure.json(symbol));
+      out.append(",\"value\":").append(SlimFailure.json(value));
+    }
     if (failure != null) {
-      out.append(",\"error\":{\"kind\":").append(quote(failure.kind().name()));
-      out.append(",\"type\":").append(quote(failure.type()));
-      out.append(",\"page\":").append(quote(failure.page()));
-      out.append(",\"block\":").append(quote(failure.block()));
-      out.append(",\"row\":").append(failure.row() == null ? "null" : failure.row());
-      out.append(",\"cell\":").append(failure.cell() == null ? "null" : failure.cell());
-      out.append(",\"message\":").append(quote(failure.message()));
-      out.append('}');
+      out.append(",\"error\":").append(failure.dump());
     }
     return out.append('}').toString();
   }
 
-  private static String quote(String value) {
-    if (value == null) {
-      return "null";
+  private static final class Assignment {
+    private final String name;
+    private final String value;
+
+    private Assignment(String name, String value) {
+      this.name = name;
+      this.value = value;
     }
-    return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+
+    private static Assignment read(String message) {
+      if (message == null || !message.startsWith("$") || !message.endsWith("]")) {
+        return null;
+      }
+      int arrow = message.indexOf("<-[");
+      if (arrow < 2) {
+        return null;
+      }
+      return new Assignment(message.substring(1, arrow), message.substring(arrow + 3, message.length() - 1));
+    }
   }
 }

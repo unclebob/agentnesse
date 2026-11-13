@@ -78,7 +78,36 @@ public final class SlimFailure {
   }
 
   public String stack() {
-    return stack;
+    return stack == null ? "" : stack;
+  }
+
+  /** Table coordinates are 0-based. Reported rows and cells are 1-based, and row 1 is the header. */
+  public static Integer oneBased(int zeroBased) {
+    return zeroBased < 0 ? null : zeroBased + 1;
+  }
+
+  public String dump() {
+    return "{\"kind\":" + json(kind.name())
+      + ",\"type\":" + json(type)
+      + ",\"page\":" + json(page)
+      + ",\"block\":" + json(block)
+      + ",\"row\":" + (row == null ? "null" : row)
+      + ",\"cell\":" + (cell == null ? "null" : cell)
+      + ",\"message\":" + json(message)
+      + ",\"stackTrace\":" + json(stack())
+      + "}";
+  }
+
+  static String json(String value) {
+    if (value == null) {
+      return "null";
+    }
+    return "\"" + value
+      .replace("\\", "\\\\")
+      .replace("\"", "\\\"")
+      .replace("\r", "\\r")
+      .replace("\n", "\\n")
+      .replace("\t", "\\t") + "\"";
   }
 
   public SlimFailure at(String page, String block, Integer row, Integer cell) {

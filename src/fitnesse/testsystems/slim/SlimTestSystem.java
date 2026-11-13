@@ -13,6 +13,7 @@ import fitnesse.slim.instructions.AssignInstruction;
 import fitnesse.slim.instructions.Instruction;
 import fitnesse.testsystems.*;
 import fitnesse.testsystems.slim.results.SlimExceptionResult;
+import fitnesse.testsystems.slim.results.SlimServerRecord;
 import fitnesse.testsystems.slim.tables.SlimAssertion;
 import fitnesse.testsystems.slim.tables.SlimTable;
 import fitnesse.wiki.PageData;
@@ -29,6 +30,7 @@ public abstract class SlimTestSystem implements TestSystem {
   private boolean ignoreAllTestsCalled;
   private boolean stopSuiteCalled;
   private boolean testSystemIsStopped;
+  private SlimServerRecord server = SlimServerRecord.started();
 
   public SlimTestSystem(String testSystemName, SlimClient slimClient) {
     this.testSystemName = testSystemName;
@@ -38,6 +40,10 @@ public abstract class SlimTestSystem implements TestSystem {
 
   public SlimTestContext getTestContext() {
     return testContext;
+  }
+
+  public SlimServerRecord server() {
+    return server;
   }
 
   @Override
@@ -259,6 +265,9 @@ public abstract class SlimTestSystem implements TestSystem {
   protected void testSystemStopped(Throwable e) {
     if (testSystemIsStopped) return;
     testSystemIsStopped = true;
+    if (e != null) {
+      server = SlimServerRecord.stopped(e);
+    }
     testSystemListener.testSystemStopped(this, e);
   }
 }

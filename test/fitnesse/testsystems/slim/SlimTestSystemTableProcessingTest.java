@@ -65,6 +65,21 @@ public class SlimTestSystemTableProcessingTest {
   }
 
   @Test
+  public void tearDownAfterIgnoreAllStillRuns() throws TestExecutionException {
+    String exceptionId = SlimServer.EXCEPTION_IGNORE_ALL_TESTS_TAG + "ignore the rest";
+    slimTestSystem.processTable(table(exceptionId), false);
+    slimTestSystem.processTable(tearDownTable("TearDown"), false);
+    assertTestRecords(ignore(exceptionId), pass("TearDown"));
+  }
+
+  @Test
+  public void theRestOfATableIsIgnoredAfterAnIgnoreScriptException() throws TestExecutionException {
+    String first = SlimServer.EXCEPTION_IGNORE_SCRIPT_TEST_TAG + " first";
+    slimTestSystem.processTable(new DummySlimTable(first, "second"), false);
+    assertTestRecords(ignore(first), ignore("second"));
+  }
+
+  @Test
   public void tableFollowingIgnoreAllTestsExceptionIgnored() throws TestExecutionException {
     String exceptionId = SlimServer.EXCEPTION_IGNORE_ALL_TESTS_TAG + "table1 with random ignore exception";
     slimTestSystem.processTable(table(exceptionId), false);
@@ -243,11 +258,17 @@ public class SlimTestSystemTableProcessingTest {
     private boolean tearDown;
 
     public DummySlimTable(String assertionId) {
+      this(assertionId, null);
+    }
+
+    public DummySlimTable(String first, String second) {
       super(null, null, null);
-      this.assertions = Collections.singletonList(
-          new SlimAssertion(new DummyInstruction(assertionId),
-              new IgnoreOnNullPassOtherwiseSlimExpectation())
-      );
+      List<SlimAssertion> made = new ArrayList<>();
+      made.add(new SlimAssertion(new DummyInstruction(first), new IgnoreOnNullPassOtherwiseSlimExpectation()));
+      if (second != null) {
+        made.add(new SlimAssertion(new DummyInstruction(second), new IgnoreOnNullPassOtherwiseSlimExpectation()));
+      }
+      this.assertions = made;
     }
 
     public void setTearDown(boolean tearDown) {

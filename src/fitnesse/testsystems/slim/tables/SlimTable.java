@@ -17,6 +17,7 @@ import fitnesse.testsystems.TestResult;
 import fitnesse.testsystems.slim.SlimTestContext;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.results.SlimExceptionResult;
+import fitnesse.testsystems.slim.results.SlimFailure;
 import fitnesse.testsystems.slim.results.SlimTestResult;
 
 import java.util.ArrayList;
@@ -100,7 +101,7 @@ public abstract class SlimTable {
     if (table.getRowCount() > 0 && table.getColumnCountInRow(0) > 0) {
       block = table.getCellContents(0, 0);
     }
-    exceptionResult.failure().at(page, block, row, col < 0 ? null : col);
+    exceptionResult.failure().at(page, block, SlimFailure.oneBased(row), SlimFailure.oneBased(col));
   }
 
   public String getSymbol(String variableName) {
@@ -438,27 +439,6 @@ public abstract class SlimTable {
       return exceptionResult;
     }
   }
-  class SilentAssignExpectation implements SlimExpectation {
-    private final String symbolName;
-
-    public SilentAssignExpectation( String symbolName) {
-      this.symbolName = symbolName;
-    }
-
-    @Override
-    public TestResult evaluateExpectation(Object returnValue) {
-      setSymbol(symbolName, returnValue == null ? null : returnValue.toString());
-      return null;
-    }
-
-    @Override
-    public SlimExceptionResult evaluateException(
-        SlimExceptionResult exceptionResult) {
-      // TODO Auto-generated method stub
-      return null;
-    }
-  }
-
   class ReturnedSymbolExpectation extends ReturnedValueExpectation {
     private final String symbolName;
     private String assignToName = null;
