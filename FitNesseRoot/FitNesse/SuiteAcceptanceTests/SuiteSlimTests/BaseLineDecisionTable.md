@@ -27,12 +27,14 @@ Your fixture code is identical to a decision table. The fixture will not be able
 ### Example
 Let's look at an example of a decision table.
 
-```agentnesse
-collapsible open Dependencies
+<details open>
+<summary>Dependencies</summary>
+
 | import |
 | --- |
 | fitnesse.slim.test |
-```
+
+</details>
 
 Given I have at least one milk remaining
 Then I should NOT go to the store

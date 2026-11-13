@@ -36,6 +36,12 @@ public final class MarkdownRenderer {
 
   private static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
                               Function<String, String> includedHtml, Function<String, String> pageTarget) {
+    return DetailsRegions.render(markdown == null ? "" : markdown,
+      chunk -> renderChunk(chunk, pageExists, children, includedHtml, pageTarget));
+  }
+
+  private static String renderChunk(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
+                                    Function<String, String> includedHtml, Function<String, String> pageTarget) {
     Parser parser = Parser.builder().extensions(EXTENSIONS).build();
     Set<String> headingIds = new HashSet<>();
     HtmlRenderer html = HtmlRenderer.builder()

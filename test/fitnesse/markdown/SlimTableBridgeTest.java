@@ -4,6 +4,7 @@ import fitnesse.testsystems.slim.HtmlTableScanner;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SlimTableBridgeTest {
@@ -27,17 +28,44 @@ public class SlimTableBridgeTest {
   }
 
   @Test
-  public void aTableInsideACollapsibleIsStillASlimTable() {
+  public void aTableInsideDetailsIsStillASlimTable() {
     String html = MarkdownRenderer.render("""
-      ```agentnesse
-      collapsible open Dependencies
+      <details open>
+      <summary>Dependencies</summary>
+
       | import |
       | --- |
       | fitnesse.slim.test |
-      ```
+
+      </details>
       """);
     assertTrue(html.contains("<details open>"));
+    assertTrue(html.contains("<summary>Dependencies</summary>"));
     assertEquals("import", new HtmlTableScanner(html).getTable(0).getCellContents(0, 0));
+  }
+
+  @Test
+  public void aClosedDetailsBlockKeepsItsTitleAndBody() {
+    String html = MarkdownRenderer.render("""
+      <details>
+      <summary>Notes</summary>
+      plain words
+      </details>
+      """);
+    assertTrue(html.contains("<details><summary>Notes</summary>"));
+    assertTrue(html.contains("plain words"));
+    assertFalse(html.contains("<details open>"));
+  }
+
+  @Test
+  public void detailsWithoutASummaryStillRendersTheBody() {
+    String html = MarkdownRenderer.render("""
+      <details open>
+      just the body
+      </details>
+      """);
+    assertTrue(html.contains("<details open>"));
+    assertTrue(html.contains("just the body"));
   }
 
   @Test

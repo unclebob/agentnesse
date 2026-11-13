@@ -4,12 +4,14 @@
   "help": null,
   "prune": false
 }
-```agentnesse
-collapsible open Extra Import
+<details open>
+<summary>Extra Import</summary>
+
 | Import |
 | --- |
 | fitnesse.slim.test.library |
-```
+
+</details>
 
 
 | Library |

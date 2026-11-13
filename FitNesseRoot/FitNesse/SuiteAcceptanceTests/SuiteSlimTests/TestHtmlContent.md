@@ -6,15 +6,17 @@
 }
 Slim tables can contain HTML content. If content qualifies as HTML, it is passed to the SUT as HTML.
 
-```agentnesse
-collapsible scenarios
+<details>
+<summary>scenarios</summary>
+
 !define html {| !note > 50% (note) |
 | !meta < 50% (meta) |}
 
 ```agentnesse
 define no_html
 < 50%
-```
+
+</details>
 
 
 | scenario | Content | content | is returned as | out |

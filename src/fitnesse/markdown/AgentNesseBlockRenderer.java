@@ -49,9 +49,6 @@ final class AgentNesseBlockRenderer implements NodeRenderer {
     if ("include".equals(block.command()) && includedHtml != null) {
       return block.includeWith(includedHtml.apply(block.argument()));
     }
-    if ("collapsible".equals(block.command())) {
-      return block.collapsibleHtml();
-    }
     return block.html();
   }
 

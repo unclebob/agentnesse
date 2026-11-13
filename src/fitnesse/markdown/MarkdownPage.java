@@ -164,7 +164,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private String render(String content) {
-    return MarkdownRenderer.render(expand(TableSeparators.supply(legacyWidgets(escapeWikiPrefixes(content)))), this::wikiWordTarget, contentsLinks(), this::includedHtml);
+    return MarkdownRenderer.render(expand(TableSeparators.supply(escapeWikiPrefixes(content))), this::wikiWordTarget, contentsLinks(), this::includedHtml);
   }
 
   private String includedHtml(String name) {
@@ -222,23 +222,6 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
         line = line.replaceAll("<(?=[A-Z][a-zA-Z0-9])", "\\\\<");
       }
       out.append(line).append('\n');
-    }
-    return out.toString();
-  }
-
-  private String legacyWidgets(String content) {
-    StringBuilder out = new StringBuilder();
-    for (String line : content.split("\n", -1)) {
-      String trimmed = line.trim();
-      String lower = trimmed.toLowerCase();
-      if (lower.equals("!contents") || lower.startsWith("!contents ")) {
-        out.append("```agentnesse\ncontents\n```\n");
-      } else if (lower.equals("!lastmodified") || lower.startsWith("!lastmodified ")) {
-        String user = getData().getAttribute(WikiPageProperty.LAST_MODIFYING_USER);
-        out.append(user == null ? "" : user).append('\n');
-      } else {
-        out.append(line).append('\n');
-      }
     }
     return out.toString();
   }

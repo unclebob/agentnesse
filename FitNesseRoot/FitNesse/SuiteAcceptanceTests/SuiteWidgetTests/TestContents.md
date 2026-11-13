@@ -15,7 +15,7 @@ Ensure the contents widget builds links to child pages.
 
 | script | | | |
 | --- | --- | --- | --- |
-| given page | ParentPage | with content | !contents |
+| given page | ParentPage | with content | &#96;&#96;&#96;agentnesse<br>contents<br>&#96;&#96;&#96; |
 | given page | ParentPage.FirstChild | | |
 | given page | ParentPage.SecondChild | | |
 | page | ParentPage | should have link to | ParentPage.FirstChild |

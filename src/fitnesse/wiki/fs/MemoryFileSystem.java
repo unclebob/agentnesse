@@ -63,7 +63,7 @@ public class MemoryFileSystem implements FileSystem {
     String path = file.getPath();
     Collection<String> result = new ArrayList<>();
     for (String filePath: files.keySet()) {
-      if (!filePath.startsWith(path)) continue;
+      if (!isSameOrChild(filePath, path)) continue;
       if (filePath.equals(path)) continue;
       String rest = filePath.substring(path.length() + 1);
       int size = rest.indexOf(File.separator);
@@ -89,9 +89,15 @@ public class MemoryFileSystem implements FileSystem {
     String pathToDelete = fileToDelete.getPath();
     for (Iterator<String> iter = files.keySet().iterator(); iter.hasNext(); ) {
       String f = iter.next();
-      if (f.startsWith(pathToDelete))
+      if (isSameOrChild(f, pathToDelete))
         iter.remove();
     }
+  }
+
+  private static boolean isSameOrChild(String filePath, String path) {
+    return filePath.equals(path)
+      || filePath.startsWith(path + "/")
+      || filePath.startsWith(path + File.separator);
   }
 
   @Override

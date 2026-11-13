@@ -4,8 +4,9 @@
   "help": null,
   "prune": false
 }
-```agentnesse
-collapsible open Scenarios
+<details open>
+<summary>Scenarios</summary>
+
 | scenario | comparator | a | accepts | b |
 | --- | --- | --- | --- | --- |
 | check | echo | @b | @a | |
@@ -18,7 +19,8 @@ collapsible open Scenarios
 
 | script | echo fixture |
 | --- | --- |
-```
+
+</details>
 
 | script | | | |
 | --- | --- | --- | --- |

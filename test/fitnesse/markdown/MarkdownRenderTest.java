@@ -24,7 +24,7 @@ public class MarkdownRenderTest {
       assertGolden(command);
     }
     assertGolden("include");
-    for (String removed : new String[] {"setup", "teardown"}) {
+    for (String removed : new String[] {"setup", "teardown", "collapsible"}) {
       String html = MarkdownRenderer.render("```agentnesse\n" + removed + "\nx\n```\n");
       assertTrue(html, html.contains("unknown agentnesse command"));
       assertTrue(html, html.contains(removed));

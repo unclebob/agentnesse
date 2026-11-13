@@ -11,8 +11,9 @@ define TEST_SYSTEM
 slim
 ```
 
-```agentnesse
-collapsible test content
+<details>
+<summary>test content</summary>
+
 ```agentnesse
 define PATHS
 ${SUT_PATH}
@@ -20,7 +21,8 @@ ${SUT_PATH}
 ```agentnesse
 define TEST_SYSTEM
 slim
-```
+
+</details>
 ```
 
 ```agentnesse

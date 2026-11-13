@@ -15,8 +15,9 @@ These are passed to the Slim Server and might be disgaraced again based on the i
 | --- |
 | fitnesse.testsystems.slim.tables |
 
-```agentnesse
-collapsible open Setup
+<details open>
+<summary>Setup</summary>
+
 Ensure any kind of script exist
 
 | script | EchoFixture |
@@ -27,7 +28,8 @@ Ensure any kind of script exist
 | --- | --- | --- |
 | $createdClass= | Disgracer.disgraceClassName | @userReadableName |
 | $createdMethodName= | Disgracer.disgraceMethodName | @userReadableName |
-```
+
+</details>
 
 
 

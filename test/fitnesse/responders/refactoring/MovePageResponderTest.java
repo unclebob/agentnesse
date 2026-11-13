@@ -119,6 +119,17 @@ public class MovePageResponderTest extends ResponderTestCase {
   }
 
   @Test
+  public void testIncludeReferenceChanged() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("ReferingPage"), "```agentnesse\ninclude PageOne.PageA\n```\n");
+    WikiPage parent = WikiPageUtil.addPage(root, PathParser.parse("DefiningPage"), "```agentnesse\ndefine NAME\nPageOne.PageA\n```\n");
+
+    movePage("PageOne.PageA", "PageTwo", true);
+
+    assertEquals("```agentnesse\ninclude .PageTwo.PageA\n```\n", root.getChildPage("ReferingPage").getData().getContent());
+    assertEquals("```agentnesse\ndefine NAME\nPageOne.PageA\n```\n", parent.getData().getContent());
+  }
+
+  @Test
   public void testAliasReferencesChanged() throws Exception {
     movePage("PageOne.PageA", "PageTwo", true);
     pageOne = root.getChildPage("PageOne");

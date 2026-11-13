@@ -37,4 +37,21 @@ public class MemoryFileSystemTest {
     assertFalse(fileSystem.exists(pageOne));
     assertFalse(fileSystem.exists(contentFile));
   }
+
+  @Test
+  public void deletingAPageDoesNotDeleteAPageWhoseNameStartsWithThatName() {
+    File pageOneNew = new File("PageOneNew");
+    File pageOneFile = new File("PageOne.md");
+    fileSystem.makeDirectory(pageOneNew);
+    fileSystem.makeFile(new File(pageOneNew, "child.md"), "child");
+    fileSystem.makeFile(pageOneFile, "page");
+
+    fileSystem.delete(pageOne);
+
+    assertFalse(fileSystem.exists(pageOne));
+    assertFalse(fileSystem.exists(contentFile));
+    assertTrue(fileSystem.exists(pageOneNew));
+    assertTrue(fileSystem.exists(new File(pageOneNew, "child.md")));
+    assertTrue(fileSystem.exists(pageOneFile));
+  }
 }

@@ -15,7 +15,7 @@ final class MarkdownReferences {
     int index = 0;
     while (index < content.length()) {
       if (startsWith(content, index, "```")) {
-        index = copyThrough(content, index, "```", out);
+        index = copyFence(content, index, out, changeReference);
       } else if (startsWith(content, index, "<!--")) {
         index = copyThrough(content, index, "-->", out);
       } else if (content.charAt(index) == '`') {
@@ -41,6 +41,36 @@ final class MarkdownReferences {
     }
     char previous = content.charAt(index - 1);
     return previous == '/' || previous == ':';
+  }
+
+  private static int copyFence(String content, int index, StringBuilder out,
+                               Function<String, Optional<String>> changeReference) {
+    int end = content.indexOf("```", index + 3);
+    if (end < 0) {
+      out.append(content.substring(index));
+      return content.length();
+    }
+    int close = end + 3;
+    String fence = content.substring(index, close);
+    out.append(includeFence(fence) ? rewriteInclude(fence, changeReference) : fence);
+    return close;
+  }
+
+  private static boolean includeFence(String fence) {
+    String inner = fence.substring(3, fence.length() - 3);
+    int newline = inner.indexOf('\n');
+    if (newline < 0 || !inner.substring(0, newline).trim().equals("agentnesse")) {
+      return false;
+    }
+    String body = inner.substring(newline + 1).stripLeading();
+    return body.startsWith("include ") || body.startsWith("include\n") || body.equals("include");
+  }
+
+  private static String rewriteInclude(String fence, Function<String, Optional<String>> changeReference) {
+    String inner = fence.substring(3, fence.length() - 3);
+    int newline = inner.indexOf('\n');
+    String body = inner.substring(newline + 1);
+    return "```" + inner.substring(0, newline + 1) + replace(null, body, changeReference) + "```";
   }
 
   private static int copyThrough(String content, int index, String closer, StringBuilder out) {

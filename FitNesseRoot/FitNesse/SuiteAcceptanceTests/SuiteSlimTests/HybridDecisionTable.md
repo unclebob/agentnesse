@@ -21,8 +21,9 @@ redefined and method parameters can be extracted from the column names.
 
 Example
 
-```agentnesse
-collapsible open Setup
+<details open>
+<summary>Setup</summary>
+
 | import |
 | --- |
 | fitnesse.slim.test |
@@ -63,7 +64,8 @@ define SLIM_DT_GETTER
   }
  ]
 }
-```
+
+</details>
 ```agentnesse
 define SLIM_DT_SETTER
 {
