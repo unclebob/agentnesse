@@ -188,24 +188,34 @@ public final class MarkdownTable implements Table {
 
     private String html() {
       if (exception != null) {
-        String message = exception.getMessage() != null ? exception.getMessage() : exception.getException();
-        String rendered = HtmlUtil.isValidTableCellContent(message) ? message : escape(message);
-        String cls = exception.getExecutionResult() == null ? "error" : exception.getExecutionResult().toString();
-        return escape(content) + " <span class=\"" + cls + "\">" + rendered + "</span>";
+        return exceptionHtml();
       }
-      if (result != null && result.getExecutionResult() == null && result.hasMessage()) {
-        return escape(result.getMessage());
+      if (result != null) {
+        return resultHtml();
       }
-      if (result != null && result.getExecutionResult() != null) {
-        HtmlTable.Cell formatted = new HtmlTable.Cell(content);
-        formatted.setTestResult(result);
-        String rendered = formatted.formatTestResult();
-        return rendered == null ? escape(content) : rendered;
+      return span(rowResult, content);
+    }
+
+    private String exceptionHtml() {
+      String message = exception.getMessage() != null ? exception.getMessage() : exception.getException();
+      String rendered = HtmlUtil.isValidTableCellContent(message) ? message : escape(message);
+      String cls = exception.getExecutionResult() == null ? "error" : exception.getExecutionResult().toString();
+      return escape(content) + " <span class=\"" + cls + "\">" + rendered + "</span>";
+    }
+
+    private String resultHtml() {
+      if (result.getExecutionResult() == null) {
+        return result.hasMessage() ? escape(result.getMessage()) : escape(content);
       }
-      if (rowResult != null) {
-        return "<span class=\"" + rowResult + "\">" + (HtmlUtil.isValidTableCellContent(content) ? content : escape(content)) + "</span>";
-      }
-      return HtmlUtil.isValidTableCellContent(content) ? content : escape(content);
+      HtmlTable.Cell formatted = new HtmlTable.Cell(content);
+      formatted.setTestResult(result);
+      String rendered = formatted.formatTestResult();
+      return rendered == null ? escape(content) : rendered;
+    }
+
+    private String span(String status, String body) {
+      String rendered = HtmlUtil.isValidTableCellContent(body) ? body : escape(body);
+      return status == null ? rendered : "<span class=\"" + status + "\">" + rendered + "</span>";
     }
 
     private static String escape(String text) {

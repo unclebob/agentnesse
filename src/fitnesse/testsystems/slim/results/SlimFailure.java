@@ -111,7 +111,7 @@ public final class SlimFailure {
     }
     int space = body.indexOf(' ');
     String first = space < 0 ? body : body.substring(0, space);
-    if (first.startsWith("NO_") || first.startsWith("COULD_") || first.startsWith("MALFORMED") || first.startsWith("TIMED")) {
+    if (slimCode(first)) {
       return first;
     }
     int colon = body.indexOf(':');
@@ -119,6 +119,10 @@ public final class SlimFailure {
       return body.substring(0, colon);
     }
     return "";
+  }
+
+  private static boolean slimCode(String first) {
+    return first.startsWith("NO_") || first.startsWith("COULD_") || first.startsWith("MALFORMED") || first.startsWith("TIMED");
   }
 
   private static String messageOf(String body, String type) {

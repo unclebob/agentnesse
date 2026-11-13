@@ -179,17 +179,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private String expandSlim(String content) {
-    Matcher matcher = VARIABLE.matcher(content);
-    StringBuilder expanded = new StringBuilder();
-    while (matcher.find()) {
-      String value = getVariable(matcher.group(1));
-      if (value != null) {
-        value = value.replace("|", "\\|").replace("\n", "<br>");
-      }
-      matcher.appendReplacement(expanded, Matcher.quoteReplacement(value == null ? matcher.group() : value));
-    }
-    matcher.appendTail(expanded);
-    return expanded.toString();
+    return substitute(content, true);
   }
 
   private String render(String content) {
@@ -226,11 +216,18 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private String expand(String content) {
+    return substitute(content, false);
+  }
+
+  private String substitute(String content, boolean escapePipes) {
     Matcher matcher = VARIABLE.matcher(content);
     StringBuilder expanded = new StringBuilder();
     while (matcher.find()) {
       String value = getVariable(matcher.group(1));
       if (value != null) {
+        if (escapePipes) {
+          value = value.replace("|", "\\|");
+        }
         value = value.replace("\n", "<br>");
       }
       matcher.appendReplacement(expanded, Matcher.quoteReplacement(value == null ? matcher.group() : value));

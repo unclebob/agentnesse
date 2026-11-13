@@ -81,23 +81,11 @@ public final class SlimSources {
   }
 
   public List<MarkdownTable> tables() {
-    List<MarkdownTable> tables = new ArrayList<>();
-    for (Item item : items) {
-      if (item.table != null) {
-        tables.add(item.table);
-      }
-    }
-    return tables;
+    return items.stream().map(item -> item.table).filter(table -> table != null).toList();
   }
 
   public List<String> errors() {
-    List<String> errors = new ArrayList<>();
-    for (Item item : items) {
-      if (item.error != null) {
-        errors.add(item.error);
-      }
-    }
-    return errors;
+    return items.stream().map(item -> item.error).filter(error -> error != null).toList();
   }
 
   private void addPages(List<WikiPage> pages, WikiPage context, boolean tearDown, Set<String> seen) {
@@ -165,28 +153,31 @@ public final class SlimSources {
         rememberAlias(block.argument());
         return;
       }
-      if (!"include".equals(block.command())) {
-        return;
-      }
-      String name = block.argument() == null ? "" : block.argument().trim();
-      int split = name.indexOf('\n');
-      if (split >= 0) {
-        name = name.substring(0, split).trim();
-      }
-      int space = name.indexOf(' ');
-      if (space >= 0) {
-        name = name.substring(0, space).trim();
-      }
-      WikiPagePath path = PathParser.parse(name);
-      if (path == null) {
-        return;
-      }
-      WikiPage included = page.getPageCrawler().getSiblingPage(path);
-      if (included instanceof MarkdownPage markdown && included != page) {
-        addPage(markdown, context, tearDown, seen);
+      if ("include".equals(block.command())) {
+        include(page, block.argument(), context, tearDown, seen);
       }
     } catch (IllegalArgumentException ignored) {
       // A define or path fence is not a document of tables.
+    }
+  }
+
+  private void include(MarkdownPage page, String argument, WikiPage context, boolean tearDown, Set<String> seen) {
+    String name = argument == null ? "" : argument.trim();
+    int split = name.indexOf('\n');
+    if (split >= 0) {
+      name = name.substring(0, split).trim();
+    }
+    int space = name.indexOf(' ');
+    if (space >= 0) {
+      name = name.substring(0, space).trim();
+    }
+    WikiPagePath path = PathParser.parse(name);
+    if (path == null) {
+      return;
+    }
+    WikiPage included = page.getPageCrawler().getSiblingPage(path);
+    if (included instanceof MarkdownPage markdown && included != page) {
+      addPage(markdown, context, tearDown, seen);
     }
   }
 
