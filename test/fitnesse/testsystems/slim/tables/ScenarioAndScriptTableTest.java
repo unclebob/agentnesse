@@ -10,7 +10,7 @@ import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.slim.SlimCommandRunningClient;
 import fitnesse.slim.instructions.CallInstruction;
 import fitnesse.slim.instructions.Instruction;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.MarkdownTableScanner;
 import fitnesse.testsystems.slim.SlimTestContextImpl;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.TableScanner;
@@ -41,7 +41,7 @@ public class ScenarioAndScriptTableTest {
   private SlimTestContextImpl makeTables(String tableText) throws Exception {
     SlimTestContextImpl testContext = new SlimTestContextImpl(new WikiTestPage(root));
     WikiPageUtil.setPageContents(root, tableText);
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     ScenarioTable st = (ScenarioTable) slimTableFactory.makeSlimTable(ts.getTable(0), "s_id", testContext);
     script = (ScriptTable) slimTableFactory.makeSlimTable(ts.getTable(1), "id", testContext);
     assertions.addAll(st.getAssertions());
@@ -293,7 +293,7 @@ public class ScenarioAndScriptTableTest {
         "\n" +
         "!|script|\n" +
         "|Login user Bob with password xyzzy|\n");
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     ScenarioTable st1 = new ScenarioTable(ts.getTable(0), "s1_id", testContext);
     ScenarioTable st2 = new ScenarioTable(ts.getTable(1), "s2_id", testContext);
     script = new ScriptTable(ts.getTable(2), "id", testContext);
@@ -317,7 +317,7 @@ public class ScenarioAndScriptTableTest {
         "\n" +
         "!|script|\n" +
         "|connect to  |Bob| with password| xyzzy|\n");
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     ScenarioTable st1 = new ScenarioTable(ts.getTable(0), "s1_id", testContext);
     ScenarioTable st2 = new ScenarioTable(ts.getTable(1), "s2_id", testContext);
     script = new ScriptTable(ts.getTable(2), "id", testContext);
@@ -341,7 +341,7 @@ public class ScenarioAndScriptTableTest {
         "\n" +
         "!|script|\n" +
         "|connect to  |Bob| with password| xyzzy|\n");
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     ScenarioTable st1 = new ScenarioTable(ts.getTable(0), "s1_id", testContext);
     ScenarioTable st2 = new ScenarioTable(ts.getTable(1), "s2_id", testContext);
     script = new ScriptTable(ts.getTable(2), "id", testContext);

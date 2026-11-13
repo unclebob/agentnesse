@@ -81,7 +81,7 @@ public class ScriptTableExtensionTest {
 
   private ScriptTable makeScriptTable(String tableText) throws Exception {
     WikiPageUtil.setPageContents(root, tableText);
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     Table t = ts.getTable(0);
     SlimTestContextImpl testContext = new SlimTestContextImpl(new WikiTestPage(root));
     return new HtmlScriptTable(t, "id", testContext);
@@ -478,8 +478,8 @@ public class ScriptTableExtensionTest {
             ),
             "[[Script], [show, func, 3, " + ahref + "]]"
     );
-    assertTrue(st.getTable() instanceof HtmlTable);
-    String html = ((HtmlTable) st.getTable()).toHtml();
+    assertTrue(st.getTable() instanceof MarkdownTable);
+    String html = ((MarkdownTable) st.getTable()).toHtml();
     assertTrue("Unexpected table html:\n" + html,
                 html.contains(ahref));
   }

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.TestExecutionException;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.MarkdownTableScanner;
 import fitnesse.testsystems.slim.SlimTestContext;
 import fitnesse.testsystems.slim.SlimTestContextImpl;
 import fitnesse.testsystems.slim.Table;
@@ -39,7 +39,7 @@ public class ScenarioTableExtensionTest {
     String pageContents = "|" + EXTENSION_NAME + "|" + contents + "|\n";
     WikiPageUtil.setPageContents(root, pageContents);
 
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     Table t = ts.getTable(0);
     SlimTestContextImpl testContext = new SlimTestContextImpl(new WikiTestPage(root));
     st = new AutoArgScenarioTable(t, "id", testContext);

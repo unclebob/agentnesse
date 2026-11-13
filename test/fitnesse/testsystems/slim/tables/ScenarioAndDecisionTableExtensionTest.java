@@ -9,7 +9,7 @@ import java.util.Map;
 import fitnesse.slim.instructions.CallInstruction;
 import fitnesse.slim.instructions.Instruction;
 import fitnesse.testrunner.WikiTestPage;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.MarkdownTableScanner;
 import fitnesse.testsystems.slim.SlimCommandRunningClient;
 import fitnesse.testsystems.slim.SlimTestContext;
 import fitnesse.testsystems.slim.SlimTestContextImpl;
@@ -52,7 +52,7 @@ public class ScenarioAndDecisionTableExtensionTest {
             + "\n"
             + "!|DT:" + scriptText + "|\n";
     WikiPageUtil.setPageContents(root, tableText);
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     Table t = ts.getTable(0);
     ScenarioTable st = new ScenarioTableWithDifferentScript(t, "s_id", testContext);
     t = ts.getTable(1);

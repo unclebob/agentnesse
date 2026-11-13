@@ -1,24 +1,14 @@
 package fitnesse.testsystems.slim.tables;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import fitnesse.markdown.TableSeparators;
 import fitnesse.slim.instructions.Instruction;
 import fitnesse.testrunner.WikiTestPage;
-import fitnesse.testsystems.slim.HtmlTable;
-import fitnesse.testsystems.slim.HtmlTableScanner;
-import fitnesse.testsystems.slim.SlimTestContext;
+import fitnesse.testsystems.slim.MarkdownTable;
 import fitnesse.testsystems.slim.SlimTestContextImpl;
 import fitnesse.testsystems.slim.Table;
-import fitnesse.testsystems.slim.TableScanner;
-import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageDummy;
-import fitnesse.wiki.WikiPageUtil;
-import fitnesse.wiki.fs.InMemoryPage;
 
 import org.junit.Before;
 
@@ -31,16 +21,12 @@ import org.junit.Before;
  */
 public abstract class SlimTableTestSupport<T extends SlimTable> {
 
-  private WikiPage root;
   protected List<Instruction> instructions;
   protected List<SlimAssertion> assertions;
   protected T tableUnderTest;
 
   public T createSlimTable(String tableText) {
-    WikiPageUtil.setPageContents(root, gfm(tableText));
-    String html = root.getHtml();
-    TableScanner<HtmlTable> ts = new HtmlTableScanner(html);
-    Table t = ts.getTable(0);
+    Table t = MarkdownTable.parse(tableText);
     SlimTestContextImpl testContext = new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy()));
     SlimTableFactory tableFactory = new SlimTableFactory();
     return (T) tableFactory.makeSlimTable(t, "id", testContext);
@@ -48,13 +34,8 @@ public abstract class SlimTableTestSupport<T extends SlimTable> {
 
   @Before
   public void setUp() throws Exception {
-    root = InMemoryPage.makeRoot("root");
     instructions = new ArrayList<>();
     assertions = new ArrayList<>();
-  }
-
-  static String gfm(String wiki) {
-    return TableSeparators.supply(wiki);
   }
 
   protected T makeSlimTableAndBuildInstructions(String pageContents) throws Exception {

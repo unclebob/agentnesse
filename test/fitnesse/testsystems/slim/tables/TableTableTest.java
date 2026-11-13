@@ -12,7 +12,7 @@ import fitnesse.testsystems.slim.SlimCommandRunningClient;
 import fitnesse.slim.instructions.CallInstruction;
 import fitnesse.slim.instructions.Instruction;
 import fitnesse.slim.instructions.MakeInstruction;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.MarkdownTableScanner;
 import fitnesse.testsystems.slim.SlimTestContextImpl;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.TableScanner;
@@ -49,7 +49,7 @@ public class TableTableTest {
 
   private TableTable makeTableTable(String tableText) throws Exception {
     WikiPageUtil.setPageContents(root, tableText);
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     Table t = ts.getTable(0);
     SlimTestContextImpl testContext = new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy()));
     return (TableTable) new SlimTableFactory().makeSlimTable(t, "id", testContext);

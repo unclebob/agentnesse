@@ -10,7 +10,7 @@ import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.slim.SlimCommandRunningClient;
 import fitnesse.slim.instructions.CallInstruction;
 import fitnesse.slim.instructions.Instruction;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.MarkdownTableScanner;
 import fitnesse.testsystems.slim.SlimTestContextImpl;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.TableScanner;
@@ -42,7 +42,7 @@ public class ScenarioAndDecisionTableTest {
   private SlimTestContextImpl makeTables(String tableText) throws Exception {
     SlimTestContextImpl testContext = new SlimTestContextImpl(new WikiTestPage(root));
     WikiPageUtil.setPageContents(root, tableText);
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     Table t = ts.getTable(0);
     ScenarioTable st = new ScenarioTable(t, "s_id", testContext);
     t = ts.getTable(1);

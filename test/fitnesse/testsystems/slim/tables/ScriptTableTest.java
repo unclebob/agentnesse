@@ -100,8 +100,8 @@ public class ScriptTableTest {
   }
 
   private ScriptTable makeScriptTable(String tableText, boolean localized) throws Exception {
-    WikiPageUtil.setPageContents(root, SlimTableTestSupport.gfm(tableText));
-    TableScanner ts = new HtmlTableScanner(root.getHtml());
+    WikiPageUtil.setPageContents(root, tableText);
+    TableScanner ts = new MarkdownTableScanner(root.getData().getContent());
     Table t = ts.getTable(0);
     SlimTestContextImpl testContext = new SlimTestContextImpl(new WikiTestPage(root));
     return (ScriptTable) slimTableFactory.makeSlimTable(t, "id", testContext);
@@ -691,8 +691,8 @@ public class ScriptTableTest {
       ),
       "[[Script], [show, func, 3, 1 < 0]]", false
     );
-    assertTrue(st.getTable() instanceof HtmlTable);
-    String html = ((HtmlTable) st.getTable()).toHtml();
+    assertTrue(st.getTable() instanceof MarkdownTable);
+    String html = ((MarkdownTable) st.getTable()).toHtml();
     assertTrue(html, html.contains("1 &lt; 0"));
   }
 
@@ -704,8 +704,8 @@ public class ScriptTableTest {
       ),
       "[[Script], [show, func, 3, <a href=\"http://myhost/turtle.html\">kawabunga</a>]]", false
     );
-    assertTrue(st.getTable() instanceof HtmlTable);
-    String html = ((HtmlTable) st.getTable()).toHtml();
+    assertTrue(st.getTable() instanceof MarkdownTable);
+    String html = ((MarkdownTable) st.getTable()).toHtml();
     assertTrue(html.contains("<a href=\"http://myhost/turtle.html\">kawabunga</a>"));
   }
 
