@@ -11,9 +11,9 @@
 To add your first "page", click the [Edit](FrontPage?edit) button and add a wiki word to the page.
 
 
-| \*\*To Learn More...\*\* | |
+| **To Learn More...** | |
 | --- | --- |
-| [Acceptance Tests](FitNesse.SuiteAcceptanceTests) | \*The suite of acceptance tests\* |
-| [Components and Licenses](FitNesse.ComponentsAndLicenses) | \*Libraries shipped with the server\* |
+| [Acceptance Tests](FitNesse.SuiteAcceptanceTests) | *The suite of acceptance tests* |
+| [Components and Licenses](FitNesse.ComponentsAndLicenses) | *Libraries shipped with the server* |
 
-!note Release ${FITNESSE_VERSION}
+*Release ${FITNESSE_VERSION}*

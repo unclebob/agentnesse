@@ -147,7 +147,7 @@ compare the two tables below with a standard decision table
 
 | should I buy milk | | | |
 | --- | --- | --- | --- |
-| GIVEN I have \*\*ZERO\*\*\*pints of milk remaining\*in my fridge | WHEN I have \*\*AT LEAST\*\* 3$<sup>1</sup> \*cash in wallet\* ----- <sup>1</sup>: the price for <br>a bottle of milk | OR I \*\*HAVE\*\* a \*credit card\* | THEN I \*go to store\* and buy milk! |
+| GIVEN I have **ZERO** *pints of milk remaining* in my fridge | WHEN I have **AT LEAST** 3$<sup>1</sup> *cash in wallet* ----- <sup>1</sup>: the price for <br>a bottle of milk | OR I **HAVE** a *credit card* | THEN I *go to store* and buy milk! |
 | 0 | 0 | no | no |
 | 0 | 1 | no | no |
 | 0 | 2 | no | no |
@@ -157,13 +157,13 @@ compare the two tables below with a standard decision table
 | 2 | 5 | yes | no |
 
 
-!meta if you like use in addition colours or other markup
+*If you like, use colours or other markup as well.*
 
 
 
 | baseline: should I buy milk | | | | |
 | --- | --- | --- | --- | --- |
-| GIVEN I have '''zero'''!-<br>-!!style_indigo{''pints of milk remaining''}!- <br>in my fridge -! | WHEN I have '''AT LEAST 3$'''!-<sup>1</sup><br>-! !style_indigo[''cash in wallet''] ----- !- <sup>1</sup>: the price for <br>a bottle of milk -! | OR I \*\*have\*\* a \`<u>\`\*credit card\*\`</u>\` | THEN I \*go to store\* and buy milk! | # |
+| GIVEN I have **zero** *pints of milk remaining* in my fridge | WHEN I have **AT LEAST 3$**<sup>1</sup> *cash in wallet* ----- <sup>1</sup>: the price for <br>a bottle of milk | OR I **have** a <u>*credit card*</u> | THEN I *go to store* and buy milk! | # |
 | 0 | 0 | no | no | . |
 | | 1 | | | . |
 | | 2 | | | . |
@@ -177,48 +177,23 @@ The test case writer has just to set the function name in *italic*
 and can use any other text and formatting to descibe the scenario further
 The pattern used in the hybrid table is the below. 
 
-{{{
-```agentnesse
-define SLIM_DT_GETTER
-!`-`
+```json
 {
-"FormatVersion":"1.0",
-"MethodExtractorRules":[
-  {
-    "Scope":"(?s).*<[i]>(.*)</i>.*",
-    "TargetName":"$1",
-    "Parameters":""
-  },
-  {
-    "Scope":"(?s)^([^\\n]*)\\n.*",
-    "TargetName":"$1",
-    "Parameters":""
-  }
- ]
+  "FormatVersion": "1.0",
+  "MethodExtractorRules": [
+    {
+      "Scope": "(?s).*<em>(.*)</em>.*",
+      "TargetName": "$1",
+      "Parameters": ""
+    },
+    {
+      "Scope": "(?s)^([^\\n]*)\\n.*",
+      "TargetName": "$1",
+      "Parameters": ""
+    }
+  ]
 }
-` -`!
 ```
-```agentnesse
-define SLIM_DT_SETTER
-!`-`
-{
-"FormatVersion":"1.0",
-"MethodExtractorRules":[
-  {
-    "Scope":"(?s).*<[i]>(.*)</i>.*",
-    "TargetName":"set $1",
-    "Parameters":""
-  },
-  {
-    "Scope":".+",
-    "TargetName":"set $0",
-    "Parameters":""  }
- ]
-}
-` -`!
-```
-
-}}}
 
 
 ### IMPORTANT: to avoid side effects always add a TearDown page to reset the mappings to the defaults.

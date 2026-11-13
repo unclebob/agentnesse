@@ -5,7 +5,7 @@
   "prune": false
 }
 ## The Backwards Search widget.
-Sometimes we want to search backwards through a path to a named page.  For example, if we are on the page !style_code(!-.PageOne.PageTwo.PageThree.PageFour-!) we might be able to say !style_code(!-&lt;PageTwo-!) to search backwards to !style_code(!-PageTwo-!).  Now let's say there is a page named !style_code(!-.PageOne.PageTwo.AnotherPage-!) and we are on !style_code(!-.PageOne.PageTwo.PageThree.PageFour-!)  We could say !style_code(!-&lt;PageTwo.AnotherPage-!)
+Sometimes we want to search backwards through a path to a named page.  For example, if we are on the page `.PageOne.PageTwo.PageThree.PageFour` we might be able to say `<PageTwo` to search backwards to `PageTwo`.  Now let's say there is a page named `.PageOne.PageTwo.AnotherPage` and we are on `.PageOne.PageTwo.PageThree.PageFour`.  We could say `<PageTwo.AnotherPage`.
 
 
 | script | | | |

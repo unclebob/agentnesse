@@ -27,8 +27,9 @@ slim
 
 ```agentnesse
 define MOCK_TEST
-| script | fitnesse.fixtures.Pass |-!
-!-| ensure | ok |
+| script | fitnesse.fixtures.Pass |
+| --- | --- |
+| ensure | ok |
 ```
 ```
 

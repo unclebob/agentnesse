@@ -6,17 +6,18 @@
 }
 Slim tables can contain HTML content. If content qualifies as HTML, it is passed to the SUT as HTML.
 
+```agentnesse
+define html
+!note > 50% (note) !meta < 50% (meta)
+```
+
 <details>
 <summary>scenarios</summary>
-
-!define html {| !note > 50% (note) |
-| !meta < 50% (meta) |}
 
 ```agentnesse
 define no_html
 < 50%
-
-</details>
+```
 
 
 | scenario | Content | content | is returned as | out |
@@ -28,7 +29,8 @@ define no_html
 | scenario | And the SUT sees | substring |
 | --- | --- | --- |
 | ensure | name contains | @substring |
-```
+
+</details>
 
 
 | script | | | |

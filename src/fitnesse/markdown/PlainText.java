@@ -1,5 +1,6 @@
 package fitnesse.markdown;
 
+import org.commonmark.node.Code;
 import org.commonmark.node.HardLineBreak;
 import org.commonmark.node.HtmlInline;
 import org.commonmark.node.Node;
@@ -26,6 +27,8 @@ final class PlainText {
   private static void collect(Node node, StringBuilder text) {
     if (node instanceof Text) {
       text.append(((Text) node).getLiteral());
+    } else if (node instanceof Code) {
+      text.append(((Code) node).getLiteral());
     } else if (node instanceof HardLineBreak || breakTag(node)) {
       text.append('\n');
     } else if (node instanceof HtmlInline) {

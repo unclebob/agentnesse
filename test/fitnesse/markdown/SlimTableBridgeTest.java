@@ -121,6 +121,26 @@ public class SlimTableBridgeTest {
   }
 
   @Test
+  public void inlineMarkdownInACellRendersAndSlimReadsThePlainText() {
+    String html = MarkdownRenderer.render("""
+      | [text](Page) | WikiWord | **bold** | `code` |
+      | --- | --- | --- | --- |
+      | a | b | c | d |
+      """);
+
+    assertTrue(html, html.contains("<a href=\"Page\">text</a>"));
+    assertTrue(html, html.contains("href=\"WikiWord?edit&nonExistent=true\""));
+    assertTrue(html, html.contains("<strong>bold</strong>"));
+    assertTrue(html, html.contains("<code>code</code>"));
+
+    HtmlTableScanner scanner = new HtmlTableScanner(html);
+    assertEquals("text", scanner.getTable(0).getCellContents(0, 0));
+    assertEquals("WikiWord", scanner.getTable(0).getCellContents(1, 0));
+    assertEquals("bold", scanner.getTable(0).getCellContents(2, 0));
+    assertEquals("code", scanner.getTable(0).getCellContents(3, 0));
+  }
+
+  @Test
   public void anEscapedUnderscoreIsAnUnderscore() {
     String html = MarkdownRenderer.render("| decision:X | |\n| --- | --- |\n| name | TEST\\_SYSTEM |\n");
     assertEquals("TEST_SYSTEM", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));

@@ -52,6 +52,8 @@ final class PathLines {
     String trimmed = line.trim();
     if (trimmed.startsWith("!path")) {
       add(paths, trimmed.substring("!path".length()));
+    } else if (trimmed.startsWith("path ") && !trimmed.substring("path ".length()).contains(" ")) {
+      add(paths, trimmed.substring("path ".length()));
     }
   }
 }

@@ -328,11 +328,16 @@ public class HtmlTable implements Table {
     }
 
     public String getContent() {
+      String slim = columnNode.getAttribute("data-slim");
+      if (slim != null) {
+        return HtmlUtil.unescapeHTML(slim).replace("&quot;", "\"").replace("&#10;", "\n");
+      }
       String unescaped = columnNode.getChildrenHTML();
       //Some browsers need &nbsp; inside an empty table cell, so we remove it here.
       if ("&nbsp;".equals(unescaped)) {
         return "";
       }
+      unescaped = unescaped.replaceAll("(?i)<br\\s*/?>", "\n");
       return qualifiesAsHtml(unescaped) ? unescaped : HtmlUtil.unescapeHTML(unescaped);
     }
 

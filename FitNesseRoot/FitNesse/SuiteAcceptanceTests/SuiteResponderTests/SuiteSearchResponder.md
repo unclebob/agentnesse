@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-!c !2 Search Responder
+## Search Responder
 
 The search responder works in two fashions: Title Search and Content Search.
 

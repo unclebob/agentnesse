@@ -43,7 +43,7 @@ fitnesse-standalone.jar
 
 | script | page driver | | |
 | --- | --- | --- | --- |
-| given page | ParentPage | with content | !path parentPath |
+| given page | ParentPage | with content | path parentPath |
 
 
 | script | | | |
