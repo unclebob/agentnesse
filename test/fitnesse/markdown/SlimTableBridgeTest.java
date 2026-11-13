@@ -121,6 +121,18 @@ public class SlimTableBridgeTest {
   }
 
   @Test
+  public void aQuotedScenarioArgumentStaysAQuotedCell() throws Exception {
+    String html = MarkdownRenderer.render("""
+      | scenario | page | source | should not contain | text |
+      | --- | --- | --- | --- | --- |
+      | reject | content contains | @text |
+      """);
+    HtmlTableScanner scanner = new HtmlTableScanner(html);
+    var copy = scanner.getTable(0).asTemplate(content -> content.replace("@text", "\"brother content\""));
+    assertEquals("\"brother content\"", copy.getCellContents(2, 1));
+  }
+
+  @Test
   public void inlineMarkdownInACellRendersAndSlimReadsThePlainText() {
     String html = MarkdownRenderer.render("""
       | [text](Page) | WikiWord | **bold** | `code` |

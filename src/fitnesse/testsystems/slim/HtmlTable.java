@@ -347,6 +347,16 @@ public class HtmlTable implements Table {
       columnNode.setChildren(nodeList);
     }
 
+    /**
+     * Scenario arguments are substituted into the cell Slim reads. A quote in the
+     * argument must stay inside {@code data-slim}; splicing it into the raw
+     * attribute would close the attribute and leave the cell empty.
+     */
+    private void replaceWithPlainText(String s) {
+      columnNode.setChildren(new NodeList(new TextNode(s)));
+      columnNode.setAttribute("data-slim", escapeAttribute(s), '"');
+    }
+
     public String getTestResult() {
       return testResult != null ? testResult.toString(originalContent) : getContent();
     }
@@ -480,6 +490,10 @@ public class HtmlTable implements Table {
     }
   }
 
+  private static String escapeAttribute(String text) {
+    return text.replace("&", "&amp;").replace("\"", "&quot;").replace("\n", "&#10;");
+  }
+
   private static String asHtml(String text) {
     if (qualifiesAsHtml(text)) {
       if (qualifiesAsSymbolReplacement(text)) {
@@ -498,10 +512,17 @@ public class HtmlTable implements Table {
 
   @Override
   public HtmlTable asTemplate(CellContentSubstitution substitution) throws SyntaxError {
-    String script = this.toHtml();
-    // Quick 'n' Dirty
-    script = substitution.substitute(script);
-    return new HtmlTableScanner(script).getTable(0);
+    HtmlTable copy = new HtmlTableScanner(toHtml()).getTable(0);
+    for (int row = 0; row < copy.getRowCount(); row++) {
+      for (int col = 0; col < copy.getColumnCountInRow(row); col++) {
+        Cell cell = copy.rows.get(row).getColumn(col);
+        String updated = substitution.substitute(cell.getContent());
+        if (!updated.equals(cell.getContent())) {
+          cell.replaceWithPlainText(updated);
+        }
+      }
+    }
+    return copy;
   }
 
   static boolean qualifiesAsSymbolReplacement(String text) {
