@@ -62,6 +62,9 @@ public class SlimPage {
     String tableId = "" + allTables.size();
     SlimTable slimTable = slimTableFactory.makeSlimTable(table, tableId, testContext);
     if (slimTable != null) {
+      if (table instanceof MarkdownTable markdown && testContext.getPageToTest() != null) {
+        markdown.locate(testContext.getPageToTest().getName(), markdown.getCellContents(0, 0));
+      }
       allTables.add(slimTable);
     }
   }

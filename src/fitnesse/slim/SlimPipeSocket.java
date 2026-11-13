@@ -35,17 +35,12 @@ public class SlimPipeSocket extends ServerSocket {
   private PrintStream stderr;
   private InputStream stdin;
 
-  public SlimPipeSocket() throws IOException {
-
-    // preserve original streams
-    this.stdout = System.out;
-    this.stderr = System.err;
-    this.stdin = System.in;
-
-    // bind System.stdout/System.stderr to original stderr
-    System.setOut(wrapStream(this.stderr, STDOUT_PREFIX));
-    System.setErr(wrapStream(this.stderr, STDERR_PREFIX));
-
+  public SlimPipeSocket(SlimService.Console console) throws IOException {
+    this.stdout = console.out();
+    this.stderr = console.err();
+    this.stdin = console.in();
+    console.setOut(wrapStream(this.stderr, STDOUT_PREFIX));
+    console.setErr(wrapStream(this.stderr, STDERR_PREFIX));
     LOG.log(Level.FINER, "Creating Slim Server with pipe socket.");
   }
 

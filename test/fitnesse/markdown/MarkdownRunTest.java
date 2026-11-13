@@ -2,7 +2,7 @@ package fitnesse.markdown;
 
 import fitnesse.testrunner.ClassPathBuilder;
 import fitnesse.testrunner.TestPageWithSuiteSetUpAndTearDown;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.HtmlCells;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.fs.FileSystemPageFactory;
@@ -74,25 +74,10 @@ public class MarkdownRunTest {
       """);
 
     String html = new TestPageWithSuiteSetUpAndTearDown(root.getChildPage("TestChild")).getHtml();
-    HtmlTableScanner scanner = new HtmlTableScanner(html);
-
-    assertTrue(cell(scanner, "import"));
-    assertTrue(cell(scanner, "suite setup ran"));
-    assertTrue(cell(scanner, "check"));
+    assertTrue(HtmlCells.contains(html, "import"));
+    assertTrue(HtmlCells.contains(html, "suite setup ran"));
+    assertTrue(HtmlCells.contains(html, "check"));
     assertTrue(html.contains("agentnesse-include"));
-  }
-
-  private static boolean cell(HtmlTableScanner scanner, String text) {
-    for (int table = 0; table < scanner.getTableCount(); table++) {
-      for (int row = 0; row < scanner.getTable(table).getRowCount(); row++) {
-        for (int column = 0; column < scanner.getTable(table).getColumnCountInRow(row); column++) {
-          if (text.equals(scanner.getTable(table).getCellContents(column, row).trim())) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
   }
 
   @Test
@@ -111,6 +96,6 @@ public class MarkdownRunTest {
     String html = root.getChildPage("TestHost").getHtml();
 
     assertTrue(html.contains("<details class=\"agentnesse-include\"><summary>Included</summary>"));
-    assertEquals("query:Employees", new HtmlTableScanner(html).getTable(0).getCellContents(0, 0));
+    assertEquals("query:Employees", HtmlCells.cell(html, 0, 0, 0));
   }
 }

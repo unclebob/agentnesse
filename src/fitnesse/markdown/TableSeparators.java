@@ -32,7 +32,7 @@ public final class TableSeparators {
     return out.toString();
   }
 
-  private static boolean isRow(String line) {
+  public static boolean isRow(String line) {
     String trimmed = line.trim();
     return trimmed.startsWith("|") || trimmed.startsWith("!|");
   }

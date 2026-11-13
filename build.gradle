@@ -73,8 +73,6 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 dependencies {
-  implementation "org.htmlparser:htmlparser:2.1"
-  implementation "org.htmlparser:htmllexer:2.1"
   implementation "org.apache.velocity:velocity-engine-core:2.4.1"
   implementation "org.apache.commons:commons-lang3:3.21.0"
   implementation "org.slf4j:slf4j-api:2.0.20"

@@ -91,6 +91,18 @@ public abstract class SlimTable {
     return tableName;
   }
 
+  private void place(SlimExceptionResult exceptionResult, int col, int row) {
+    String page = "";
+    if (getTestContext().getPageToTest() != null && getTestContext().getPageToTest().getName() != null) {
+      page = getTestContext().getPageToTest().getName();
+    }
+    String block = "";
+    if (table.getRowCount() > 0 && table.getColumnCountInRow(0) > 0) {
+      block = table.getCellContents(0, 0);
+    }
+    exceptionResult.failure().at(page, block, row, col < 0 ? null : col);
+  }
+
   public String getSymbol(String variableName) {
     return testContext.getSymbol(variableName);
   }
@@ -252,6 +264,7 @@ public abstract class SlimTable {
 
     @Override
     public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) {
+      place(exceptionResult, col, row);
       table.updateContent(col, row, exceptionResult);
       if(exceptionResult.getException().equals(EXCEPTION_IGNORE_SCRIPT_TEST_TAG) || exceptionResult.getException().equals(EXCEPTION_IGNORE_ALL_TESTS_TAG)){
         getTestContext().incrementIgnoredTestsCount();
@@ -338,6 +351,7 @@ public abstract class SlimTable {
       if (exceptionResult.isNoMethodInClassException() || exceptionResult.isNoInstanceException()) {
         return null;
       }
+      place(exceptionResult, -1, row);
       table.updateContent(-1, row, exceptionResult);
       getTestContext().incrementErroredTestsCount();
       return exceptionResult;

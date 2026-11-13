@@ -90,19 +90,27 @@ public final class SlimFailure {
   }
 
   private static Kind kindOf(String raw, String type) {
-    String lower = raw.toLowerCase();
-    if (lower.contains("bindexception") || lower.contains("could not start")
-      || lower.contains("connection refused") || lower.contains("slim server died")
-      || lower.contains("failed to connect")) {
+    if (launchFailure(raw)) {
       return Kind.LAUNCH_FAILURE;
     }
     if (NO_METHOD_IN_CLASS.equals(type)) {
       return Kind.MISSING_METHOD;
     }
-    if (NO_CLASS.equals(type) || NO_CONSTRUCTOR.equals(type) || COULD_NOT_INVOKE_CONSTRUCTOR.equals(type)) {
+    if (missingFixture(type)) {
       return Kind.MISSING_FIXTURE;
     }
     return Kind.EXCEPTION;
+  }
+
+  private static boolean launchFailure(String raw) {
+    String lower = raw.toLowerCase();
+    return lower.contains("bindexception") || lower.contains("could not start")
+      || lower.contains("connection refused") || lower.contains("slim server died")
+      || lower.contains("failed to connect");
+  }
+
+  private static boolean missingFixture(String type) {
+    return NO_CLASS.equals(type) || NO_CONSTRUCTOR.equals(type) || COULD_NOT_INVOKE_CONSTRUCTOR.equals(type);
   }
 
   private static String typeOf(String body) {

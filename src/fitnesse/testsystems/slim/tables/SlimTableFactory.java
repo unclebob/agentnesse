@@ -103,30 +103,38 @@ public class SlimTableFactory {
   }
 
   private TableTypeAndName getTableNameAndType(String tableName) {
-    TableTypeAndName nameAndType;
-    if (hasColon(tableName)) {
-      nameAndType = new TableTypeAndName(tableName.split(":"));
-    } else if (getTableType(tableName) != null) {
-      // First column only contains table type, such as "| scenario |"
-      nameAndType = new TableTypeAndName(tableName, "");
-    } else {
-      nameAndType = new TableTypeAndName("", tableName);
-    }
+    return aliasOrDefault(splitName(tableName));
+  }
 
+  private TableTypeAndName splitName(String tableName) {
+    if (hasColon(tableName)) {
+      return new TableTypeAndName(tableName.split(":"));
+    }
+    if (getTableType(tableName) != null) {
+      return new TableTypeAndName(tableName, "");
+    }
+    return new TableTypeAndName("", tableName);
+  }
+
+  private TableTypeAndName aliasOrDefault(TableTypeAndName nameAndType) {
     String disgracedName = Disgracer.disgraceClassName(nameAndType.tableName);
     if (aliasArrays.containsKey(disgracedName)) {
-      String aliasedTableName = aliasArrays.get(disgracedName);
-      if (hasColon(aliasedTableName)) {
-        String[] aliasParts = aliasedTableName.split(":");
-        return new TableTypeAndName(
-          aliasParts[0].isEmpty() ? nameAndType.tableType : aliasParts[0],
-          (aliasParts.length <= 1 || aliasParts[1].isEmpty()) ? nameAndType.tableName : aliasParts[1]);
-      }
-      return new TableTypeAndName(nameAndType.tableType, aliasedTableName);
-    } else if (StringUtils.isBlank(nameAndType.tableType) && tableTypeArrays.containsKey(disgracedName)) {
+      return applyAlias(nameAndType, aliasArrays.get(disgracedName));
+    }
+    if (StringUtils.isBlank(nameAndType.tableType) && tableTypeArrays.containsKey(disgracedName)) {
       return new TableTypeAndName(tableTypeArrays.get(disgracedName), nameAndType.tableName);
     }
     return nameAndType;
+  }
+
+  private TableTypeAndName applyAlias(TableTypeAndName nameAndType, String aliasedTableName) {
+    if (!hasColon(aliasedTableName)) {
+      return new TableTypeAndName(nameAndType.tableType, aliasedTableName);
+    }
+    String[] aliasParts = aliasedTableName.split(":");
+    String type = aliasParts[0].isEmpty() ? nameAndType.tableType : aliasParts[0];
+    String name = aliasParts.length <= 1 || aliasParts[1].isEmpty() ? nameAndType.tableName : aliasParts[1];
+    return new TableTypeAndName(type, name);
   }
 
   public void addDefaultTableType(String fixture, String tableType) {

@@ -182,7 +182,7 @@ public class HtmlSlimResponderTest {
   public void tableWithBadConstructorHasException() throws Exception {
     getResultsForPageContents("!|DT:fitnesse.slim.test.TestSlim|badArgument|\n"
         + "|returnConstructorArgument?|\n" + "|3|\n");
-    TableScanner ts = new HtmlTableScanner(testPage.getHtml());
+    TableScanner ts = new MarkdownTableScanner(testPage.getData().getContent());
     ts.getTable(0);
     assertTestResultsContain("Could not invoke constructor");
   }
@@ -228,14 +228,8 @@ public class HtmlSlimResponderTest {
   public void tableWithSymbolSubstitution() throws Exception {
     getResultsForPageContents("!|DT:fitnesse.slim.test.TestSlim|\n"
         + "|string|getStringArg?|\n" + "|Bob|$V=|\n" + "|$V|$V|\n");
-    TableScanner ts = getScannedResults();
-    Table dt = ts.getTable(0);
-    assertEquals("$V<-[Bob]", unescape(dt.getCellContents(1, 2)));
-    assertEquals("$V->[Bob]", unescape(dt.getCellContents(0, 3)));
-  }
-
-  protected TableScanner getScannedResults() throws Exception {
-    return new HtmlTableScanner(testResults);
+    assertEquals("$V<-[Bob]", unescape(HtmlCells.cell(testResults, 0, 2, 1)));
+    assertEquals("$V->[Bob]", unescape(HtmlCells.cell(testResults, 0, 3, 0)));
   }
 
   private String unescape(String x) {
@@ -247,21 +241,17 @@ public class HtmlSlimResponderTest {
     getResultsForPageContents("!|DT:fitnesse.slim.test.TestSlim|\n"
         + "|string|getStringArg?|\n" + "|3|$A=|\n" + "|2|<$A|\n" + "|5|$B=|\n"
         + "|4|$A<_<$B|\n");
-    TableScanner ts = getScannedResults();
-    Table dt = ts.getTable(0);
-    assertEquals("<span class=\"pass\">2<$A->[3]</span>",
-        unescape(dt.getCellContents(1, 3)));
-    assertEquals("<span class=\"pass\">$A->[3]<4<$B->[5]</span>",
-        unescape(dt.getCellContents(1, 5)));
+    assertEquals("<span class=\"pass\">2&lt;$A-&gt;[3]</span>",
+        HtmlCells.raw(testResults, 0, 3, 1).trim());
+    assertEquals("<span class=\"pass\">$A-&gt;[3]&lt;4&lt;$B-&gt;[5]</span>",
+        HtmlCells.raw(testResults, 0, 5, 1).trim());
   }
 
   @Test
   public void tableWithExpression() throws Exception {
     getResultsForPageContents("!|DT:fitnesse.slim.test.TestSlim|\n"
         + "|string|getStringArg?|\n" + "|${=3+4=}|7|\n");
-    TableScanner ts = getScannedResults();
-    Table dt = ts.getTable(0);
-    assertTrue(dt.getCellContents(1, 2).contains("${=3+4=}"));
+    assertTrue(HtmlCells.cell(testResults, 0, 2, 1).contains("${=3+4=}"));
   }
 
   @Test

@@ -43,7 +43,7 @@ public final class MarkdownTableScanner implements TableScanner<MarkdownTable> {
         }
         continue;
       }
-      if (isRow(line)) {
+      if (TableSeparators.isRow(line)) {
         inTable = true;
         current.append(line).append('\n');
       } else if (inTable) {
@@ -54,11 +54,6 @@ public final class MarkdownTableScanner implements TableScanner<MarkdownTable> {
     if (inTable) {
       add(current, tearDown);
     }
-  }
-
-  private static boolean isRow(String line) {
-    String trimmed = line.trim();
-    return trimmed.startsWith("|") || trimmed.startsWith("!|");
   }
 
   private void add(StringBuilder current, boolean tearDown) {

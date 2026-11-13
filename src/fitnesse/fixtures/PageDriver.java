@@ -12,15 +12,8 @@ import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
-import org.htmlparser.Node;
-import org.htmlparser.NodeFilter;
-import org.htmlparser.Parser;
-import org.htmlparser.Tag;
-import org.htmlparser.filters.AndFilter;
-import org.htmlparser.filters.TagNameFilter;
-import org.htmlparser.lexer.Lexer;
-import org.htmlparser.lexer.Page;
-import org.htmlparser.util.NodeList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PageDriver {
   private PageCreator creator = new PageCreator();
@@ -123,45 +116,19 @@ public class PageDriver {
   }
 
   public int countOfTagWithIdPrefix(String tag, String idPrefix) throws Exception {
-    NodeFilter filter =
-      new AndFilter(
-        new TagNameFilter(tag),
-        new HasAttributePrefixFilter("id", idPrefix));
-    return getMatchingTags(filter).size();
-  }
-
-  private NodeList getMatchingTags(NodeFilter filter) throws Exception {
+    if (tag == null || idPrefix == null || tag.isEmpty()) {
+      return 0;
+    }
     String html = examiner.html();
-    Parser parser = new Parser(new Lexer(new Page(html)));
-    NodeList list = parser.parse(null);
-    NodeList matches = list.extractAllNodesThatMatch(filter, true);
-    return matches;
-  }
-
-  private static class HasAttributePrefixFilter extends org.htmlparser.filters.HasAttributeFilter {
-    private static final long serialVersionUID = 1L;
-
-    public HasAttributePrefixFilter(String attribute, String prefix) {
-      super(attribute, prefix);
+    Matcher tags = Pattern.compile("<" + Pattern.quote(tag) + "\\b([^>]*)>", Pattern.CASE_INSENSITIVE).matcher(html);
+    int count = 0;
+    while (tags.find()) {
+      Matcher id = Pattern.compile("\\bid\\s*=\\s*([\"'])(.*?)\\1", Pattern.CASE_INSENSITIVE).matcher(tags.group(1));
+      if (id.find() && id.group(2).startsWith(idPrefix)) {
+        count++;
+      }
     }
-
-    @Override
-    public boolean accept(Node node) {
-      if (!(node instanceof Tag)) {
-        return false;
-      }
-
-      if (mValue == null) {
-        return false;
-      }
-
-      Tag tag = (Tag) node;
-      if (tag.getAttributeEx(mAttribute) == null) {
-        return false;
-      }
-
-      return tag.getAttributeEx(mAttribute).getValue().startsWith(mValue);
-    }
+    return count;
   }
 
   public boolean pageHasAttribute(String fullPathOfPage, String attribute) throws Exception {

@@ -3,6 +3,8 @@
 package fitnesse.slim;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,6 +21,34 @@ import static fitnesse.slim.JavaSlimFactory.*;
 
 public class SlimService {
   private static final String OPTION_DESCRIPTOR = "[-v] [-i interactionClass] [-s statementTimeout] [-d] port";
+
+  /**
+   * The process streams and the exit call. Tests replace this so pipe mode
+   * and the out-of-memory abort can run without touching the real JVM.
+   */
+  public interface Console {
+    InputStream in();
+    PrintStream out();
+    PrintStream err();
+    void setOut(PrintStream out);
+    void setErr(PrintStream err);
+    void exit(int code);
+  }
+
+  static Console console = new Console() {
+    public InputStream in() { return System.in; }
+    public PrintStream out() { return System.out; }
+    public PrintStream err() { return System.err; }
+    public void setOut(PrintStream out) { System.setOut(out); }
+    public void setErr(PrintStream err) { System.setErr(err); }
+    public void exit(int code) { System.exit(code); }
+  };
+
+  static void onOutOfMemory(OutOfMemoryError error) {
+    console.err().println("Out of Memory. Aborting.");
+    error.printStackTrace(console.err());
+    console.exit(99);
+  }
 
   public static class Options {
     public final boolean verbose;
@@ -70,26 +100,24 @@ public class SlimService {
     System.err.println("    " + SlimService.class.getName() + " " + OPTION_DESCRIPTOR);
   }
 
-  public static void startWithFactory(SlimFactory slimFactory, Options options) throws IOException {
-    ServerSocket socket;
+  static ServerSocket open(Options options) throws IOException {
     if (options.port == 1) {
-      socket = new SlimPipeSocket();
       if (options.daemon) {
-        System.err
-            .println("Warning: in Slim Pipe mode the daemon flag is not supported.");
+        console.err().println("Warning: in Slim Pipe mode the daemon flag is not supported.");
       }
-    } else {
-      ServerSocketFactory serverSocketFactory = new PlainServerSocketFactory();
-      socket = serverSocketFactory.createServerSocket(options.port);
+      return new SlimPipeSocket(console);
     }
+    return new PlainServerSocketFactory().createServerSocket(options.port);
+  }
+
+  public static void startWithFactory(SlimFactory slimFactory, Options options) throws IOException {
+    ServerSocket socket = open(options);
     try {
       SlimService slimservice = new SlimService(slimFactory.getSlimServer(),
           socket, options.daemon);
       slimservice.accept();
     } catch (java.lang.OutOfMemoryError e) {
-      System.err.println("Out of Memory. Aborting.");
-      e.printStackTrace();
-      System.exit(99);
+      onOutOfMemory(e);
       throw e;
     } catch (BindException e) {
       System.err.println("Can not bind to port " + options.port + ". Aborting.");
@@ -133,9 +161,7 @@ public class SlimService {
         acceptOne();
       }
     } catch (java.lang.OutOfMemoryError e) {
-      System.err.println("Out of Memory. Aborting");
-      e.printStackTrace();
-      System.exit(99);
+      onOutOfMemory(e);
     } finally {
       serverSocket.close();
     }

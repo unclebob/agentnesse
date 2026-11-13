@@ -2,8 +2,10 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.slim;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.BindException;
 import java.net.ServerSocket;
@@ -138,7 +140,10 @@ public class SlimServiceTest extends SlimServiceTestBase {
         SlimService.startWithFactory(JavaSlimFactory.createJavaSlimFactory(options), options);
         fail("expected the port to be taken");
       } catch (BindException expected) {
-        assertNotNull(expected);
+        fitnesse.testsystems.slim.results.SlimFailure failure =
+          fitnesse.testsystems.slim.results.SlimFailure.parse(expected.toString());
+        assertEquals(fitnesse.testsystems.slim.results.SlimFailure.Kind.LAUNCH_FAILURE, failure.kind());
+        System.out.println("LAUNCH " + failure.kind() + " " + expected);
       }
     }
   }
@@ -178,6 +183,56 @@ public class SlimServiceTest extends SlimServiceTestBase {
       socket.close();
       server.join(5000);
       assertFalse(server.isAlive());
+    }
+  }
+
+  @Test
+  public void pipeModeUsesTheConsoleAndDoesNotReplaceSystemOut() throws Exception {
+    SlimService.Console previous = SlimService.console;
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    PrintStream realOut = System.out;
+    SlimService.console = new SlimService.Console() {
+      private PrintStream errStream = new PrintStream(err, true);
+      private PrintStream outStream = new PrintStream(new ByteArrayOutputStream(), true);
+      public InputStream in() { return new ByteArrayInputStream(new byte[0]); }
+      public PrintStream out() { return outStream; }
+      public PrintStream err() { return errStream; }
+      public void setOut(PrintStream out) { outStream = out; }
+      public void setErr(PrintStream err) { errStream = err; }
+      public void exit(int code) { }
+    };
+    try {
+      SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "1"});
+      try (java.net.ServerSocket socket = SlimService.open(options)) {
+        assertEquals(1, socket.getLocalPort());
+      }
+      assertTrue(err.toString(), err.toString().contains("Warning: in Slim Pipe mode"));
+      assertSame(realOut, System.out);
+    } finally {
+      SlimService.console = previous;
+    }
+  }
+
+  @Test
+  public void outOfMemoryAbortsThroughTheConsole() {
+    SlimService.Console previous = SlimService.console;
+    int[] code = {-1};
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    SlimService.console = new SlimService.Console() {
+      private final PrintStream errStream = new PrintStream(err, true);
+      public InputStream in() { return new ByteArrayInputStream(new byte[0]); }
+      public PrintStream out() { return errStream; }
+      public PrintStream err() { return errStream; }
+      public void setOut(PrintStream out) { }
+      public void setErr(PrintStream err) { }
+      public void exit(int status) { code[0] = status; }
+    };
+    try {
+      SlimService.onOutOfMemory(new OutOfMemoryError("boom"));
+      assertEquals(99, code[0]);
+      assertTrue(err.toString(), err.toString().contains("Out of Memory"));
+    } finally {
+      SlimService.console = previous;
     }
   }
 

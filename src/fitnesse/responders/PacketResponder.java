@@ -5,7 +5,7 @@ import fitnesse.FitNesseContext;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.MarkdownTableScanner;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.TableScanner;
 import fitnesse.wiki.PageCrawler;
@@ -47,9 +47,7 @@ public class PacketResponder implements Responder {
 
   private void buildPacket() throws UnsupportedEncodingException {
     packet = new JSONObject();
-    String html = page.getHtml();
-
-    TableScanner scanner = new HtmlTableScanner(html);
+    TableScanner scanner = new MarkdownTableScanner(page.getData().getContent());
 
     addTablesToPacket(scanner);
     if (jsonpFunction != null)

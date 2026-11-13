@@ -15,6 +15,7 @@ public class SlimExceptionResult implements ExceptionResult {
   private final String resultKey;
   private final String exceptionValue;
   private TestResult catchException;
+  private SlimFailure failure;
 
   public SlimExceptionResult(String resultKey, String exceptionValue) {
     this.resultKey = resultKey;
@@ -71,7 +72,10 @@ public class SlimExceptionResult implements ExceptionResult {
   }
 
   public SlimFailure failure() {
-    return SlimFailure.parse(exceptionValue);
+    if (failure == null) {
+      failure = SlimFailure.parse(exceptionValue);
+    }
+    return failure;
   }
 
   public boolean isCatchException() {

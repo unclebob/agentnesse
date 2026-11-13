@@ -21,6 +21,10 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
   private final SlimTableFactory slimTableFactory;
   private SlimPage slimPage;
 
+  SlimPage executedPage() {
+    return slimPage;
+  }
+
   public HtmlSlimTestSystem(String testSystemName, SlimClient slimClient,
                             SlimTableFactory slimTableFactory) {
     super(testSystemName, slimClient);
@@ -61,23 +65,23 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
   }
 
   private String createHtmlResults(SlimTable startWithTable, SlimTable stopBeforeTable) {
-    MarkdownTableScanner scanner = slimPage.getTableScanner();
     if (startWithTable == null && stopBeforeTable == null) {
-      return scanner.toHtml();
+      return slimPage.getTableScanner().toHtml();
     }
+    return htmlFrom(startWithTable, stopBeforeTable);
+  }
+
+  private String htmlFrom(SlimTable startWithTable, SlimTable stopBeforeTable) {
     StringBuilder html = new StringBuilder();
     boolean started = startWithTable == null;
-    for (MarkdownTable table : scanner) {
-      if (!started && startWithTable != null && table == startWithTable.getTable()) {
-        started = true;
-      }
-      if (!started) {
-        continue;
+    for (MarkdownTable table : slimPage.getTableScanner()) {
+      started = started || table == startWithTable.getTable();
+      if (started && (stopBeforeTable == null || table != stopBeforeTable.getTable())) {
+        html.append(table.toHtml());
       }
       if (stopBeforeTable != null && table == stopBeforeTable.getTable()) {
         break;
       }
-      html.append(table.toHtml());
     }
     return html.toString();
   }

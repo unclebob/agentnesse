@@ -107,9 +107,8 @@ public class MarkdownPageTest {
       | given page | ${SUT} |
       """);
     String html = root.getChildPage("TestHost").getHtml();
-    var scanner = new fitnesse.testsystems.slim.HtmlTableScanner(html);
-    assertEquals("!path lib/*.jar", scanner.getTable(0).getCellContents(1, 1).trim());
-    assertEquals(1, scanner.getTableCount());
+    assertEquals("!path lib/*.jar", fitnesse.testsystems.slim.HtmlCells.cell(html, 0, 1, 1).trim());
+    assertEquals(1, fitnesse.testsystems.slim.HtmlCells.tables(html));
   }
 
   @Test

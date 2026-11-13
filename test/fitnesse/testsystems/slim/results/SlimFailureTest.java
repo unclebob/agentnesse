@@ -1,11 +1,24 @@
 package fitnesse.testsystems.slim.results;
 
+import fitnesse.testsystems.ExecutionResult;
 import org.junit.Test;
 
+import static fitnesse.slim.SlimServer.EXCEPTION_IGNORE_ALL_TESTS_TAG;
+import static fitnesse.slim.SlimServer.EXCEPTION_IGNORE_SCRIPT_TEST_TAG;
 import static fitnesse.slim.SlimServer.EXCEPTION_TAG;
 import static org.junit.Assert.assertEquals;
 
 public class SlimFailureTest {
+
+  @Test
+  public void anIgnoredExceptionStaysIgnoreAndAPlainOneStaysAnError() {
+    assertEquals(ExecutionResult.IGNORE,
+      new SlimExceptionResult("k", EXCEPTION_IGNORE_SCRIPT_TEST_TAG).getIgnoreExecutionResult());
+    assertEquals(ExecutionResult.IGNORE,
+      new SlimExceptionResult("k", EXCEPTION_IGNORE_ALL_TESTS_TAG).getIgnoreExecutionResult());
+    assertEquals(ExecutionResult.ERROR,
+      new SlimExceptionResult("k", "boom").getIgnoreExecutionResult());
+  }
 
   @Test
   public void aMissingClassIsAMissingFixture() {

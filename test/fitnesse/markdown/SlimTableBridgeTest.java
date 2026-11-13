@@ -1,6 +1,7 @@
 package fitnesse.markdown;
 
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.HtmlCells;
+import fitnesse.testsystems.slim.MarkdownTable;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -18,13 +19,12 @@ public class SlimTableBridgeTest {
       | 10 | 2 | 5.0 |
       """);
 
-    HtmlTableScanner scanner = new HtmlTableScanner(html);
-    assertEquals(1, scanner.getTableCount());
-    assertEquals("decision:Division", scanner.getTable(0).getCellContents(0, 0));
-    assertEquals(1, scanner.getTable(0).getColumnCountInRow(0));
-    assertEquals("numerator", scanner.getTable(0).getCellContents(0, 1));
-    assertEquals("10", scanner.getTable(0).getCellContents(0, 2));
-    assertEquals(3, scanner.getTable(0).getColumnCountInRow(1));
+    assertEquals(1, HtmlCells.tables(html));
+    assertEquals("decision:Division", HtmlCells.cell(html, 0, 0, 0));
+    assertEquals(1, HtmlCells.columns(html, 0, 0));
+    assertEquals("numerator", HtmlCells.cell(html, 0, 1, 0));
+    assertEquals("10", HtmlCells.cell(html, 0, 2, 0));
+    assertEquals(3, HtmlCells.columns(html, 0, 1));
   }
 
   @Test
@@ -41,7 +41,7 @@ public class SlimTableBridgeTest {
       """);
     assertTrue(html.contains("<details open>"));
     assertTrue(html.contains("<summary>Dependencies</summary>"));
-    assertEquals("import", new HtmlTableScanner(html).getTable(0).getCellContents(0, 0));
+    assertEquals("import", HtmlCells.cell(html, 0, 0, 0));
   }
 
   @Test
@@ -76,10 +76,9 @@ public class SlimTableBridgeTest {
       | cash? | card? | pints? | go? |
       | | | | no |
       """);
-    HtmlTableScanner scanner = new HtmlTableScanner(html);
-    assertEquals(1, scanner.getTable(0).getColumnCountInRow(0));
-    assertEquals(4, scanner.getTable(0).getColumnCountInRow(2));
-    assertEquals("no", scanner.getTable(0).getCellContents(3, 2));
+    assertEquals(1, HtmlCells.columns(html, 0, 0));
+    assertEquals(4, HtmlCells.columns(html, 0, 2));
+    assertEquals("no", HtmlCells.cell(html, 0, 2, 3));
   }
 
   @Test
@@ -90,8 +89,7 @@ public class SlimTableBridgeTest {
       | given page | line one<br>\\| import \\| |
       """);
 
-    HtmlTableScanner scanner = new HtmlTableScanner(html);
-    assertEquals("line one\n| import |", scanner.getTable(0).getCellContents(1, 1));
+    assertEquals("line one\n| import |", HtmlCells.cell(html, 0, 1, 1));
   }
 
   @Test
@@ -101,23 +99,22 @@ public class SlimTableBridgeTest {
       | --- | --- | --- | --- |
       | check | echo | Hello | |
       """);
-    HtmlTableScanner scanner = new HtmlTableScanner(html);
-    assertEquals(2, scanner.getTable(0).getColumnCountInRow(0));
-    assertEquals(3, scanner.getTable(0).getColumnCountInRow(1));
-    assertEquals("Hello", scanner.getTable(0).getCellContents(2, 1));
+    assertEquals(2, HtmlCells.columns(html, 0, 0));
+    assertEquals(3, HtmlCells.columns(html, 0, 1));
+    assertEquals("Hello", HtmlCells.cell(html, 0, 1, 2));
   }
 
   @Test
   public void aCellKeepsABackslash() {
     String html = MarkdownRenderer.render(
       "| decision:X | |\n| --- | --- |\n| pattern | (?s)^([^\\\\n]\\*)\\\\n.\\* |\n");
-    assertEquals("(?s)^([^\\n]*)\\n.*", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));
+    assertEquals("(?s)^([^\\n]*)\\n.*", HtmlCells.cell(html, 0, 1, 1));
   }
 
   @Test
   public void anEscapedDollarStaysADollarForTheNextPage() {
     String html = MarkdownRenderer.render("| script | |\n| --- | --- |\n| check | \\${PAGE_NAME} |\n");
-    assertEquals("${PAGE_NAME}", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));
+    assertEquals("${PAGE_NAME}", HtmlCells.cell(html, 0, 1, 1));
   }
 
   @Test
@@ -127,8 +124,11 @@ public class SlimTableBridgeTest {
       | --- | --- | --- | --- | --- |
       | reject | content contains | @text |
       """);
-    HtmlTableScanner scanner = new HtmlTableScanner(html);
-    var copy = scanner.getTable(0).asTemplate(content -> content.replace("@text", "\"brother content\""));
+    MarkdownTable table = MarkdownTable.parse("""
+      | scenario | page | source | should not contain | text |
+      | reject | content contains | @text |
+      """);
+    var copy = (MarkdownTable) table.asTemplate(content -> content.replace("@text", "\"brother content\""));
     assertEquals("\"brother content\"", copy.getCellContents(2, 1));
   }
 
@@ -145,16 +145,15 @@ public class SlimTableBridgeTest {
     assertTrue(html, html.contains("<strong>bold</strong>"));
     assertTrue(html, html.contains("<code>code</code>"));
 
-    HtmlTableScanner scanner = new HtmlTableScanner(html);
-    assertEquals("text", scanner.getTable(0).getCellContents(0, 0));
-    assertEquals("WikiWord", scanner.getTable(0).getCellContents(1, 0));
-    assertEquals("bold", scanner.getTable(0).getCellContents(2, 0));
-    assertEquals("code", scanner.getTable(0).getCellContents(3, 0));
+    assertEquals("text", HtmlCells.cell(html, 0, 0, 0));
+    assertEquals("WikiWord", HtmlCells.cell(html, 0, 0, 1));
+    assertEquals("bold", HtmlCells.cell(html, 0, 0, 2));
+    assertEquals("code", HtmlCells.cell(html, 0, 0, 3));
   }
 
   @Test
   public void anEscapedUnderscoreIsAnUnderscore() {
     String html = MarkdownRenderer.render("| decision:X | |\n| --- | --- |\n| name | TEST\\_SYSTEM |\n");
-    assertEquals("TEST_SYSTEM", new HtmlTableScanner(html).getTable(0).getCellContents(1, 1));
+    assertEquals("TEST_SYSTEM", HtmlCells.cell(html, 0, 1, 1));
   }
 }

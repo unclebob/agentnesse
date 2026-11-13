@@ -3,7 +3,7 @@ package fitnesse.slim.converters;
 import fitnesse.html.HtmlTag;
 import fitnesse.html.HtmlUtil;
 import fitnesse.slim.Converter;
-import fitnesse.testsystems.slim.HtmlTable;
+import fitnesse.testsystems.slim.CellMarkup;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public class MapConverter implements Converter<Map> {
 
   protected void addCellContent(HtmlTag valueCell, Object cellValue) {
     String valueToAdd = ElementConverterHelper.elementToString(cellValue);
-    if (!HtmlUtil.isValidTableCellContent(valueToAdd) && !HtmlTable.qualifiesAsConvertedList(valueToAdd))
+    if (!HtmlUtil.isValidTableCellContent(valueToAdd) && !CellMarkup.qualifiesAsConvertedList(valueToAdd))
       valueToAdd = HtmlUtil.escapeHTML(valueToAdd);
 
     valueCell.add(valueToAdd.trim());

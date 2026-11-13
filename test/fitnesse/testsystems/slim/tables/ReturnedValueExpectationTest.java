@@ -3,7 +3,7 @@
 package fitnesse.testsystems.slim.tables;
 
 import fitnesse.testrunner.WikiTestPage;
-import fitnesse.testsystems.slim.HtmlTableScanner;
+import fitnesse.testsystems.slim.MarkdownTable;
 import fitnesse.testsystems.slim.SlimTestContextImpl;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.TableScanner;
@@ -24,8 +24,7 @@ public class ReturnedValueExpectationTest {
   }
 
   private void assertExpectationMessage(String expected, String value, String message) throws Exception {
-    TableScanner ts = new HtmlTableScanner("<table><tr><td>x</td></tr></table>");
-    Table t = ts.getTable(0);
+    Table t = MarkdownTable.parse("| x |\n");
     SlimTable slimTable = new DecisionTable(t, "id", testContext);
     SlimTable.RowExpectation expectation = slimTable.new ReturnedValueExpectation(0, 0);
     SlimTestResult testResult = expectation.evaluationMessage(value, expected);

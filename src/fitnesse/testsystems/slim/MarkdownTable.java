@@ -4,6 +4,7 @@ import fitnesse.html.HtmlUtil;
 import fitnesse.markdown.SlimMarkdownTable;
 import fitnesse.markdown.TableSeparators;
 import fitnesse.testsystems.TestResult;
+import fitnesse.testsystems.slim.results.CellRecord;
 import fitnesse.testsystems.slim.results.SlimExceptionResult;
 import fitnesse.testsystems.slim.results.SlimTestResult;
 import fitnesse.testsystems.slim.tables.SyntaxError;
@@ -18,7 +19,11 @@ import java.util.List;
  */
 public final class MarkdownTable implements Table {
   private final List<List<Cell>> rows = new ArrayList<>();
+  private final List<CellRecord> rowRecords = new ArrayList<>();
   private final List<PlacedChild> children = new ArrayList<>();
+  private CellRecord tableRecord = CellRecord.status(null);
+  private String pageName = "";
+  private String blockName = "";
   private boolean tearDown;
 
   public static MarkdownTable parse(String markdown) {
@@ -26,6 +31,7 @@ public final class MarkdownTable implements Table {
     MarkdownTable table = new MarkdownTable();
     for (int row = 1; row <= source.rowCount(); row++) {
       table.rows.add(cells(withoutTrailingEmpty(source.row(row))));
+      table.rowRecords.add(CellRecord.status(null));
     }
     return table;
   }
@@ -40,6 +46,24 @@ public final class MarkdownTable implements Table {
 
   public void setTearDown(boolean tearDown) {
     this.tearDown = tearDown;
+  }
+
+  public void locate(String page, String block) {
+    this.pageName = page == null ? "" : page;
+    this.blockName = block == null ? "" : block;
+  }
+
+  public CellRecord tableRecord() {
+    return tableRecord;
+  }
+
+  public CellRecord rowRecord(int row) {
+    return rowRecords.get(row);
+  }
+
+  public CellRecord cellRecord(int row, int column) {
+    CellRecord recorded = rows.get(row).get(column).record;
+    return recorded == null ? CellRecord.status(null) : recorded;
   }
 
   @Override
@@ -65,6 +89,7 @@ public final class MarkdownTable implements Table {
   @Override
   public int addRow(List<String> list) {
     rows.add(cells(list));
+    rowRecords.add(CellRecord.status(null));
     return rows.size() - 1;
   }
 
@@ -82,24 +107,58 @@ public final class MarkdownTable implements Table {
 
   @Override
   public void updateContent(int row, TestResult testResult) {
+    CellRecord recorded = CellRecord.from(testResult);
+    rowRecords.set(row, recorded);
     for (Cell cell : rows.get(row)) {
-      cell.rowResult = testResult.getExecutionResult() == null ? null : testResult.getExecutionResult().toString();
+      cell.rowResult = recorded.status();
     }
+    noteTable(recorded);
   }
 
   @Override
   public void updateContent(int column, int row, SlimTestResult testResult) {
     Cell cell = rows.get(row).get(column);
     cell.result = testResult;
+    cell.record = CellRecord.from(testResult, cell.content);
+    noteTable(cell.record);
   }
 
   @Override
   public void updateContent(int column, int row, SlimExceptionResult exceptionResult) {
+    if (exceptionResult.failure().page() == null) {
+      exceptionResult.failure().at(pageName, blockName, row, column < 0 ? null : column);
+    }
+    CellRecord recorded = CellRecord.error(exceptionResult);
     if (column < 0) {
-      rows.add(row + 1, List.of(new Cell(exceptionResult.getException())));
+      Cell cell = new Cell(exceptionResult.getException());
+      cell.record = recorded;
+      rows.add(row + 1, List.of(cell));
+      rowRecords.add(row + 1, recorded);
+      noteTable(recorded);
       return;
     }
-    rows.get(row).get(column).exception = exceptionResult;
+    Cell cell = rows.get(row).get(column);
+    cell.exception = exceptionResult;
+    cell.record = recorded;
+    noteTable(recorded);
+  }
+
+  private void noteTable(CellRecord recorded) {
+    if (recorded.failure() != null || worse(recorded.status(), tableRecord.status())) {
+      tableRecord = recorded;
+    }
+  }
+
+  private static boolean worse(String next, String current) {
+    return rank(next) > rank(current);
+  }
+
+  private static int rank(String status) {
+    if ("error".equals(status)) return 4;
+    if ("fail".equals(status)) return 3;
+    if ("ignore".equals(status)) return 2;
+    if ("pass".equals(status)) return 1;
+    return 0;
   }
 
   @Override
@@ -111,6 +170,7 @@ public final class MarkdownTable implements Table {
         copied.add(new Cell(substitution.substitute(cell.content)));
       }
       copy.rows.add(copied);
+      copy.rowRecords.add(CellRecord.status(null));
     }
     return copy;
   }
@@ -170,6 +230,7 @@ public final class MarkdownTable implements Table {
     private String content;
     private SlimTestResult result;
     private SlimExceptionResult exception;
+    private CellRecord record;
     private String rowResult;
 
     private Cell(String content) {
@@ -207,9 +268,7 @@ public final class MarkdownTable implements Table {
       if (result.getExecutionResult() == null) {
         return result.hasMessage() ? escape(result.getMessage()) : escape(content);
       }
-      HtmlTable.Cell formatted = new HtmlTable.Cell(content);
-      formatted.setTestResult(result);
-      String rendered = formatted.formatTestResult();
+      String rendered = CellMarkup.format(content, result);
       return rendered == null ? escape(content) : rendered;
     }
 
