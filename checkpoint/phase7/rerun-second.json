@@ -2,116 +2,104 @@
   "schemaVersion": 1,
   "run": {
     "stoptest": "?responder=stoptest&id=1",
-    "pages": [
-      {
-        "path": "Demo.Fail",
+    "pages": [{
+      "path": "Demo.Fail",
+      "counts": {
+        "ignored": 0,
+        "right": 0,
+        "tableFailures": 0,
+        "exceptions": 0,
+        "wrong": 1
+      },
+      "blocks": [{
         "counts": {
           "ignored": 0,
           "right": 0,
-          "tableFailures": 0,
           "exceptions": 0,
           "wrong": 1
         },
-        "blocks": [
-          {
-            "counts": {
-              "ignored": 0,
-              "right": 0,
-              "exceptions": 0,
-              "wrong": 1
+        "name": "script",
+        "rows": [
+          {"cells": [
+            {
+              "actual": null,
+              "symbol": null,
+              "expected": null,
+              "column": 1,
+              "row": 1,
+              "error": null,
+              "value": null,
+              "status": null
             },
-            "name": "script",
-            "rows": [
-              {
-                "cells": [
-                  {
-                    "actual": null,
-                    "symbol": null,
-                    "expected": null,
-                    "column": 1,
-                    "row": 1,
-                    "error": null,
-                    "value": null,
-                    "status": null
-                  },
-                  {
-                    "actual": "fitnesse.fixtures.EchoFixture",
-                    "symbol": null,
-                    "expected": "fitnesse.fixtures.EchoFixture",
-                    "column": 2,
-                    "row": 1,
-                    "error": null,
-                    "value": null,
-                    "status": null
-                  }
-                ]
-              },
-              {
-                "cells": [
-                  {
-                    "actual": null,
-                    "symbol": null,
-                    "expected": null,
-                    "column": 1,
-                    "row": 2,
-                    "error": null,
-                    "value": null,
-                    "status": null
-                  },
-                  {
-                    "actual": null,
-                    "symbol": null,
-                    "expected": null,
-                    "column": 2,
-                    "row": 2,
-                    "error": null,
-                    "value": null,
-                    "status": null
-                  },
-                  {
-                    "actual": null,
-                    "symbol": null,
-                    "expected": null,
-                    "column": 3,
-                    "row": 2,
-                    "error": null,
-                    "value": null,
-                    "status": null
-                  },
-                  {
-                    "actual": "ok",
-                    "symbol": null,
-                    "expected": "bad",
-                    "column": 4,
-                    "row": 2,
-                    "error": null,
-                    "value": null,
-                    "status": "fail"
-                  }
-                ]
-              }
-            ],
-            "status": "fail"
-          }
+            {
+              "actual": "fitnesse.fixtures.EchoFixture",
+              "symbol": null,
+              "expected": "fitnesse.fixtures.EchoFixture",
+              "column": 2,
+              "row": 1,
+              "error": null,
+              "value": null,
+              "status": null
+            }
+          ]},
+          {"cells": [
+            {
+              "actual": null,
+              "symbol": null,
+              "expected": null,
+              "column": 1,
+              "row": 2,
+              "error": null,
+              "value": null,
+              "status": null
+            },
+            {
+              "actual": null,
+              "symbol": null,
+              "expected": null,
+              "column": 2,
+              "row": 2,
+              "error": null,
+              "value": null,
+              "status": null
+            },
+            {
+              "actual": null,
+              "symbol": null,
+              "expected": null,
+              "column": 3,
+              "row": 2,
+              "error": null,
+              "value": null,
+              "status": null
+            },
+            {
+              "actual": "ok",
+              "symbol": null,
+              "expected": "bad",
+              "column": 4,
+              "row": 2,
+              "error": null,
+              "value": null,
+              "status": "fail"
+            }
+          ]}
         ],
-        "durationMillis": 51,
         "status": "fail"
-      }
-    ],
-    "servers": [
-      {
-        "stdout": "",
-        "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
-        "exitCode": 0,
-        "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
-        "exceptions": []
-      }
-    ],
-    "failedPages": [
-      "Demo.Fail"
-    ],
+      }],
+      "durationMillis": 83,
+      "status": "fail"
+    }],
+    "servers": [{
+      "stdout": "",
+      "launchFailure": null,
+      "name": "slim:fitnesse.slim.SlimService",
+      "exitCode": 0,
+      "stderr": "",
+      "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+      "exceptions": []
+    }],
+    "failedPages": ["Demo.Fail"],
     "counts": {
       "ignored": 0,
       "right": 0,
@@ -120,8 +108,8 @@
       "wrong": 1
     },
     "name": "Demo",
-    "start": "2026-11-14T14:03:34.465Z",
-    "durationMillis": 254,
+    "start": "2026-11-14T14:25:00.382Z",
+    "durationMillis": 325,
     "id": "1"
   }
 }

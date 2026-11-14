@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Demo" tests="2" failures="1" errors="1" time="0.261">
-  <testcase name="Demo.Broken" classname="Demo.Broken" time="0.027">
+<testsuite name="Demo" tests="2" failures="1" errors="1" time="0.326">
+  <testcase name="Demo.Broken" classname="Demo.Broken" time="0.038">
     <error message="table failure script">table failure script</error>
   </testcase>
-  <testcase name="Demo.Compare" classname="Demo.Compare" time="0.028">
+  <testcase name="Demo.Compare" classname="Demo.Compare" time="0.032">
     <failure message="script row 3 column 4 expected [bad] actual [ok]">script row 3 column 4 expected [bad] actual [ok]</failure>
   </testcase>
 </testsuite>

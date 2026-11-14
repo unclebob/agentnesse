@@ -49,6 +49,7 @@ public class TableTable extends SlimTable {
         getTestContext().increment(testSummary);
         testResult = new SlimTestResult(ExecutionResult.getExecutionResult(testSummary));
         testResult.setVariables(getSymbolsToStore());
+        table.updateContent(0, 0, testResult);
       }
       getTestContext().increment(testResult.getExecutionResult());
       return testResult;

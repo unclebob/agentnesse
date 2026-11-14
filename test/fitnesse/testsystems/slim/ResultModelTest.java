@@ -1,7 +1,9 @@
 package fitnesse.testsystems.slim;
 
+import fitnesse.results.BlockJson;
 import fitnesse.testrunner.WikiPageDescriptor;
 import fitnesse.testrunner.WikiTestPage;
+import fitnesse.testsystems.TestSummary;
 import fitnesse.testsystems.UnableToStartException;
 import fitnesse.testsystems.slim.results.CellRecord;
 import fitnesse.testsystems.slim.results.SlimFailure;
@@ -45,6 +47,52 @@ public class ResultModelTest {
     assertEquals(Integer.valueOf(2), missing.failure().cell());
     showAll("MISSING_METHOD", "| script | fitnesse.slim.test.TestSlim |\n| check | no such method | x | x |\n");
     showAll("EXCEPTION", "| script | fitnesse.slim.test.TestSlim |\n| check | throw normal | true |\n");
+  }
+
+  @Test
+  public void defineTableTypePageCountsItsTableResult() throws Exception {
+    String markdown = """
+      | import |
+      | fitnesse.fixtures |
+
+      | Table Or Decision Fixture |
+      | --- |
+      | parsing as? |
+      | Parsed as Decision fixture |
+
+      ```agentnesse
+      alias Table or Decision Fixture
+      table:
+      ```
+
+      | Table Or Decision Fixture | |
+      | --- | --- |
+      | parsing as? | Parsed as Table fixture |
+
+      ```agentnesse
+      alias Table or Decision Fixture
+      script:
+      ```
+
+      | Table Or Decision Fixture | | |
+      | --- | --- | --- |
+      | check | parsing as | Parsed as Decision fixture |
+      """;
+    WikiPage root = InMemoryPage.makeRoot("RooT");
+    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("Example"), markdown);
+    HtmlSlimTestSystem system = start(page);
+    try {
+      system.runTests(new WikiTestPage(page));
+    } finally {
+      system.bye();
+    }
+    TestSummary summary = ((SlimTestContextImpl) system.getTestContext()).getTestSummary();
+    int right = 0;
+    for (MarkdownTable table : system.executedPage().getTableScanner()) {
+      right += BlockJson.from(table).getJSONObject("counts").getInt("right");
+    }
+    assertEquals(4, summary.getRight());
+    assertEquals(summary.getRight(), right);
   }
 
   @Test
