@@ -390,6 +390,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
 
   private void executeTests(MultipleTestsRunner testRunner) throws IOException, TestExecutionException {
     fitnesse.results.JsonResultsFormatter results = new fitnesse.results.JsonResultsFormatter(new StringBuilder(), false, null);
+    results.setSuiteName(suiteName);
     testRunner.addTestSystemListener(results);
     testRunner.addExecutionLogListener(results);
     testRunner.executeTestPages();

@@ -17,6 +17,8 @@ import fitnesse.testsystems.TestSummary;
 import fitnesse.testsystems.TestSystem;
 import fitnesse.testsystems.TestSystemFactory;
 import fitnesse.testsystems.TestSystemListener;
+import fitnesse.testsystems.slim.MarkdownTable;
+import fitnesse.testsystems.slim.TableFinished;
 import fitnesse.testsystems.slim.TestingInterruptedException;
 import util.FileUtil;
 
@@ -183,7 +185,12 @@ public class MultipleTestsRunner implements Stoppable {
     }
   }
 
-  private class InternalTestSystemListener implements TestSystemListener {
+  private class InternalTestSystemListener implements TestSystemListener, TableFinished {
+    @Override
+    public void tableFinished(TestPage page, MarkdownTable table) {
+      formatters.tableFinished(page, table);
+    }
+
     @Override
     public void testSystemStarted(TestSystem testSystem) {
       formatters.testSystemStarted(testSystem);

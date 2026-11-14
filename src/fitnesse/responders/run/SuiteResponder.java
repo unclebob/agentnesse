@@ -207,6 +207,7 @@ public class SuiteResponder extends ChunkingResponder {
       java.io.File failures = FailedPages.defaultFile(context.getRootPagePath());
       JsonResultsFormatter json = new JsonResultsFormatter(response.getWriter(), stream, failures);
       json.setRunId(testRunId);
+      json.setSuiteName(fitnesse.wiki.PathParser.render(page.getFullPath()));
       mainFormatter = json;
     } else {
       mainFormatter = newHtmlFormatter();

@@ -195,7 +195,7 @@ public class CommandRunner {
       try {
         String s;
         while ((s = reader.readLine()) != null) {
-          writer.write(s);
+          writer.write(s + "\n");
         }
       } catch (Exception e) {
         exceptionOccurred(e);

@@ -78,6 +78,24 @@
         "durationMillis": { "type": "integer", "minimum": 0 },
         "status": { "enum": ["pass", "fail", "error", "ignore", "empty"] },
         "blocks": { "type": "array", "items": { "$ref": "#/$defs/block" } }
+      },
+      "if": {
+        "properties": {
+          "counts": {
+            "anyOf": [
+              { "properties": { "right": { "minimum": 1 } }, "required": ["right"] },
+              { "properties": { "wrong": { "minimum": 1 } }, "required": ["wrong"] },
+              { "properties": { "ignored": { "minimum": 1 } }, "required": ["ignored"] },
+              { "properties": { "exceptions": { "minimum": 1 } }, "required": ["exceptions"] }
+            ]
+          }
+        },
+        "required": ["counts"]
+      },
+      "then": {
+        "properties": {
+          "blocks": { "minItems": 1 }
+        }
       }
     },
     "server": {
@@ -97,9 +115,10 @@
     "run": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "start", "durationMillis", "counts", "failedPages", "pages", "servers", "stoptest"],
+      "required": ["id", "name", "start", "durationMillis", "counts", "failedPages", "pages", "servers", "stoptest"],
       "properties": {
         "id": { "type": "string" },
+        "name": { "type": "string" },
         "start": { "type": "string" },
         "durationMillis": { "type": "integer", "minimum": 0 },
         "counts": { "$ref": "#/$defs/counts" },

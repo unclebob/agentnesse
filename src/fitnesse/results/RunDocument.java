@@ -20,7 +20,7 @@ public final class RunDocument {
   private RunDocument() {
   }
 
-  public static JSONObject reduce(List<JSONObject> events, String id, String start, long durationMillis) {
+  public static JSONObject reduce(List<JSONObject> events, String id, String name, String start, long durationMillis) {
     Map<String, JSONObject> pages = new LinkedHashMap<>();
     JSONArray servers = new JSONArray();
     for (JSONObject event : events) {
@@ -38,6 +38,7 @@ public final class RunDocument {
     }
     JSONObject run = new JSONObject();
     run.put("id", id);
+    run.put("name", name == null ? "" : name);
     run.put("start", start);
     run.put("durationMillis", durationMillis);
     run.put("counts", countsJson(counts));

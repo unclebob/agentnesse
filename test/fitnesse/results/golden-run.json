@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "run": {
     "id": "run-1",
+    "name": "Suite",
     "start": "2026-11-14T00:00:00Z",
     "durationMillis": 12,
     "counts": { "right": 1, "wrong": 0, "ignored": 0, "exceptions": 0 },

@@ -11,8 +11,82 @@
           "exceptions": 0,
           "wrong": 1
         },
-        "blocks": [],
-        "durationMillis": 49,
+        "blocks": [
+          {
+            "name": "script",
+            "rows": [
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 1,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": "fitnesse.fixtures.EchoFixture",
+                    "symbol": null,
+                    "expected": "fitnesse.fixtures.EchoFixture",
+                    "column": 2,
+                    "row": 1,
+                    "error": null,
+                    "value": null,
+                    "status": "pass"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 2,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 3,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": "ok",
+                    "symbol": null,
+                    "expected": "bad",
+                    "column": 4,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": "fail"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "durationMillis": 50,
         "status": "fail"
       },
       {
@@ -23,7 +97,81 @@
           "exceptions": 0,
           "wrong": 0
         },
-        "blocks": [],
+        "blocks": [
+          {
+            "name": "script",
+            "rows": [
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 1,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": "fitnesse.fixtures.EchoFixture",
+                    "symbol": null,
+                    "expected": "fitnesse.fixtures.EchoFixture",
+                    "column": 2,
+                    "row": 1,
+                    "error": null,
+                    "value": null,
+                    "status": "pass"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 2,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 3,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": "ok",
+                    "symbol": null,
+                    "expected": "ok",
+                    "column": 4,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": "pass"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
         "durationMillis": 3,
         "status": "pass"
       }
@@ -48,8 +196,9 @@
       "exceptions": 0,
       "wrong": 1
     },
-    "start": "2026-11-14T01:47:13.178Z",
-    "durationMillis": 262,
+    "name": "Demo",
+    "start": "2026-11-14T13:16:17.448Z",
+    "durationMillis": 257,
     "id": "1"
   }
 }

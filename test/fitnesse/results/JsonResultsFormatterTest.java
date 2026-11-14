@@ -5,6 +5,7 @@ import fitnesse.testsystems.TestPage;
 import fitnesse.testsystems.TestSummary;
 import fitnesse.testrunner.WikiTestPage;
 import fitnesse.wiki.WikiPageDummy;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.Test;
@@ -75,9 +76,69 @@ public class JsonResultsFormatterTest {
       }
     }
     JSONObject run = document.getJSONObject("run");
-    JSONObject reduced = RunDocument.reduce(lines, run.getString("id"), run.getString("start"), run.getLong("durationMillis"));
+    JSONObject reduced = RunDocument.reduce(lines, run.getString("id"), run.getString("name"),
+      run.getString("start"), run.getLong("durationMillis"));
     assertJsonEquals(document.toString(), reduced.toString());
     assertEquals("?responder=stoptest&id=run-7", run.getString("stoptest"));
+  }
+
+  @Test
+  public void eachSlimServerStartIsItsOwnRecord() throws Exception {
+    JsonResultsFormatter formatter = new JsonResultsFormatter(new StringBuilder(), false, null);
+    formatter.commandStarted(context("slim", "java one"));
+    formatter.stdOut("first\n");
+    formatter.exitCode(0);
+    formatter.commandStarted(context("slim", "java two"));
+    formatter.stdErr("java.net.BindException: Address already in use\n");
+    formatter.exitCode(98);
+    formatter.finish();
+
+    JSONArray servers = formatter.document().getJSONObject("run").getJSONArray("servers");
+    assertEquals(2, servers.length());
+    assertEquals("java one", servers.getJSONObject(0).getString("command"));
+    assertEquals(0, servers.getJSONObject(0).getInt("exitCode"));
+    assertEquals("first\n", servers.getJSONObject(0).getString("stdout"));
+    assertEquals("", servers.getJSONObject(0).getString("stderr"));
+    assertEquals(98, servers.getJSONObject(1).getInt("exitCode"));
+    assertEquals("java.net.BindException: Address already in use\n", servers.getJSONObject(1).getString("stderr"));
+  }
+
+  @Test
+  public void aNestedPageDriverServerKeepsItsOwnStderrAndExitCode() throws Exception {
+    JsonResultsFormatter formatter = new JsonResultsFormatter(new StringBuilder(), false, null);
+    formatter.commandStarted(context("slim", "java outer"));
+    formatter.stdOut(frame("start", new JSONObject().put("name", "slim:child").put("command", "java child")));
+    formatter.stdOut(frame("stderr", new JSONObject().put("text", "java.net.BindException: Address already in use\n")));
+    formatter.stdOut(frame("exit", new JSONObject().put("code", 98)));
+    formatter.exitCode(0);
+    formatter.finish();
+
+    JSONArray servers = formatter.document().getJSONObject("run").getJSONArray("servers");
+    assertEquals(2, servers.length());
+    assertEquals(0, servers.getJSONObject(0).getInt("exitCode"));
+    assertEquals("", servers.getJSONObject(0).getString("stderr"));
+    assertEquals("slim:child", servers.getJSONObject(1).getString("name"));
+    assertEquals("java child", servers.getJSONObject(1).getString("command"));
+    assertEquals(98, servers.getJSONObject(1).getInt("exitCode"));
+    assertEquals("java.net.BindException: Address already in use\n", servers.getJSONObject(1).getString("stderr"));
+  }
+
+  @Test
+  public void aBrokenServerMarkerStaysOnTheParentStdout() throws Exception {
+    JsonResultsFormatter formatter = new JsonResultsFormatter(new StringBuilder(), false, null);
+    formatter.commandStarted(context("slim", "java"));
+    formatter.stdOut("{\"agentnesseLog\":\n");
+    formatter.finish();
+    String stdout = formatter.document().getJSONObject("run").getJSONArray("servers").getJSONObject(0).getString("stdout");
+    assertTrue(stdout, stdout.contains("agentnesseLog"));
+  }
+
+  private static String frame(String kind, JSONObject body) {
+    JSONObject frame = new JSONObject().put("agentnesseLog", kind);
+    for (String key : body.keySet()) {
+      frame.put(key, body.get(key));
+    }
+    return frame.toString() + "\n";
   }
 
   private static TestPage page(String name) {

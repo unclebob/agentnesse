@@ -24,15 +24,22 @@ public class ResultsSchemaTest {
       schema = new JSONObject(new JSONTokener(in));
     }
     JSONObject document = RunDocument.reduce(java.util.List.of(
+      new JSONObject().put("event", "table-done").put("path", "Page").put("block",
+        new JSONObject().put("name", "script").put("rows", new JSONArray())),
       new JSONObject().put("event", "page-done").put("path", "Page")
         .put("counts", RunDocument.countsJson(new fitnesse.testsystems.TestSummary(1, 0, 0, 0)))
         .put("durationMillis", 3).put("status", "pass")
-    ), "id", "2026-11-14T00:00:00Z", 3);
+    ), "id", "Suite", "2026-11-14T00:00:00Z", 3);
 
     assertEquals(schema.getJSONObject("properties").getJSONObject("schemaVersion").getInt("const"),
       document.getInt("schemaVersion"));
     require(schema.getJSONObject("$defs").getJSONObject("run"), document.getJSONObject("run"));
-    assertTrue(document.getJSONObject("run").getJSONArray("pages").getJSONObject(0).getJSONArray("blocks").isEmpty());
+    SchemaCheck.pagesThatAssertHaveBlocks(document.getJSONObject("run"));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void aPageWithAssertionsAndNoBlocksIsRejected() throws Exception {
+    SchemaCheck.main(new String[]{"test/fitnesse/results/assertions-without-blocks.json"});
   }
 
   @Test

@@ -30,12 +30,12 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
   private final boolean streamEvents;
   private final File failuresFile;
   private final List<JSONObject> events = new ArrayList<>();
-  private final Map<String, ServerLog> servers = new LinkedHashMap<>();
   private final Map<String, Long> pageStarted = new LinkedHashMap<>();
+  private final ServerTranscript servers = new ServerTranscript();
   private final LongSupplier clock;
   private final long startedAt;
-  private String currentServer = "slim";
   private String runId = "";
+  private String suiteName = "";
   private int failures;
 
   public JsonResultsFormatter(Appendable out, boolean streamEvents, File failuresFile) {
@@ -52,6 +52,10 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
 
   public void setRunId(String runId) {
     this.runId = runId == null ? "" : runId;
+  }
+
+  public void setSuiteName(String suiteName) {
+    this.suiteName = suiteName == null ? "" : suiteName;
   }
 
   public List<JSONObject> events() {
@@ -87,45 +91,43 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
   }
 
   @Override
-  public void commandStarted(ExecutionContext context) {
-    currentServer = context.getTestSystemName();
-    current().command.append(context.getCommand());
+  public synchronized void commandStarted(ExecutionContext context) {
+    servers.commandStarted(context.getTestSystemName(), context.getCommand());
   }
 
   @Override
-  public void stdOut(String output) {
-    current().stdout.append(output);
+  public synchronized void stdOut(String output) {
+    servers.stdOut(output);
   }
 
   @Override
-  public void stdErr(String output) {
-    ServerLog server = current();
-    server.stderr.append(output);
+  public synchronized void stdErr(String output) {
+    servers.stdErr(output);
   }
 
   @Override
-  public void exitCode(int exitCode) {
-    current().exitCode = exitCode;
+  public synchronized void exitCode(int exitCode) {
+    servers.exitCode(exitCode);
   }
 
   @Override
-  public void exceptionOccurred(Throwable e) {
-    ServerLog server = current();
-    server.exceptions.add(e.toString());
-    SlimFailure parsed = SlimFailure.parse(e.toString());
-    if (parsed.kind() == SlimFailure.Kind.LAUNCH_FAILURE) {
-      server.launchFailure = parsed;
-    }
+  public synchronized void exceptionOccurred(Throwable error) {
+    SlimFailure parsed = SlimFailure.parse(error.toString());
+    SlimFailure launch = parsed.kind() == SlimFailure.Kind.LAUNCH_FAILURE ? parsed : null;
+    servers.exception(error, launch);
   }
 
   public JSONObject document() {
     long duration = Math.max(0, clock.getAsLong() - startedAt);
-    return RunDocument.reduce(events, runId, Instant.ofEpochMilli(startedAt).toString(), duration);
+    return RunDocument.reduce(events, runId, suiteName, Instant.ofEpochMilli(startedAt).toString(), duration);
   }
 
   public void finish() throws IOException {
-    for (ServerLog server : servers.values()) {
-      record(new JSONObject().put("event", "server").put("server", server.json()));
+    synchronized (this) {
+      servers.flush();
+      for (JSONObject server : servers.toJson()) {
+        record(new JSONObject().put("event", "server").put("server", server));
+      }
     }
     JSONObject document = document();
     if (!streamEvents) {
@@ -169,37 +171,7 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
     return Math.max(0, clock.getAsLong() - began);
   }
 
-  private ServerLog current() {
-    return servers.computeIfAbsent(currentServer, ServerLog::new);
-  }
-
   private static String path(TestPage page) {
     return page.getFullPath();
-  }
-
-  private static final class ServerLog {
-    private final String name;
-    private final StringBuilder command = new StringBuilder();
-    private final StringBuilder stdout = new StringBuilder();
-    private final StringBuilder stderr = new StringBuilder();
-    private final List<String> exceptions = new ArrayList<>();
-    private Integer exitCode;
-    private SlimFailure launchFailure;
-
-    private ServerLog(String name) {
-      this.name = name;
-    }
-
-    private JSONObject json() {
-      JSONObject server = new JSONObject();
-      server.put("name", name);
-      server.put("command", command.toString());
-      server.put("exitCode", exitCode == null ? JSONObject.NULL : exitCode);
-      server.put("stdout", stdout.toString());
-      server.put("stderr", stderr.toString());
-      server.put("exceptions", new JSONArray(exceptions));
-      server.put("launchFailure", launchFailure == null ? JSONObject.NULL : BlockJson.errorJson(launchFailure));
-      return server;
-    }
   }
 }

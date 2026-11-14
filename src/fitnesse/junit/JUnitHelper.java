@@ -77,6 +77,7 @@ public class JUnitHelper {
       .makeFitNesseContext();
 
     fitnesse.results.JsonResultsFormatter results = new fitnesse.results.JsonResultsFormatter(new StringBuilder(), false, null);
+    results.setSuiteName(pageName);
     List<WikiPage> pages = initChildren(pageName, suiteFilter, excludeSuiteFilter, context);
     TestRun run = createTestRun(context, pages);
     MultipleTestsRunner testRunner = createTestRunner(run, context, debugMode);

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 /** JUnit XML built from a results document, for CI. */
 public final class JunitXmlWriter {
@@ -30,8 +31,10 @@ public final class JunitXmlWriter {
       cases.append(testCase(page));
     }
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      + "<testsuite name=\"" + escape(run.getString("id")) + "\" tests=\"" + pages.length()
-      + "\" failures=\"" + failures + "\" errors=\"" + errors + "\">\n"
+      + "<testsuite name=\"" + escape(run.optString("name", run.optString("id")))
+      + "\" tests=\"" + pages.length()
+      + "\" failures=\"" + failures + "\" errors=\"" + errors
+      + "\" time=\"" + seconds(run.optLong("durationMillis")) + "\">\n"
       + cases + "</testsuite>\n";
   }
 
@@ -45,13 +48,20 @@ public final class JunitXmlWriter {
   private static String testCase(JSONObject page) {
     String name = escape(page.getString("path"));
     String status = page.getString("status");
-    String open = "  <testcase name=\"" + name + "\" classname=\"" + name + "\"";
+    String open = "  <testcase name=\"" + name + "\" classname=\"" + name
+      + "\" time=\"" + seconds(page.optLong("durationMillis")) + "\"";
     if (!RunDocument.failed(status)) {
       return open + "/>\n";
     }
+    String detail = FailureText.of(page);
+    String message = detail.contains("\n") ? detail.substring(0, detail.indexOf('\n')) : detail;
     String tag = "error".equals(status) ? "error" : "failure";
-    return open + ">\n    <" + tag + " message=\"" + escape(status) + "\">"
-      + escape(page.getJSONObject("counts").toString()) + "</" + tag + ">\n  </testcase>\n";
+    return open + ">\n    <" + tag + " message=\"" + escape(message) + "\">"
+      + escape(detail) + "</" + tag + ">\n  </testcase>\n";
+  }
+
+  private static String seconds(long millis) {
+    return String.format(Locale.US, "%.3f", millis / 1000.0);
   }
 
   private static String escape(String value) {

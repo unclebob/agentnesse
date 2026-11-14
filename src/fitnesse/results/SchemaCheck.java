@@ -28,7 +28,22 @@ public final class SchemaCheck {
       throw new IllegalStateException("schemaVersion");
     }
     require(schema.getJSONObject("$defs").getJSONObject("run"), document.getJSONObject("run"));
+    pagesThatAssertHaveBlocks(document.getJSONObject("run"));
     System.out.println("results match schema version " + document.getInt("schemaVersion"));
+  }
+
+  static void pagesThatAssertHaveBlocks(JSONObject run) {
+    JSONArray pages = run.getJSONArray("pages");
+    for (int i = 0; i < pages.length(); i++) {
+      JSONObject page = pages.getJSONObject(i);
+      if (asserted(page.getJSONObject("counts")) && page.getJSONArray("blocks").isEmpty()) {
+        throw new IllegalStateException(page.getString("path") + " recorded assertions but no blocks");
+      }
+    }
+  }
+
+  private static boolean asserted(JSONObject counts) {
+    return counts.getInt("right") + counts.getInt("wrong") + counts.getInt("ignored") + counts.getInt("exceptions") > 0;
   }
 
   static void require(JSONObject definition, JSONObject value) {
