@@ -13,7 +13,9 @@ import fitnesse.wiki.refactoring.ChangeReference;
 import fitnesse.wiki.refactoring.OutboundReferences;
 import fitnesse.wiki.refactoring.ReferenceRenamingTraverser;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class PageMovementResponder implements Responder {
 
@@ -52,20 +54,60 @@ public abstract class PageMovementResponder implements Responder {
       return makeErrorMessageResponder(makeLink(getNewPageName()) + " already exists").makeResponse(context, request);
     }
 
-    if (request.hasInput("refactorReferences")) {
-      if (newParentPage != oldRefactoredPage.getParent()) {
-        WikiPagePath movedPath = oldRefactoredPage.getFullPath();
-        OutboundReferences.absolutize(oldRefactoredPage);
-        oldRefactoredPage = context.getRootPage().getPageCrawler().getPage(movedPath);
-      }
-      ReferenceRenamingTraverser.renameReferences(context.getRootPage(), getReferenceRenamer());
-    }
-    execute();
+    rewriteThenMove(context, request);
 
     SimpleResponse response = new SimpleResponse();
     response.redirect(createRedirectionUrl(newParentPage, getNewPageName()));
 
     return response;
+  }
+
+  private void rewriteThenMove(FitNesseContext context, Request request) throws Exception {
+    if (!request.hasInput("refactorReferences")) {
+      execute();
+      return;
+    }
+    Map<String, String> original = snapshot(context.getRootPage());
+    try {
+      rewriteReferences(context);
+      execute();
+    } catch (Exception failure) {
+      restore(context.getRootPage(), original);
+      throw failure;
+    }
+  }
+
+  private void rewriteReferences(FitNesseContext context) {
+    if (newParentPage != oldRefactoredPage.getParent()) {
+      WikiPagePath movedPath = oldRefactoredPage.getFullPath();
+      OutboundReferences.absolutize(oldRefactoredPage);
+      oldRefactoredPage = context.getRootPage().getPageCrawler().getPage(movedPath);
+    }
+    ReferenceRenamingTraverser.renameReferences(context.getRootPage(), getReferenceRenamer());
+  }
+
+  private static Map<String, String> snapshot(WikiPage root) {
+    Map<String, String> contents = new LinkedHashMap<>();
+    root.getPageCrawler().traverse(page -> contents.put(key(page), page.getData().getContent()), new NoPruningStrategy());
+    return contents;
+  }
+
+  private static void restore(WikiPage root, Map<String, String> original) {
+    root.getPageCrawler().traverse(page -> writeBack(page, original.get(key(page))), new NoPruningStrategy());
+  }
+
+  private static void writeBack(WikiPage page, String content) {
+    if (content == null || content.equals(page.getData().getContent())) {
+      return;
+    }
+    PageData data = page.getData();
+    data.setContent(content);
+    page.commit(data);
+  }
+
+  private static String key(WikiPage page) {
+    String rendered = PathParser.render(page.getFullPath());
+    return rendered == null || rendered.isEmpty() ? "root" : rendered;
   }
 
   protected boolean getAndValidateRefactoredPage(FitNesseContext context, Request request) {

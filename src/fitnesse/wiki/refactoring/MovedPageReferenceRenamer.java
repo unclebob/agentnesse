@@ -3,6 +3,7 @@
 package fitnesse.wiki.refactoring;
 
 import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiWordReference;
 
 import java.util.Optional;
@@ -18,6 +19,23 @@ public class MovedPageReferenceRenamer implements ChangeReference {
 
   @Override
   public Optional<String> changeReference(WikiPage currentPage, String reference) {
+    if (staysRelative(currentPage, reference)) {
+      return Optional.empty();
+    }
     return new WikiWordReference(currentPage, reference).getMovedPageRenamedContent(reference, pageToBeMoved, newParentName);
+  }
+
+  /** A relative reference whose source and target both move with the subtree still resolves after the move. */
+  private boolean staysRelative(WikiPage currentPage, String reference) {
+    if (reference.startsWith(".") || !inside(currentPage.getFullPath())) {
+      return false;
+    }
+    WikiPage target = ReferenceIndex.resolve(currentPage, reference);
+    return target != null && inside(target.getFullPath());
+  }
+
+  private boolean inside(WikiPagePath path) {
+    WikiPagePath moved = pageToBeMoved.getFullPath();
+    return path.equals(moved) || path.startsWith(moved);
   }
 }

@@ -238,7 +238,7 @@ public class MovePageResponderTest extends ResponderTestCase {
     movePage("PageOne", "PageTwo", true);
     WikiPage movedPage = pageTwo.getChildPage("PageOne");
     assertFalse(crawler.pageExists(PathParser.parse("PageOne")));
-    assertEquals(".PageTwo.PageOne.PageA", movedPage.getData().getContent());
+    assertEquals("^PageA", movedPage.getData().getContent());
     assertEquals("PageTwo.PageOne", PathParser.render(movedPage.getFullPath()));
   }
 
