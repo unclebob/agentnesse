@@ -5778,7 +5778,7 @@
             "status": null
           }
         ],
-        "durationMillis": 228,
+        "durationMillis": 351,
         "status": "pass"
       },
       {
@@ -11012,7 +11012,7 @@
             "status": null
           }
         ],
-        "durationMillis": 51,
+        "durationMillis": 82,
         "status": "pass"
       },
       {
@@ -15808,7 +15808,7 @@
             "status": null
           }
         ],
-        "durationMillis": 43,
+        "durationMillis": 42,
         "status": "pass"
       },
       {
@@ -20844,7 +20844,7 @@
             "status": null
           }
         ],
-        "durationMillis": 44,
+        "durationMillis": 53,
         "status": "pass"
       },
       {
@@ -27760,7 +27760,7 @@
             "status": null
           }
         ],
-        "durationMillis": 42,
+        "durationMillis": 44,
         "status": "pass"
       },
       {
@@ -33162,7 +33162,7 @@
             "status": null
           }
         ],
-        "durationMillis": 448,
+        "durationMillis": 622,
         "status": "pass"
       },
       {
@@ -38112,7 +38112,7 @@
             "status": null
           }
         ],
-        "durationMillis": 44,
+        "durationMillis": 53,
         "status": "pass"
       },
       {
@@ -43508,14 +43508,14 @@
             "status": null
           }
         ],
-        "durationMillis": 33,
+        "durationMillis": 51,
         "status": "pass"
       },
       {
         "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.CountAssertions",
         "counts": {
           "ignored": 0,
-          "right": 11,
+          "right": 23,
           "tableFailures": 0,
           "exceptions": 0,
           "wrong": 0
@@ -48056,7 +48056,7 @@
           {
             "counts": {
               "ignored": 0,
-              "right": 11,
+              "right": 23,
               "exceptions": 0,
               "wrong": 0
             },
@@ -48603,6 +48603,642 @@
                   "value": null,
                   "status": null
                 }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 17,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 17,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 17,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 17,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "make",
+                  "column": 1,
+                  "row": 18,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 18,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 18,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 19,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 19,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 19,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": "200",
+                  "symbol": null,
+                  "expected": "200",
+                  "column": 4,
+                  "row": 19,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 20,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 20,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 20,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 21,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 21,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 21,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 22,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 22,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 22,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 23,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 23,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 23,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 23,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "make",
+                  "column": 1,
+                  "row": 24,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 24,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 24,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 25,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 25,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 25,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": "200",
+                  "symbol": null,
+                  "expected": "200",
+                  "column": 4,
+                  "row": 25,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 26,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 26,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 26,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 27,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 27,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 27,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 28,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 28,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 28,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 29,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 29,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 29,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 30,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 30,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 30,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 30,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "make",
+                  "column": 1,
+                  "row": 31,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 31,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 31,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 32,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 32,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 32,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": "200",
+                  "symbol": null,
+                  "expected": "200",
+                  "column": 4,
+                  "row": 32,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 33,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 33,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 33,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "ensure",
+                  "column": 1,
+                  "row": 34,
+                  "error": null,
+                  "value": null,
+                  "status": "pass"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 34,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 34,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
               ]}
             ],
             "status": "pass"
@@ -48890,6 +49526,420 @@
               "exceptions": 0,
               "wrong": 0
             },
+            "name": "scenario",
+            "rows": [
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 5,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "create page",
+                  "column": 1,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": "CountAssertions.OneFail",
+                  "symbol": "IT",
+                  "expected": "$IT=",
+                  "column": 1,
+                  "row": 3,
+                  "error": null,
+                  "value": "CountAssertions.OneFail",
+                  "status": "symbol"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 3,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 3,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]}
+            ],
+            "status": null
+          },
+          {
+            "counts": {
+              "ignored": 0,
+              "right": 0,
+              "exceptions": 0,
+              "wrong": 0
+            },
+            "name": "scenario",
+            "rows": [
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 5,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "create page",
+                  "column": 1,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": "CountAssertions.NoCells",
+                  "symbol": "IT",
+                  "expected": "$IT=",
+                  "column": 1,
+                  "row": 3,
+                  "error": null,
+                  "value": "CountAssertions.NoCells",
+                  "status": "symbol"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 3,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 3,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]}
+            ],
+            "status": null
+          },
+          {
+            "counts": {
+              "ignored": 0,
+              "right": 0,
+              "exceptions": 0,
+              "wrong": 0
+            },
+            "name": "scenario",
+            "rows": [
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 1,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 5,
+                  "row": 1,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": "create page",
+                  "column": 1,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 4,
+                  "row": 2,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]},
+              {"cells": [
+                {
+                  "actual": "CountAssertions.OnePass",
+                  "symbol": "IT",
+                  "expected": "$IT=",
+                  "column": 1,
+                  "row": 3,
+                  "error": null,
+                  "value": "CountAssertions.OnePass",
+                  "status": "symbol"
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 2,
+                  "row": 3,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                },
+                {
+                  "actual": null,
+                  "symbol": null,
+                  "expected": null,
+                  "column": 3,
+                  "row": 3,
+                  "error": null,
+                  "value": null,
+                  "status": null
+                }
+              ]}
+            ],
+            "status": null
+          },
+          {
+            "counts": {
+              "ignored": 0,
+              "right": 0,
+              "exceptions": 0,
+              "wrong": 0
+            },
             "name": "tear down",
             "rows": [{"cells": [{
               "actual": "tear down",
@@ -48904,7 +49954,7 @@
             "status": null
           }
         ],
-        "durationMillis": 413,
+        "durationMillis": 1293,
         "status": "pass"
       },
       {
@@ -54338,13 +55388,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.AddUpChange@5f049ea1",
+                  "actual": "fitnesse.slim.test.AddUpChange@909217e",
                   "symbol": "myfixture",
                   "expected": "$myfixture=",
                   "column": 1,
                   "row": 2,
                   "error": null,
-                  "value": "fitnesse.slim.test.AddUpChange@5f049ea1",
+                  "value": "fitnesse.slim.test.AddUpChange@909217e",
                   "status": "symbol"
                 },
                 {
@@ -54600,13 +55650,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.AddUpChange@72cc7e6f",
+                  "actual": "fitnesse.slim.test.AddUpChange@18271936",
                   "symbol": "anotherFixture",
                   "expected": "$anotherFixture=",
                   "column": 1,
                   "row": 2,
                   "error": null,
-                  "value": "fitnesse.slim.test.AddUpChange@72cc7e6f",
+                  "value": "fitnesse.slim.test.AddUpChange@18271936",
                   "status": "symbol"
                 },
                 {
@@ -54904,13 +55954,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.TestQuery@5afa3c9",
+                  "actual": "fitnesse.slim.test.TestQuery@606e4010",
                   "symbol": "tq",
                   "expected": "$tq=",
                   "column": 1,
                   "row": 3,
                   "error": null,
-                  "value": "fitnesse.slim.test.TestQuery@5afa3c9",
+                  "value": "fitnesse.slim.test.TestQuery@606e4010",
                   "status": "symbol"
                 },
                 {
@@ -55090,13 +56140,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.TestQuery@72035809",
+                  "actual": "fitnesse.slim.test.TestQuery@8458f04",
                   "symbol": "tq",
                   "expected": "$tq=",
                   "column": 1,
                   "row": 3,
                   "error": null,
-                  "value": "fitnesse.slim.test.TestQuery@72035809",
+                  "value": "fitnesse.slim.test.TestQuery@8458f04",
                   "status": "symbol"
                 },
                 {
@@ -55428,14 +56478,14 @@
             "status": null
           }
         ],
-        "durationMillis": 43,
+        "durationMillis": 49,
         "status": "pass"
       },
       {
         "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.DefineTableTypeTest",
         "counts": {
           "ignored": 0,
-          "right": 4,
+          "right": 3,
           "tableFailures": 0,
           "exceptions": 0,
           "wrong": 0
@@ -60018,21 +61068,21 @@
           {
             "counts": {
               "ignored": 0,
-              "right": 2,
+              "right": 1,
               "exceptions": 0,
               "wrong": 0
             },
             "name": "Table Or Decision Fixture",
             "rows": [
               {"cells": [{
-                "actual": null,
+                "actual": "Table Or Decision Fixture",
                 "symbol": null,
                 "expected": "Table Or Decision Fixture",
                 "column": 1,
                 "row": 1,
                 "error": null,
                 "value": null,
-                "status": "pass"
+                "status": null
               }]},
               {"cells": [
                 {
@@ -60134,7 +61184,7 @@
             "status": null
           }
         ],
-        "durationMillis": 19,
+        "durationMillis": 55,
         "status": "pass"
       },
       {
@@ -66586,7 +67636,7 @@
             "status": null
           }
         ],
-        "durationMillis": 14,
+        "durationMillis": 36,
         "status": "pass"
       },
       {
@@ -71398,7 +72448,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 35,
         "status": "pass"
       },
       {
@@ -77582,7 +78632,7 @@
             "status": "pass"
           }
         ],
-        "durationMillis": 46,
+        "durationMillis": 71,
         "status": "pass"
       },
       {
@@ -82530,7 +83580,7 @@
             "status": "pass"
           }
         ],
-        "durationMillis": 14,
+        "durationMillis": 20,
         "status": "pass"
       },
       {
@@ -87508,7 +88558,7 @@
             "status": "pass"
           }
         ],
-        "durationMillis": 13,
+        "durationMillis": 18,
         "status": "pass"
       },
       {
@@ -92910,7 +93960,7 @@
             "status": null
           }
         ],
-        "durationMillis": 238,
+        "durationMillis": 328,
         "status": "pass"
       },
       {
@@ -98540,7 +99590,7 @@
             "status": null
           }
         ],
-        "durationMillis": 24,
+        "durationMillis": 41,
         "status": "pass"
       },
       {
@@ -103966,7 +105016,7 @@
             "status": null
           }
         ],
-        "durationMillis": 13,
+        "durationMillis": 17,
         "status": "pass"
       },
       {
@@ -124856,7 +125906,7 @@
             "status": null
           }
         ],
-        "durationMillis": 32,
+        "durationMillis": 28,
         "status": "pass"
       },
       {
@@ -131706,7 +132756,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 14,
         "status": "pass"
       },
       {
@@ -136578,7 +137628,7 @@
             "status": null
           }
         ],
-        "durationMillis": 15,
+        "durationMillis": 17,
         "status": "pass"
       },
       {
@@ -141776,7 +142826,7 @@
             "status": null
           }
         ],
-        "durationMillis": 25,
+        "durationMillis": 27,
         "status": "pass"
       },
       {
@@ -146532,7 +147582,7 @@
             "status": null
           }
         ],
-        "durationMillis": 22,
+        "durationMillis": 9,
         "status": "pass"
       },
       {
@@ -151420,7 +152470,7 @@
             "status": null
           }
         ],
-        "durationMillis": 13,
+        "durationMillis": 8,
         "status": "pass"
       },
       {
@@ -156606,7 +157656,7 @@
             "status": null
           }
         ],
-        "durationMillis": 37,
+        "durationMillis": 28,
         "status": "pass"
       },
       {
@@ -161750,7 +162800,7 @@
             "status": null
           }
         ],
-        "durationMillis": 32,
+        "durationMillis": 17,
         "status": "pass"
       },
       {
@@ -167088,7 +168138,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 9,
         "status": "pass"
       },
       {
@@ -171850,7 +172900,7 @@
             "status": null
           }
         ],
-        "durationMillis": 21,
+        "durationMillis": 23,
         "status": "pass"
       },
       {
@@ -177216,7 +178266,7 @@
             "status": null
           }
         ],
-        "durationMillis": 25,
+        "durationMillis": 28,
         "status": "pass"
       },
       {
@@ -182070,7 +183120,7 @@
             "status": null
           }
         ],
-        "durationMillis": 11,
+        "durationMillis": 12,
         "status": "pass"
       },
       {
@@ -189012,7 +190062,7 @@
             "status": null
           }
         ],
-        "durationMillis": 15,
+        "durationMillis": 34,
         "status": "pass"
       },
       {
@@ -194868,7 +195918,7 @@
             "status": null
           }
         ],
-        "durationMillis": 11,
+        "durationMillis": 18,
         "status": "pass"
       },
       {
@@ -200310,7 +201360,7 @@
             "status": null
           }
         ],
-        "durationMillis": 15,
+        "durationMillis": 24,
         "status": "pass"
       },
       {
@@ -205582,7 +206632,7 @@
             "status": null
           }
         ],
-        "durationMillis": 226,
+        "durationMillis": 293,
         "status": "pass"
       },
       {
@@ -210594,7 +211644,7 @@
             "status": null
           }
         ],
-        "durationMillis": 183,
+        "durationMillis": 263,
         "status": "pass"
       },
       {
@@ -216840,7 +217890,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 27,
         "status": "pass"
       },
       {
@@ -222906,7 +223956,7 @@
             "status": null
           }
         ],
-        "durationMillis": 20,
+        "durationMillis": 48,
         "status": "pass"
       },
       {
@@ -227878,7 +228928,7 @@
             "status": null
           }
         ],
-        "durationMillis": 24,
+        "durationMillis": 48,
         "status": "pass"
       },
       {
@@ -232906,7 +233956,7 @@
             "status": null
           }
         ],
-        "durationMillis": 11,
+        "durationMillis": 17,
         "status": "pass"
       },
       {
@@ -239242,7 +240292,7 @@
             "status": null
           }
         ],
-        "durationMillis": 25,
+        "durationMillis": 51,
         "status": "pass"
       },
       {
@@ -243958,7 +245008,7 @@
             "status": null
           }
         ],
-        "durationMillis": 15,
+        "durationMillis": 33,
         "status": "pass"
       },
       {
@@ -248862,7 +249912,7 @@
             "status": null
           }
         ],
-        "durationMillis": 20,
+        "durationMillis": 44,
         "status": "pass"
       },
       {
@@ -253768,7 +254818,7 @@
             "status": null
           }
         ],
-        "durationMillis": 227,
+        "durationMillis": 321,
         "status": "pass"
       },
       {
@@ -258648,7 +259698,7 @@
             "status": null
           }
         ],
-        "durationMillis": 15,
+        "durationMillis": 39,
         "status": "pass"
       },
       {
@@ -263742,7 +264792,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 32,
         "status": "pass"
       },
       {
@@ -269570,7 +270620,7 @@
             "status": null
           }
         ],
-        "durationMillis": 230,
+        "durationMillis": 412,
         "status": "pass"
       },
       {
@@ -275398,7 +276448,7 @@
             "status": null
           }
         ],
-        "durationMillis": 238,
+        "durationMillis": 384,
         "status": "pass"
       },
       {
@@ -281438,7 +282488,7 @@
             "status": null
           }
         ],
-        "durationMillis": 237,
+        "durationMillis": 372,
         "status": "pass"
       },
       {
@@ -286212,14 +287262,14 @@
             "status": null
           }
         ],
-        "durationMillis": 10,
+        "durationMillis": 22,
         "status": "pass"
       },
       {
         "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.SymbolsInTableTable",
         "counts": {
           "ignored": 0,
-          "right": 6,
+          "right": 4,
           "tableFailures": 0,
           "exceptions": 0,
           "wrong": 0
@@ -290910,21 +291960,21 @@
           {
             "counts": {
               "ignored": 0,
-              "right": 1,
+              "right": 0,
               "exceptions": 0,
               "wrong": 0
             },
             "name": "table: Table Table Inc First Col",
             "rows": [
               {"cells": [{
-                "actual": null,
+                "actual": "table: Table Table Inc First Col",
                 "symbol": null,
                 "expected": "table: Table Table Inc First Col",
                 "column": 1,
                 "row": 1,
                 "error": null,
                 "value": null,
-                "status": "pass"
+                "status": null
               }]},
               {"cells": [
                 {
@@ -290993,7 +292043,7 @@
                 }
               ]}
             ],
-            "status": "pass"
+            "status": null
           },
           {
             "counts": {
@@ -291264,21 +292314,21 @@
           {
             "counts": {
               "ignored": 0,
-              "right": 1,
+              "right": 0,
               "exceptions": 0,
               "wrong": 0
             },
             "name": "table: Table Table Inc First Col",
             "rows": [
               {"cells": [{
-                "actual": null,
+                "actual": "table: Table Table Inc First Col",
                 "symbol": null,
                 "expected": "table: Table Table Inc First Col",
                 "column": 1,
                 "row": 1,
                 "error": null,
                 "value": null,
-                "status": "pass"
+                "status": null
               }]},
               {"cells": [
                 {
@@ -291377,7 +292427,7 @@
                 }
               ]}
             ],
-            "status": "pass"
+            "status": null
           },
           {
             "counts": {
@@ -291464,14 +292514,14 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 23,
         "status": "pass"
       },
       {
         "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.SymbolsInTableTableManagedByTheFixture",
         "counts": {
           "ignored": 0,
-          "right": 5,
+          "right": 3,
           "tableFailures": 0,
           "exceptions": 0,
           "wrong": 0
@@ -296172,21 +297222,21 @@
           {
             "counts": {
               "ignored": 0,
-              "right": 1,
+              "right": 0,
               "exceptions": 0,
               "wrong": 0
             },
             "name": "table: Table Table Inc First Col",
             "rows": [
               {"cells": [{
-                "actual": null,
+                "actual": "table: Table Table Inc First Col",
                 "symbol": null,
                 "expected": "table: Table Table Inc First Col",
                 "column": 1,
                 "row": 1,
                 "error": null,
                 "value": null,
-                "status": "pass"
+                "status": null
               }]},
               {"cells": [
                 {
@@ -296285,7 +297335,7 @@
                 }
               ]}
             ],
-            "status": "pass"
+            "status": null
           },
           {
             "counts": {
@@ -296408,21 +297458,21 @@
           {
             "counts": {
               "ignored": 0,
-              "right": 1,
+              "right": 0,
               "exceptions": 0,
               "wrong": 0
             },
             "name": "table: Table Table Inc First Col",
             "rows": [
               {"cells": [{
-                "actual": null,
+                "actual": "table: Table Table Inc First Col",
                 "symbol": null,
                 "expected": "table: Table Table Inc First Col",
                 "column": 1,
                 "row": 1,
                 "error": null,
                 "value": null,
-                "status": "pass"
+                "status": null
               }]},
               {"cells": [
                 {
@@ -296557,7 +297607,7 @@
                 }
               ]}
             ],
-            "status": "pass"
+            "status": null
           },
           {
             "counts": {
@@ -296686,7 +297736,7 @@
             "status": null
           }
         ],
-        "durationMillis": 13,
+        "durationMillis": 18,
         "status": "pass"
       },
       {
@@ -301392,7 +302442,7 @@
             "status": null
           }
         ],
-        "durationMillis": 9,
+        "durationMillis": 11,
         "status": "pass"
       },
       {
@@ -306054,7 +307104,7 @@
             "status": null
           }
         ],
-        "durationMillis": 9,
+        "durationMillis": 27,
         "status": "pass"
       },
       {
@@ -314814,7 +315864,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 22,
         "status": "pass"
       },
       {
@@ -319852,7 +320902,7 @@
             "status": null
           }
         ],
-        "durationMillis": 11,
+        "durationMillis": 38,
         "status": "pass"
       },
       {
@@ -325254,7 +326304,7 @@
             "status": null
           }
         ],
-        "durationMillis": 260,
+        "durationMillis": 454,
         "status": "pass"
       },
       {
@@ -330712,7 +331762,7 @@
             "status": null
           }
         ],
-        "durationMillis": 376,
+        "durationMillis": 584,
         "status": "pass"
       },
       {
@@ -335416,7 +336466,7 @@
             "status": null
           }
         ],
-        "durationMillis": 18,
+        "durationMillis": 28,
         "status": "pass"
       },
       {
@@ -340948,7 +341998,7 @@
             "status": null
           }
         ],
-        "durationMillis": 232,
+        "durationMillis": 365,
         "status": "pass"
       },
       {
@@ -346606,7 +347656,7 @@
             "status": null
           }
         ],
-        "durationMillis": 11,
+        "durationMillis": 38,
         "status": "pass"
       },
       {
@@ -352054,7 +353104,7 @@
             "status": null
           }
         ],
-        "durationMillis": 14,
+        "durationMillis": 12,
         "status": "pass"
       },
       {
@@ -356951,7 +358001,7 @@
             "status": null
           }
         ],
-        "durationMillis": 14,
+        "durationMillis": 12,
         "status": "pass"
       },
       {
@@ -361848,7 +362898,7 @@
             "status": null
           }
         ],
-        "durationMillis": 13,
+        "durationMillis": 18,
         "status": "pass"
       },
       {
@@ -366642,7 +367692,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 29,
         "status": "pass"
       },
       {
@@ -371274,7 +372324,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 25,
         "status": "pass"
       },
       {
@@ -375980,7 +377030,7 @@
             "status": null
           }
         ],
-        "durationMillis": 8,
+        "durationMillis": 13,
         "status": "pass"
       },
       {
@@ -380850,7 +381900,7 @@
             "status": null
           }
         ],
-        "durationMillis": 7,
+        "durationMillis": 25,
         "status": "pass"
       },
       {
@@ -388298,7 +389348,7 @@
             "status": null
           }
         ],
-        "durationMillis": 12,
+        "durationMillis": 25,
         "status": "pass"
       },
       {
@@ -393106,7 +394156,7 @@
             "status": null
           }
         ],
-        "durationMillis": 11,
+        "durationMillis": 19,
         "status": "pass"
       },
       {
@@ -398118,7 +399168,7 @@
             "status": null
           }
         ],
-        "durationMillis": 1021,
+        "durationMillis": 1055,
         "status": "pass"
       },
       {
@@ -403078,7 +404128,7 @@
             "status": null
           }
         ],
-        "durationMillis": 24,
+        "durationMillis": 49,
         "status": "pass"
       },
       {
@@ -408090,7 +409140,7 @@
             "status": null
           }
         ],
-        "durationMillis": 1018,
+        "durationMillis": 1052,
         "status": "pass"
       },
       {
@@ -413282,7 +414332,7 @@
             "status": null
           }
         ],
-        "durationMillis": 4071,
+        "durationMillis": 4182,
         "status": "pass"
       },
       {
@@ -418414,7 +419464,7 @@
             "status": null
           }
         ],
-        "durationMillis": 10,
+        "durationMillis": 23,
         "status": "pass"
       },
       {
@@ -423152,7 +424202,7 @@
             "status": null
           }
         ],
-        "durationMillis": 9,
+        "durationMillis": 12,
         "status": "pass"
       },
       {
@@ -427954,7 +429004,7 @@
             "status": null
           }
         ],
-        "durationMillis": 284,
+        "durationMillis": 675,
         "status": "pass"
       },
       {
@@ -432756,7 +433806,7 @@
             "status": null
           }
         ],
-        "durationMillis": 1032,
+        "durationMillis": 1115,
         "status": "pass"
       },
       {
@@ -433016,7 +434066,7 @@
             "status": null
           }
         ],
-        "durationMillis": 138,
+        "durationMillis": 258,
         "status": "pass"
       }
     ],
@@ -433029,6 +434079,33 @@
         "stderr": "",
         "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
         "exceptions": ["fitnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file."]
+      },
+      {
+        "stdout": "",
+        "launchFailure": null,
+        "name": "slim:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
+      },
+      {
+        "stdout": "",
+        "launchFailure": null,
+        "name": "slim:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
+      },
+      {
+        "stdout": "",
+        "launchFailure": null,
+        "name": "slim:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
       },
       {
         "stdout": "",
@@ -433207,7 +434284,7 @@
         "name": "SLIM:something.that.does.not.exists",
         "exitCode": 1,
         "stderr": "Error: Could not find or load main class something.that.does.not.exists\nCaused by: java.lang.ClassNotFoundException: something.that.does.not.exists\n",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp defaultPath something.that.does.not.exists 39545",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp defaultPath something.that.does.not.exists 41879",
         "exceptions": []
       },
       {
@@ -433232,14 +434309,14 @@
     "failedPages": [],
     "counts": {
       "ignored": 12,
-      "right": 501,
+      "right": 508,
       "tableFailures": 0,
       "exceptions": 0,
       "wrong": 0
     },
     "name": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests",
-    "start": "2026-11-14T14:23:45.413Z",
-    "durationMillis": 13405,
+    "start": "2026-11-14T17:52:29.766Z",
+    "durationMillis": 17532,
     "id": "1"
   }
 }

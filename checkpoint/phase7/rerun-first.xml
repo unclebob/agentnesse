@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Demo" tests="2" failures="1" errors="0" time="0.279">
-  <testcase name="Demo.Fail" classname="Demo.Fail" time="0.061">
+<testsuite name="Demo" tests="2" failures="1" errors="0" time="0.343">
+  <testcase name="Demo.Fail" classname="Demo.Fail" time="0.053">
     <failure message="script row 2 column 4 expected [bad] actual [ok]">script row 2 column 4 expected [bad] actual [ok]</failure>
   </testcase>
-  <testcase name="Demo.Pass" classname="Demo.Pass" time="0.008"/>
+  <testcase name="Demo.Pass" classname="Demo.Pass" time="0.003"/>
 </testsuite>

@@ -88,7 +88,7 @@
           ],
           "status": "fail"
         }],
-        "durationMillis": 61,
+        "durationMillis": 53,
         "status": "fail"
       },
       {
@@ -176,7 +176,7 @@
           ],
           "status": "pass"
         }],
-        "durationMillis": 8,
+        "durationMillis": 3,
         "status": "pass"
       }
     ],
@@ -198,8 +198,8 @@
       "wrong": 1
     },
     "name": "Demo",
-    "start": "2026-11-14T14:24:59.831Z",
-    "durationMillis": 279,
+    "start": "2026-11-14T17:52:55.695Z",
+    "durationMillis": 343,
     "id": "1"
   }
 }

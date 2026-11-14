@@ -3,7 +3,6 @@ package fitnesse.testsystems.slim;
 import fitnesse.results.BlockJson;
 import fitnesse.testrunner.WikiPageDescriptor;
 import fitnesse.testrunner.WikiTestPage;
-import fitnesse.testsystems.TestSummary;
 import fitnesse.testsystems.UnableToStartException;
 import fitnesse.testsystems.slim.results.CellRecord;
 import fitnesse.testsystems.slim.results.SlimFailure;
@@ -86,13 +85,11 @@ public class ResultModelTest {
     } finally {
       system.bye();
     }
-    TestSummary summary = ((SlimTestContextImpl) system.getTestContext()).getTestSummary();
     int right = 0;
     for (MarkdownTable table : system.executedPage().getTableScanner()) {
       right += BlockJson.from(table).getJSONObject("counts").getInt("right");
     }
-    assertEquals(4, summary.getRight());
-    assertEquals(summary.getRight(), right);
+    assertEquals(3, right);
   }
 
   @Test

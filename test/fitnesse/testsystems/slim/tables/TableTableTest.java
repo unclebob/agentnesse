@@ -86,12 +86,39 @@ public class TableTableTest {
     assertEquals("pass", pass.status());
     assertTrue(fail.assertion());
     assertEquals("fail", fail.status());
-    CellRecord outcome = table.cellRecord(0, 0);
-    assertTrue(outcome.assertion());
-    assertEquals("fail", outcome.status());
+    assertFalse(table.cellRecord(0, 0).assertion());
     JSONObject counts = BlockJson.from(table).getJSONObject("counts");
     assertEquals(1, counts.getInt("right"));
-    assertEquals(2, counts.getInt("wrong"));
+    assertEquals(1, counts.getInt("wrong"));
+  }
+
+  @Test
+  public void oneFailingCellIsOneWrong() throws Exception {
+    makeTableTableAndBuildInstructions(tableTableHeader + "|a|\n");
+    tt.new TableTableExpectation().evaluateExpectation(asList(asList("fail")));
+    MarkdownTable table = (MarkdownTable) tt.getTable();
+    assertTrue(table.cellRecord(1, 0).assertion());
+    assertEquals("fail", table.cellRecord(1, 0).status());
+    assertFalse(table.cellRecord(0, 0).assertion());
+    JSONObject counts = BlockJson.from(table).getJSONObject("counts");
+    assertEquals(0, counts.getInt("right"));
+    assertEquals(1, counts.getInt("wrong"));
+  }
+
+  @Test
+  public void aTableWithNoCellResultsCountsItsOutcomeOnce() throws Exception {
+    makeTableTableAndBuildInstructions(tableTableHeader + "|a|b|\n");
+    tt.new TableTableExpectation().evaluateExpectation(asList(asList("no change", "no change")));
+    MarkdownTable table = (MarkdownTable) tt.getTable();
+    assertFalse(table.cellRecord(1, 0).assertion());
+    assertFalse(table.cellRecord(1, 1).assertion());
+    CellRecord outcome = table.cellRecord(0, 0);
+    assertTrue(outcome.assertion());
+    assertEquals("ignore", outcome.status());
+    JSONObject counts = BlockJson.from(table).getJSONObject("counts");
+    assertEquals(0, counts.getInt("right"));
+    assertEquals(0, counts.getInt("wrong"));
+    assertEquals(1, counts.getInt("ignored"));
   }
 
   @Test
@@ -150,7 +177,7 @@ public class TableTableTest {
             asList(
                     asList("bad", "boy")
             ),
-      "[[fail(Table:fixture), argument], [fail(bad), fail(boy)]]"
+      "[[pass(Table:fixture), argument], [fail(bad), fail(boy)]]"
     );
   }
 
@@ -160,7 +187,7 @@ public class TableTableTest {
             asList(
                     asList("x:bad", "x:boy")
             ),
-      "[[fail(Table:fixture), argument], [fail(x:bad), fail(x:boy)]]"
+      "[[pass(Table:fixture), argument], [fail(x:bad), fail(x:boy)]]"
     );
   }
 
@@ -170,7 +197,7 @@ public class TableTableTest {
             asList(
                     asList("fail:bad", "fail:boy")
             ),
-      "[[fail(Table:fixture), argument], [fail(bad), fail(boy)]]"
+      "[[pass(Table:fixture), argument], [fail(bad), fail(boy)]]"
     );
   }
 
@@ -180,7 +207,7 @@ public class TableTableTest {
             asList(
                     asList("fail", "fail")
             ),
-      "[[fail(Table:fixture), argument], [fail(2), fail(4)]]"
+      "[[pass(Table:fixture), argument], [fail(2), fail(4)]]"
     );
   }
 
@@ -190,7 +217,7 @@ public class TableTableTest {
             asList(
                     asList("ignore", "ignore")
             ),
-      "[[ignore(Table:fixture), argument], [ignore(2), ignore(4)]]"
+      "[[pass(Table:fixture), argument], [ignore(2), ignore(4)]]"
     );
   }
 
@@ -200,7 +227,7 @@ public class TableTableTest {
             asList(
                     asList("ignore:x", "ignore:y")
             ),
-      "[[ignore(Table:fixture), argument], [ignore(x), ignore(y)]]"
+      "[[pass(Table:fixture), argument], [ignore(x), ignore(y)]]"
     );
   }
 
@@ -240,7 +267,7 @@ public class TableTableTest {
             asList(
                     asList("error:myError", "error:anError")
             ),
-      "[[error(Table:fixture), argument], [error(myError), error(anError)]]"
+      "[[pass(Table:fixture), argument], [error(myError), error(anError)]]"
     );
   }
 
@@ -251,7 +278,7 @@ public class TableTableTest {
                     asList("", "", "error:surplus A"),
                     asList("error:surplus B", "error:surplus C")
             ),
-      "[[error(Table:fixture), argument], [2, 4, error(surplus A)], [error(surplus B), error(surplus C)]]"
+      "[[pass(Table:fixture), argument], [2, 4, error(surplus A)], [error(surplus B), error(surplus C)]]"
     );
   }
 
@@ -262,7 +289,7 @@ public class TableTableTest {
                     asList("", "", "fail:surplus A"),
                     asList("fail:surplus B", "fail:surplus C")
             ),
-      "[[fail(Table:fixture), argument], [2, 4, fail(surplus A)], [fail(surplus B), fail(surplus C)]]"
+      "[[pass(Table:fixture), argument], [2, 4, fail(surplus A)], [fail(surplus B), fail(surplus C)]]"
     );
   }
 
@@ -273,7 +300,7 @@ public class TableTableTest {
                     asList("", "", "fail"),
                     asList("fail", "fail")
             ),
-      "[[fail(Table:fixture), argument], [2, 4, fail(fail)], [fail(fail), fail(fail)]]"
+      "[[pass(Table:fixture), argument], [2, 4, fail(fail)], [fail(fail), fail(fail)]]"
     );
   }
 
@@ -333,7 +360,7 @@ public class TableTableTest {
             )
     );
     SlimAssertion.evaluateExpectations(assertions, pseudoResults);
-    assertEquals("[[fail(Table:fixture), argument], [pass($X->[value]), fail($X->[value]), $X->[value], ignore($X->[value])]]",
+    assertEquals("[[pass(Table:fixture), argument], [pass($X->[value]), fail($X->[value]), $X->[value], ignore($X->[value])]]",
         tt.getTable().toString());
   }
 
@@ -350,7 +377,7 @@ public class TableTableTest {
     );
 
     SlimAssertion.evaluateExpectations(assertions, pseudoResults);
-    assertEquals("[[fail(Table:fixture), argument], [pass($A<-[1]), ignore($B<-[2]), fail($C<-[3]), fail($D<-[sole:l]), $E=, pass($F=)]]",
+    assertEquals("[[pass(Table:fixture), argument], [pass($A<-[1]), ignore($B<-[2]), fail($C<-[3]), fail($D<-[sole:l]), $E=, pass($F=)]]",
         tt.getTable().toString());
     assertEquals("1", tt.getSymbol("A"));
     assertEquals("2", tt.getSymbol("B"));

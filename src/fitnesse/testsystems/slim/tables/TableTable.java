@@ -49,7 +49,8 @@ public class TableTable extends SlimTable {
         getTestContext().increment(testSummary);
         testResult = new SlimTestResult(ExecutionResult.getExecutionResult(testSummary));
         testResult.setVariables(getSymbolsToStore());
-        table.updateContent(0, 0, testResult);
+        if (noCellResults(testSummary))
+          table.updateContent(0, 0, testResult);
       }
       getTestContext().increment(testResult.getExecutionResult());
       return testResult;
@@ -61,6 +62,11 @@ public class TableTable extends SlimTable {
       getTestContext().incrementErroredTestsCount();
       return exceptionResult;
     }
+  }
+
+  private static boolean noCellResults(TestSummary summary) {
+    return summary.getRight() == 0 && summary.getWrong() == 0
+      && summary.getIgnores() == 0 && summary.getExceptions() == 0;
   }
 
   @SuppressWarnings("unchecked")
