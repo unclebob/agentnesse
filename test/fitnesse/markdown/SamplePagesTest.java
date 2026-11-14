@@ -37,7 +37,7 @@ public class SamplePagesTest {
     assertTrue(decision.getHtml().contains("id=\"divides-numbers\""));
     assertTrue(script.getHtml().contains("agentnesse-table scenario"));
     assertTrue(script.getHtml().contains("agentnesse-table script"));
-    assertTrue(withSetUp.getHtml().contains("agentnesse-include"));
+    assertTrue(!withSetUp.getHtml().contains("agentnesse-include"));
     assertTrue(!withSetUp.getHtml().contains("agentnesse-setup"));
     assertTrue(withSetUp.getHtml().contains("agentnesse-table query"));
     assertTrue(blocks.getHtml().contains("agentnesse-define"));

@@ -30,5 +30,5 @@ alias Division eg.Division
 ```
 
 ```agentnesse
-include SetUp
+include PageFooter
 ```

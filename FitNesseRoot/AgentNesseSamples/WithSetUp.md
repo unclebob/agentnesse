@@ -1,14 +1,12 @@
 {
   "type": "test",
   "tags": ["sample"],
-  "help": "A test that names its SetUp",
+  "help": "A test whose SetUp is inherited",
   "prune": false
 }
 # With SetUp
 
-```agentnesse
-include SetUp
-```
+`SetUp` is a sibling of this page, so the test inherits it. Naming it again would run it twice.
 
 | query:Employees | |
 | --- | --- |
