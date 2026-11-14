@@ -30,6 +30,10 @@ public class ErrorResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    if (JsonResponses.wantsJson(request)) {
+      String text = message != null ? message : (exception == null ? "" : exception.toString());
+      return JsonResponses.error(statusCode, "error", text);
+    }
     SimpleResponse response = new SimpleResponse(statusCode);
     HtmlPage html = context.pageFactory.newPage();
     html.addTitles("Error Occurred");

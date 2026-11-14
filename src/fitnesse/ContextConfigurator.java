@@ -16,7 +16,6 @@ import java.util.Properties;
 import static fitnesse.ConfigurationParameter.COMMAND;
 import static fitnesse.ConfigurationParameter.CONFIG_FILE;
 import static fitnesse.ConfigurationParameter.LISTEN;
-import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
 import static fitnesse.ConfigurationParameter.THEME;
 /**
@@ -93,10 +92,6 @@ public class ContextConfigurator {
 
     if (versionsController == null) {
       versionsController = new WikiFiles();
-    }
-
-    if (get(LOG_DIRECTORY) != null) {
-      logger = new Logger(get(LOG_DIRECTORY));
     }
 
     SystemVariableSource variableSource = new SystemVariableSource(properties);

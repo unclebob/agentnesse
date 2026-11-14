@@ -63,6 +63,7 @@ public class DeletePageResponderTest extends ResponderTestCase {
     assertEquals(303, response.getStatus());
     assertEquals("/root", response.getHeader("Location"));
     assertFalse(this.root.getPageCrawler().pageExists(PathParser.parse(this.level1Name)));
+    assertFalse(this.root.getPageCrawler().pageExists(this.level2FullPath));
 
     List<?> children = this.root.getChildren();
     assertEquals(0, children.size());

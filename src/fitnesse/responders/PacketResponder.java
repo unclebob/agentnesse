@@ -13,6 +13,7 @@ import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,12 +26,11 @@ public class PacketResponder implements Responder {
   private WikiPage page;
   private JSONObject packet;
   List<JSONObject> tables = new ArrayList<>();
-  private String jsonpFunction;
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
     response = new SimpleResponse();
-    jsonpFunction = request.getInput("jsonp");
+    response.setContentType(Response.Format.JSON);
     String pageName = request.getResource();
     PageCrawler pageCrawler = context.getRootPage().getPageCrawler();
     WikiPagePath resourcePath = PathParser.parse(pageName);
@@ -50,10 +50,8 @@ public class PacketResponder implements Responder {
     TableScanner scanner = new MarkdownTableScanner(page.getData().getContent());
 
     addTablesToPacket(scanner);
-    if (jsonpFunction != null)
-      response.setContent(String.format("%s(%s)", jsonpFunction, packet.toString(1)));
-    else
-      response.setContent(packet.toString(1));
+    packet.put("page", page.getName());
+    response.setContent(packet.toString(2));
   }
 
   private void addTablesToPacket(TableScanner scanner) throws JSONException {
@@ -66,32 +64,12 @@ public class PacketResponder implements Responder {
 
   private void addTableToPacket(Table t) throws JSONException {
     JSONObject table = new JSONObject();
-    JSONObject[] parents = new JSONObject[10];
-    parents[0] = table;
+    JSONArray rows = new JSONArray();
     for (int row = 0; row < t.getRowCount(); row++) {
-      List<String> rowList = getRowFromTable(t, row);
-      int indent = getIndent(rowList);
-      if (indent >= 0) {
-        String name = rowList.get(indent);
-        String value = rowList.size() > (indent + 1) ? rowList.get(indent + 1) : "";
-        if (null == value || "".equals(value)) {
-          JSONObject parent = new JSONObject();
-          parents[indent].put(name, parent);
-          parents[indent + 1] = parent;
-        } else {
-          parents[indent].put(name, value);
-        }
-      }
+      rows.put(new JSONArray(getRowFromTable(t, row)));
     }
+    table.put("rows", rows);
     tables.add(table);
-  }
-
-  private int getIndent(List<String> rowList) {
-    for (int indent = 0; indent < rowList.size(); indent++) {
-      if (!"".equals(rowList.get(indent)))
-        return indent;
-    }
-    return -1;
   }
 
   private List<String> getRowFromTable(Table t, int row) {

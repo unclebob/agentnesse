@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentnesse.dev/schemas/results-1.json",
   "title": "AgentNesse run results",
+  "description": "Frozen at version 1 as of 965aad43b.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "run"],

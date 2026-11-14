@@ -69,7 +69,7 @@ public class NameWikiPageResponderTest {
   @Test
   public void testTextPlain() throws Exception {
     Response r = responder.makeResponse(context, request);
-    assertEquals("text/plain", r.getContentType());
+    assertEquals("application/json", r.getContentType());
   }
 
   @Test
@@ -105,13 +105,12 @@ public class NameWikiPageResponderTest {
     WikiPageUtil.addPage(root, pageOnePath, "");
     WikiPageUtil.addPage(root, pageTwoPath, "");
     request.setResource("");
-    request.addInput("format", "json");
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
     JSONArray actual = new JSONArray(response.getContent());
     assertEquals(2, actual.length());
     Set<String> actualSet = new HashSet<>();
-    actualSet.add(actual.getString(0));
-    actualSet.add(actual.getString(1));
+    actualSet.add(actual.getJSONObject(0).getString("name"));
+    actualSet.add(actual.getJSONObject(1).getString("name"));
     Set<String> expectedSet = new HashSet<>();
     expectedSet.add(pageOneName);
     expectedSet.add(pageTwoName);
@@ -124,9 +123,9 @@ public class NameWikiPageResponderTest {
     WikiPageUtil.addPage(frontPage, pageOnePath, "");
     WikiPageUtil.addPage(frontPage, pageTwoPath, "");
     request.setResource("");
-    request.addInput("ShowChildCount","");
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-    assertHasRegexp("FrontPage 2", response.getContent());
+    assertDoesntHaveRegexp("FrontPage 2", response.getContent());
+    assertHasRegexp("\"name\": \"FrontPage\"", response.getContent());
   }
 
   private static int CountLines(String s) {
@@ -178,7 +177,7 @@ public class NameWikiPageResponderTest {
     assertHasRegexp(pageThreeName,                                           response.getContent());
     assertHasRegexp(pageThreeName + "." + pageFourName,                      response.getContent());
     assertHasRegexp(pageThreeName + "." + pageFourName + "." + pageFiveName, response.getContent());
-    assertEquals(5, CountLines(response.getContent()));
+    assertEquals(5, new JSONArray(response.getContent()).length());
   }
 
   @Test
@@ -190,7 +189,7 @@ public class NameWikiPageResponderTest {
     request.addInput("LeafOnly", "");
 
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-    assertEquals(2, CountLines(response.getContent())); // we only have 2 leave pages
+    assertEquals(2, new JSONArray(response.getContent()).length());
   }
 
   @Test
@@ -205,10 +204,23 @@ public class NameWikiPageResponderTest {
 
     // since the setAttribute() calls in createTestPageTree() don't have an effect the following tests are failing
     // reenable them once the issue above has been resolved!
-    assertHasRegexp(pageOneName, response.getContent());
-    assertHasRegexp(pageOneName + "." + pageTwoName + " \\[" + helloTag + "]", response.getContent());
-    assertHasRegexp(pageThreeName + " \\[" + worldTag + "\\]", response.getContent());
-    assertHasRegexp(pageThreeName + "." + pageFourName + " \\[" + worldTag + "\\]", response.getContent());
-    assertHasRegexp(pageThreeName + "." + pageFourName + "." + pageFiveName + " \\[" + fitnesseTag + "\\]\\[" + worldTag + "\\]", response.getContent());
+    JSONArray pages = new JSONArray(response.getContent());
+    assertEquals(helloTag, tagsOf(pages, pageOneName + "." + pageTwoName).getString(0));
+    assertEquals(worldTag, tagsOf(pages, pageThreeName).getString(0));
+    org.json.JSONArray five = tagsOf(pages, pageThreeName + "." + pageFourName + "." + pageFiveName);
+    Set<String> fiveTags = new HashSet<>();
+    for (int i = 0; i < five.length(); i++) {
+      fiveTags.add(five.getString(i));
+    }
+    assertEquals(Set.of(fitnesseTag, worldTag), fiveTags);
+  }
+
+  private static org.json.JSONArray tagsOf(JSONArray pages, String name) {
+    for (int i = 0; i < pages.length(); i++) {
+      if (name.equals(pages.getJSONObject(i).getString("name"))) {
+        return pages.getJSONObject(i).getJSONArray("tags");
+      }
+    }
+    throw new AssertionError(name);
   }
 }

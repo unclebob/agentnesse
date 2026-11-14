@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import static fitnesse.ConfigurationParameter.LISTEN;
-import static fitnesse.ConfigurationParameter.LOG_DIRECTORY;
 import static fitnesse.ConfigurationParameter.MAXIMUM_WORKERS;
 import static fitnesse.ConfigurationParameter.REFACTOR_START_PATH;
 import static fitnesse.ConfigurationParameter.THEME;
@@ -23,7 +22,7 @@ import static fitnesse.ConfigurationParameter.THEME;
 public final class AgentNesseConfig {
   private static final Set<String> KEYS = Set.of(
     "port", "listen", "rootPath", "pageRoot",
-    "logDirectory", "maximumWorkers", "theme", "refactorStartPath");
+    "maximumWorkers", "theme", "refactorStartPath");
 
   private AgentNesseConfig() {
   }
@@ -88,9 +87,6 @@ public final class AgentNesseConfig {
 
   private static boolean applyServer(ContextConfigurator configurator, File file, JSONObject json, String key) {
     switch (key) {
-      case "logDirectory":
-        configurator.withParameter(LOG_DIRECTORY, requireString(file, key, json));
-        return true;
       case "maximumWorkers":
         configurator.withParameter(MAXIMUM_WORKERS, Integer.toString(requireInt(file, key, json)));
         return true;

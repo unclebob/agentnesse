@@ -2,6 +2,9 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders.search;
 
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.regex.Pattern;
 
 import fitnesse.components.TraversalListener;
@@ -68,6 +71,20 @@ public class SearchResponder extends ResultResponder {
 
   private boolean isMethodSearch() {
     return request.hasInput("isMethodSearch");
+  }
+
+  String searchKind() {
+    if (isMethodSearch()) {
+      return "method";
+    }
+    return "Title".equals(getSearchType()) ? "title" : "text";
+  }
+
+  @Override
+  protected JSONObject jsonFor(List<WikiPage> hits) {
+    return super.jsonFor(hits)
+      .put("searchType", searchKind())
+      .put("searchString", getSearchString());
   }
 
   @Override

@@ -14,25 +14,75 @@ final class MarkdownReferences {
     StringBuilder out = new StringBuilder();
     int index = 0;
     while (index < content.length()) {
-      if (startsWith(content, index, "```")) {
-        index = copyFence(content, index, out, changeReference);
-      } else if (startsWith(content, index, "<!--")) {
-        index = copyThrough(content, index, "-->", out);
-      } else if (content.charAt(index) == '`') {
-        index = copyThrough(content, index, "`", out);
-      } else {
-        int length = WikiWords.findWikiWordLength(content.substring(index));
-        if (length > 0 && !insideUrl(content, index)) {
-          String word = content.substring(index, index + length);
-          out.append(changeReference.apply(word).orElse(word));
-          index += length;
-        } else {
-          out.append(content.charAt(index));
-          index++;
-        }
-      }
+      index = advance(content, index, out, changeReference);
     }
     return out.toString();
+  }
+
+  private static int advance(String content, int index, StringBuilder out,
+                             Function<String, Optional<String>> changeReference) {
+    if (startsWith(content, index, "```")) {
+      return copyFence(content, index, out, changeReference);
+    }
+    if (startsWith(content, index, "<!--")) {
+      return copyThrough(content, index, "-->", out);
+    }
+    if (content.charAt(index) == '`') {
+      return copyThrough(content, index, "`", out);
+    }
+    if (content.charAt(index) == '[') {
+      return bracket(content, index, out, changeReference);
+    }
+    return word(content, index, out, changeReference);
+  }
+
+  private static int bracket(String content, int index, StringBuilder out,
+                             Function<String, Optional<String>> changeReference) {
+    int next = link(content, index, out, changeReference);
+    if (next == index) {
+      out.append(content.charAt(index));
+      return index + 1;
+    }
+    return next;
+  }
+
+  private static int word(String content, int index, StringBuilder out,
+                          Function<String, Optional<String>> changeReference) {
+    int pathLength = leadingPath(content, index);
+    int length = pathLength > 0 ? pathLength : WikiWords.findWikiWordLength(content.substring(index));
+    if (length > 0 && !insideUrl(content, index)) {
+      String token = content.substring(index, index + length);
+      out.append(changeReference.apply(token).orElse(token));
+      return index + length;
+    }
+    out.append(content.charAt(index));
+    return index + 1;
+  }
+
+  private static int leadingPath(String content, int index) {
+    if (!pathSigil(content, index)) {
+      return 0;
+    }
+    return scanPath(content, index + 1) - index;
+  }
+
+  private static boolean pathSigil(String content, int index) {
+    char first = content.charAt(index);
+    return "<>^.".indexOf(first) >= 0 && index + 1 < content.length() && Character.isUpperCase(content.charAt(index + 1));
+  }
+
+  private static int scanPath(String content, int end) {
+    while (end < content.length() && pathChar(content.charAt(end))) {
+      end++;
+    }
+    while (content.charAt(end - 1) == '.') {
+      end--;
+    }
+    return end;
+  }
+
+  private static boolean pathChar(char c) {
+    return Character.isLetterOrDigit(c) || c == '.';
   }
 
   private static boolean insideUrl(String content, int index) {
@@ -63,7 +113,45 @@ final class MarkdownReferences {
       return false;
     }
     String body = inner.substring(newline + 1).stripLeading();
-    return body.startsWith("include ") || body.startsWith("include\n") || body.equals("include");
+    return command(body, "include") || command(body, "scenarios");
+  }
+
+  private static boolean command(String body, String name) {
+    return body.equals(name) || body.startsWith(name + " ") || body.startsWith(name + "\n");
+  }
+
+  private static int link(String content, int index, StringBuilder out,
+                          Function<String, Optional<String>> changeReference) {
+    int labelEnd = content.indexOf("](", index);
+    if (labelEnd < 0) {
+      return index;
+    }
+    int destEnd = content.indexOf(')', labelEnd + 2);
+    if (destEnd < 0) {
+      return index;
+    }
+    String destination = content.substring(labelEnd + 2, destEnd);
+    int hash = destination.indexOf('#');
+    String path = hash < 0 ? destination : destination.substring(0, hash);
+    String anchor = hash < 0 ? "" : destination.substring(hash);
+    if (!pagePath(path)) {
+      return index;
+    }
+    out.append(content, index, labelEnd + 2);
+    out.append(changeReference.apply(path).orElse(path)).append(anchor).append(')');
+    return destEnd + 1;
+  }
+
+  private static boolean pagePath(String path) {
+    if (path.isEmpty() || remote(path)) {
+      return false;
+    }
+    char first = path.charAt(0);
+    return "<>^.".indexOf(first) >= 0 || WikiWords.findWikiWordLength(path) == path.length();
+  }
+
+  private static boolean remote(String path) {
+    return path.contains("://") || path.indexOf(' ') >= 0 || path.indexOf('/') >= 0;
   }
 
   private static String rewriteInclude(String fence, Function<String, Optional<String>> changeReference) {

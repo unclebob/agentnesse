@@ -92,16 +92,6 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void createsALoggerWhenALogDirectoryIsConfigured() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty()
-      .withParameter(ConfigurationParameter.LOG_DIRECTORY, "build/test-logs")
-      .withPort(9126)
-      .makeFitNesseContext();
-
-    assertThat(context.logger, is(notNullValue()));
-  }
-
-  @Test
   public void bootstrapIsDefaultTheme() throws IOException {
     String theme = ContextConfigurator
       .empty()

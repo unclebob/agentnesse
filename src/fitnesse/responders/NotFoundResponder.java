@@ -17,9 +17,11 @@ public class NotFoundResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
-    SimpleResponse response = new SimpleResponse(404);
     resource = request.getResource();
-
+    if (JsonResponses.wantsJson(request)) {
+      return JsonResponses.error(404, "notFound", "No page " + resource);
+    }
+    SimpleResponse response = new SimpleResponse(404);
     response.setContent(makeHtml(context, request));
     return response;
   }

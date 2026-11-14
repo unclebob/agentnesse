@@ -9,7 +9,6 @@ public enum ConfigurationParameter {
 
   CONFIG_FILE("ConfigFile"),
   LOG_LEVEL("LogLevel"),
-  LOG_DIRECTORY("LogDirectory"),
   ROOT_PATH("RootPath"),
   ROOT_DIRECTORY("FitNesseRoot"),
   PORT("Port"),

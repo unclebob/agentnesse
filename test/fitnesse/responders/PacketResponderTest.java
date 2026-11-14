@@ -62,47 +62,41 @@ public class PacketResponderTest {
     request.setResource("SimplePage");
     SimpleResponse response = makeResponse();
     assertEquals(200, response.getStatus());
-    assertEquals("{\"tables\": []}", response.getContent());
+    assertJsonEquals("{\"page\":\"SimplePage\",\"tables\":[]}", response.getContent());
   }
 
   @Test
   public void pageWithOneSimpleTable() throws Exception {
-    assertPageWithTableResponseWith("|cell|\n", "{\"tables\": [{\"cell\": {}}]}");
+    assertPageWithTableResponseWith("|cell|\n", "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"cell\"]]}]}");
   }
 
   @Test
   public void pageWithOneSimplePair() throws Exception {
-    assertPageWithTableResponseWith("|name|value|\n", "{\"tables\": [{\"name\": \"value\"}]}");
+    assertPageWithTableResponseWith("|name|value|\n", "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"name\",\"value\"]]}]}");
   }
 
   @Test
   public void pageWithTwoPairs() throws Exception {
     assertPageWithTableResponseWith("|name1|value1|\n|name2|value2|\n",
-      "{\"tables\": [{\n" +
-        " \"name1\": \"value1\",\n" +
-        " \"name2\": \"value2\"\n" +
-        "}]}");
+      "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"name1\",\"value1\"],[\"name2\",\"value2\"]]}]}");
   }
 
   @Test
   public void twoTablesWithSimplePairs() throws Exception {
     assertPageWithTableResponseWith("|n|v|\n\n|n2|v2|\n",
-      "{\"tables\": [\n" +
-        " {\"n\": \"v\"},\n" +
-        " {\"n2\": \"v2\"}\n" +
-        "]}");
+      "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"n\",\"v\"]]},{\"rows\":[[\"n2\",\"v2\"]]}]}");
   }
 
   @Test
   public void oneTableWithNestedPair() throws Exception {
-    JSONObject expected = new JSONObject("{\"tables\": [{\"n\": {\"m\": \"v\"}}]}");
-    assertPageWithTableResponseWith("|n|\n||m|v|\n", expected.toString(1));
+    assertPageWithTableResponseWith("|n|\n||m|v|\n",
+      "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"n\"],[\"\",\"m\",\"v\"]]}]}");
   }
 
   @Test
   public void tableWithBlankLinesIgnored() throws Exception {
-    JSONObject expected = new JSONObject("{\"tables\": [{\"n\": {\"m\": \"v\"}}]}");
-    assertPageWithTableResponseWith("|n|\n||||\n||m|v|\n", expected.toString(1));
+    assertPageWithTableResponseWith("|n|\n||||\n||m|v|\n",
+      "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"n\"],[\"\"],[\"\",\"m\",\"v\"]]}]}");
   }
 
   @Test
@@ -117,23 +111,16 @@ public class PacketResponderTest {
         "|||Luka|5|\n" +
         "||Gina|\n" +
         "||Justin|\n";
-    String expectedString = "{\"tables\": [{\"bob\": {\n" +
-      " \"Angela\": {\n" +
-      "  \"Lexy\": \"6\",\n" +
-      "  \"Mandy\": \"2\",\n" +
-      "  \"Sami\": \"4\"\n" +
-      " },\n" +
-      " \"Gina\": {},\n" +
-      " \"Justin\": {},\n" +
-      " \"Micah\": {\"Luka\": \"5\"}\n" +
-      "}}]}";
-    JSONObject expected = new JSONObject(expectedString);
-    assertPageWithTableResponseWith(table, expected.toString(1));
+    assertPageWithTableResponseWith(table,
+      "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[" +
+        "[\"bob\"],[\"\",\"Angela\"],[\"\",\"\",\"Lexy\",\"6\"],[\"\",\"\",\"Sami\",\"4\"],[\"\",\"\",\"Mandy\",\"2\"]," +
+        "[\"\",\"Micah\"],[\"\",\"\",\"Luka\",\"5\"],[\"\",\"Gina\"],[\"\",\"Justin\"]" +
+        "]}]}");
   }
 
   @Test
   public void jsonpQueryArgument() throws Exception {
     request.addInput("jsonp", "load");
-    assertPageWithTableResponseWith("|cell|\n", "load({\"tables\": [{\"cell\": {}}]})");
+    assertPageWithTableResponseWith("|cell|\n", "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"cell\"]]}]}");
   }
 }

@@ -6,62 +6,48 @@ import fitnesse.FitNesseContext;
 import fitnesse.http.Request;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
-import org.apache.commons.lang3.StringUtils;
+import fitnesse.http.Response;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.*;
 
 public class NameWikiPageResponder extends BasicResponder {
   @Override
   protected String contentFrom(FitNesseContext context, Request request, WikiPage requestedPage) {
-    List<String> lines = addLines(request, requestedPage, "");
-
-    String format = request.getInput("format");
-    if ("json".equalsIgnoreCase(format)) {
-      JSONArray jsonPages = new JSONArray(lines);
-      return jsonPages.toString();
+    JSONArray pages = new JSONArray();
+    for (NamedPage named : addLines(request, requestedPage, "")) {
+      JSONObject item = new JSONObject().put("name", named.name);
+      if (request.hasInput("ShowTags")) {
+        item.put("tags", new JSONArray(named.tags));
+      }
+      pages.put(item);
     }
-    return StringUtils.join(lines, System.getProperty("line.separator"));
+    return pages.toString(2);
   }
 
-  private List<String> addLines(Request request, WikiPage requestedPage, String prefix) {
-    List<String> lines = new ArrayList<>();
+  private List<NamedPage> addLines(Request request, WikiPage requestedPage, String prefix) {
+    List<NamedPage> lines = new ArrayList<>();
 
     for (WikiPage child : requestedPage.getChildren()) {
-	  if(!request.hasInput("LeafOnly") || child.getChildren().isEmpty()) {
-        lines.add(makeLine(request, child, prefix));
+      if (!request.hasInput("LeafOnly") || child.getChildren().isEmpty()) {
+        lines.add(new NamedPage(prefix + child.getName(), request.hasInput("ShowTags") ? getTags(child) : Set.of()));
       }
-
-	  if (request.hasInput("Recursive")) {
-	    lines.addAll(addLines(request, child, prefix + child.getName() + "."));
-	  }
+      if (request.hasInput("Recursive")) {
+        lines.addAll(addLines(request, child, prefix + child.getName() + "."));
+      }
     }
-
     return lines;
   }
 
-  private String makeLine(Request request, WikiPage child, String prefix) {
-    int numberOfChildren = child.getChildren().size();
+  private static final class NamedPage {
+    private final String name;
+    private final Set<String> tags;
 
-    StringBuilder line = new StringBuilder(64)
-            .append(prefix)
-            .append(child.getName());
-
-    if (request.hasInput("ShowChildCount")) {
-      line.append(" ").append(numberOfChildren);
+    private NamedPage(String name, Set<String> tags) {
+      this.name = name;
+      this.tags = tags;
     }
-
-    if (request.hasInput("ShowTags")) {
-	  Set<String> tags = getTags(child);
-	  if(!tags.isEmpty()) {
-	    line.append(" ");
-		for(String tag : tags) {
-          line.append("[").append(tag).append("]");
-		}
-      }
-	}
-
-    return line.toString();
   }
 
   private Set<String> getTags(WikiPage page) {
@@ -83,7 +69,7 @@ public class NameWikiPageResponder extends BasicResponder {
 
   @Override
   protected String getContentType() {
-    return "text/plain";
+    return Response.Format.JSON.getContentType();
   }
 
 }

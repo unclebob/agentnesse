@@ -3,6 +3,9 @@ package fitnesse.responders.search;
 import static fitnesse.wiki.PageData.LEGACY_PAGE_TYPE_ATTRIBUTE;
 import static fitnesse.wiki.PageData.PAGE_TYPE_ATTRIBUTE;
 import static fitnesse.wiki.PageData.PropertySUITES;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,8 +14,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fitnesse.markdown.FrontMatter;
+import fitnesse.responders.JsonResponses;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.search.AttributeWikiPageFinder;
+import fitnesse.wiki.search.FrontMatterFinder;
 import fitnesse.wiki.search.PageFinder;
 import fitnesse.components.TraversalListener;
 import fitnesse.http.Request;
@@ -97,7 +103,26 @@ public class SearchPropertiesResponder extends ResultResponder {
   }
 
   @Override
+  protected JSONObject jsonFor(List<WikiPage> hits) {
+    JSONArray pages = new JSONArray();
+    for (WikiPage hit : hits) {
+      FrontMatter matter = FrontMatter.read(hit.getData().getContent());
+      pages.put(new JSONObject()
+        .put("path", hit.getFullPath().toString())
+        .put("type", matter.type() == null ? "static" : matter.type())
+        .put("tags", new JSONArray(matter.tags()))
+        .put("help", matter.help() == null ? JSONObject.NULL : matter.help())
+        .put("prune", matter.prune()));
+    }
+    return new JSONObject().put("pages", pages);
+  }
+
+  @Override
   protected PageFinder getPageFinder(TraversalListener<WikiPage> observer) {
+    if (JsonResponses.wantsJson(request)) {
+      return new FrontMatterFinder(observer, request.getInput("type"), request.getInput("tags"),
+        request.getInput("help"), request.getInput("prune"));
+    }
     List<PageType> pageTypes = getPageTypesFromInput(request);
     Map<String, Boolean> attributes = getAttributesFromInput(request);
     String suites = getSuitesFromInput(request);

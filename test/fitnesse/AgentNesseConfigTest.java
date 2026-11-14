@@ -21,7 +21,7 @@ public class AgentNesseConfigTest {
   @Test
   public void appliesEveryKey() throws Exception {
     File file = write("{\"port\": 8123, \"rootPath\": \"work\", \"pageRoot\": \"Pages\", " +
-      "\"logDirectory\": \"logs\", \"maximumWorkers\": 12, \"theme\": \"mint\", " +
+      "\"maximumWorkers\": 12, \"theme\": \"mint\", " +
       "\"refactorStartPath\": \"FrontPage\", \"listen\": \"0.0.0.0\"}");
 
     ContextConfigurator configurator = ContextConfigurator.empty();
@@ -30,7 +30,6 @@ public class AgentNesseConfigTest {
     assertThat(configurator.get(ConfigurationParameter.PORT), is("8123"));
     assertThat(configurator.get(ConfigurationParameter.ROOT_PATH), is("work"));
     assertThat(configurator.get(ConfigurationParameter.ROOT_DIRECTORY), is("Pages"));
-    assertThat(configurator.get(ConfigurationParameter.LOG_DIRECTORY), is("logs"));
     assertThat(configurator.get(ConfigurationParameter.MAXIMUM_WORKERS), is("12"));
     assertThat(configurator.get(ConfigurationParameter.THEME), is("mint"));
     assertThat(configurator.get(ConfigurationParameter.REFACTOR_START_PATH), is("FrontPage"));

@@ -17,8 +17,12 @@ import fitnesse.testsystems.TestSystemFactory;
 import fitnesse.testsystems.slim.InstructionTestSystem;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InstructionResponder implements Responder {
 
@@ -40,8 +44,27 @@ public class InstructionResponder implements Responder {
     }
 
     SimpleResponse response = new SimpleResponse();
-    response.setContent(result.toString());
+    response.setContentType(Response.Format.JSON);
+    response.setContent(json(result.toString()).toString(2));
     return response;
+  }
+
+  private static JSONObject json(String lines) {
+    Map<String, JSONArray> byPath = new LinkedHashMap<>();
+    for (String line : lines.split("\\R")) {
+      if (line.isEmpty()) {
+        continue;
+      }
+      int bar = line.indexOf('|');
+      String path = bar < 0 ? line : line.substring(0, bar);
+      String instruction = bar < 0 ? "" : line.substring(bar + 1);
+      byPath.computeIfAbsent(path, key -> new JSONArray()).put(instruction);
+    }
+    JSONArray pages = new JSONArray();
+    for (Map.Entry<String, JSONArray> entry : byPath.entrySet()) {
+      pages.put(new JSONObject().put("path", entry.getKey()).put("instructions", entry.getValue()));
+    }
+    return new JSONObject().put("pages", pages);
   }
 
   static class InstructionTestSystemFactory implements TestSystemFactory {

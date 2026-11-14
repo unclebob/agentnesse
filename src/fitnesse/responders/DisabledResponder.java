@@ -9,6 +9,9 @@ import fitnesse.wiki.WikiPage;
 public class DisabledResponder extends BasicResponder {
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    if (JsonResponses.wantsJson(request)) {
+      return JsonResponses.error(403, "disabled", "This responder is disabled");
+    }
     return responseWith(contentFrom(context, request, null));
   }
 

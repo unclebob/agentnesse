@@ -1,6 +1,8 @@
 package fitnesse.responders;
 
 import fitnesse.FitNesseContext;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
@@ -32,7 +34,7 @@ public class ScopeVariablesResponder extends BasicResponder {
     else {
       variables = new ArrayList<>();
       listVariablesLoc(page);
-      response = makeResponse(request);
+      response = JsonResponses.wantsJson(request) ? jsonResponse() : makeResponse(request);
     }
     return response;
   }
@@ -49,6 +51,20 @@ public class ScopeVariablesResponder extends BasicResponder {
     }
 
     if (page.getParent() != page) listVariablesLoc(page.getParent());
+  }
+
+  private Response jsonResponse() throws UnsupportedEncodingException {
+    JSONArray values = new JSONArray();
+    for (ScopeVariable variable : variables) {
+      values.put(new JSONObject()
+        .put("name", variable.getKey())
+        .put("value", variable.getValue())
+        .put("page", variable.getLocation()));
+    }
+    SimpleResponse response = new SimpleResponse();
+    response.setContentType(Response.Format.JSON);
+    response.setContent(new JSONObject().put("variables", values).toString(2));
+    return response;
   }
 
   private Response makeResponse(Request request) throws UnsupportedEncodingException {

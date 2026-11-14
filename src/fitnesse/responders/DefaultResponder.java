@@ -10,6 +10,9 @@ public class DefaultResponder extends BasicResponder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    if (JsonResponses.wantsJson(request)) {
+      return JsonResponses.error(404, "default", "No responder for " + request.getResource());
+    }
     return responseWith(contentFrom(context, request, null));
   }
 }
