@@ -78,16 +78,28 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
 
   @Override
   public void testComplete(TestPage testPage, TestSummary testSummary) {
-    String status = RunDocument.status(testPage.getName(), testSummary);
+    String page = path(testPage);
+    JSONObject counts = PageCounts.counts(blocks(page));
+    String status = PageCounts.status(testPage.getName(), counts);
     if (RunDocument.failed(status)) {
       failures++;
     }
     record(new JSONObject()
       .put("event", "page-done")
-      .put("path", path(testPage))
-      .put("counts", RunDocument.countsJson(testSummary))
-      .put("durationMillis", elapsed(path(testPage)))
+      .put("path", page)
+      .put("counts", counts)
+      .put("durationMillis", elapsed(page))
       .put("status", status));
+  }
+
+  private JSONArray blocks(String path) {
+    JSONArray blocks = new JSONArray();
+    for (JSONObject event : events) {
+      if ("table-done".equals(event.optString("event")) && path.equals(event.optString("path"))) {
+        blocks.put(event.getJSONObject("block"));
+      }
+    }
+    return blocks;
   }
 
   @Override

@@ -8,7 +8,7 @@ final class FailureText {
   private FailureText() {
   }
 
-  static String of(JSONObject page) {
+  static String assertions(JSONObject page) {
     StringBuilder text = new StringBuilder();
     JSONArray blocks = page.optJSONArray("blocks");
     if (blocks != null) {
@@ -19,10 +19,25 @@ final class FailureText {
     if (text.length() == 0 && "empty".equals(page.optString("status"))) {
       return "Page executed no assertions";
     }
-    if (text.length() == 0) {
-      return page.getJSONObject("counts").toString();
-    }
     return text.toString().trim();
+  }
+
+  static String tables(JSONObject page) {
+    StringBuilder text = new StringBuilder();
+    appendTableFailures(text, page.optJSONArray("blocks"));
+    return text.toString().trim();
+  }
+
+  private static void appendTableFailures(StringBuilder text, JSONArray blocks) {
+    if (blocks == null) {
+      return;
+    }
+    for (int i = 0; i < blocks.length(); i++) {
+      JSONObject block = blocks.getJSONObject(i);
+      if ("table-failure".equals(block.optString("status", ""))) {
+        text.append("table failure ").append(block.optString("name")).append('\n');
+      }
+    }
   }
 
   private static void appendBlock(StringBuilder text, JSONObject block) {

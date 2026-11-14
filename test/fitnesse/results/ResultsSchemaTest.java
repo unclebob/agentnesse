@@ -25,7 +25,10 @@ public class ResultsSchemaTest {
     }
     JSONObject document = RunDocument.reduce(java.util.List.of(
       new JSONObject().put("event", "table-done").put("path", "Page").put("block",
-        new JSONObject().put("name", "script").put("rows", new JSONArray())),
+        new JSONObject().put("name", "script").put("status", "pass")
+          .put("counts", new JSONObject().put("right", 1).put("wrong", 0).put("ignored", 0).put("exceptions", 0))
+          .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(
+            new JSONObject().put("row", 1).put("column", 1).put("status", "pass")))))),
       new JSONObject().put("event", "page-done").put("path", "Page")
         .put("counts", RunDocument.countsJson(new fitnesse.testsystems.TestSummary(1, 0, 0, 0)))
         .put("durationMillis", 3).put("status", "pass")
@@ -40,6 +43,31 @@ public class ResultsSchemaTest {
   @Test(expected = IllegalStateException.class)
   public void aPageWithAssertionsAndNoBlocksIsRejected() throws Exception {
     SchemaCheck.main(new String[]{"test/fitnesse/results/assertions-without-blocks.json"});
+  }
+
+  @Test
+  public void matchingCellsOfEveryAssertionStatusAreAccepted() {
+    JSONObject cell = new JSONObject().put("row", 1).put("column", 1);
+    JSONObject pass = new JSONObject(cell.toString()).put("status", "pass");
+    JSONObject fail = new JSONObject(cell.toString()).put("status", "fail");
+    JSONObject ignore = new JSONObject(cell.toString()).put("status", "ignore");
+    JSONObject error = new JSONObject(cell.toString()).put("status", "error");
+    JSONObject compared = new JSONObject().put("name", "script").put("status", "fail")
+      .put("counts", new JSONObject().put("right", 1).put("wrong", 1).put("ignored", 1).put("exceptions", 1))
+      .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(pass).put(fail).put(ignore).put(error))));
+    JSONObject broken = new JSONObject().put("name", "Missing").put("status", "table-failure")
+      .put("counts", new JSONObject().put("right", 0).put("wrong", 0).put("ignored", 0).put("exceptions", 0))
+      .put("rows", new JSONArray());
+    JSONObject page = new JSONObject().put("path", "Demo").put("status", "fail").put("durationMillis", 1)
+      .put("counts", PageCounts.counts(1, 1, 1, 1, 1))
+      .put("blocks", new JSONArray().put(compared).put(broken));
+    JSONObject run = new JSONObject().put("pages", new JSONArray().put(page)).put("counts", PageCounts.counts(1, 1, 1, 1, 1));
+    SchemaCheck.countsMatchCells(run);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void cellTotalsThatDoNotMatchPageCountsAreRejected() throws Exception {
+    SchemaCheck.main(new String[]{"test/fitnesse/results/counts-do-not-match-cells.json"});
   }
 
   @Test

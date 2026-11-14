@@ -28,10 +28,10 @@ public final class RunDocument {
     }
     JSONArray pageList = new JSONArray();
     JSONArray failed = new JSONArray();
-    TestSummary counts = new TestSummary();
+    JSONObject counts = PageCounts.counts(0, 0, 0, 0, 0);
     for (JSONObject page : pages.values()) {
       pageList.put(page);
-      counts.add(countsOf(page.getJSONObject("counts")));
+      counts = PageCounts.add(counts, page.getJSONObject("counts"));
       if (failed(page.getString("status"))) {
         failed.put(page.getString("path"));
       }
@@ -41,7 +41,7 @@ public final class RunDocument {
     run.put("name", name == null ? "" : name);
     run.put("start", start);
     run.put("durationMillis", durationMillis);
-    run.put("counts", countsJson(counts));
+    run.put("counts", counts);
     run.put("failedPages", failed);
     run.put("pages", pageList);
     run.put("servers", servers);
@@ -66,24 +66,21 @@ public final class RunDocument {
   private static JSONObject newPage(String path) {
     return new JSONObject()
       .put("path", path)
-      .put("counts", countsJson(new TestSummary()))
+      .put("counts", PageCounts.counts(0, 0, 0, 0, 0))
       .put("durationMillis", 0)
       .put("status", "pass")
       .put("blocks", new JSONArray());
   }
 
   private static void finish(JSONObject page, JSONObject event) {
-    page.put("counts", event.getJSONObject("counts"));
     page.put("durationMillis", event.getLong("durationMillis"));
-    page.put("status", event.getString("status"));
+    JSONObject counts = PageCounts.counts(page.getJSONArray("blocks"));
+    page.put("counts", counts);
+    page.put("status", PageCounts.status(page.getString("path"), counts));
   }
 
   public static JSONObject countsJson(TestSummary summary) {
-    return new JSONObject()
-      .put("right", summary.getRight())
-      .put("wrong", summary.getWrong())
-      .put("ignored", summary.getIgnores())
-      .put("exceptions", summary.getExceptions());
+    return PageCounts.counts(summary.getRight(), summary.getWrong(), summary.getIgnores(), summary.getExceptions(), 0);
   }
 
   public static TestSummary countsOf(JSONObject counts) {

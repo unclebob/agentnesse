@@ -62,6 +62,7 @@ public class ResultModelTest {
     CellRecord cell = table.cellRecord(1, 3);
     assertEquals("ignore", cell.status());
     assertEquals("ignore", table.rowRecord(1).status());
+    assertFalse(cell.assertion());
     System.out.println("IGNORE " + cell.dump());
   }
 

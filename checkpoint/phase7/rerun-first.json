@@ -8,11 +8,18 @@
         "counts": {
           "ignored": 0,
           "right": 0,
+          "tableFailures": 0,
           "exceptions": 0,
           "wrong": 1
         },
         "blocks": [
           {
+            "counts": {
+              "ignored": 0,
+              "right": 0,
+              "exceptions": 0,
+              "wrong": 1
+            },
             "name": "script",
             "rows": [
               {
@@ -35,7 +42,7 @@
                     "row": 1,
                     "error": null,
                     "value": null,
-                    "status": "pass"
+                    "status": null
                   }
                 ]
               },
@@ -83,7 +90,8 @@
                   }
                 ]
               }
-            ]
+            ],
+            "status": "fail"
           }
         ],
         "durationMillis": 50,
@@ -94,11 +102,18 @@
         "counts": {
           "ignored": 0,
           "right": 1,
+          "tableFailures": 0,
           "exceptions": 0,
           "wrong": 0
         },
         "blocks": [
           {
+            "counts": {
+              "ignored": 0,
+              "right": 1,
+              "exceptions": 0,
+              "wrong": 0
+            },
             "name": "script",
             "rows": [
               {
@@ -121,7 +136,7 @@
                     "row": 1,
                     "error": null,
                     "value": null,
-                    "status": "pass"
+                    "status": null
                   }
                 ]
               },
@@ -169,10 +184,11 @@
                   }
                 ]
               }
-            ]
+            ],
+            "status": "pass"
           }
         ],
-        "durationMillis": 3,
+        "durationMillis": 2,
         "status": "pass"
       }
     ],
@@ -193,12 +209,13 @@
     "counts": {
       "ignored": 0,
       "right": 1,
+      "tableFailures": 0,
       "exceptions": 0,
       "wrong": 1
     },
     "name": "Demo",
-    "start": "2026-11-14T13:16:17.448Z",
-    "durationMillis": 257,
+    "start": "2026-11-14T14:03:34.029Z",
+    "durationMillis": 260,
     "id": "1"
   }
 }

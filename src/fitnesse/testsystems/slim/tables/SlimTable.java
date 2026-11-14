@@ -371,6 +371,15 @@ public abstract class SlimTable {
       else
         return SlimTestResult.error("Unknown construction message", actual);
     }
+
+    @Override
+    public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) {
+      SlimExceptionResult result = super.evaluateException(exceptionResult);
+      if (getCol() >= 0) {
+        table.markNotAnAssertion(getCol(), getRow());
+      }
+      return result;
+    }
   }
 
   class SymbolAssignmentExpectation extends RowExpectation {

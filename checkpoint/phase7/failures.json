@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "run": {
+    "stoptest": "?responder=stoptest&id=1",
+    "pages": [
+      {
+        "path": "Demo.Broken",
+        "counts": {
+          "ignored": 0,
+          "right": 0,
+          "tableFailures": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [
+          {
+            "counts": {
+              "ignored": 0,
+              "right": 0,
+              "exceptions": 0,
+              "wrong": 0
+            },
+            "name": "script",
+            "rows": [
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 1,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 2,
+                    "row": 1,
+                    "error": {
+                      "kind": "MISSING_FIXTURE",
+                      "block": "script",
+                      "stackTrace": "at fitnesse.slim.fixtureInteraction.SimpleInteraction.searchPathsForClass(SimpleInteraction.java:87) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.createInstance(SimpleInteraction.java:41) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimExecutionContext.create(SlimExecutionContext.java:52) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.StatementExecutor.create(StatementExecutor.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.instructions.MakeInstruction.executeInternal(MakeInstruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.instructions.Instruction.execute(Instruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor.execute(ListExecutor.java:85) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.executeInstructions(SlimServer.java:83) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.serve(SlimServer.java:48) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.handle(SlimService.java:189) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.acceptOne(SlimService.java:197) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.accept(SlimService.java:161) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:118) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.run(SlimService.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.main(SlimService.java:78) [fitnesse-20261114-standalone.jar:20261114]",
+                      "page": "Broken",
+                      "row": 1,
+                      "type": "COULD_NOT_INVOKE_CONSTRUCTOR",
+                      "message": "NoSuchFixtureForTableFailure[0]",
+                      "cell": 2
+                    },
+                    "value": null,
+                    "status": null
+                  }
+                ]
+              }
+            ],
+            "status": "table-failure"
+          }
+        ],
+        "durationMillis": 27,
+        "status": "error"
+      },
+      {
+        "path": "Demo.Compare",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "tableFailures": 0,
+          "exceptions": 0,
+          "wrong": 1
+        },
+        "blocks": [
+          {
+            "counts": {
+              "ignored": 0,
+              "right": 1,
+              "exceptions": 0,
+              "wrong": 1
+            },
+            "name": "script",
+            "rows": [
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 1,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": "fitnesse.fixtures.EchoFixture",
+                    "symbol": null,
+                    "expected": "fitnesse.fixtures.EchoFixture",
+                    "column": 2,
+                    "row": 1,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 2,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 3,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": "ok",
+                    "symbol": null,
+                    "expected": "ok",
+                    "column": 4,
+                    "row": 2,
+                    "error": null,
+                    "value": null,
+                    "status": "pass"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 1,
+                    "row": 3,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 2,
+                    "row": 3,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": null,
+                    "symbol": null,
+                    "expected": null,
+                    "column": 3,
+                    "row": 3,
+                    "error": null,
+                    "value": null,
+                    "status": null
+                  },
+                  {
+                    "actual": "ok",
+                    "symbol": null,
+                    "expected": "bad",
+                    "column": 4,
+                    "row": 3,
+                    "error": null,
+                    "value": null,
+                    "status": "fail"
+                  }
+                ]
+              }
+            ],
+            "status": "fail"
+          }
+        ],
+        "durationMillis": 28,
+        "status": "fail"
+      }
+    ],
+    "servers": [
+      {
+        "stdout": "",
+        "launchFailure": null,
+        "name": "slim:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
+      }
+    ],
+    "failedPages": [
+      "Demo.Broken",
+      "Demo.Compare"
+    ],
+    "counts": {
+      "ignored": 0,
+      "right": 1,
+      "tableFailures": 1,
+      "exceptions": 0,
+      "wrong": 1
+    },
+    "name": "Demo",
+    "start": "2026-11-14T14:03:27.496Z",
+    "durationMillis": 261,
+    "id": "1"
+  }
+}

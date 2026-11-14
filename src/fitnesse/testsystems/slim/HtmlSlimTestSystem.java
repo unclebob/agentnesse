@@ -53,7 +53,7 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
         try {
           processTable(theTable, isSuiteTearDownPage);
           if (theTable.getTable() instanceof MarkdownTable markdown) {
-            publishTable(pageToTest, markdown);
+            publishTree(pageToTest, markdown);
           }
         } catch (SyntaxError e) {
           String tableName = theTable.getTable().getCellContents(0, 0);
@@ -64,6 +64,13 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
         String html = createHtmlResults(startWithTable, nextTable);
         testOutputChunk(pageToTest, html);
       }
+    }
+  }
+
+  private void publishTree(TestPage page, MarkdownTable table) {
+    publishTable(page, table);
+    for (MarkdownTable child : table.childTables()) {
+      publishTree(page, child);
     }
   }
 

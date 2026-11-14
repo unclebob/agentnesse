@@ -67,6 +67,26 @@ public final class MarkdownTable implements Table {
     return recorded == null ? CellRecord.status(null) : recorded;
   }
 
+  /** The cell text, not the pass/fail decoration written over it. */
+  public String originalCell(int column, int row) {
+    return rows.get(row).get(column).content;
+  }
+
+  public List<MarkdownTable> childTables() {
+    List<MarkdownTable> tables = new ArrayList<>();
+    for (PlacedChild child : children) {
+      tables.add(child.table);
+    }
+    return tables;
+  }
+
+  public void markNotAnAssertion(int column, int row) {
+    Cell cell = rows.get(row).get(column);
+    if (cell.record != null) {
+      cell.record = cell.record.asTableProblem();
+    }
+  }
+
   @Override
   public String getCellContents(int column, int row) {
     return rows.get(row).get(column).shown();

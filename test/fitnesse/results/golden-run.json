@@ -5,19 +5,28 @@
     "name": "Suite",
     "start": "2026-11-14T00:00:00Z",
     "durationMillis": 12,
-    "counts": { "right": 1, "wrong": 0, "ignored": 0, "exceptions": 0 },
+    "counts": { "right": 1, "wrong": 0, "ignored": 0, "exceptions": 0, "tableFailures": 0 },
     "failedPages": ["Suite.Empty"],
     "pages": [
       {
         "path": "Suite.One",
-        "counts": { "right": 1, "wrong": 0, "ignored": 0, "exceptions": 0 },
+        "counts": { "right": 1, "wrong": 0, "ignored": 0, "exceptions": 0, "tableFailures": 0 },
         "durationMillis": 5,
         "status": "pass",
-        "blocks": [{ "name": "script", "rows": [] }]
+        "blocks": [
+          {
+            "name": "script",
+            "status": "pass",
+            "counts": { "right": 1, "wrong": 0, "ignored": 0, "exceptions": 0 },
+            "rows": [
+              { "cells": [ { "row": 2, "column": 1, "status": "pass" } ] }
+            ]
+          }
+        ]
       },
       {
         "path": "Suite.Empty",
-        "counts": { "right": 0, "wrong": 0, "ignored": 0, "exceptions": 0 },
+        "counts": { "right": 0, "wrong": 0, "ignored": 0, "exceptions": 0, "tableFailures": 0 },
         "durationMillis": 1,
         "status": "empty",
         "blocks": []

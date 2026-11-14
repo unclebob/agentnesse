@@ -20,7 +20,10 @@ public class RunDocumentTest {
     List<JSONObject> events = List.of(
       new JSONObject().put("event", "page-started").put("path", "Suite.One"),
       new JSONObject().put("event", "table-done").put("path", "Suite.One").put("block",
-        new JSONObject().put("name", "script").put("rows", new JSONArray())),
+        new JSONObject().put("name", "script").put("status", "pass")
+          .put("counts", new JSONObject().put("right", 1).put("wrong", 0).put("ignored", 0).put("exceptions", 0))
+          .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(
+            new JSONObject().put("row", 2).put("column", 1).put("status", "pass")))))),
       new JSONObject().put("event", "page-done").put("path", "Suite.One")
         .put("counts", RunDocument.countsJson(new TestSummary(1, 0, 0, 0)))
         .put("durationMillis", 5).put("status", "pass"),
@@ -64,8 +67,9 @@ public class RunDocumentTest {
     JSONObject cell = new JSONObject()
       .put("row", 2).put("column", 4).put("status", "fail")
       .put("expected", "ok").put("actual", "bad").put("error", JSONObject.NULL);
-    JSONObject block = new JSONObject().put("name", "script").put("rows",
-      new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(cell))));
+    JSONObject block = new JSONObject().put("name", "script").put("status", "fail")
+      .put("counts", new JSONObject().put("right", 0).put("wrong", 1).put("ignored", 0).put("exceptions", 0))
+      .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(cell))));
     JSONObject document = RunDocument.reduce(List.of(
       new JSONObject().put("event", "table-done").put("path", "Demo.Fail").put("block", block),
       new JSONObject().put("event", "page-done").put("path", "Demo.Fail")
@@ -84,8 +88,9 @@ public class RunDocumentTest {
     JSONObject error = new JSONObject().put("kind", "EXCEPTION").put("type", "java.lang.RuntimeException")
       .put("message", "boom").put("stackTrace", "at Demo.main");
     JSONObject cell = new JSONObject().put("row", 1).put("column", 1).put("status", "error").put("error", error);
-    JSONObject block = new JSONObject().put("name", "script").put("rows",
-      new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(cell))));
+    JSONObject block = new JSONObject().put("name", "script").put("status", "error")
+      .put("counts", new JSONObject().put("right", 0).put("wrong", 0).put("ignored", 0).put("exceptions", 1))
+      .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(cell))));
     JSONObject document = RunDocument.reduce(List.of(
       new JSONObject().put("event", "table-done").put("path", "Demo.Boom").put("block", block),
       new JSONObject().put("event", "page-done").put("path", "Demo.Boom")
@@ -95,5 +100,32 @@ public class RunDocumentTest {
     String xml = JunitXmlWriter.xml(document);
     assertTrue(xml, xml.contains("errors=\"1\""));
     assertTrue(xml, xml.contains("boom"));
+  }
+
+  @Test
+  public void aTableFailureIsAnErrorAndAnAssertionFailureIsAFailure() {
+    JSONObject broken = new JSONObject().put("name", "NoSuchFixture").put("status", "table-failure")
+      .put("counts", new JSONObject().put("right", 0).put("wrong", 0).put("ignored", 0).put("exceptions", 0))
+      .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(
+        new JSONObject().put("row", 1).put("column", 1).put("status", JSONObject.NULL)))));
+    JSONObject compared = new JSONObject().put("name", "script").put("status", "fail")
+      .put("counts", new JSONObject().put("right", 1).put("wrong", 1).put("ignored", 0).put("exceptions", 0))
+      .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray()
+        .put(new JSONObject().put("row", 2).put("column", 4).put("status", "pass").put("expected", "ok").put("actual", "ok"))
+        .put(new JSONObject().put("row", 3).put("column", 4).put("status", "fail").put("expected", "bad").put("actual", "ok")))));
+    JSONObject document = RunDocument.reduce(List.of(
+      new JSONObject().put("event", "table-done").put("path", "Demo.Both").put("block", compared),
+      new JSONObject().put("event", "table-done").put("path", "Demo.Both").put("block", broken),
+      new JSONObject().put("event", "page-done").put("path", "Demo.Both")
+        .put("counts", RunDocument.countsJson(new TestSummary())).put("durationMillis", 5).put("status", "pass")
+    ), "1", "Demo", "start", 5);
+    JSONObject page = document.getJSONObject("run").getJSONArray("pages").getJSONObject(0);
+    assertEquals(1, page.getJSONObject("counts").getInt("right"));
+    assertEquals(1, page.getJSONObject("counts").getInt("wrong"));
+    assertEquals(1, page.getJSONObject("counts").getInt("tableFailures"));
+    assertEquals("fail", page.getString("status"));
+    String xml = JunitXmlWriter.xml(document);
+    assertTrue(xml, xml.contains("<failure message=\"script row 3 column 4 expected [bad] actual [ok]\">"));
+    assertTrue(xml, xml.contains("<error message=\"table failure NoSuchFixture\">"));
   }
 }

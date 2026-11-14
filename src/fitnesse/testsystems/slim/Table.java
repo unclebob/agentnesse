@@ -32,6 +32,10 @@ public interface Table {
 
   void updateContent(int col, int row, SlimExceptionResult exceptionResult);
 
+  /** A construction failure belongs to the table, not to the assertion counts. */
+  default void markNotAnAssertion(int col, int row) {
+  }
+
   Table asTemplate(CellContentSubstitution substitution) throws SyntaxError;
 
   // Mainly for IDE navigation

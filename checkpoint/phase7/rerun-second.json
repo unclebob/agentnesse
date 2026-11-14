@@ -8,11 +8,18 @@
         "counts": {
           "ignored": 0,
           "right": 0,
+          "tableFailures": 0,
           "exceptions": 0,
           "wrong": 1
         },
         "blocks": [
           {
+            "counts": {
+              "ignored": 0,
+              "right": 0,
+              "exceptions": 0,
+              "wrong": 1
+            },
             "name": "script",
             "rows": [
               {
@@ -35,7 +42,7 @@
                     "row": 1,
                     "error": null,
                     "value": null,
-                    "status": "pass"
+                    "status": null
                   }
                 ]
               },
@@ -83,10 +90,11 @@
                   }
                 ]
               }
-            ]
+            ],
+            "status": "fail"
           }
         ],
-        "durationMillis": 49,
+        "durationMillis": 51,
         "status": "fail"
       }
     ],
@@ -107,11 +115,12 @@
     "counts": {
       "ignored": 0,
       "right": 0,
+      "tableFailures": 0,
       "exceptions": 0,
       "wrong": 1
     },
     "name": "Demo",
-    "start": "2026-11-14T13:16:17.880Z",
+    "start": "2026-11-14T14:03:34.465Z",
     "durationMillis": 254,
     "id": "1"
   }

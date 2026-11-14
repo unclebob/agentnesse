@@ -14,43 +14,85 @@ public final class CellRecord {
   private final SlimFailure failure;
   private final String symbol;
   private final String value;
+  private final boolean assertion;
+  private final boolean trouble;
 
-  private CellRecord(String status, String actual, String expected, SlimFailure failure, String symbol, String value) {
+  private CellRecord(String status, String actual, String expected, SlimFailure failure, String symbol, String value,
+                     boolean assertion, boolean trouble) {
     this.status = status;
     this.actual = actual;
     this.expected = expected;
     this.failure = failure;
     this.symbol = symbol;
     this.value = value;
+    this.assertion = assertion;
+    this.trouble = trouble;
   }
 
   public static CellRecord from(SlimTestResult result, String original) {
     Assignment assignment = Assignment.read(result.getMessage());
     if (assignment != null) {
-      return new CellRecord("symbol", assignment.value, original, null, assignment.name, assignment.value);
+      return symbol(assignment, original);
     }
+    return compared(result, original);
+  }
+
+  private static CellRecord symbol(Assignment assignment, String original) {
+    return new CellRecord("symbol", assignment.value, original, null, assignment.name, assignment.value, false, false);
+  }
+
+  private static CellRecord compared(SlimTestResult result, String original) {
     ExecutionResult execution = result.getExecutionResult();
+    boolean assertion = countsAsAssertion(result);
     String actual = result.hasActual() ? result.getActual() : result.getMessage();
     String expected = result.hasExpected() ? result.getExpected() : original;
-    return new CellRecord(execution == null ? null : execution.toString(), actual, expected, null, null, null);
+    String status = execution == null ? null : execution.toString();
+    boolean trouble = !assertion && execution == ExecutionResult.ERROR;
+    return new CellRecord(status, actual, expected, null, null, null, assertion, trouble);
   }
 
   public static CellRecord from(TestResult result) {
-    ExecutionResult execution = result.getExecutionResult();
-    return new CellRecord(execution == null ? null : execution.toString(),
-      result.hasActual() ? result.getActual() : null,
-      result.hasExpected() ? result.getExpected() : null,
-      null, null, null);
+    if (result instanceof SlimTestResult slim) {
+      return from(slim, null);
+    }
+    return status(null);
   }
 
   public static CellRecord error(SlimExceptionResult exception) {
     ExecutionResult execution = exception.getExecutionResult();
-    return new CellRecord(execution == null ? "error" : execution.toString(),
-      null, null, exception.failure(), null, null);
+    SlimFailure failure = exception.failure();
+    boolean assertion = failure.kind() == SlimFailure.Kind.EXCEPTION
+      || execution == ExecutionResult.IGNORE || execution == ExecutionResult.FAIL;
+    String status = assertion ? (execution == null ? "error" : execution.toString()) : null;
+    return new CellRecord(status, null, null, failure, null, null, assertion, !assertion);
   }
 
   public static CellRecord status(String status) {
-    return new CellRecord(status, null, null, null, null, null);
+    return new CellRecord(status, null, null, null, null, null, false, false);
+  }
+
+  /** A construction or syntax failure is a problem with the table, not an assertion. */
+  public CellRecord asTableProblem() {
+    return new CellRecord(null, actual, expected, failure, symbol, value, false, true);
+  }
+
+  public boolean assertion() {
+    return assertion;
+  }
+
+  public boolean trouble() {
+    return trouble;
+  }
+
+  private static boolean countsAsAssertion(SlimTestResult result) {
+    ExecutionResult execution = result.getExecutionResult();
+    if (!result.doesCount() || execution == null) {
+      return false;
+    }
+    if (execution == ExecutionResult.ERROR) {
+      return result.hasExpected() || result.hasActual();
+    }
+    return true;
   }
 
   public String status() {

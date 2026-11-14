@@ -10,7 +10,7 @@
     "run": { "$ref": "#/$defs/run" }
   },
   "$defs": {
-    "counts": {
+    "assertionCounts": {
       "type": "object",
       "additionalProperties": false,
       "required": ["right", "wrong", "ignored", "exceptions"],
@@ -19,6 +19,18 @@
         "wrong": { "type": "integer", "minimum": 0 },
         "ignored": { "type": "integer", "minimum": 0 },
         "exceptions": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["right", "wrong", "ignored", "exceptions", "tableFailures"],
+      "properties": {
+        "right": { "type": "integer", "minimum": 0 },
+        "wrong": { "type": "integer", "minimum": 0 },
+        "ignored": { "type": "integer", "minimum": 0 },
+        "exceptions": { "type": "integer", "minimum": 0 },
+        "tableFailures": { "type": "integer", "minimum": 0 }
       }
     },
     "error": {
@@ -62,9 +74,11 @@
     "block": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "rows"],
+      "required": ["name", "rows", "status", "counts"],
       "properties": {
         "name": { "type": "string" },
+        "status": { "enum": ["pass", "fail", "error", "ignore", "table-failure", null] },
+        "counts": { "$ref": "#/$defs/assertionCounts" },
         "rows": { "type": "array", "items": { "$ref": "#/$defs/row" } }
       }
     },

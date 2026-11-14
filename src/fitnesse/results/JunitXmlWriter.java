@@ -23,9 +23,11 @@ public final class JunitXmlWriter {
     for (int i = 0; i < pages.length(); i++) {
       JSONObject page = pages.getJSONObject(i);
       String status = page.getString("status");
-      if ("fail".equals(status) || "empty".equals(status)) {
+      JSONObject counts = page.getJSONObject("counts");
+      if ("fail".equals(status) || "empty".equals(status) || counts.getInt("wrong") > 0) {
         failures++;
-      } else if ("error".equals(status)) {
+      }
+      if ("error".equals(status) || counts.getInt("tableFailures") > 0) {
         errors++;
       }
       cases.append(testCase(page));
@@ -53,11 +55,25 @@ public final class JunitXmlWriter {
     if (!RunDocument.failed(status)) {
       return open + "/>\n";
     }
-    String detail = FailureText.of(page);
+    String assertions = FailureText.assertions(page);
+    String tables = FailureText.tables(page);
+    if (assertions.isEmpty() && tables.isEmpty()) {
+      return open + "/>\n";
+    }
+    boolean assertionFailure = "fail".equals(status) || "empty".equals(status) || page.getJSONObject("counts").getInt("wrong") > 0;
+    StringBuilder body = new StringBuilder(open).append(">\n");
+    if (!assertions.isEmpty()) {
+      body.append(element(assertionFailure ? "failure" : "error", assertions));
+    }
+    if (!tables.isEmpty()) {
+      body.append(element("error", tables));
+    }
+    return body.append("  </testcase>\n").toString();
+  }
+
+  private static String element(String tag, String detail) {
     String message = detail.contains("\n") ? detail.substring(0, detail.indexOf('\n')) : detail;
-    String tag = "error".equals(status) ? "error" : "failure";
-    return open + ">\n    <" + tag + " message=\"" + escape(message) + "\">"
-      + escape(detail) + "</" + tag + ">\n  </testcase>\n";
+    return "    <" + tag + " message=\"" + escape(message) + "\">" + escape(detail) + "</" + tag + ">\n";
   }
 
   private static String seconds(long millis) {

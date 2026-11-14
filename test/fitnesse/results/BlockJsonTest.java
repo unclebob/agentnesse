@@ -36,6 +36,9 @@ public class BlockJsonTest {
     assertEquals("3", symbol.getString("value"));
 
     assertEquals("ignore", cell(block, 2, 0).getString("status"));
+    assertEquals("error", block.getString("status"));
+    assertEquals(1, block.getJSONObject("counts").getInt("right"));
+    assertEquals(1, block.getJSONObject("counts").getInt("exceptions"));
 
     JSONObject error = cell(block, 2, 1).getJSONObject("error");
     assertEquals("EXCEPTION", error.getString("kind"));
@@ -44,6 +47,26 @@ public class BlockJsonTest {
     assertEquals(3, error.getInt("row"));
     assertEquals(2, error.getInt("cell"));
     assertEquals("Suite.Page", error.getString("page"));
+  }
+
+  @Test
+  public void aPassingCallThatDoesNotCompareIsNotAnAssertion() {
+    MarkdownTable table = MarkdownTable.parse("| script | EchoFixture |\n");
+    table.updateContent(1, 0, SlimTestResult.ok("EchoFixture"));
+    JSONObject block = BlockJson.from(table);
+    assertEquals(JSONObject.NULL, cell(block, 0, 1).get("status"));
+    assertEquals(0, block.getJSONObject("counts").getInt("right"));
+    assertEquals(JSONObject.NULL, block.get("status"));
+  }
+
+  @Test
+  public void aBrokenTableWithNoAssertionsIsATableFailure() {
+    MarkdownTable table = MarkdownTable.parse("| script | NoSuchFixture |\n");
+    table.updateContent(1, 0, new SlimExceptionResult("id", "NO_CLASS NoSuchFixture"));
+    JSONObject block = BlockJson.from(table);
+    assertEquals(JSONObject.NULL, cell(block, 0, 1).get("status"));
+    assertEquals("table-failure", block.getString("status"));
+    assertEquals(0, block.getJSONObject("counts").getInt("exceptions"));
   }
 
   @Test
