@@ -10,6 +10,7 @@ import fitnesse.responders.ErrorResponder;
 import fitnesse.responders.NotFoundResponder;
 import fitnesse.wiki.*;
 import fitnesse.wiki.refactoring.ChangeReference;
+import fitnesse.wiki.refactoring.OutboundReferences;
 import fitnesse.wiki.refactoring.ReferenceRenamingTraverser;
 
 import java.util.List;
@@ -52,6 +53,11 @@ public abstract class PageMovementResponder implements Responder {
     }
 
     if (request.hasInput("refactorReferences")) {
+      if (newParentPage != oldRefactoredPage.getParent()) {
+        WikiPagePath movedPath = oldRefactoredPage.getFullPath();
+        OutboundReferences.absolutize(oldRefactoredPage);
+        oldRefactoredPage = context.getRootPage().getPageCrawler().getPage(movedPath);
+      }
       ReferenceRenamingTraverser.renameReferences(context.getRootPage(), getReferenceRenamer());
     }
     execute();
