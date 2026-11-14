@@ -23,7 +23,9 @@ public class ExitCodeListener implements TestSystemListener {
 
   @Override
   public void testComplete(TestPage testPage, TestSummary testSummary) {
-    if (testSummary.getWrong() > 0 || testSummary.getExceptions() > 0) {
+    boolean noAssertions = testPage != null
+      && ExecutionResult.getExecutionResult(testPage.getName(), testSummary) == ExecutionResult.EMPTY;
+    if (noAssertions || testSummary.getWrong() > 0 || testSummary.getExceptions() > 0) {
       failCount++;
     }
   }

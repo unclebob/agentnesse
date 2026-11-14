@@ -33,6 +33,7 @@ public final class CellMarkup {
       case PASS -> formatPass(result, message);
       case FAIL -> formatFail(result, original, message);
       case IGNORE -> formatIgnore(result, original, message);
+      case EMPTY -> formatError(original, message);
       case ERROR -> formatError(original, message);
     };
   }

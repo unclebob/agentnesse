@@ -120,10 +120,19 @@ public class JUnitRunNotifierResultsListenerTest {
 
     listener.announceNumberTestsToRun(1);
     listener.testAssertionVerified(null, testResult);
-    listener.testComplete(mockWikiTestPage(), summary("-"));
+    listener.testComplete(mockWikiTestPage(), summary("I"));
     listener.close();
 
     verify(notifier).fireTestIgnored(description);
+  }
+
+  @Test
+  public void aPageThatRanNoAssertionsFails() {
+    listener.testComplete(mockWikiTestPage(), summary("-"));
+
+    verify(notifier).fireTestFailure(arguments.capture());
+    assertThat(arguments.getValue().getMessage(), is("Page executed no assertions: WikiPage"));
+    verify(notifier).fireTestFinished(description);
   }
 
   @Test

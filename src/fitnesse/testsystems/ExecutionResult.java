@@ -4,6 +4,8 @@ public enum ExecutionResult {
   ERROR,
   FAIL,
   IGNORE,
+  /** A test page ran and checked nothing. Counted as a failure, not an ignore. */
+  EMPTY,
   PASS;
 
   @Override
@@ -20,11 +22,17 @@ public enum ExecutionResult {
       return FAIL;
     } else if (testSummary.getExceptions() > 0) {
       return ERROR;
-    } else if (((isSuiteMetaPage(relativeName) && testSummary.getIgnores() > 0)
-            || (!isSuiteMetaPage(relativeName) && testSummary.getIgnores() >= 0)) && testSummary.getRight() == 0) {
+    } else if (!isSuiteMetaPage(relativeName) && executedNoAssertions(testSummary)) {
+      return EMPTY;
+    } else if (testSummary.getIgnores() > 0 && testSummary.getRight() == 0) {
       return IGNORE;
     }
     return PASS;
+  }
+
+  public static boolean executedNoAssertions(TestSummary testSummary) {
+    return testSummary.getRight() == 0 && testSummary.getWrong() == 0
+      && testSummary.getIgnores() == 0 && testSummary.getExceptions() == 0;
   }
   
   public static ExecutionResult getExecutionResult(TestSummary testSummary) {

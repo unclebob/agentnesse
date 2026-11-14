@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import fitnesse.testsystems.ExecutionResult;
 import fitnesse.testsystems.TestPage;
 import fitnesse.util.TimeMeasurement;
 import fitnesse.http.ChunkedResponse;
@@ -39,10 +40,10 @@ public class TestTextFormatter extends BaseFormatter implements Closeable {
   @Override
   public void testComplete(TestPage page, TestSummary summary) {
     timeMeasurement.stop();
-    updateCounters(summary);
+    updateCounters(page, summary);
     String timeString = new SimpleDateFormat("HH:mm:ss").format(timeMeasurement.startedAtDate());
     writeData("%s %s R:%-4d W:%-4d I:%-4d E:%-4d %s\t(%s)\t%.03f seconds\n",
-      passFail(summary), timeString, summary.getRight(), summary.getWrong(), summary.getIgnores(), summary.getExceptions(), page.getName(), page.getFullPath(), timeMeasurement.elapsedSeconds());
+      passFail(page, summary), timeString, summary.getRight(), summary.getWrong(), summary.getIgnores(), summary.getExceptions(), page.getName(), page.getFullPath(), timeMeasurement.elapsedSeconds());
   }
 
   private void writeData(String format, Object... args) {
@@ -53,24 +54,31 @@ public class TestTextFormatter extends BaseFormatter implements Closeable {
     }
   }
 
-  private void updateCounters(TestSummary summary) {
+  private void updateCounters(TestPage page, TestSummary summary) {
     testCount++;
-    if (summary.getWrong() > 0) {
+    if (ranNothing(page, summary) || summary.getWrong() > 0) {
       failCount++;
     }
     if (summary.getExceptions() > 0) {
       failCount++;
     }
-
   }
-  private String passFail(TestSummary summary) {
-    if (summary.getWrong() > 0){
+
+  private String passFail(TestPage page, TestSummary summary) {
+    if (ranNothing(page, summary)) {
+      return "Z";
+    }
+    if (summary.getWrong() > 0) {
       return "F";
     }
     if (summary.getExceptions() > 0) {
       return "X";
     }
     return ".";
+  }
+
+  private static boolean ranNothing(TestPage page, TestSummary summary) {
+    return ExecutionResult.getExecutionResult(page.getName(), summary) == ExecutionResult.EMPTY;
   }
 
   @Override

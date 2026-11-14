@@ -7,3 +7,4 @@
 
 | scenario | scenario in included page |
 | --- | --- |
+| check | echo | included | included |

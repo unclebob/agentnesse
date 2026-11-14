@@ -4,60 +4,30 @@
   "help": null,
   "prune": false
 }
-If a `SuiteSetUp` or `SuiteTearDown` page is eecuted without errors, it should be counted as a correctly executed page.
-
-```agentnesse
-define TEST_SYSTEM
-slim
-```
-
-<details>
-<summary>test content</summary>
-
-```agentnesse
-define PATHS
-${SUT_PATH}
-
-```agentnesse
-define TEST_SYSTEM
-slim
-
-</details>
-```
-
-```agentnesse
-define MOCK_TEST
-| script | fitnesse.fixtures.Pass |
-| --- | --- |
-| ensure | ok |
-```
-```
-
+If a `SuiteSetUp` or `SuiteTearDown` page is executed without errors, it should be counted as a correctly executed page.
 
 | Library |
 | --- |
 | page driver |
 | echo fixture |
 
-
-| given page with content | |
+| script | page driver |
 | --- | --- |
-| page | content |
-| SuiteParent | ${PATHS} |
-| SuiteParent.SuiteSetUp | |
-| SuiteParent.SuiteTearDown | |
-| SuiteParent.TestOneOne | ${MOCK_TEST} |
-| SuiteParent.TestOneTwo | ${MOCK_TEST} |
+| given page | SuiteParent | with content | ${SUT_PATH}<br>\`\`\`agentnesse<br>define TEST_SYSTEM<br>slim<br>\`\`\` |
+| make a suite page | SuiteParent |
+| given page | SuiteParent.SuiteSetUp | with content | |
+| given page | SuiteParent.SuiteTearDown | with content | |
+| given page | SuiteParent.TestOneOne | with content | \| script \| fitnesse.fixtures.Pass \|<br>\| --- \|<br>\| ensure \| ok \| |
+| make a test page | SuiteParent.TestOneOne |
+| given page | SuiteParent.TestOneTwo | with content | \| script \| fitnesse.fixtures.Pass \|<br>\| --- \|<br>\| ensure \| ok \| |
+| make a test page | SuiteParent.TestOneTwo |
 
 For normal (HTML) responses:
 
-
-| script | | | |
-| --- | --- | --- | --- |
+| script |
+| --- |
 | check | request page | SuiteParent?suite | 200 |
-| show | content | | |
-| ensure | content contains | <strong>Test Pages:</strong>&nbsp;4 right, 0 wrong, 0 ignored, 0 exceptions | |
-| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.\*>SuiteSetUp</a> | |
-| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.\*>SuiteTearDown</a> | |
-```
-
+| show | content |
+| ensure | content contains | &lt;strong&gt;Test Pages:&lt;/strong&gt;&amp;nbsp;4 right, 0 wrong, 0 ignored, 0 exceptions |
+| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.*>SuiteSetUp |
+| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.*>SuiteTearDown |

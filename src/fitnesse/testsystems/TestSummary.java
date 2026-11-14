@@ -95,6 +95,9 @@ public class TestSummary {
        case IGNORE:
          ignores++;
          break;
+       case EMPTY:
+         wrong++;
+         break;
        case ERROR:
          exceptions++;
          break;

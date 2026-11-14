@@ -49,6 +49,18 @@ public class TestTextFormatterTest {
   }
   
   @Test
+  public void aPageThatRanNoAssertionsIsADistinctFailure() throws Exception {
+    WikiTestPage page = new WikiTestPage(new WikiPageDummy("Empty", "content", null));
+    ChunkedResponse response = mock(ChunkedResponse.class);
+    TestTextFormatter formatter = new TestTextFormatter(response);
+    formatter.testStarted(page);
+    formatter.testComplete(page, new TestSummary(0, 0, 0, 0));
+    formatter.close();
+    verify(response).add("Z " + START_TIME + " R:0    W:0    I:0    E:0    Empty\t()\t0" + getDecimalSeparator() + "000 seconds\n");
+    verify(response).add("--------\n1 Tests,\t1 Failures\t0" + getDecimalSeparator() + "000 seconds.\n");
+  }
+
+  @Test
   public void allTestingCompleteShouldAddTotalsToResponse() throws Exception {
 
     ChunkedResponse response = mock(ChunkedResponse.class);

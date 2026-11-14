@@ -60,13 +60,16 @@ public class JUnitRunNotifierResultsListener
     increaseCompletedTests();
     Description description = descriptionFor(test);
 
+    ExecutionResult pageResult = getExecutionResult(test.getName(), testSummary);
     if (firstFailure != null) {
       notifier.fireTestFailure(new Failure(description, firstFailure));
+    } else if (pageResult == ExecutionResult.EMPTY) {
+      notifier.fireTestFailure(new Failure(description, new AssertionError("Page executed no assertions: " + test.getFullPath())));
     } else if (testSummary.getExceptions() > 0) {
       notifier.fireTestFailure(new Failure(description, new Exception("Exception occurred on page " + test.getFullPath())));
     } else if (testSummary.getWrong() > 0) {
       notifier.fireTestFailure(new Failure(description, new AssertionError("Test failures occurred on page " + test.getFullPath())));
-    } else if (getExecutionResult(testSummary) == ExecutionResult.IGNORE) {
+    } else if (pageResult == ExecutionResult.IGNORE) {
       notifier.fireTestIgnored(description);
       return;
     }

@@ -2,7 +2,9 @@ package fitnesse.reporting;
 
 import java.io.IOException;
 
+import fitnesse.testrunner.WikiTestPage;
 import fitnesse.testsystems.TestSummary;
+import fitnesse.wiki.WikiPageDummy;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -28,6 +30,14 @@ public class ExitCodeListenerTest {
     listener.testComplete(null, new TestSummary(0,4,0,3));
 
     assertEquals(4, listener.getFailCount());
+  }
+
+  @Test
+  public void aPageThatRanNoAssertionsFailsTheExitCode() {
+    ExitCodeListener listener = new ExitCodeListener();
+    listener.testComplete(new WikiTestPage(new WikiPageDummy("Empty", "", null)), new TestSummary(0, 0, 0, 0));
+    listener.testComplete(new WikiTestPage(new WikiPageDummy("SuiteSetUp", "", null)), new TestSummary(0, 0, 0, 0));
+    assertEquals(1, listener.getFailCount());
   }
 
   @Test
