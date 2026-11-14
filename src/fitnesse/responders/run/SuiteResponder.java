@@ -11,9 +11,9 @@ import fitnesse.http.SimpleResponse;
 import fitnesse.reporting.BaseFormatter;
 import fitnesse.reporting.Formatter;
 import fitnesse.reporting.InteractiveFormatter;
-import fitnesse.reporting.RerunSuiteFormatter;
 import fitnesse.reporting.SuiteHtmlFormatter;
-import fitnesse.reporting.TestTextFormatter;
+import fitnesse.results.FailedPages;
+import fitnesse.results.JsonResultsFormatter;
 import fitnesse.responders.ChunkingResponder;
 import fitnesse.responders.WikiPageActions;
 import fitnesse.testrunner.MultipleTestsRunner;
@@ -50,7 +50,7 @@ public class SuiteResponder extends ChunkingResponder {
   static final RunningTestingTracker runningTestingTracker = new RunningTestingTracker();
 
   static final String UNSUPPORTED_RESULT_FORMAT_MESSAGE =
-    "Result format %s is not supported until JSON results land. format=text and HTML still work.\n";
+    "Result format %s is not supported. Use format=json.\n";
 
   private Formatter rerunFormatter;
 
@@ -85,7 +85,7 @@ public class SuiteResponder extends ChunkingResponder {
         return result;
     }
     testRunId = runningTestingTracker.generateNextTicket();
-    response.addHeader("X-FitNesse-Test-Id", testRunId);
+    response.addHeader("X-Agentnesse-Test-Id", testRunId);
     return response;
   }
 
@@ -192,10 +192,7 @@ public class SuiteResponder extends ChunkingResponder {
   }
 
   static SimpleResponse unsupportedFormatResponse(String format) throws java.io.UnsupportedEncodingException {
-    if (format == null) {
-      return null;
-    }
-    if (!"xml".equalsIgnoreCase(format) && !"junit".equalsIgnoreCase(format)) {
+    if (format == null || "json".equalsIgnoreCase(format) || "html".equalsIgnoreCase(format)) {
       return null;
     }
     SimpleResponse rejected = new SimpleResponse(400);
@@ -205,15 +202,19 @@ public class SuiteResponder extends ChunkingResponder {
   }
 
   private void createMainFormatter() {
-    if (response.isTextFormat()) {
-      mainFormatter = newTextFormatter();
+    if (response.isJsonFormat()) {
+      boolean stream = request == null || !request.hasInput(fitnesse.http.Request.NOCHUNK);
+      java.io.File failures = FailedPages.defaultFile(context.getRootPagePath());
+      JsonResultsFormatter json = new JsonResultsFormatter(response.getWriter(), stream, failures);
+      json.setRunId(testRunId);
+      mainFormatter = json;
     } else {
       mainFormatter = newHtmlFormatter();
     }
   }
 
-  protected Formatter createRerunFormatter() throws IOException {
-    return new RerunSuiteFormatter(getRerunPageFile());
+  protected Formatter createRerunFormatter() {
+    return null;
   }
 
   protected File getRerunPageFile() {
@@ -258,10 +259,6 @@ public class SuiteResponder extends ChunkingResponder {
     return "testPage";
   }
 
-  protected BaseFormatter newTextFormatter() {
-    return new TestTextFormatter(response);
-  }
-
   protected BaseFormatter newHtmlFormatter() {
     return new SuiteHtmlFormatter(page, isMultipleTestsRun(), response.getWriter());
   }
@@ -274,6 +271,13 @@ public class SuiteResponder extends ChunkingResponder {
     }
     try {
       runner.executeTestPages();
+      if (mainFormatter instanceof JsonResultsFormatter json) {
+        try {
+          json.finish();
+        } catch (IOException e) {
+          throw new TestExecutionException(e);
+        }
+      }
     } finally {
       runningTestingTracker.removeEndedProcess(testRunId);
     }
@@ -282,7 +286,22 @@ public class SuiteResponder extends ChunkingResponder {
   protected List<WikiPage> getPagesToRun() {
     SuiteFilter filter = createSuiteFilter(request, page.getFullPath().toString());
     SuiteContentsFinder suiteTestFinder = new SuiteContentsFinder(page, filter, root);
-    return suiteTestFinder.getAllPagesToRunForThisSuite();
+    List<WikiPage> pages = suiteTestFinder.getAllPagesToRunForThisSuite();
+    return onlyFailedPages(pages);
+  }
+
+  private List<WikiPage> onlyFailedPages(List<WikiPage> pages) {
+    if (request == null || request.getInput("rerunFailures") == null) {
+      return pages;
+    }
+    try {
+      java.util.Set<String> only = new java.util.HashSet<>(
+        FailedPages.read(java.nio.file.Path.of(request.getInput("rerunFailures"))));
+      pages.removeIf(candidate -> !only.contains(PathParser.render(candidate.getFullPath())));
+      return pages;
+    } catch (java.io.IOException e) {
+      throw new IllegalArgumentException("Cannot read rerun failures: " + e.getMessage());
+    }
   }
 
   protected MultipleTestsRunner newMultipleTestsRunner(List<WikiPage> pages) {

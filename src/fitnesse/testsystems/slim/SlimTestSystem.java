@@ -257,6 +257,14 @@ public abstract class SlimTestSystem implements TestSystem {
     testSystemListener.testAssertionVerified(assertion, testResult);
   }
 
+  protected void publishTable(TestPage page, MarkdownTable table) {
+    for (TestSystemListener listener : testSystemListener.listeners()) {
+      if (listener instanceof TableFinished finished) {
+        finished.tableFinished(page, table);
+      }
+    }
+  }
+
   protected void testExceptionOccurred(Assertion assertion, ExceptionResult exceptionResult) {
     testSystemListener.testExceptionOccurred(assertion, exceptionResult);
   }

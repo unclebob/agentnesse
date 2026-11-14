@@ -1,0 +1,1019 @@
+{
+  "schemaVersion": 1,
+  "run": {
+    "stoptest": "?responder=stoptest&id=1",
+    "pages": [
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.BaseLineDecisionTable",
+        "counts": {
+          "ignored": 0,
+          "right": 17,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 252,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.BaseLineDecisionTable.ComparatorsAreSupported",
+        "counts": {
+          "ignored": 0,
+          "right": 10,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 69,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.BaseLineDecisionTable.HowtoIgnoreResultValues",
+        "counts": {
+          "ignored": 2,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 57,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.BaseLineDecisionTable.MakingTheBaselineTableTheDefaultDecisionTable",
+        "counts": {
+          "ignored": 0,
+          "right": 7,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 44,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.BaseLineDecisionTable.ScenariosAreSupported",
+        "counts": {
+          "ignored": 0,
+          "right": 10,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 40,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.BaseLineDecisionTable.TestFailuresAreMarked",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 390,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ChainTest",
+        "counts": {
+          "ignored": 0,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 33,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ChainWithInstanceTest",
+        "counts": {
+          "ignored": 0,
+          "right": 7,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 34,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.DefineAliasTest",
+        "counts": {
+          "ignored": 0,
+          "right": 22,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 49,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.DefineTableTypeTest",
+        "counts": {
+          "ignored": 0,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 15,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.DisgracerTest",
+        "counts": {
+          "ignored": 0,
+          "right": 22,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 15,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ErikPragtBug",
+        "counts": {
+          "ignored": 0,
+          "right": 3,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.HybridDecisionTable",
+        "counts": {
+          "ignored": 1,
+          "right": 40,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 34,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.HybridDecisionTable.ImplementDynamicDecisionTableWithHybridTable",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 9,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.HybridDecisionTable.MethodExtractorRuleTest",
+        "counts": {
+          "ignored": 0,
+          "right": 7,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 12,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.IgnoredTestsShouldColorGray",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 247,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.LibrarySuite.HowToAddFixturesWithParametersToTheLibrary",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.LibrarySuite.LastLibraryPreceedsEarlierLibraryTest",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 11,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.LibrarySuite.LibraryInSetUpSuite.LibraryInSetUpAndPageTest",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.LibrarySuite.LibraryInSetUpSuite.LibraryInSetUpTest",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 13,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.LibrarySuite.OneLibraryTest",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 11,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.MultiByteCharsInSlim",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 16,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ParameterizedScenarios",
+        "counts": {
+          "ignored": 0,
+          "right": 15,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 13,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.QueryTableSuite.SetContextValue",
+        "counts": {
+          "ignored": 2,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 11,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.QueryTableSuite.TestMatching",
+        "counts": {
+          "ignored": 0,
+          "right": 27,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 26,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.RegularExpressionMatching",
+        "counts": {
+          "ignored": 0,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 8,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioLibraryTestSuite.BlankCellsInNestedScenariosShouldWork",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 11,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioLibraryTestSuite.BrotherScenarioLibraryIsIncluded",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 33,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioLibraryTestSuite.NoScenarioSectionIfThereAreNone",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 18,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioLibraryTestSuite.ScenarioLibrariesOrderTests.ScenarioLibraryOrderSuite.ScenarioLibraryOrderTestParent.ScenarioLibraryOrderIsCorrect",
+        "counts": {
+          "ignored": 0,
+          "right": 3,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 13,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioLibraryTestSuite.ScenarioLibraryShouldIncludeIncludedPages",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 8,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioLibraryTestSuite.ScenariosOnlyInSlimTests",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 19,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioLibraryTestSuite.ShouldBeAbleToDealWithPlaceholderScenarios",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 18,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioTestSuite.ScenarioWithOutputParametersInDecisionTables",
+        "counts": {
+          "ignored": 0,
+          "right": 6,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 38,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioTestSuite.ScenarioWithOutputParametersInScripts",
+        "counts": {
+          "ignored": 0,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 17,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioTestSuite.ScriptSubclassUsedForDecisionTable",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 18,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioTestSuite.StopTestExceptionInDescisionTable",
+        "counts": {
+          "ignored": 0,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 289,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioTestSuite.UnknownOutputParameterInDescisionTable",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 198,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ScenarioTestSuite.UsingConstructorArgumentsFromDecisionTablesInScenarios",
+        "counts": {
+          "ignored": 0,
+          "right": 8,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SegregationOfRequirementsAndImplementation",
+        "counts": {
+          "ignored": 0,
+          "right": 12,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 19,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.NamingConvention",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 23,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.SlimSymbolCanHoldInstanceUsedAsParameter",
+        "counts": {
+          "ignored": 0,
+          "right": 8,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 10,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.SlimSymbolManipulation",
+        "counts": {
+          "ignored": 0,
+          "right": 18,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 21,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.SlimSymbolShouldShowRawContents",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 9,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.SlimSymbolsCanBeBlankOrNull",
+        "counts": {
+          "ignored": 0,
+          "right": 3,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.SlimSymbolsWithSecretPrefixAreNotExpandedInHtml",
+        "counts": {
+          "ignored": 0,
+          "right": 3,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 219,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.TestCanPassSymbolsIntoConstructors",
+        "counts": {
+          "ignored": 0,
+          "right": 3,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SlimSymbols.TestSymbolsDontGetTurnedToStringsInTheOutput",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 8,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.StopSuite",
+        "counts": {
+          "ignored": 0,
+          "right": 6,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 244,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.StopTest",
+        "counts": {
+          "ignored": 0,
+          "right": 6,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 243,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.StopTestInSuiteSetUp",
+        "counts": {
+          "ignored": 0,
+          "right": 7,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 240,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SystemUnderTestTest",
+        "counts": {
+          "ignored": 0,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.SymbolsInTableTable",
+        "counts": {
+          "ignored": 0,
+          "right": 12,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 16,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.SymbolsInTableTableManagedByTheFixture",
+        "counts": {
+          "ignored": 0,
+          "right": 14,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.TestReturnsNull",
+        "counts": {
+          "ignored": 1,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 8,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestChineseWords",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 16,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestComparators",
+        "counts": {
+          "ignored": 0,
+          "right": 26,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 17,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestCustomConverter",
+        "counts": {
+          "ignored": 0,
+          "right": 13,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 13,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestDetailedDiff",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 269,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestExceptionCount",
+        "counts": {
+          "ignored": 0,
+          "right": 6,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 381,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestExceptionIsDisplayed.DisableExceptionTesting",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 19,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestExceptionIsDisplayed.ParameterConversionExceptions",
+        "counts": {
+          "ignored": 0,
+          "right": 6,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 236,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestExceptionIsDisplayed.SlimExceptionResult",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 13,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestHtmlContent",
+        "counts": {
+          "ignored": 0,
+          "right": 5,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 12,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestIgnoreAll",
+        "counts": {
+          "ignored": 6,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 14,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestIgnoreInScriptTable",
+        "counts": {
+          "ignored": 2,
+          "right": 3,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 10,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestOrderedQueryWithDuplicateRows",
+        "counts": {
+          "ignored": 0,
+          "right": 14,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 12,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestPageWithInclude",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 13,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestScriptTable",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 7,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestScriptTableDisplayParameterValue",
+        "counts": {
+          "ignored": 0,
+          "right": 3,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 9,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSequentialArgumentProcessing",
+        "counts": {
+          "ignored": 0,
+          "right": 8,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 11,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSubsetQuery",
+        "counts": {
+          "ignored": 0,
+          "right": 11,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 17,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSystemSlimSuite.A_TimeoutAsSlimHeaderNotReceived",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 1032,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSystemSlimSuite.JavaSlimServer.CallStaticJavaMethod",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 18,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSystemSlimSuite.ManualStartofSlimService",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 1021,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSystemSlimSuite.TimeoutInSlimTestSystem",
+        "counts": {
+          "ignored": 0,
+          "right": 4,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 4076,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestTryingParameterizationIsntTooGreedy",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 13,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestTwoIdenticalTablesOnPageDontConflict",
+        "counts": {
+          "ignored": 0,
+          "right": 1,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 8,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSystemSlimSuite.ErrorSituationsDuringSlimServerStartup.B_TimeoutAsSlimServerDiesBeforeConnecting",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 306,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSystemSlimSuite.ErrorSituationsDuringSlimServerStartup.C_TimeoutAsNoServerAtGivenSocket",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 1040,
+        "status": "pass"
+      },
+      {
+        "path": "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestSystemSlimSuite.TextBeforeSlimHeaderIsIgnored",
+        "counts": {
+          "ignored": 0,
+          "right": 2,
+          "exceptions": 0,
+          "wrong": 0
+        },
+        "blocks": [],
+        "durationMillis": 157,
+        "status": "pass"
+      }
+    ],
+    "servers": [
+      {
+        "stdout": "slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1\u8fd9\u662f\u4e2d\u6587slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1slim:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1me hereme hereme hereSLIM:fitnesse.slim.SlimService/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService -v 9123SLIM:fitnesse.slim.SlimServiceConnection to running SlimService: 127.0.0.1:9123slim:in-processslim:in-process",
+        "launchFailure": null,
+        "name": "slim:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "java.net.BindException: Address already in use\tat java.base/sun.nio.ch.Net.bind0(Native Method)\tat java.base/sun.nio.ch.Net.bind(Net.java:577)\tat java.base/sun.nio.ch.Net.bind(Net.java:566)\tat java.base/sun.nio.ch.NioSocketImpl.bind(NioSocketImpl.java:636)\tat java.base/java.net.ServerSocket.bind(ServerSocket.java:391)\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:278)\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:171)\tat fitnesse.socketservice.PlainServerSocketFactory.createServerSocket(PlainServerSocketFactory.java:15)\tat fitnesse.slim.SlimService.open(SlimService.java:110)\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:114)\tat fitnesse.slim.SlimService.run(SlimService.java:88)\tat fitnesse.slim.SlimService.main(SlimService.java:78)Exiting as exception occured: Address already in usefitnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file.\tat fitnesse.testsystems.slim.SlimCommandRunningClient.validateConnection(SlimCommandRunningClient.java:143)\tat fitnesse.testsystems.slim.SlimCommandRunningClient.connect(SlimCommandRunningClient.java:120)\tat fitnesse.testsystems.slim.SlimCommandRunningClient.start(SlimCommandRunningClient.java:64)\tat fitnesse.testsystems.slim.SlimTestSystem.start(SlimTestSystem.java:62)\tat fitnesse.testrunner.MultipleTestsRunner$MultipleTestsCoordinator.startTestSystem(MultipleTestsRunner.java:160)\tat fitnesse.testrunner.run.PerTestSystemTestRun.startTestSystemAndExecutePages(PerTestSystemTestRun.java:43)\tat fitnesse.testrunner.run.PerTestSystemTestRun.executeTestPages(PerTestSystemTestRun.java:30)\tat fitnesse.testrunner.MultipleTestsRunner.executeTestPages(MultipleTestsRunner.java:67)\tat fitnesse.responders.run.SuiteResponder.performExecution(SuiteResponder.java:273)\tat fitnesse.responders.run.SuiteResponder.doExecuteTests(SuiteResponder.java:112)\tat fitnesse.responders.run.SuiteResponder$TestExecutor.execute(SuiteResponder.java:169)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.doInvoke(UberspectImpl.java:571)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:554)\tat org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:221)\tat org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:368)\tat org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:492)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.runtime.directive.Parse.render(Parse.java:284)\tat org.apache.velocity.runtime.parser.node.ASTDirective.render(ASTDirective.java:304)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.Template.merge(Template.java:358)\tat org.apache.velocity.Template.merge(Template.java:262)\tat fitnesse.html.template.HtmlPage.render(HtmlPage.java:82)\tat fitnesse.responders.run.SuiteResponder.doSending(SuiteResponder.java:102)\tat fitnesse.responders.ChunkingResponder.startSending(ChunkingResponder.java:74)\tat fitnesse.http.ChunkedResponse.sendTo(ChunkedResponse.java:29)\tat fitnesse.http.MockResponseSender.doSending(MockResponseSender.java:39)\tat fitnesse.fixtures.ResponseRequester.execute(ResponseRequester.java:39)\tat fitnesse.fixtures.PageDriver.requestPage(PageDriver.java:41)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245)\tat fitnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17)\tat fitnesse.slim.LibraryMethodExecutor.execute(LibraryMethodExecutor.java:16)\tat fitnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139)\tat fitnesse.slim.StatementExecutor.call(StatementExecutor.java:112)\tat fitnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30)\tat fitnesse.slim.instructions.Instruction.execute(Instruction.java:26)\tat fitnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49)\tat fitnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43)\tat fitnesse.slim.ListExecutor.execute(ListExecutor.java:85)\tat fitnesse.slim.SlimServer.executeInstructions(SlimServer.java:83)\tat fitnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76)\tat fitnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63)\tat fitnesse.slim.SlimServer.serve(SlimServer.java:48)\tat fitnesse.slim.SlimService.handle(SlimService.java:189)\tat fitnesse.slim.SlimService.acceptOne(SlimService.java:197)\tat fitnesse.slim.SlimService.accept(SlimService.java:161)\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:118)\tat fitnesse.slim.SlimService.run(SlimService.java:88)\tat fitnesse.slim.SlimService.main(SlimService.java:78)fitnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file.\tat fitnesse.testsystems.slim.SlimCommandRunningClient.validateConnection(SlimCommandRunningClient.java:143)\tat fitnesse.testsystems.slim.SlimCommandRunningClient.connect(SlimCommandRunningClient.java:120)\tat fitnesse.testsystems.slim.SlimCommandRunningClient.start(SlimCommandRunningClient.java:64)\tat fitnesse.testsystems.slim.SlimTestSystem.start(SlimTestSystem.java:62)\tat fitnesse.testrunner.MultipleTestsRunner$MultipleTestsCoordinator.startTestSystem(MultipleTestsRunner.java:160)\tat fitnesse.testrunner.run.PerTestSystemTestRun.startTestSystemAndExecutePages(PerTestSystemTestRun.java:43)\tat fitnesse.testrunner.run.PerTestSystemTestRun.executeTestPages(PerTestSystemTestRun.java:30)\tat fitnesse.testrunner.MultipleTestsRunner.executeTestPages(MultipleTestsRunner.java:67)\tat fitnesse.responders.run.SuiteResponder.performExecution(SuiteResponder.java:273)\tat fitnesse.responders.run.SuiteResponder.doExecuteTests(SuiteResponder.java:112)\tat fitnesse.responders.run.SuiteResponder$TestExecutor.execute(SuiteResponder.java:169)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.doInvoke(UberspectImpl.java:571)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:554)\tat org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:221)\tat org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:368)\tat org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:492)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.runtime.directive.Parse.render(Parse.java:284)\tat org.apache.velocity.runtime.parser.node.ASTDirective.render(ASTDirective.java:304)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.Template.merge(Template.java:358)\tat org.apache.velocity.Template.merge(Template.java:262)\tat fitnesse.html.template.HtmlPage.render(HtmlPage.java:82)\tat fitnesse.responders.run.SuiteResponder.doSending(SuiteResponder.java:102)\tat fitnesse.responders.ChunkingResponder.startSending(ChunkingResponder.java:74)\tat fitnesse.http.ChunkedResponse.sendTo(ChunkedResponse.java:29)\tat fitnesse.http.MockResponseSender.doSending(MockResponseSender.java:39)\tat fitnesse.fixtures.ResponseRequester.execute(ResponseRequester.java:39)\tat fitnesse.fixtures.PageDriver.requestPage(PageDriver.java:41)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245)\tat fitnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17)\tat fitnesse.slim.LibraryMethodExecutor.execute(LibraryMethodExecutor.java:16)\tat fitnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139)\tat fitnesse.slim.StatementExecutor.call(StatementExecutor.java:112)\tat fitnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30)\tat fitnesse.slim.instructions.Instruction.execute(Instruction.java:26)\tat fitnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49)\tat fitnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43)\tat fitnesse.slim.ListExecutor.execute(ListExecutor.java:85)\tat fitnesse.slim.SlimServer.executeInstructions(SlimServer.java:83)\tat fitnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76)\tat fitnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63)\tat fitnesse.slim.SlimServer.serve(SlimServer.java:48)\tat fitnesse.slim.SlimService.handle(SlimService.java:189)\tat fitnesse.slim.SlimService.acceptOne(SlimService.java:197)\tat fitnesse.slim.SlimService.accept(SlimService.java:161)\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:118)\tat fitnesse.slim.SlimService.run(SlimService.java:88)\tat fitnesse.slim.SlimService.main(SlimService.java:78)",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
+      },
+      {
+        "stdout": "SLIM:something.that.does.not.exists/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp defaultPath something.that.does.not.exists 34319SLIM:fitnesse.slim.SlimServiceConnection to running SlimService: localhost:8099",
+        "launchFailure": null,
+        "name": "SLIM:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "Error: Could not find or load main class something.that.does.not.existsCaused by: java.lang.ClassNotFoundException: something.that.does.not.existsfitnesse.slim.SlimError: Error SLiM server died before a connection could be established. Caused by: java.lang.ClassNotFoundException: something.that.does.not.exists\tat fitnesse.testsystems.slim.SlimCommandRunningClient.connect(SlimCommandRunningClient.java:94)\tat fitnesse.testsystems.slim.SlimCommandRunningClient.start(SlimCommandRunningClient.java:64)\tat fitnesse.testsystems.slim.SlimTestSystem.start(SlimTestSystem.java:62)\tat fitnesse.testrunner.MultipleTestsRunner$MultipleTestsCoordinator.startTestSystem(MultipleTestsRunner.java:160)\tat fitnesse.testrunner.run.PerTestSystemTestRun.startTestSystemAndExecutePages(PerTestSystemTestRun.java:43)\tat fitnesse.testrunner.run.PerTestSystemTestRun.executeTestPages(PerTestSystemTestRun.java:30)\tat fitnesse.testrunner.MultipleTestsRunner.executeTestPages(MultipleTestsRunner.java:67)\tat fitnesse.responders.run.SuiteResponder.performExecution(SuiteResponder.java:273)\tat fitnesse.responders.run.SuiteResponder.doExecuteTests(SuiteResponder.java:112)\tat fitnesse.responders.run.SuiteResponder$TestExecutor.execute(SuiteResponder.java:169)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.doInvoke(UberspectImpl.java:571)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:554)\tat org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:221)\tat org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:368)\tat org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:492)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.runtime.directive.Parse.render(Parse.java:284)\tat org.apache.velocity.runtime.parser.node.ASTDirective.render(ASTDirective.java:304)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.Template.merge(Template.java:358)\tat org.apache.velocity.Template.merge(Template.java:262)\tat fitnesse.html.template.HtmlPage.render(HtmlPage.java:82)\tat fitnesse.responders.run.SuiteResponder.doSending(SuiteResponder.java:102)\tat fitnesse.responders.ChunkingResponder.startSending(ChunkingResponder.java:74)\tat fitnesse.http.ChunkedResponse.sendTo(ChunkedResponse.java:29)\tat fitnesse.http.MockResponseSender.doSending(MockResponseSender.java:39)\tat fitnesse.fixtures.ResponseRequester.execute(ResponseRequester.java:39)\tat fitnesse.fixtures.PageDriver.requestPage(PageDriver.java:41)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245)\tat fitnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17)\tat fitnesse.slim.LibraryMethodExecutor.execute(LibraryMethodExecutor.java:16)\tat fitnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139)\tat fitnesse.slim.StatementExecutor.call(StatementExecutor.java:112)\tat fitnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30)\tat fitnesse.slim.instructions.Instruction.execute(Instruction.java:26)\tat fitnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49)\tat fitnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43)\tat fitnesse.slim.ListExecutor.execute(ListExecutor.java:85)\tat fitnesse.slim.SlimServer.executeInstructions(SlimServer.java:83)\tat fitnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76)\tat fitnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63)\tat fitnesse.slim.SlimServer.serve(SlimServer.java:48)\tat fitnesse.slim.SlimService.handle(SlimService.java:189)\tat fitnesse.slim.SlimService.acceptOne(SlimService.java:197)\tat fitnesse.slim.SlimService.accept(SlimService.java:161)\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:118)\tat fitnesse.slim.SlimService.run(SlimService.java:88)\tat fitnesse.slim.SlimService.main(SlimService.java:78)fitnesse.slim.SlimError: Error connecting to SLiM server on localhost:8099\tat fitnesse.testsystems.slim.SlimCommandRunningClient.connect(SlimCommandRunningClient.java:100)\tat fitnesse.testsystems.slim.SlimCommandRunningClient.start(SlimCommandRunningClient.java:64)\tat fitnesse.testsystems.slim.SlimTestSystem.start(SlimTestSystem.java:62)\tat fitnesse.testrunner.MultipleTestsRunner$MultipleTestsCoordinator.startTestSystem(MultipleTestsRunner.java:160)\tat fitnesse.testrunner.run.PerTestSystemTestRun.startTestSystemAndExecutePages(PerTestSystemTestRun.java:43)\tat fitnesse.testrunner.run.PerTestSystemTestRun.executeTestPages(PerTestSystemTestRun.java:30)\tat fitnesse.testrunner.MultipleTestsRunner.executeTestPages(MultipleTestsRunner.java:67)\tat fitnesse.responders.run.SuiteResponder.performExecution(SuiteResponder.java:273)\tat fitnesse.responders.run.SuiteResponder.doExecuteTests(SuiteResponder.java:112)\tat fitnesse.responders.run.SuiteResponder$TestExecutor.execute(SuiteResponder.java:169)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.doInvoke(UberspectImpl.java:571)\tat org.apache.velocity.util.introspection.UberspectImpl$VelMethodImpl.invoke(UberspectImpl.java:554)\tat org.apache.velocity.runtime.parser.node.ASTMethod.execute(ASTMethod.java:221)\tat org.apache.velocity.runtime.parser.node.ASTReference.execute(ASTReference.java:368)\tat org.apache.velocity.runtime.parser.node.ASTReference.render(ASTReference.java:492)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.runtime.directive.Parse.render(Parse.java:284)\tat org.apache.velocity.runtime.parser.node.ASTDirective.render(ASTDirective.java:304)\tat org.apache.velocity.runtime.parser.node.SimpleNode.render(SimpleNode.java:439)\tat org.apache.velocity.Template.merge(Template.java:358)\tat org.apache.velocity.Template.merge(Template.java:262)\tat fitnesse.html.template.HtmlPage.render(HtmlPage.java:82)\tat fitnesse.responders.run.SuiteResponder.doSending(SuiteResponder.java:102)\tat fitnesse.responders.ChunkingResponder.startSending(ChunkingResponder.java:74)\tat fitnesse.http.ChunkedResponse.sendTo(ChunkedResponse.java:29)\tat fitnesse.http.MockResponseSender.doSending(MockResponseSender.java:39)\tat fitnesse.fixtures.ResponseRequester.execute(ResponseRequester.java:39)\tat fitnesse.fixtures.PageDriver.requestPage(PageDriver.java:41)\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317)\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245)\tat fitnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17)\tat fitnesse.slim.LibraryMethodExecutor.execute(LibraryMethodExecutor.java:16)\tat fitnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139)\tat fitnesse.slim.StatementExecutor.call(StatementExecutor.java:112)\tat fitnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30)\tat fitnesse.slim.instructions.Instruction.execute(Instruction.java:26)\tat fitnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49)\tat fitnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43)\tat fitnesse.slim.ListExecutor.execute(ListExecutor.java:85)\tat fitnesse.slim.SlimServer.executeInstructions(SlimServer.java:83)\tat fitnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76)\tat fitnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63)\tat fitnesse.slim.SlimServer.serve(SlimServer.java:48)\tat fitnesse.slim.SlimService.handle(SlimService.java:189)\tat fitnesse.slim.SlimService.acceptOne(SlimService.java:197)\tat fitnesse.slim.SlimService.accept(SlimService.java:161)\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:118)\tat fitnesse.slim.SlimService.run(SlimService.java:88)\tat fitnesse.slim.SlimService.main(SlimService.java:78)Caused by: java.net.ConnectException: Connection refused\tat java.base/sun.nio.ch.Net.connect0(Native Method)\tat java.base/sun.nio.ch.Net.connect(Net.java:601)\tat java.base/sun.nio.ch.Net.connect(Net.java:590)\tat java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:583)\tat java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:351)\tat java.base/java.net.Socket.connect(Socket.java:751)\tat java.base/java.net.Socket.connect(Socket.java:686)\tat java.base/java.net.Socket.<init>(Socket.java:555)\tat java.base/java.net.Socket.<init>(Socket.java:324)\tat fitnesse.socketservice.PlainClientSocketFactory.createSocket(PlainClientSocketFactory.java:14)\tat fitnesse.testsystems.slim.SlimCommandRunningClient.connect(SlimCommandRunningClient.java:97)\t... 54 more",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
+      },
+      {
+        "stdout": "",
+        "launchFailure": null,
+        "name": "SLIM:remote_debug:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "",
+        "command": "java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
+      }
+    ],
+    "failedPages": [],
+    "counts": {
+      "ignored": 14,
+      "right": 505,
+      "exceptions": 0,
+      "wrong": 0
+    },
+    "start": "2026-11-14T01:46:59.316Z",
+    "durationMillis": 13120,
+    "id": "1"
+  }
+}

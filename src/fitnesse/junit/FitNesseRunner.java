@@ -44,17 +44,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     String systemProperty() default "";
   }
   /**
-   * The <code>DebugMode</code> annotation specifies whether the test is run
-   * with the REST debug option. Default is true
-   */
-  @Retention(RetentionPolicy.RUNTIME)
-  @Target(ElementType.TYPE)
-  public @interface DebugMode {
-
-    boolean value();
-  }
-
-  /**
    * The <code>SuiteFilter</code> annotation specifies the suite filter of the Fitnesse suite
    * to be run, e.g.: fasttests
    */
@@ -130,16 +119,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     String systemProperty() default "";
 
   }
-  /**
-   * The <code>ConfigFile</code> annotation specifies the configuration file to load.
-   */
-  @Retention(RetentionPolicy.RUNTIME)
-  @Target(ElementType.TYPE)
-  public @interface ConfigFile {
-
-    String value();
-  }
-
   private Class<?> suiteClass;
   private String suiteName;
   private String outputDir;
@@ -197,11 +176,6 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
       errors.add(e);
     }
     try {
-      this.debugMode = useDebugMode(suiteClass);
-    } catch (Exception e) {
-      errors.add(e);
-    }
-    try {
       this.context = createContext(suiteClass);
     } catch (Exception e) {
       errors.add(e);
@@ -233,9 +207,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
 
   protected String getSuiteFilter(Class<?> klass) throws Exception {
-    SuiteFilter annotation = klass.getAnnotation(SuiteFilter.class);
-    return annotation == null ? null : requiredSetting(annotation.value(), annotation.systemProperty(),
-      "In annotation @SuiteFilter you have to specify either 'value' or 'systemProperty'");
+    return optionalFilter(klass.getAnnotation(SuiteFilter.class), SuiteFilter::value, SuiteFilter::systemProperty, "@SuiteFilter");
   }
 
   protected boolean getSuiteFilterAndStrategy(Class<?> klass) throws Exception {
@@ -247,17 +219,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
 
   protected String getExcludeSuiteFilter(Class<?> klass) throws Exception {
-    ExcludeSuiteFilter annotation = klass.getAnnotation(ExcludeSuiteFilter.class);
-    return annotation == null ? null : requiredSetting(annotation.value(), annotation.systemProperty(),
-      "In annotation @ExcludeSuiteFilter you have to specify either 'value' or 'systemProperty'");
-  }
-
-  protected boolean useDebugMode(Class<?> klass) throws Exception {
-    DebugMode debugModeAnnotation = klass.getAnnotation(DebugMode.class);
-    if (null == debugModeAnnotation) {
-      return true;
-    }
-    return debugModeAnnotation.value();
+    return optionalFilter(klass.getAnnotation(ExcludeSuiteFilter.class), ExcludeSuiteFilter::value, ExcludeSuiteFilter::systemProperty, "@ExcludeSuiteFilter");
   }
 
   protected String getFitNesseDir(Class<?> klass)
@@ -269,6 +231,15 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     return requiredSetting(fitnesseDirAnnotation.value(), fitnesseDirAnnotation.systemProperty(),
       "In annotation @FitnesseDir you have to specify either 'value' or 'systemProperty'",
       property -> new File(System.getProperty(property)).getAbsolutePath());
+  }
+
+  private <A> String optionalFilter(A annotation, java.util.function.Function<A, String> value,
+                                   java.util.function.Function<A, String> property, String name) throws Exception {
+    if (annotation == null) {
+      return null;
+    }
+    return requiredSetting(value.apply(annotation), property.apply(annotation),
+      "In annotation " + name + " you have to specify either 'value' or 'systemProperty'");
   }
 
   private String requiredSetting(String value, String systemProperty, String message) throws InitializationError {
@@ -303,12 +274,8 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     return lport;
   }
 
-  protected File getConfigFile(String rootPath, Class<?> klass) {
-    ConfigFile configFileAnnotation = klass.getAnnotation(ConfigFile.class);
-    if (null == configFileAnnotation) {
-      return new File(rootPath, ContextConfigurator.DEFAULT_CONFIG_FILE);
-    }
-    return new File(configFileAnnotation.value());
+  protected File getConfigFile(String rootPath) {
+    return new File(rootPath, ContextConfigurator.DEFAULT_CONFIG_FILE);
   }
 
   @Override
@@ -404,10 +371,10 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     String rootPath = getFitNesseDir(suiteClass);
     String fitNesseRoot = getFitNesseRoot(suiteClass);
     int port = getPort(suiteClass);
-    File configFile = getConfigFile(rootPath, suiteClass);
+    File configFile = getConfigFile(rootPath);
 
     ContextConfigurator configurator = ContextConfigurator.systemDefaults();
-    boolean configRequired = suiteClass.getAnnotation(ConfigFile.class) != null;
+    boolean configRequired = false;
     try {
       fitnesse.AgentNesseConfig.apply(configurator, configFile, configRequired);
     } catch (IllegalArgumentException e) {
@@ -422,13 +389,14 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
 
   private void executeTests(MultipleTestsRunner testRunner) throws IOException, TestExecutionException {
-    JavaFormatter testFormatter = new JavaFormatter(suiteName);
-    testFormatter.setResultsRepository(new JavaFormatter.FolderResultsRepository(outputDir));
-    testRunner.addTestSystemListener(testFormatter);
-
+    fitnesse.results.JsonResultsFormatter results = new fitnesse.results.JsonResultsFormatter(new StringBuilder(), false, null);
+    testRunner.addTestSystemListener(results);
+    testRunner.addExecutionLogListener(results);
     testRunner.executeTestPages();
-    TestSummary summary = testFormatter.getTotalSummary();
-
+    results.finish();
+    fitnesse.results.JunitXmlWriter.write(results.document(), new File(outputDir, suiteName + ".xml").toPath());
+    TestSummary summary = fitnesse.results.RunDocument.countsOf(
+      results.document().getJSONObject("run").getJSONObject("counts"));
     assertTrue(msgAtLeastOneTest(suiteName, summary), summary.getRight() > 0 || summary.getWrong() > 0 || summary.getExceptions() > 0);
   }
 

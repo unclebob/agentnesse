@@ -111,7 +111,7 @@ public class FitNesseMain {
     String command = context.getProperty(COMMAND.getKey());
       if (command != null) {
         String output = context.getProperty(OUTPUT.getKey());
-        executeSingleCommand(context.fitNesse, command, output);
+        executeSingleCommand(context.fitNesse, jsonCommand(context, command), output);
 
         return exitCodeListener.getFailCount();
       } else {
@@ -142,6 +142,18 @@ public class FitNesseMain {
       return sockets.createServerSocket(context.port);
     }
     return sockets.createServerSocket(context.port, address);
+  }
+
+  private String jsonCommand(FitNesseContext context, String command) {
+    String withFormat = command;
+    if (command.contains("?") && !command.contains("format=")) {
+      withFormat = command + "&format=json";
+    }
+    String rerun = context.getProperty(RERUN_FAILURES.getKey());
+    if (rerun == null) {
+      return withFormat;
+    }
+    return withFormat + "&rerunFailures=" + java.net.URLEncoder.encode(rerun, java.nio.charset.StandardCharsets.UTF_8);
   }
 
   private void executeSingleCommand(FitNesse fitNesse, String command, String outputFile) throws Exception {

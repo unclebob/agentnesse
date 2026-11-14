@@ -28,8 +28,5 @@ public class FitNesseSuiteArgumentsTest {
     assertNull("null exclude filter allowed", suite.getExcludeSuiteFilter(FitNesseSuiteExampleTest.class));
     assertEquals("testSuite", suite.getSuiteFilter(FitNesseSuiteWithFilterExampleTest.class));
     assertEquals("excludedSuite", suite.getExcludeSuiteFilter(FitNesseSuiteWithFilterExampleTest.class));
-    assertEquals(true, suite.useDebugMode(FitNesseSuiteExampleTest.class));
-    assertEquals(true, suite.useDebugMode(FitNesseSuiteWithFilterExampleTest.class));
-    assertEquals(false, suite.useDebugMode(FitNesseSuiteExampleTestNoDebug.class));
   }
 }

@@ -10,6 +10,7 @@ import fitnesse.testsystems.TestSummary;
 import fitnesse.testsystems.TestSystemListener;
 import fitnesse.wiki.WikiPage;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,18 +76,20 @@ public class JUnitHelper {
       .withPort(port)
       .makeFitNesseContext();
 
-    JavaFormatter testFormatter = new JavaFormatter(pageName);
-    testFormatter.setResultsRepository(new JavaFormatter.FolderResultsRepository(outputDir));
-
+    fitnesse.results.JsonResultsFormatter results = new fitnesse.results.JsonResultsFormatter(new StringBuilder(), false, null);
     List<WikiPage> pages = initChildren(pageName, suiteFilter, excludeSuiteFilter, context);
     TestRun run = createTestRun(context, pages);
     MultipleTestsRunner testRunner = createTestRunner(run, context, debugMode);
-    testRunner.addTestSystemListener(testFormatter);
+    testRunner.addTestSystemListener(results);
     testRunner.addTestSystemListener(resultsListener);
+    testRunner.addExecutionLogListener(results);
     testRunner.addExecutionLogListener(new ConsoleExecutionLogListener());
 
     testRunner.executeTestPages();
-    TestSummary summary = testFormatter.getTotalSummary();
+    results.finish();
+    fitnesse.results.JunitXmlWriter.write(results.document(), new File(outputDir, pageName + ".xml").toPath());
+    TestSummary summary = fitnesse.results.RunDocument.countsOf(
+      results.document().getJSONObject("run").getJSONObject("counts"));
 
     assertEquals("wrong", 0, summary.getWrong());
     assertEquals("exceptions", 0, summary.getExceptions());

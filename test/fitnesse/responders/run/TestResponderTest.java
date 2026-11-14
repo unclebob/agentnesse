@@ -229,7 +229,7 @@ public class TestResponderTest {
     sender.doSending(response);
 
     String results = sender.sentData();
-    assertSubString("X-FitNesse-Test-Id: ", results);
+    assertSubString("X-Agentnesse-Test-Id: ", results);
   }
 
   @Test
@@ -267,33 +267,27 @@ public class TestResponderTest {
   }
 
   @Test
-  public void simpleTextFormatForPassingTest() throws Exception {
-    request.addInput("format", "text");
+  public void jsonFormatForPassingTest() throws Exception {
+    request.addInput("format", "json");
     doSimpleRun(passFixtureTable());
-    assertEquals("text/text", response.getContentType());
-    assertTrue(results.contains("\n. "));
-    assertTrue(results.contains("R:1    W:0    I:0    E:0    TestPage\t(TestPage)"));
-    assertTrue(results.contains("1 Tests,\t0 Failures"));
+    assertEquals("application/json", response.getContentType());
+    assertTrue(results, results.contains("\"status\":\"pass\""));
   }
 
   @Test
-  public void simpleTextFormatForFailingTest() throws Exception {
-    request.addInput("format", "text");
+  public void jsonFormatForFailingTest() throws Exception {
+    request.addInput("format", "json");
     doSimpleRun(failFixtureTable());
-    assertEquals("text/text", response.getContentType());
-    assertTrue(results.contains("\nF "));
-    assertTrue(results.contains("R:0    W:1    I:0    E:0    TestPage\t(TestPage)"));
-    assertTrue(results.contains("1 Tests,\t1 Failures"));
+    assertEquals("application/json", response.getContentType());
+    assertTrue(results, results.contains("\"status\":\"fail\""));
   }
 
   @Test
-  public void simpleTextFormatForErrorTest() throws Exception {
-    request.addInput("format", "text");
+  public void jsonFormatForErrorTest() throws Exception {
+    request.addInput("format", "json");
     doSimpleRun(errorFixtureTable());
-    assertEquals("text/text", response.getContentType());
-    assertTrue(results.contains("\nX "));
-    assertTrue(results.contains("R:0    W:0    I:0    E:1    TestPage\t(TestPage)"));
-    assertTrue(results.contains("1 Tests,\t1 Failures"));
+    assertEquals("application/json", response.getContentType());
+    assertTrue(results, results.contains("\"status\":\"error\""));
   }
 
   @Test

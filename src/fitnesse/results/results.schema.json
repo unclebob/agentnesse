@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentnesse.dev/schemas/results-1.json",
+  "title": "AgentNesse run results",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "run"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "run": { "$ref": "#/$defs/run" }
+  },
+  "$defs": {
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["right", "wrong", "ignored", "exceptions"],
+      "properties": {
+        "right": { "type": "integer", "minimum": 0 },
+        "wrong": { "type": "integer", "minimum": 0 },
+        "ignored": { "type": "integer", "minimum": 0 },
+        "exceptions": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "type", "message", "stackTrace"],
+      "properties": {
+        "kind": { "enum": ["MISSING_FIXTURE", "MISSING_METHOD", "EXCEPTION", "LAUNCH_FAILURE"] },
+        "type": { "type": "string" },
+        "message": { "type": "string" },
+        "stackTrace": { "type": "string" },
+        "page": { "type": ["string", "null"] },
+        "block": { "type": ["string", "null"] },
+        "row": { "type": ["integer", "null"] },
+        "cell": { "type": ["integer", "null"] }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["row", "column", "status"],
+      "properties": {
+        "row": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["pass", "fail", "ignore", "error", "symbol", "empty", null] },
+        "actual": { "type": ["string", "null"] },
+        "expected": { "type": ["string", "null"] },
+        "symbol": { "type": ["string", "null"] },
+        "value": { "type": ["string", "null"] },
+        "error": { "anyOf": [{ "$ref": "#/$defs/error" }, { "type": "null" }] }
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cells"],
+      "properties": {
+        "cells": { "type": "array", "items": { "$ref": "#/$defs/cell" } }
+      }
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "rows"],
+      "properties": {
+        "name": { "type": "string" },
+        "rows": { "type": "array", "items": { "$ref": "#/$defs/row" } }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "counts", "durationMillis", "status", "blocks"],
+      "properties": {
+        "path": { "type": "string" },
+        "counts": { "$ref": "#/$defs/counts" },
+        "durationMillis": { "type": "integer", "minimum": 0 },
+        "status": { "enum": ["pass", "fail", "error", "ignore", "empty"] },
+        "blocks": { "type": "array", "items": { "$ref": "#/$defs/block" } }
+      }
+    },
+    "server": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "command", "exitCode", "stdout", "stderr", "exceptions"],
+      "properties": {
+        "name": { "type": "string" },
+        "command": { "type": "string" },
+        "exitCode": { "type": ["integer", "null"] },
+        "stdout": { "type": "string" },
+        "stderr": { "type": "string" },
+        "exceptions": { "type": "array", "items": { "type": "string" } },
+        "launchFailure": { "anyOf": [{ "$ref": "#/$defs/error" }, { "type": "null" }] }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start", "durationMillis", "counts", "failedPages", "pages", "servers", "stoptest"],
+      "properties": {
+        "id": { "type": "string" },
+        "start": { "type": "string" },
+        "durationMillis": { "type": "integer", "minimum": 0 },
+        "counts": { "$ref": "#/$defs/counts" },
+        "failedPages": { "type": "array", "items": { "type": "string" } },
+        "pages": { "type": "array", "items": { "$ref": "#/$defs/page" } },
+        "servers": { "type": "array", "items": { "$ref": "#/$defs/server" } },
+        "stoptest": { "type": "string" }
+      }
+    }
+  }
+}

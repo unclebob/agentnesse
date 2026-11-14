@@ -106,7 +106,7 @@ public class SuiteResponderTest {
   }
 
   public static String unsupportedFormatMessage(String format) {
-    return "Result format " + format + " is not supported until JSON results land. format=text and HTML still work.\n";
+    return "Result format " + format + " is not supported. Use format=json.\n";
   }
 
   @Test
@@ -158,25 +158,35 @@ public class SuiteResponderTest {
     assertSubString("EchoFixture", results);
     assertSubString("bad", results);
 
-    assertSubString("RerunLastFailures", results);
-    assertSubString("Rerun Failed", results);
-    File rerunPage = responder.getRerunPageFile();
-    assertTrue(rerunPage.exists());
-    String rerunPageContent = FileUtil.getFileContent(rerunPage);
-    assertSubString("SuitePage.TestTwo", rerunPageContent);
-    assertNotSubString("TestOne", rerunPageContent);
-
-    // execute rerun suite
-    String rerunPageName = responder.getRerunPageName();
-    request = new MockRequest();
-    request.setResource(rerunPageName);
+    request.addInput("format", "json");
+    request.addInput(fitnesse.http.Request.NOCHUNK, "true");
     responder = new SuiteResponder();
-    suite = WikiPageUtil.addPage(root, PathParser.parse(rerunPageName), rerunPageContent);
-    responder.page = suite;
+    String json = jsonBody(runSuite());
+    org.json.JSONArray failed = new org.json.JSONObject(json).getJSONObject("run").getJSONArray("failedPages");
+    assertEquals(1, failed.length());
+    assertTrue(failed.getString(0).endsWith("TestTwo"));
 
-    String rerunresults = runSuite();
-    assertSubString("TestTwo", rerunresults);
-    assertNotSubString("TestOne", rerunresults);
+    request = new MockRequest();
+    request.setResource("SuitePage");
+    request.addInput("format", "json");
+    request.addInput(fitnesse.http.Request.NOCHUNK, "true");
+    request.addInput("rerunFailures", fitnesse.results.FailedPages.defaultFile(context.getRootPagePath()).getPath());
+    responder = new SuiteResponder();
+    String rerun = jsonBody(runSuite());
+    org.json.JSONArray rerunPages = new org.json.JSONObject(rerun).getJSONObject("run").getJSONArray("pages");
+    assertEquals(1, rerunPages.length());
+    assertTrue(rerunPages.getJSONObject(0).getString("path").endsWith("TestTwo"));
+  }
+
+  @Test
+  public void aMissingRerunFileIsRejected() throws Exception {
+    request.addInput("format", "json");
+    request.addInput(fitnesse.http.Request.NOCHUNK, "true");
+    request.addInput("rerunFailures", "no-such-last-failures.json");
+    Response response = responder.makeResponse(context, request);
+    String body = getResponseContent(response);
+    assertFalse(body, body.contains("schemaVersion"));
+    assertFalse(body, body.contains("TestOne"));
   }
 
   @Test
@@ -473,6 +483,10 @@ public class SuiteResponderTest {
       field.setAccessible(true);
       field.set(response, sender);
     }
+  }
+
+  private static String jsonBody(String response) {
+    return response.substring(response.indexOf('{'));
   }
 
   private String runSuite() throws Exception {

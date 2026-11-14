@@ -11,7 +11,7 @@ import static fitnesse.ContextConfigurator.*;
 public class Arguments {
 
   private final CommandLine commandLine = new CommandLine(
-          "[-v][-p port][-d dir][-r root][-f config][-c command][-b output][--listen address]");
+          "[-v][-p port][-d dir][-r root][-f config][-c command][-b output][--listen address][-rerun-failures file]");
 
   private final String rootPath;
   private final Integer port;
@@ -21,6 +21,7 @@ public class Arguments {
   private final String configFile;
   private final boolean verboseLogging;
   private final String listenAddress;
+  private final String rerunFailures;
 
   public Arguments(String... args) {
     if (!commandLine.parse(args)) {
@@ -35,6 +36,11 @@ public class Arguments {
     this.configFile = commandLine.getOptionArgument("f", "config");
     this.verboseLogging = commandLine.hasOption("v");
     this.listenAddress = commandLine.getOptionArgument("listen", "address");
+    this.rerunFailures = commandLine.getOptionArgument("rerun-failures", "file");
+  }
+
+  public String getRerunFailures() {
+    return rerunFailures;
   }
 
   static void printUsage() {
@@ -48,8 +54,10 @@ public class Arguments {
       defaults.get(ROOT_DIRECTORY) + "}");
     System.err.println("\t-f <config file> {" +
       defaults.get(CONFIG_FILE) + "}");
-    System.err.println("\t-c <command> execute single command.");
+    System.err.println("\t-c <command> execute one command and print JSON results.");
     System.err.println("\t-b <filename> redirect command output.");
+    System.err.println("\t--rerun-failures <json> rerun only failedPages from that file.");
+    System.err.println("\t    A run also writes .agentnesse/last-failures.json beside the wiki root.");
     System.err.println("\t-v {off} Verbose logging");
     System.err.println("\t--listen <address> {" + DEFAULT_LISTEN + "} Bind to this address. 0.0.0.0 listens on all interfaces.");
   }
@@ -67,9 +75,11 @@ public class Arguments {
   }
 
   public ContextConfigurator update(ContextConfigurator defaults) {
-    ContextConfigurator result = defaults;
+    ContextConfigurator result = defaults.withParameter(LOG_LEVEL, verboseLogging ? "verbose" : "normal");
+    return applyRun(applyLocation(result));
+  }
 
-    result = result.withParameter(LOG_LEVEL, verboseLogging ? "verbose" : "normal");
+  private ContextConfigurator applyLocation(ContextConfigurator result) {
     if (configFile != null)
       result = result.withParameter(CONFIG_FILE, configFile);
     if (port != null)
@@ -78,13 +88,18 @@ public class Arguments {
       result = result.withRootPath(rootPath);
     if (rootDirectory != null)
       result = result.withRootDirectoryName(rootDirectory);
+    return result;
+  }
+
+  private ContextConfigurator applyRun(ContextConfigurator result) {
     if (output != null)
       result = result.withParameter(OUTPUT, output);
     if (command != null)
       result = result.withParameter(COMMAND, command);
+    if (rerunFailures != null)
+      result = result.withParameter(RERUN_FAILURES, rerunFailures);
     if (listenAddress != null)
       result = result.withParameter(LISTEN, listenAddress);
-
     return result;
   }
 

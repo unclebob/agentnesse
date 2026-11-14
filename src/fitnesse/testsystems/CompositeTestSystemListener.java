@@ -15,7 +15,7 @@ public class CompositeTestSystemListener implements TestSystemListener {
     listeners.add(listener);
   }
 
-  protected final List<TestSystemListener> listeners() {
+  public final List<TestSystemListener> listeners() {
     return listeners;
   }
 

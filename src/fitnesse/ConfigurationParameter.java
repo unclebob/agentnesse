@@ -15,6 +15,7 @@ public enum ConfigurationParameter {
   PORT("Port"),
   OUTPUT("RedirectOutput"),
   COMMAND("Command"),
+  RERUN_FAILURES("RerunFailures"),
   LISTEN("listen"),
   MAXIMUM_WORKERS("MaximumWorkers"),
   THEME("Theme"),

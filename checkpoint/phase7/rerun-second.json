@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "run": {
+    "stoptest": "?responder=stoptest&id=1",
+    "pages": [
+      {
+        "path": "Demo.Fail",
+        "counts": {
+          "ignored": 0,
+          "right": 0,
+          "exceptions": 0,
+          "wrong": 1
+        },
+        "blocks": [],
+        "durationMillis": 55,
+        "status": "fail"
+      }
+    ],
+    "servers": [
+      {
+        "stdout": "",
+        "launchFailure": null,
+        "name": "slim:fitnesse.slim.SlimService",
+        "exitCode": 0,
+        "stderr": "",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "exceptions": []
+      }
+    ],
+    "failedPages": [
+      "Demo.Fail"
+    ],
+    "counts": {
+      "ignored": 0,
+      "right": 0,
+      "exceptions": 0,
+      "wrong": 1
+    },
+    "start": "2026-11-14T01:47:13.608Z",
+    "durationMillis": 259,
+    "id": "1"
+  }
+}

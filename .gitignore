@@ -1,6 +1,7 @@
 bin
 build
 .metrics/
+.agentnesse/
 .venv/
 target/
 out

@@ -239,6 +239,20 @@ public class FitNesseMainTest {
   }
 
   @Test
+  public void rerunFailuresIsAppendedToTheCommand() throws Exception {
+    context.withParameter(ConfigurationParameter.COMMAND, "Suite?suite");
+    context.withParameter(ConfigurationParameter.RERUN_FAILURES, "last failures.json");
+
+    FitNesse fitNesse = mock(FitNesse.class);
+    context = spy(context);
+    doAnswer(fitNesseContextWith(fitNesse)).when(context).makeFitNesseContext();
+
+    new FitNesseMain().launchFitNesse(context);
+    verify(fitNesse).executeSingleCommand(
+      "Suite?suite&format=json&rerunFailures=last+failures.json", System.out);
+  }
+
+  @Test
   public void commandExitCodeIsTheNumberOfFailingTests() throws Exception {
     FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestFail.md",
       """
@@ -253,7 +267,7 @@ public class FitNesseMainTest {
       | check | echo | hello | goodbye |
       """);
 
-    int exitCode = launch(new String[]{"-r", TEST_FITNESSE_ROOT, "-c", "TestFail?test&format=text"});
+    int exitCode = launch(new String[]{"-r", TEST_FITNESSE_ROOT, "-c", "TestFail?test"});
     assertEquals(1, exitCode);
   }
 
@@ -274,10 +288,11 @@ public class FitNesseMainTest {
     File output = new File(TEST_FITNESSE_ROOT, "results.txt");
 
     int exitCode = launch(new String[]{
-      "-r", TEST_FITNESSE_ROOT, "-c", "TestPass?test&format=text", "-b", output.getPath()});
+      "-r", TEST_FITNESSE_ROOT, "-c", "TestPass?test", "-b", output.getPath()});
 
     assertEquals(0, exitCode);
-    assertThat(FileUtil.getFileContent(output), containsString("0 Failures"));
+    assertThat(FileUtil.getFileContent(output), containsString("\"schemaVersion\": 1"));
+    assertThat(FileUtil.getFileContent(output), containsString("\"status\": \"pass\""));
   }
 
   @Test

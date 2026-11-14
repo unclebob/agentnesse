@@ -60,6 +60,8 @@ public abstract class Response {
       format = Format.JUNIT;
     } else if ("text".equalsIgnoreCase(formatString)) {
       format = Format.TEXT;
+    } else if ("json".equalsIgnoreCase(formatString)) {
+      format = Format.JSON;
     } else if ("tsv".equalsIgnoreCase(formatString)) {
       format = Format.TSV;
     } else {
@@ -83,6 +85,10 @@ public abstract class Response {
 
   public boolean isTextFormat() {
     return Format.TEXT.contentType.equals(contentType);
+  }
+
+  public boolean isJsonFormat() {
+    return Format.JSON.contentType.equals(contentType);
   }
 
   public boolean isTabSeparatedFormat() {

@@ -52,6 +52,9 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
 
         try {
           processTable(theTable, isSuiteTearDownPage);
+          if (theTable.getTable() instanceof MarkdownTable markdown) {
+            publishTable(pageToTest, markdown);
+          }
         } catch (SyntaxError e) {
           String tableName = theTable.getTable().getCellContents(0, 0);
           theTable.getTable().updateContent(0, 0, SlimTestResult.error(String.format("<strong> %s: Bad table! %s</strong>", tableName, e.getMessage())));
