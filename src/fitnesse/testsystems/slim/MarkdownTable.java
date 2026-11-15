@@ -25,6 +25,7 @@ public final class MarkdownTable implements Table {
   private CellRecord tableRecord = CellRecord.status(null);
   private String pageName = "";
   private String blockName = "";
+  private String origin = "";
   private boolean tearDown;
 
   public static MarkdownTable parse(String markdown) {
@@ -47,6 +48,14 @@ public final class MarkdownTable implements Table {
 
   public void setTearDown(boolean tearDown) {
     this.tearDown = tearDown;
+  }
+
+  public void setOrigin(String origin) {
+    this.origin = origin == null ? "" : origin;
+  }
+
+  public String origin() {
+    return origin;
   }
 
   public void locate(String page, String block) {

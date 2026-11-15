@@ -83,16 +83,50 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
 
   private String htmlFrom(SlimTable startWithTable, SlimTable stopBeforeTable) {
     StringBuilder html = new StringBuilder();
+    StringBuilder section = new StringBuilder();
+    String sectionName = "";
     boolean started = startWithTable == null;
+    String testPage = pageName();
     for (MarkdownTable table : slimPage.getTableScanner()) {
-      started = started || table == startWithTable.getTable();
-      if (started && (stopBeforeTable == null || table != stopBeforeTable.getTable())) {
-        html.append(table.toHtml());
+      if (!started) {
+        started = table == startWithTable.getTable();
       }
       if (stopBeforeTable != null && table == stopBeforeTable.getTable()) {
         break;
       }
+      if (started) {
+        sectionName = appendTable(html, section, sectionName, testPage, table);
+      }
     }
+    appendSection(html, sectionName, section);
     return html.toString();
+  }
+
+  private String pageName() {
+    return getTestContext().getPageToTest() == null ? "" : getTestContext().getPageToTest().getName();
+  }
+
+  private static String appendTable(StringBuilder html, StringBuilder section, String sectionName,
+                                    String testPage, MarkdownTable table) {
+    String name = ResultSections.section(table.origin(), testPage, table.getCellContents(0, 0));
+    if (!name.equals(sectionName)) {
+      appendSection(html, sectionName, section);
+      sectionName = name;
+    }
+    if (name.isEmpty()) {
+      html.append(table.toHtml());
+    } else {
+      section.append(table.toHtml());
+    }
+    return sectionName;
+  }
+
+  private static void appendSection(StringBuilder html, String name, StringBuilder section) {
+    if (name.isEmpty() || section.length() == 0) {
+      section.setLength(0);
+      return;
+    }
+    html.append(ResultSections.details(name, section.toString()));
+    section.setLength(0);
   }
 }
