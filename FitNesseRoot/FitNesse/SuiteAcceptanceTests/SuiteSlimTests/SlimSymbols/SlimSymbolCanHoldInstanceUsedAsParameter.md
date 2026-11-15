@@ -34,7 +34,7 @@ The `getStringFromOther(TestSlim other)` method returns `other.getStringArg()`.
 | check | return constructor arg | 1 | |
 | reject | is same | $TEST_SLIM_INSTANCE | |
 
-An instance stored in a Slim symbol can also be used for instance chaining (ChainWithInstanceTest).
+An instance stored in a Slim symbol can also be used for instance chaining (`ChainWithInstanceTest`).
 
 
 | script | $TEST_SLIM_INSTANCE | |

@@ -11,6 +11,7 @@ import fitnesse.wiki.VersionInfo;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageLoadException;
 import fitnesse.wiki.WikiPageProperty;
+import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.WikiWordReference;
 import fitnesse.wiki.CompositeVariableSource;
@@ -183,7 +184,8 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private String render(String content) {
-    return MarkdownRenderer.render(expand(TableSeparators.supply(escapeWikiPrefixes(content))), this::wikiWordTarget, contentsLinks(), this::includedHtml);
+    return MarkdownRenderer.render(expand(TableSeparators.supply(escapeWikiPrefixes(content))), this::wikiWordTarget,
+      contentsLinks(), this::includedHtml, WikiPageUtil.isTestPage(this));
   }
 
   private String includedHtml(String name) {
@@ -433,15 +435,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private static int firstBreak(String argument) {
-    int space = argument.indexOf(' ');
-    int newline = argument.indexOf('\n');
-    if (space < 0) {
-      return newline;
-    }
-    if (newline < 0) {
-      return space;
-    }
-    return Math.min(space, newline);
+    return fitnesse.wiki.WikiPaths.firstOf(argument, ' ', '\n');
   }
 
   private void rememberDefine(Map<String, String> values, String literal) {

@@ -3,8 +3,6 @@ package fitnesse.responders;
 import fitnesse.FitNesseContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import fitnesse.html.template.HtmlPage;
-import fitnesse.html.template.PageTitle;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.http.SimpleResponse;
@@ -16,11 +14,13 @@ import java.util.*;
 
 public class ScopeVariablesResponder extends BasicResponder {
   private List<ScopeVariable> variables;
-  private HtmlPage responsePage;
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
-    responsePage = context.pageFactory.newPage();
+    Response rejected = JsonResponses.unknownParameter(request, "variables");
+    if (rejected != null) {
+      return rejected;
+    }
 
     WikiPage requestedPage = getRequestedPage(request, context);
     String pageName = request.getResource();
@@ -34,7 +34,7 @@ public class ScopeVariablesResponder extends BasicResponder {
     else {
       variables = new ArrayList<>();
       listVariablesLoc(page);
-      response = JsonResponses.wantsJson(request) ? jsonResponse() : makeResponse(request);
+      response = jsonResponse();
     }
     return response;
   }
@@ -64,19 +64,6 @@ public class ScopeVariablesResponder extends BasicResponder {
     SimpleResponse response = new SimpleResponse();
     response.setContentType(Response.Format.JSON);
     response.setContent(new JSONObject().put("variables", values).toString(2));
-    return response;
-  }
-
-  private Response makeResponse(Request request) throws UnsupportedEncodingException {
-    responsePage.setTitle("Available variables");
-    responsePage.put("viewLocation", request.getResource());
-    responsePage.setNavTemplate("viewNav");
-    responsePage.setPageTitle(new PageTitle(PathParser.parse(request.getResource())));
-    responsePage.put("variables",variables);
-    responsePage.setMainTemplate("scopeVariables");
-
-    SimpleResponse response = new SimpleResponse();
-    response.setContent(responsePage.html(request));
     return response;
   }
 

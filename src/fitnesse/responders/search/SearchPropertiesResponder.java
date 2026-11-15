@@ -1,105 +1,35 @@
 package fitnesse.responders.search;
 
-import static fitnesse.wiki.PageData.LEGACY_PAGE_TYPE_ATTRIBUTE;
-import static fitnesse.wiki.PageData.PAGE_TYPE_ATTRIBUTE;
-import static fitnesse.wiki.PageData.PropertySUITES;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import fitnesse.FitNesseContext;
+import fitnesse.components.TraversalListener;
+import fitnesse.http.Request;
+import fitnesse.http.Response;
 import fitnesse.markdown.FrontMatter;
 import fitnesse.responders.JsonResponses;
 import fitnesse.wiki.WikiPage;
-import fitnesse.wiki.search.AttributeWikiPageFinder;
 import fitnesse.wiki.search.FrontMatterFinder;
 import fitnesse.wiki.search.PageFinder;
-import fitnesse.components.TraversalListener;
-import fitnesse.http.Request;
-import fitnesse.wiki.PageType;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
+import java.util.Set;
 
 public class SearchPropertiesResponder extends ResultResponder {
-
-  private static final Logger LOG = Logger.getLogger(SearchPropertiesResponder.class.getName());
-
-  public static final String IGNORED = "Any";
-  public static final String ACTION = "Action";
-  public static final String SECURITY = "Security";
-  public static final String SPECIAL = "Special";
-
-  protected List<PageType> getPageTypesFromInput(Request request) {
-    String requestedPageTypes = request.hasInput(PAGE_TYPE_ATTRIBUTE)
-      ? request.getInput(PAGE_TYPE_ATTRIBUTE)
-      : request.getInput(LEGACY_PAGE_TYPE_ATTRIBUTE);
-    if (requestedPageTypes == null) {
-      return null;
-    }
-
-    List<PageType> types = new ArrayList<>();
-
-    for (String type : requestedPageTypes.split(",")) {
-      types.add(PageType.fromString(type));
-    }
-    return types;
-  }
-
-  protected String getSuitesFromInput(Request request) {
-    if (!isSuitesGiven(request))
-      return null;
-
-    return request.getInput(PropertySUITES);
-  }
-
-  private boolean isSuitesGiven(Request request) {
-    return request.hasInput(PropertySUITES);
-  }
-
-  protected Map<String, Boolean> getAttributesFromInput(Request request) {
-    Map<String, Boolean> attributes = new LinkedHashMap<>();
-
-    getListboxAttributesFromRequest(request, ACTION, SEARCH_ACTION_ATTRIBUTES,
-        attributes);
-    // the search form sends the navigation attributes as "Action" too
-    getListboxAttributesFromRequest(request, ACTION, SEARCH_NAVIGATION_ATTRIBUTES,
-        attributes);
-    getListboxAttributesFromRequest(request, SPECIAL, SPECIAL_ATTRIBUTES,
-        attributes);
-
-    // "obsolete" input is used to make existing queries work
-    if (request.hasInput(SEARCH_ATTRIBUTE_SKIP) || request.hasInput("obsolete"))
-      attributes.put(SEARCH_ATTRIBUTE_SKIP, true);
-
-    return attributes;
-  }
-
-  private void getListboxAttributesFromRequest(Request request,
-      String inputAttributeName, String[] attributeList,
-      Map<String, Boolean> attributes) {
-    String requested = request.getInput(inputAttributeName);
-    if (requested == null) {
-      requested = IGNORED;
-    }
-    if (!IGNORED.equals(requested)) {
-      for (String searchAttribute : attributeList) {
-        attributes.put(searchAttribute, requested.contains(searchAttribute));
-      }
-    }
-  }
+  private static final Set<String> TYPES = Set.of("test", "suite", "static");
 
   @Override
-  protected String getTemplate() {
-    return "searchForm";
-  }
-
-  @Override
-  protected String getTitle() {
-    return "Search Page Properties Results";
+  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    Response rejected = JsonResponses.unknownParameter(request, "searchProperties", "executeSearchProperties",
+      "type", "tags", "help", "prune", "searchScope");
+    if (rejected != null) {
+      return rejected;
+    }
+    String type = request.getInput("type");
+    if (type != null && !type.isEmpty() && !TYPES.contains(type)) {
+      return JsonResponses.error(400, "badRequest", "Unknown page type " + type);
+    }
+    return super.makeResponse(context, request);
   }
 
   @Override
@@ -119,24 +49,7 @@ public class SearchPropertiesResponder extends ResultResponder {
 
   @Override
   protected PageFinder getPageFinder(TraversalListener<WikiPage> observer) {
-    if (JsonResponses.wantsJson(request)) {
-      return new FrontMatterFinder(observer, request.getInput("type"), request.getInput("tags"),
-        request.getInput("help"), request.getInput("prune"));
-    }
-    List<PageType> pageTypes = getPageTypesFromInput(request);
-    Map<String, Boolean> attributes = getAttributesFromInput(request);
-    String suites = getSuitesFromInput(request);
-
-    if (pageTypes == null && attributes.isEmpty() && suites == null) {
-      try {
-        response.add("No search properties were specified.");
-      } catch (IOException e) {
-        LOG.log(Level.WARNING, "Unable to send content to client", e);
-      }
-      return null;
-    }
-
-    return new AttributeWikiPageFinder(observer, pageTypes, attributes, suites);
+    return new FrontMatterFinder(observer, request.getInput("type"), request.getInput("tags"),
+      request.getInput("help"), request.getInput("prune"));
   }
-
 }

@@ -7,5 +7,5 @@
 
 | script | | | |
 | --- | --- | --- | --- |
-| given page | CrazyPage | with content | brother content |
+| given page | `CrazyPage` | with content | brother content |
 | it should contain | brother content | | |

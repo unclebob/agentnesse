@@ -8,9 +8,7 @@
 
 The search responder works in two fashions: Title Search and Content Search.
 
- ^TestSearchForm
- ^TestTitleSearch
- ^TestContentSearch
+Search reads the title, the text, or a method name and returns JSON.
 
 ---
 Includes:

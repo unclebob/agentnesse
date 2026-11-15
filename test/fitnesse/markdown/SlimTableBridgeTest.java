@@ -12,7 +12,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void aRenderedTableIsReadByTheSlimScannerAsFitNesseRows() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       | decision:Division | | |
       | --- | --- | --- |
       | numerator | denominator | quotient? |
@@ -29,7 +29,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void aTableInsideDetailsIsStillASlimTable() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       <details open>
       <summary>Dependencies</summary>
 
@@ -46,7 +46,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void aClosedDetailsBlockKeepsItsTitleAndBody() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       <details>
       <summary>Notes</summary>
       plain words
@@ -59,7 +59,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void detailsWithoutASummaryStillRendersTheBody() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       <details open>
       just the body
       </details>
@@ -70,7 +70,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void anEmptyBodyCellStaysSoAShortRowKeepsItsWidth() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       | baseline:buy milk | | | |
       | --- | --- | --- | --- |
       | cash? | card? | pints? | go? |
@@ -83,7 +83,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void aCellKeepsAPipeAndANewlineThatThePageUnderTestNeeds() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       | script | with content |
       | --- | --- |
       | given page | line one<br>\\| import \\| |
@@ -94,7 +94,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void emptyCellsAtTheEndOfARowAreNotSlimCells() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       | script | echo fixture | | |
       | --- | --- | --- | --- |
       | check | echo | Hello | |
@@ -106,20 +106,20 @@ public class SlimTableBridgeTest {
 
   @Test
   public void aCellKeepsABackslash() {
-    String html = MarkdownRenderer.render(
+    String html = MarkdownRenderer.render(true, 
       "| decision:X | |\n| --- | --- |\n| pattern | (?s)^([^\\\\n]\\*)\\\\n.\\* |\n");
     assertEquals("(?s)^([^\\n]*)\\n.*", HtmlCells.cell(html, 0, 1, 1));
   }
 
   @Test
   public void anEscapedDollarStaysADollarForTheNextPage() {
-    String html = MarkdownRenderer.render("| script | |\n| --- | --- |\n| check | \\${PAGE_NAME} |\n");
+    String html = MarkdownRenderer.render(true, "| script | |\n| --- | --- |\n| check | \\${PAGE_NAME} |\n");
     assertEquals("${PAGE_NAME}", HtmlCells.cell(html, 0, 1, 1));
   }
 
   @Test
   public void aQuotedScenarioArgumentStaysAQuotedCell() throws Exception {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       | scenario | page | source | should not contain | text |
       | --- | --- | --- | --- | --- |
       | reject | content contains | @text |
@@ -134,14 +134,14 @@ public class SlimTableBridgeTest {
 
   @Test
   public void inlineMarkdownInACellRendersAndSlimReadsThePlainText() {
-    String html = MarkdownRenderer.render("""
+    String html = MarkdownRenderer.render(true, """
       | [text](Page) | WikiWord | **bold** | `code` |
       | --- | --- | --- | --- |
       | a | b | c | d |
       """);
 
     assertTrue(html, html.contains("<a href=\"Page\">text</a>"));
-    assertTrue(html, html.contains("href=\"WikiWord?edit&nonExistent=true\""));
+    assertFalse(html, html.contains("WikiWord?edit"));
     assertTrue(html, html.contains("<strong>bold</strong>"));
     assertTrue(html, html.contains("<code>code</code>"));
 
@@ -153,7 +153,7 @@ public class SlimTableBridgeTest {
 
   @Test
   public void anEscapedUnderscoreIsAnUnderscore() {
-    String html = MarkdownRenderer.render("| decision:X | |\n| --- | --- |\n| name | TEST\\_SYSTEM |\n");
+    String html = MarkdownRenderer.render(true, "| decision:X | |\n| --- | --- |\n| name | TEST\\_SYSTEM |\n");
     assertEquals("TEST_SYSTEM", HtmlCells.cell(html, 0, 1, 1));
   }
 }

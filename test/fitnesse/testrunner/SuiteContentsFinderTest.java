@@ -40,8 +40,8 @@ public class SuiteContentsFinderTest {
   @Test
   public void testGatherXRefTestPages() {
     WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("SomePage"), "!see PageA\n!see PageB");
-    WikiPage pageA = WikiPageUtil.addPage(root, PathParser.parse("PageA"), "");
-    WikiPage pageB = WikiPageUtil.addPage(root, PathParser.parse("PageB"), "");
+    WikiPage pageA = addTestPage(root, "PageA", "");
+    WikiPage pageB = addTestPage(root, "PageB", "");
     SuiteContentsFinder finder = new SuiteContentsFinder(testPage, null, root);
     List<WikiPage> testPages = finder.getAllPagesToRunForThisSuite();
     assertEquals(2, testPages.size());
@@ -52,8 +52,8 @@ public class SuiteContentsFinderTest {
   @Test
   public void shouldTestXRefsInSubSuites() {
     WikiPageUtil.addPage(suite, PathParser.parse("SubSuite"), "!see .PageA\n!see .PageB");
-    WikiPage pageA = WikiPageUtil.addPage(root, PathParser.parse("PageA"), "");
-    WikiPage pageB = WikiPageUtil.addPage(root, PathParser.parse("PageB"), "");
+    WikiPage pageA = addTestPage(root, "PageA", "");
+    WikiPage pageB = addTestPage(root, "PageB", "");
     SuiteContentsFinder finder = new SuiteContentsFinder(suite, null, root);
     List<WikiPage> testPages = finder.getAllPagesToRunForThisSuite();
     assertEquals(3, testPages.size());

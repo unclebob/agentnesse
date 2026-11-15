@@ -29,6 +29,10 @@ public class PacketResponder implements Responder {
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    Response rejected = JsonResponses.unknownParameter(request, "packet");
+    if (rejected != null) {
+      return rejected;
+    }
     response = new SimpleResponse();
     response.setContentType(Response.Format.JSON);
     String pageName = request.getResource();

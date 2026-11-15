@@ -4,4 +4,4 @@
   "help": null,
   "prune": false
 }
-See .FitNesse.WikiWord
+See .FitNesse.SuiteAcceptanceTests.SuiteWidgetTests.WikiWord

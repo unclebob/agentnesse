@@ -7,14 +7,17 @@ import fitnesse.http.MockRequest;
 import fitnesse.http.MockResponseSender;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
+import fitnesse.http.SimpleResponse;
 import fitnesse.testutil.FitNesseUtil;
-import fitnesse.wiki.*;
+import fitnesse.wiki.PathParser;
+import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.WikiPageUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static util.RegexTestCase.assertDoesntHaveRegexp;
 import static util.RegexTestCase.assertHasRegexp;
-import static util.RegexTestCase.assertNotSubString;
 import static util.RegexTestCase.assertSubString;
 
 public class SearchResponderTest {
@@ -30,8 +33,8 @@ public class SearchResponderTest {
     WikiPageUtil.addPage(somePage, PathParser.parse("SomeTest"), "test page content");
     WikiPageUtil.addPage(somePage, PathParser.parse("SomeSuite"), "suite page content");
     request = new MockRequest();
-    request.addInput("searchString", "blah");
-    request.addInput("searchType", "blah");
+    request.addInput("q", "blah");
+    request.addInput("type", "text");
     responder = new SearchResponder();
   }
 
@@ -45,7 +48,7 @@ public class SearchResponderTest {
     WikiPageUtil.addPage(somePage, PathParser.parse("PageTwo.PageTwoChild"),
       "|Some method|");
 
-    String content = getResponseContentUsingMethodName("|Some method|", "root");
+    String content = getResponseContentUsingMethodName("Some method", "root");
 
     assertHasRegexp("SomePage.PageOne.PageOneChild", content);
     assertHasRegexp("SomePage.PageTwo.PageTwoChild", content);
@@ -58,7 +61,7 @@ public class SearchResponderTest {
     WikiPage suite11 = WikiPageUtil.addPage(somePage, PathParser.parse("Suite11"), "some content");
     WikiPageUtil.addPage(suite11, PathParser.parse("Suite11Test1"), "|Some method|");
 
-    String content = getResponseContentUsingMethodName("|Some method|", "Suite11");
+    String content = getResponseContentUsingMethodName("Some method", "Suite11");
 
     assertHasRegexp("SomePage.Suite11.Suite11Test1", content);
     //Exception is thrown if page is not formed properly. Below assert ensures, the page content is valid one.
@@ -81,7 +84,7 @@ public class SearchResponderTest {
 
     WikiPageUtil.addPage(somePage, PathParser.parse("Test11"), "|Some methods|");
 
-    String content = getResponseContentUsingMethodName("|Some method|", "");
+    String content = getResponseContentUsingMethodName("Some method", "");
 
     assertHasRegexp("Test1", content);
     assertHasRegexp("Test2", content);
@@ -109,7 +112,7 @@ public class SearchResponderTest {
 
     WikiPageUtil.addPage(somePage, PathParser.parse("Test11"), "|Method with params|");
 
-    String content = getResponseContentUsingMethodName("|Method with |1| param|", "root");
+    String content = getResponseContentUsingMethodName("Method with param", "root");
 
     assertHasRegexp("Test1", content);
     assertHasRegexp("Test2", content);
@@ -131,45 +134,23 @@ public class SearchResponderTest {
   }
 
   @Test
-  public void testTableSorterScript() throws Exception {
-    String content = getResponseContentUsingSearchString("something");
-    // test only small part, since output is chunked
-    assertNotSubString("tableSorter", content);
-  }
-
-  @Test
-  public void testClientSideSortScript() throws Exception {
-    String content = getResponseContentUsingSearchString("something");
-    assertNotSubString("clientSideSort.js", content);
-  }
-
-  @Test
-  public void testPageSortLink() throws Exception {
-    String content = getResponseContentUsingSearchString("something");
-    assertSubString(">Page<", content);
-    assertNotSubString("tableSorter.sort", content);
-  }
-
-  @Test
-  public void testLastModifiedSortLink() throws Exception {
-    String content = getResponseContentUsingSearchString("something");
-    assertSubString(">LastModified<", content);
-  }
-
-  @Test
   public void testNoSearchStringBringsUpNoResults() throws Exception {
     String content = getResponseContentUsingSearchString("");
-    assertSubString("No pages matched your search criteria.", content);
+    assertSubString("\"pages\": []", content);
   }
 
   @Test
-  public void testEscapesSearchString() throws Exception {
-    String content = getResponseContentUsingSearchString("!+-<&>");
-    assertSubString("<title>Content Search Results for '!+-&lt;&amp;&gt;'</title>", content);
+  public void unknownSearchTypeIsRejected() throws Exception {
+    request.addInput("type", "nope");
+    request.addInput("q", "something");
+    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+    assertEquals(400, response.getStatus());
+    assertSubString("Unknown search type nope", response.getContent());
   }
 
   private String getResponseContentUsingSearchString(String searchString) throws Exception {
-    request.addInput("searchString", searchString);
+    request.addInput("q", searchString);
+    request.addInput("type", "text");
     request.addInput(Request.NOCHUNK, "");
     Response response = responder.makeResponse(context, request);
     MockResponseSender sender = new MockResponseSender();
@@ -178,8 +159,8 @@ public class SearchResponderTest {
   }
 
   private String getResponseContentUsingMethodName(String searchString, String searchScope) throws Exception {
-    request.addInput("searchString", searchString);
-    request.addInput("isMethodSearch", "true");
+    request.addInput("q", searchString);
+    request.addInput("type", "method");
     request.addInput("searchScope", searchScope);
     if (!(searchScope.equals("root") || searchScope.isEmpty())) {
       //This is specific to test data defined in testHtmlWithMethodWithDefinedScope when specific option is selected.
@@ -192,41 +173,4 @@ public class SearchResponderTest {
     return sender.sentData();
   }
 
-  @Test
-  public void testTitle() {
-    request.addInput("searchType", "something with the word title in it");
-    responder.setRequest(request);
-    String title = responder.getTitle();
-    assertSubString("Title Search Results", title);
-
-    request.addInput("searchType", "something with the word content in it");
-    title = responder.getTitle();
-    assertSubString("Content Search Results", title);
-  }
-
-  @Test
-  public void testLinkShouldContainFullPagePath() throws Exception {
-    request.setResource("SomePage");
-    String searchPageContent = getResponseContentUsingSearchString("test page");
-
-    assertSubString("<a href=\"SomePage.SomeTest?test\">Test</a>", searchPageContent);
-  }
-
-  @Test
-  public void suiteLinkShouldContainFullPagePath() throws Exception {
-    request.setResource("SomePage");
-    String searchPageContent = getResponseContentUsingSearchString("suite page");
-
-    assertSubString("<a href=\"SomePage.SomeSuite?suite\">Suite</a>", searchPageContent);
-  }
-  @Test
-  public void tagsShouldBeEscaped() throws Exception {
-    WikiPage somePage = context.getRootPage().getChildPage("SomePage");
-    PageData data = somePage.getData();
-    data.setAttribute(WikiPageProperty.SUITES, " <script>TEST</script> ");
-    somePage.commit(data);
-    String searchPageContent = getResponseContentUsingSearchString("something");
-
-    assertSubString("&lt;script&gt;TEST&lt;/script&gt;", searchPageContent);
-  }
 }

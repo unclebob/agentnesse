@@ -63,7 +63,7 @@ ddt: add up change
 
 #### Use Case 3
 The names are matching but you need to overwrite the table type.
-Note that the DefineTableType table will not overwrite type definitions given in the test.
+Note that the `DefineTableType` table will not overwrite type definitions given in the test.
 
 
 ```agentnesse
@@ -166,7 +166,7 @@ subset query: $tq
 | 3 | 6 |
 
 #### Use Case 5
-If you can't use an [Import](ImportTable) statement or you have import conflicts you can't resolve.
+If you can't use an Import statement or you have import conflicts you can't resolve.
 The alias can help you to get around these.
 
 

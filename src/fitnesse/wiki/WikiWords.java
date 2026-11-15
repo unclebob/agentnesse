@@ -4,6 +4,14 @@ public final class WikiWords {
   private WikiWords() {
   }
 
+  public static boolean startsAtBoundary(String text, int index) {
+    if (index == 0) {
+      return true;
+    }
+    char previous = text.charAt(index - 1);
+    return !Character.isLetterOrDigit(previous);
+  }
+
   public static int findWikiWordLength(String text) {
     String candidate = text + ".";
     int offset = "<>^.".contains(candidate.substring(0, 1)) ? 1 : 0;

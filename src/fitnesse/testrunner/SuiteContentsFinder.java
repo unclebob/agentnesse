@@ -53,7 +53,7 @@ public class SuiteContentsFinder {
   private List<WikiPage> addTestPagesToSuite(WikiPage page, SuiteFilter suiteFilter) {
     List<WikiPage> testPages = new LinkedList<>();
     boolean includePage = isTopPage(page) || !isPruned(page);
-    if (suiteFilter.isMatchingTest(page) && includePage) {
+    if (suiteFilter.isMatchingTest(page) && includePage && !structural(page)) {
       testPages.add(page);
     }
     addXrefPages(testPages, page);
@@ -74,6 +74,17 @@ public class SuiteContentsFinder {
     return page == pageToRun;
   }
 
+  /**
+   * SetUp, TearDown, and the scenario library are pulled into a test. They are
+   * not tests of their own, even when their tables are Slim tables.
+   */
+  private static boolean structural(WikiPage page) {
+    String name = page.getName();
+    return "SetUp".equals(name) || "TearDown".equals(name)
+      || "SuiteSetUp".equals(name) || "SuiteTearDown".equals(name)
+      || "ScenarioLibrary".equals(name);
+  }
+
   private void addXrefPages(List<WikiPage> pages, WikiPage thePage) {
     List<String> pageReferences = WikiPageUtil.getXrefPages(thePage);
     if (pageReferences.isEmpty()) {
@@ -83,7 +94,7 @@ public class SuiteContentsFinder {
     for (String pageReference : pageReferences) {
       WikiPagePath path = PathParser.parse(pageReference);
       WikiPage referencedPage = pageCrawler.getSiblingPage(path);
-      if (referencedPage != null)
+      if (referencedPage != null && suiteFilter.isMatchingTest(referencedPage) && !structural(referencedPage))
         pages.add(referencedPage);
     }
   }

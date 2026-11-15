@@ -6,17 +6,14 @@ import fitnesse.FitNesseContext;
 import fitnesse.Responder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
-import fitnesse.http.SimpleResponse;
-import fitnesse.html.template.HtmlPage;
 
 public class ErrorResponder implements Responder {
-  private Exception exception;
-  private String message;
-  private int statusCode;
+  private final Exception exception;
+  private final String message;
+  private final int statusCode;
 
   public ErrorResponder(Exception e) {
-    exception = e;
-    statusCode = 400;
+    this(e, null, 400);
   }
 
   public ErrorResponder(String message) {
@@ -24,39 +21,27 @@ public class ErrorResponder implements Responder {
   }
 
   public ErrorResponder(String message, int statusCode) {
+    this(null, message, statusCode);
+  }
+
+  private ErrorResponder(Exception exception, String message, int statusCode) {
+    this.exception = exception;
     this.message = message;
     this.statusCode = statusCode;
   }
 
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
-    if (JsonResponses.wantsJson(request)) {
-      String text = message != null ? message : (exception == null ? "" : exception.toString());
-      return JsonResponses.error(statusCode, "error", text);
-    }
-    SimpleResponse response = new SimpleResponse(statusCode);
-    HtmlPage html = context.pageFactory.newPage();
-    html.addTitles("Error Occurred");
-    html.setMainTemplate("error");
-    html.put("exception", exception);
-    if (exception != null)
-      html.put("exception", exception);
-    if (message != null)
-      html.put("message", message);
-    response.setContent(html.html(request));
-
-    return response;
+    String text = message != null ? message : (exception == null ? "" : exception.toString());
+    return JsonResponses.afterRemoved(request, statusCode, "error", text);
   }
 
   public static String makeExceptionString(Throwable e) {
     StringBuilder builder = new StringBuilder();
     builder.append(e.toString()).append("\n");
     for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-      builder.append("\t")
-              .append(stackTraceElement)
-              .append("\n");
+      builder.append("\t").append(stackTraceElement).append("\n");
     }
-
     return builder.toString();
   }
 }

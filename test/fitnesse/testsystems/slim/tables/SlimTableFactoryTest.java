@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,17 +46,17 @@ public class SlimTableFactoryTest {
   }
 
   @Test
-  public void aTableNamedCommentIsADecisionTable() {
-    when(table.getCellContents(0, 0)).thenReturn("comment");
+  public void aTableNamedCommentIsSkipped() {
+    when(table.getCellContents(0, 0)).thenReturn("Comment");
     SlimTable slimTable = slimTableFactory.makeSlimTable(table, "0", new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy())));
-    assertThat(slimTable, instanceOf(DecisionTable.class));
+    assertNull(slimTable);
   }
 
   @Test
-  public void aCommentColonTableIsADecisionTableForTheRestOfTheName() {
+  public void aCommentColonTableIsSkipped() {
     when(table.getCellContents(0, 0)).thenReturn("comment: a comment table");
     SlimTable slimTable = slimTableFactory.makeSlimTable(table, "0", new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy())));
-    assertThat(slimTable, instanceOf(SlimErrorTable.class));
+    assertNull(slimTable);
   }
 
   @Test

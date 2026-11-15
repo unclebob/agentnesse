@@ -1,6 +1,7 @@
 package fitnesse.responders;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 
 import fitnesse.wiki.WikiPageUtil;
@@ -121,6 +122,8 @@ public class PacketResponderTest {
   @Test
   public void jsonpQueryArgument() throws Exception {
     request.addInput("jsonp", "load");
-    assertPageWithTableResponseWith("|cell|\n", "{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"cell\"]]}]}");
+    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+    assertEquals(400, response.getStatus());
+    assertTrue(response.getContent().contains("Unknown parameter jsonp"));
   }
 }

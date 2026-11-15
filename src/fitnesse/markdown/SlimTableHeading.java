@@ -35,6 +35,14 @@ public final class SlimTableHeading {
     this.error = error;
   }
 
+  /** A comment table is not Slim. The marker is the whole first cell, or the text before a colon. */
+  public static boolean comment(String cell) {
+    String text = cell == null ? "" : cell.trim();
+    int colon = text.indexOf(':');
+    String head = colon < 0 ? text : text.substring(0, colon).trim();
+    return head.equalsIgnoreCase("comment");
+  }
+
   public static SlimTableHeading parse(String cell) {
     String text = cell == null ? "" : cell.trim();
     int colon = text.indexOf(':');

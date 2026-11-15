@@ -3,6 +3,6 @@
 <form class="navbar-form search" role="search" action="?search">
  <input type="hidden" name="responder" value="search" />
  <input type="hidden" name="searchScope" value="root" />
- <input type="text" id="searchString" name="searchString" class="form-control" placeholder="Search for page" />
- <input type="hidden" name="searchType" value="Search Titles" />
+ <input type="text" id="searchString" name="q" class="form-control" placeholder="Search for page" />
+ <input type="hidden" name="type" value="title" />
 </form>

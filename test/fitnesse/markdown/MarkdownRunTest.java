@@ -58,11 +58,13 @@ public class MarkdownRunTest {
   @Test
   public void aMarkdownTestRunIncludesSetupAndSuiteSetupByName() throws Exception {
     fileSystem.makeFile(new File("root/SetUp.md"), """
+      {"type":"test"}
       | import | |
       | --- | --- |
       | fitnesse.fixtures | |
       """);
     fileSystem.makeFile(new File("root/SuiteSetUp.md"), """
+      {"type":"test"}
       | script | |
       | --- | --- |
       | suite setup ran | |
@@ -83,6 +85,7 @@ public class MarkdownRunTest {
   @Test
   public void anIncludeBlockInsertsTheOtherPageCollapsed() throws Exception {
     fileSystem.makeFile(new File("root/Included.md"), """
+      {"type":"test"}
       | query:Employees | |
       | --- | --- |
       | name | hired |

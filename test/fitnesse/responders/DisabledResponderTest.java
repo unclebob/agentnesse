@@ -25,13 +25,9 @@ public class DisabledResponderTest {
     Responder responder = new DisabledResponder();
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, new MockRequest());
 
-    assertEquals(200, response.getStatus());
-
-    String body = response.getContent();
-
-    assertHasRegexp("<html>", body);
-    assertHasRegexp("<body", body);
-    assertHasRegexp("that this action should be disabled.", body);
+    assertEquals(403, response.getStatus());
+    assertHasRegexp("\"error\": \"disabled\"", response.getContent());
+    assertHasRegexp("This responder is disabled", response.getContent());
   }
 
 }

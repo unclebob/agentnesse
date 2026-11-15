@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-Raising an exception with the term "StopTest" in it during "SuiteSetUp" will make sure all remaining tests are skipped.
+Raising an exception with the term "StopTest" in it during "`SuiteSetUp`" will make sure all remaining tests are skipped.
 
 
 | script | | | |

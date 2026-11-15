@@ -36,11 +36,18 @@ public class MarkdownRenderTest {
 
   @Test
   public void aSlimTableKeepsItsNameAndGainsATypeClass() throws Exception {
-    assertGolden("decision-table");
-    assertGolden("bare-decision");
-    assertGolden("script-table");
-    assertGolden("query-table");
-    assertGolden("unknown-table");
+    assertGolden("decision-table", true);
+    assertGolden("bare-decision", true);
+    assertGolden("script-table", true);
+    assertGolden("query-table", true);
+    assertGolden("unknown-table", true);
+  }
+
+  @Test
+  public void tablesFollowThePageType() throws Exception {
+    assertGolden("static-table", false);
+    assertGolden("comment-table", true);
+    assertGolden("literal-table", true);
   }
 
   @Test
@@ -56,9 +63,18 @@ public class MarkdownRenderTest {
   }
 
   static void assertGolden(String name) throws Exception {
+    assertGolden(name, false);
+  }
+
+  static void assertGolden(String name, boolean testPage) throws Exception {
     Path dir = Path.of("test/fitnesse/markdown/golden");
     String markdown = Files.readString(dir.resolve(name + ".md"));
     String html = Files.readString(dir.resolve(name + ".html"));
-    assertEquals(html, MarkdownRenderer.render(markdown));
+    assertEquals(html, MarkdownRenderer.render(markdown, word -> {
+      if ("SuiteWidgetTests".equals(word) || ">SuiteWidgetTests".equals(word)) {
+        return "FitNesse.SuiteAcceptanceTests.SuiteWidgetTests";
+      }
+      return null;
+    }, java.util.List.of(), null, testPage));
   }
 }

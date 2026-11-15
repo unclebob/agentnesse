@@ -3,16 +3,13 @@
 package fitnesse.responders;
 
 import fitnesse.FitNesseContext;
+import fitnesse.Responder;
 import fitnesse.http.Request;
 import fitnesse.http.Response;
 
-public class DefaultResponder extends BasicResponder {
-
+public class DefaultResponder implements Responder {
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
-    if (JsonResponses.wantsJson(request)) {
-      return JsonResponses.error(404, "default", "No responder for " + request.getResource());
-    }
-    return responseWith(contentFrom(context, request, null));
+    return JsonResponses.afterRemoved(request, 404, "default", "No responder for " + request.getResource());
   }
 }

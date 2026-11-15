@@ -46,7 +46,6 @@ public class AgentJsonTest {
   public void packetIsTheBlockModel() throws Exception {
     WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("TablePage"), "|a|b|\n|1|2|\n");
     request.setResource("TablePage");
-    request.addInput("jsonp", "load");
     SimpleResponse response = (SimpleResponse) new PacketResponder().makeResponse(context, request);
     assertJsonEquals("{\"page\":\"TablePage\",\"tables\":[{\"rows\":[[\"a\",\"b\"],[\"1\",\"2\"]]}]}", response.getContent());
     assertTrue(response.getContent().startsWith("{"));
@@ -58,21 +57,20 @@ public class AgentJsonTest {
     WikiPageUtil.addPage(parent, PathParser.parse("Alpha"), "find this text");
     WikiPageUtil.addPage(parent, PathParser.parse("Beta"), "|echo method|\n");
     request.setResource("Suite");
-    request.addInput("format", "json");
     request.addInput(Request.NOCHUNK, "");
-    request.addInput("searchString", "Alpha");
-    request.addInput("searchType", "title");
-    assertJsonEquals("{\"searchType\":\"title\",\"searchString\":\"Alpha\",\"pages\":[\"Suite.Alpha\"]}",
+    request.addInput("q", "Alpha");
+    request.addInput("type", "title");
+    assertJsonEquals("{\"type\":\"title\",\"q\":\"Alpha\",\"pages\":[\"Suite.Alpha\"]}",
       body(new SearchResponder()));
 
-    request.addInput("searchString", "find this");
-    request.addInput("searchType", "content");
-    assertJsonEquals("{\"searchType\":\"text\",\"searchString\":\"find this\",\"pages\":[\"Suite.Alpha\"]}",
+    request.addInput("q", "find this");
+    request.addInput("type", "text");
+    assertJsonEquals("{\"type\":\"text\",\"q\":\"find this\",\"pages\":[\"Suite.Alpha\"]}",
       body(new SearchResponder()));
 
-    request.addInput("searchString", "|echo method|");
-    request.addInput("isMethodSearch", "true");
-    assertJsonEquals("{\"searchType\":\"method\",\"searchString\":\"|echo method|\",\"pages\":[\"Suite.Beta\"]}",
+    request.addInput("q", "echo method");
+    request.addInput("type", "method");
+    assertJsonEquals("{\"type\":\"method\",\"q\":\"echo method\",\"pages\":[\"Suite.Beta\"]}",
       body(new SearchResponder()));
   }
 
@@ -83,7 +81,6 @@ public class AgentJsonTest {
     WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Other"),
       FrontMatter.write("static", List.of(), null, true, ""));
     request.setResource("");
-    request.addInput("format", "json");
     request.addInput(Request.NOCHUNK, "");
     request.addInput("type", "test");
     request.addInput("tags", "ready");
@@ -113,27 +110,28 @@ public class AgentJsonTest {
     WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Page"),
       "```agentnesse\ndefine MAX\n3\n```\n");
     request.setResource("Page");
-    request.addHeader("Accept", "application/json");
     SimpleResponse response = (SimpleResponse) new ScopeVariablesResponder().makeResponse(context, request);
     assertJsonEquals("{\"variables\":[{\"name\":\"MAX\",\"value\":\"3\",\"page\":\"Page\"}]}", response.getContent());
   }
 
   @Test
-  public void errorsAreJsonWhenAsked() throws Exception {
+  public void errorsAreJsonWithoutAnAcceptHeader() throws Exception {
     request.setResource("Missing");
-    request.addInput("format", "json");
     assertJsonEquals("{\"status\":404,\"error\":\"notFound\",\"message\":\"No page Missing\"}",
       ((SimpleResponse) new NotFoundResponder().makeResponse(context, request)).getContent());
 
     MockRequest accepted = new MockRequest();
     accepted.setResource("Missing");
-    accepted.addHeader("Accept", "application/json");
     assertJsonEquals("{\"status\":400,\"error\":\"error\",\"message\":\"boom\"}",
       ((SimpleResponse) new ErrorResponder("boom").makeResponse(context, accepted)).getContent());
     assertJsonEquals("{\"status\":403,\"error\":\"disabled\",\"message\":\"This responder is disabled\"}",
       ((SimpleResponse) new DisabledResponder().makeResponse(context, accepted)).getContent());
     assertJsonEquals("{\"status\":404,\"error\":\"default\",\"message\":\"No responder for Missing\"}",
       ((SimpleResponse) new DefaultResponder().makeResponse(context, accepted)).getContent());
+
+    accepted.addInput("jsonp", "load");
+    assertJsonEquals("{\"status\":400,\"error\":\"badRequest\",\"message\":\"Unknown parameter jsonp\"}",
+      ((SimpleResponse) new NotFoundResponder().makeResponse(context, accepted)).getContent());
   }
 
   private String body(fitnesse.Responder responder) throws Exception {

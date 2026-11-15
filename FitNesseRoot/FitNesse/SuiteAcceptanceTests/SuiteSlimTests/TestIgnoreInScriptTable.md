@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-Raising an exception with the term "ignore" in it will make sure that script test table is ignored from that point, but "TearDown" and rest of suite is executed.
+Raising an exception with the term "ignore" in it will make sure that script test table is ignored from that point, but "`TearDown`" and rest of suite is executed.
 
 
 | script | echo fixture | | |

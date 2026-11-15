@@ -11,7 +11,7 @@
 | start | Page Builder |
 | line | I came first! |
 | attributes | Help=First Child's help |
-| page | ParentPage.FirstChild |
+| page | `ParentPage.FirstChild` |
 
 **Next create a sibling**
 
@@ -20,4 +20,4 @@
 | start | Page Builder |
 | line | I'm younger, but wiser |
 | attributes | Help=Second Child's help |
-| page | ParentPage.SecondChild |
+| page | `ParentPage.SecondChild` |

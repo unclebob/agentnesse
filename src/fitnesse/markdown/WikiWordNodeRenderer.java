@@ -15,10 +15,12 @@ import java.util.function.Function;
 final class WikiWordNodeRenderer implements NodeRenderer {
   private final HtmlWriter writer;
   private final Function<String, String> pageTarget;
+  private final RenderState state;
 
-  WikiWordNodeRenderer(HtmlNodeRendererContext context, Function<String, String> pageTarget) {
+  WikiWordNodeRenderer(HtmlNodeRendererContext context, Function<String, String> pageTarget, RenderState state) {
     this.writer = context.getWriter();
     this.pageTarget = pageTarget;
+    this.state = state;
   }
 
   @Override
@@ -33,6 +35,10 @@ final class WikiWordNodeRenderer implements NodeRenderer {
       writer.text(literal);
       return;
     }
+    if (state.literalCells) {
+      writer.text(literal);
+      return;
+    }
     write(literal);
   }
 
@@ -40,7 +46,7 @@ final class WikiWordNodeRenderer implements NodeRenderer {
     int index = 0;
     while (index < literal.length()) {
       int length = WikiWords.findWikiWordLength(literal.substring(index));
-      if (length > 0) {
+      if (length > 0 && WikiWords.startsAtBoundary(literal, index)) {
         writer.raw(link(literal.substring(index, index + length)));
         index += length;
       } else {

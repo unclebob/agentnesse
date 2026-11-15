@@ -14,6 +14,15 @@ import java.util.*;
 
 public class NameWikiPageResponder extends BasicResponder {
   @Override
+  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    Response rejected = JsonResponses.unknownParameter(request, "names", "Recursive", "ShowTags", "LeafOnly");
+    if (rejected != null) {
+      return rejected;
+    }
+    return super.makeResponse(context, request);
+  }
+
+  @Override
   protected String contentFrom(FitNesseContext context, Request request, WikiPage requestedPage) {
     JSONArray pages = new JSONArray();
     for (NamedPage named : addLines(request, requestedPage, "")) {

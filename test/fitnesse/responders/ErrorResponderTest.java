@@ -30,11 +30,8 @@ public class ErrorResponderTest {
 
     assertEquals(400, response.getStatus());
 
-    String body = response.getContent();
-
-    assertHasRegexp("<html>", body);
-    assertHasRegexp("<body", body);
-    assertHasRegexp("java.lang.Exception: some error message", body);
+    assertHasRegexp("\"error\": \"error\"", response.getContent());
+    assertHasRegexp("java.lang.Exception: some error message", response.getContent());
   }
 
   @Test

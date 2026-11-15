@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-This page is used as a target for some of the FitNesse acceptance tests.  Don't delete it or any of it's children.
+This page is used as a target for some of the `FitNesse` acceptance tests.  Don't delete it or any of it's children.
 
 .FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildOne
 .FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithLinkToNonExistentPage

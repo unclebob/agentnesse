@@ -13,9 +13,11 @@ import fitnesse.wiki.refactoring.ChangeReference;
 import fitnesse.wiki.refactoring.OutboundReferences;
 import fitnesse.wiki.refactoring.ReferenceRenamingTraverser;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class PageMovementResponder implements Responder {
 
@@ -72,7 +74,7 @@ public abstract class PageMovementResponder implements Responder {
       rewriteReferences(context);
       execute();
     } catch (Exception failure) {
-      restore(context.getRootPage(), original);
+      undo(context.getRootPage(), original);
       throw failure;
     }
   }
@@ -92,8 +94,21 @@ public abstract class PageMovementResponder implements Responder {
     return contents;
   }
 
-  private static void restore(WikiPage root, Map<String, String> original) {
+  private static void undo(WikiPage root, Map<String, String> original) {
+    removeCopies(root, original.keySet());
     root.getPageCrawler().traverse(page -> writeBack(page, original.get(key(page))), new NoPruningStrategy());
+  }
+
+  private static void removeCopies(WikiPage root, Set<String> original) {
+    List<WikiPage> extras = new ArrayList<>();
+    root.getPageCrawler().traverse(page -> {
+      if (!original.contains(key(page)) && original.contains(key(page.getParent()))) {
+        extras.add(page);
+      }
+    }, new NoPruningStrategy());
+    for (WikiPage extra : extras) {
+      extra.remove();
+    }
   }
 
   private static void writeBack(WikiPage page, String content) {
@@ -140,19 +155,22 @@ public abstract class PageMovementResponder implements Responder {
   }
 
   protected void movePage(WikiPage movedPage, WikiPage newParentPage, String pageName) throws RefactorException {
-
-    PageData pageData = movedPage.getData();
-    WikiPage targetPage = newParentPage.addChildPage(pageName);
-    targetPage.commit(pageData);
-    moveChildren(movedPage, targetPage);
+    copySubtree(movedPage, newParentPage, pageName);
     movedPage.remove();
   }
 
-  protected void moveChildren(WikiPage movedPage, WikiPage newParentPage) throws RefactorException {
-    List<WikiPage> children = movedPage.getChildren();
-    for (WikiPage page : children) {
-      movePage(page, newParentPage, page.getName());
+  private void copySubtree(WikiPage movedPage, WikiPage newParentPage, String pageName) throws RefactorException {
+    PageData pageData = movedPage.getData();
+    WikiPage targetPage = newParentPage.addChildPage(pageName);
+    targetPage.commit(pageData);
+    copied();
+    for (WikiPage child : movedPage.getChildren()) {
+      copySubtree(child, targetPage, child.getName());
     }
+  }
+
+  /** Called after each page has been copied and before its children. Tests fail a move here. */
+  protected void copied() throws RefactorException {
   }
 
 }

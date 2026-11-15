@@ -1,6 +1,8 @@
 package fitnesse.wiki.refactoring;
 
+import fitnesse.markdown.SlimTables;
 import fitnesse.wiki.NoPruningStrategy;
+import fitnesse.wiki.PageType;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiWordReference;
 
@@ -68,7 +70,11 @@ public final class ReferenceIndex {
   }
 
   private static void note(WikiPage page, List<String> dangling) {
-    for (String path : paths(page.getData().getContent())) {
+    String content = page.getData().getContent();
+    if (page.getData().hasAttribute(PageType.TEST.toString())) {
+      content = SlimTables.withoutSlimTables(content);
+    }
+    for (String path : paths(content)) {
       if (!resolves(page, path)) {
         dangling.add(page.getFullPath() + " -> " + path);
       }

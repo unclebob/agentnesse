@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-Raising an exception with the term "StopTest" in it will make sure test is stopped, but "TearDown" and rest of suite is executed.
+Raising an exception with the term "StopTest" in it will make sure test is stopped, but "`TearDown`" and rest of suite is executed.
 
 
 | script | | | |

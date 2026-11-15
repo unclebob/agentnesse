@@ -118,7 +118,7 @@ public class SuiteResponderTest {
     assertEquals(404, status);
 
     String results = getResponseContent(response);
-    assertSubString("Not Found:DoesNotExist", results);
+    assertSubString("No page DoesNotExist", results);
   }
 
   @Test

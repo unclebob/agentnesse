@@ -8,11 +8,12 @@ import fitnesse.testutil.FitNesseUtil;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static util.RegexTestCase.assertHasRegexp;
 
 public class ScopeVariablesResponderTest {
   protected WikiPage root;
@@ -45,10 +46,21 @@ public class ScopeVariablesResponderTest {
   public void shouldListVariables() throws Exception {
     request.setResource("SimplePage.ChildPage.GrandChildPage");
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context,request);
-    assertHasRegexp("<tr>.*?<td>x</td>.*?<td>X</td>.*<td><a href=\"SimplePage\">SimplePage</a></td>.*?</tr>", response.getContent());
-    assertHasRegexp("<tr>.*?<td>y</td>.*?<td>Y</td>.*<td><a href=\"SimplePage\">SimplePage</a></td>.*?</tr>", response.getContent());
-    assertHasRegexp("<tr>.*?<td>z</td>.*?<td>Z</td>.*?<td><a href=\"SimplePage.ChildPage\">SimplePage.ChildPage</a></td>.*?</tr>", response.getContent());
-    assertHasRegexp("<tr>.*?<td>a</td>.*?<td>B</td>.*?<td><a href=\"SimplePage.ChildPage.GrandChildPage\">SimplePage.ChildPage.GrandChildPage</a></td>.*?</tr>", response.getContent());
-    assertHasRegexp("<tr>.*?<td>b</td>.*?<td>BB</td>.*?<td><a href=\"SimplePage.ChildPage.GrandChildPage\">SimplePage.ChildPage.GrandChildPage</a></td>.*?</tr>", response.getContent());
+    JSONArray variables = new JSONObject(response.getContent()).getJSONArray("variables");
+    assertEquals("X", value(variables, "x", "SimplePage"));
+    assertEquals("Y", value(variables, "y", "SimplePage"));
+    assertEquals("Z", value(variables, "z", "SimplePage.ChildPage"));
+    assertEquals("B", value(variables, "a", "SimplePage.ChildPage.GrandChildPage"));
+    assertEquals("BB", value(variables, "b", "SimplePage.ChildPage.GrandChildPage"));
+  }
+
+  private static String value(JSONArray variables, String name, String page) {
+    for (int i = 0; i < variables.length(); i++) {
+      JSONObject variable = variables.getJSONObject(i);
+      if (name.equals(variable.getString("name")) && page.equals(variable.getString("page"))) {
+        return variable.getString("value");
+      }
+    }
+    return null;
   }
 }

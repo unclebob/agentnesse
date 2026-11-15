@@ -1,5 +1,6 @@
 package fitnesse.testsystems.slim.tables;
 
+import fitnesse.markdown.SlimTableHeading;
 import fitnesse.testsystems.slim.SlimTestContext;
 import fitnesse.testsystems.slim.Table;
 import fitnesse.util.StringUtils;
@@ -56,7 +57,11 @@ public class SlimTableFactory {
 
   public SlimTable makeSlimTable(Table table, String tableId, SlimTestContext slimTestContext) {
     SlimTable newTable;
-    TableTypeAndName nameAndType = getTableNameAndType(table.getCellContents(0, 0));
+    String firstCell = table.getCellContents(0, 0);
+    if (SlimTableHeading.comment(firstCell)) {
+      return null;
+    }
+    TableTypeAndName nameAndType = getTableNameAndType(firstCell);
 
     Class<? extends SlimTable> tableClass = getTableType(nameAndType.tableType);
 

@@ -146,8 +146,8 @@
 
 | scenario | widget | wikiText | should render | htmlText |
 | --- | --- | --- | --- | --- |
-| create page | WidgetPage | with content | @wikiText | |
-| check | request page | WidgetPage | 200 | |
+| create page | `WidgetPage` | with content | @wikiText | |
+| check | request page | `WidgetPage` | 200 | |
 | ensure | content matches | @htmlText | | |
 | show | content | | | |
 
@@ -194,7 +194,7 @@ define TestEND
 ```
 
 
-| scenario | and TestSystem setup is | content |
+| scenario | and `TestSystem` setup is | content |
 | --- | --- | --- |
 | $CONTENT= | echo | $CONTENT@content |
 

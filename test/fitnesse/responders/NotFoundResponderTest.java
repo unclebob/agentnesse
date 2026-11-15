@@ -31,24 +31,8 @@ public class NotFoundResponderTest {
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
 
     assertEquals(404, response.getStatus());
-
-    String body = response.getContent();
-
-    assertHasRegexp("<html>", body);
-    assertHasRegexp("<body", body);
-    assertHasRegexp("some page", body);
-    assertHasRegexp("Not Found", body);
-  }
-
-  @Test
-  public void testHasEditLinkForWikiWords() throws Exception {
-    MockRequest request = new MockRequest();
-    request.setResource("PageOne.PageTwo");
-
-    Responder responder = new NotFoundResponder();
-    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-
-    assertHasRegexp("\"PageOne[.]PageTwo[?]edit\"", response.getContent());
+    assertHasRegexp("\"error\": \"notFound\"", response.getContent());
+    assertHasRegexp("No page some page", response.getContent());
   }
 
 }

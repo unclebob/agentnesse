@@ -123,9 +123,10 @@ public class NameWikiPageResponderTest {
     WikiPageUtil.addPage(frontPage, pageOnePath, "");
     WikiPageUtil.addPage(frontPage, pageTwoPath, "");
     request.setResource("");
+    request.addInput("ShowChildCount", "true");
     SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
-    assertDoesntHaveRegexp("FrontPage 2", response.getContent());
-    assertHasRegexp("\"name\": \"FrontPage\"", response.getContent());
+    assertEquals(400, response.getStatus());
+    assertHasRegexp("Unknown parameter ShowChildCount", response.getContent());
   }
 
   private static int CountLines(String s) {

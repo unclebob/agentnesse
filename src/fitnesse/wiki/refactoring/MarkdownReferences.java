@@ -1,6 +1,7 @@
 package fitnesse.wiki.refactoring;
 
 import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.WikiPaths;
 import fitnesse.wiki.WikiWords;
 
 import java.util.Optional;
@@ -50,7 +51,7 @@ final class MarkdownReferences {
                           Function<String, Optional<String>> changeReference) {
     int pathLength = leadingPath(content, index);
     int length = pathLength > 0 ? pathLength : WikiWords.findWikiWordLength(content.substring(index));
-    if (length > 0 && !insideUrl(content, index)) {
+    if (length > 0 && !insideUrl(content, index) && WikiWords.startsAtBoundary(content, index)) {
       String token = content.substring(index, index + length);
       out.append(changeReference.apply(token).orElse(token));
       return index + length;
@@ -131,27 +132,15 @@ final class MarkdownReferences {
       return index;
     }
     String destination = content.substring(labelEnd + 2, destEnd);
-    int hash = destination.indexOf('#');
-    String path = hash < 0 ? destination : destination.substring(0, hash);
-    String anchor = hash < 0 ? "" : destination.substring(hash);
-    if (!pagePath(path)) {
+    int cut = WikiPaths.suffixAt(destination);
+    String path = cut < 0 ? destination : destination.substring(0, cut);
+    String suffix = cut < 0 ? "" : destination.substring(cut);
+    if (!WikiPaths.isPage(path)) {
       return index;
     }
     out.append(content, index, labelEnd + 2);
-    out.append(changeReference.apply(path).orElse(path)).append(anchor).append(')');
+    out.append(changeReference.apply(path).orElse(path)).append(suffix).append(')');
     return destEnd + 1;
-  }
-
-  private static boolean pagePath(String path) {
-    if (path.isEmpty() || remote(path)) {
-      return false;
-    }
-    char first = path.charAt(0);
-    return "<>^.".indexOf(first) >= 0 || WikiWords.findWikiWordLength(path) == path.length();
-  }
-
-  private static boolean remote(String path) {
-    return path.contains("://") || path.indexOf(' ') >= 0 || path.indexOf('/') >= 0;
   }
 
   private static String rewriteInclude(String fence, Function<String, Optional<String>> changeReference) {

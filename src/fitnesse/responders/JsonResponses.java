@@ -6,22 +6,49 @@ import fitnesse.http.SimpleResponse;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Locale;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-/** JSON error bodies for callers that ask for JSON. */
+/** JSON error bodies. These endpoints return JSON without an Accept header or format argument. */
 public final class JsonResponses {
   private JsonResponses() {
   }
 
-  public static boolean wantsJson(Request request) {
-    if (request == null) {
-      return false;
+  private static final String[] REMOVED = {
+    "ShowChildCount", "jsonp", "searchType", "isMethodSearch", "searchString"
+  };
+
+  /** Returns a 400 when the request still carries a parameter these endpoints no longer accept. */
+  public static SimpleResponse removedParameter(Request request) throws UnsupportedEncodingException {
+    for (String name : REMOVED) {
+      if (request.hasInput(name)) {
+        return error(400, "badRequest", "Unknown parameter " + name);
+      }
     }
-    if ("json".equalsIgnoreCase(request.getInput("format"))) {
-      return true;
+    return null;
+  }
+
+  /** Returns a 400 when the request carries a parameter this endpoint no longer accepts. */
+  public static SimpleResponse unknownParameter(Request request, String... allowed) throws UnsupportedEncodingException {
+    Set<String> ok = new HashSet<>(Arrays.asList(allowed));
+    ok.add("responder");
+    ok.add(Request.NOCHUNK);
+    for (String key : request.getMap().keySet()) {
+      if (!ok.contains(key)) {
+        return error(400, "badRequest", "Unknown parameter " + key);
+      }
     }
-    String accept = request.getHeader("Accept");
-    return accept != null && accept.toLowerCase(Locale.ROOT).contains("application/json");
+    return null;
+  }
+
+  public static Response afterRemoved(Request request, int status, String error, String message)
+      throws UnsupportedEncodingException {
+    Response rejected = removedParameter(request);
+    if (rejected != null) {
+      return rejected;
+    }
+    return error(status, error, message);
   }
 
   public static SimpleResponse error(int status, String error, String message) throws UnsupportedEncodingException {

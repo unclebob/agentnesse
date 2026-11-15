@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-A `SetUp`, `TearDown`, `SuiteSetUp`, `SuiteTearDown`, and `ScenarioLibrary` that belong to an ancestor are applied to a grandchild. The SetUp has to run: the grandchild names `test slim`, which exists only because that SetUp imports `fitnesse.slim.test`.
+A `SetUp`, `TearDown`, `SuiteSetUp`, `SuiteTearDown`, and `ScenarioLibrary` that belong to an ancestor are applied to a grandchild. The `SetUp` has to run: the grandchild names `test slim`, which exists only because that `SetUp` imports `fitnesse.slim.test`.
 
 | Library |
 | --- |

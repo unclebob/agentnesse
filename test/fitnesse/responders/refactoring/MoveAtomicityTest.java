@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +52,36 @@ public class MoveAtomicityTest {
   }
 
   @Test
+  public void copyFailureAfterTheFirstPageRemovesTheDestinationAndRestoresContent() throws Exception {
+    FitNesseContext context = wiki();
+    Map<String, String> before = contents(context.getRootPage());
+    try {
+      new FailAfterCopies(1).makeResponse(context, moveRequest("ParentPage.PageMove", "Elsewhere"));
+      fail("copy should have thrown");
+    } catch (RefactorException expected) {
+      assertEquals("copied", expected.getMessage());
+    }
+    assertEquals(before, contents(context.getRootPage()));
+  }
+
+  @Test
+  public void aRandomCopyFailureLeavesTheTreeByteIdentical() throws Exception {
+    Random random = new Random(8);
+    for (int trial = 0; trial < 12; trial++) {
+      FitNesseContext context = deeper();
+      Map<String, String> before = contents(context.getRootPage());
+      int failAfter = 1 + random.nextInt(3);
+      try {
+        new FailAfterCopies(failAfter).makeResponse(context, moveRequest("ParentPage.PageMove", "Elsewhere"));
+        fail("copy should have thrown");
+      } catch (RefactorException expected) {
+        assertEquals("copied", expected.getMessage());
+      }
+      assertEquals("trial " + trial + " after " + failAfter, before, contents(context.getRootPage()));
+    }
+  }
+
+  @Test
   public void passingMoveAbsolutizesOutboundReferencesAndKeepsInsideOnesRelative() throws Exception {
     FitNesseContext context = wiki();
     new MovePageResponder().makeResponse(context, moveRequest("ParentPage.PageMove", "Elsewhere"));
@@ -68,6 +99,13 @@ public class MoveAtomicityTest {
     WikiPage other = WikiPageUtil.addPage(root, PathParser.parse("OtherPage"), "");
     WikiPageUtil.addPage(other, PathParser.parse("PageMove"), "already");
     WikiPageUtil.addPage(root, PathParser.parse("Elsewhere"), "");
+    return context;
+  }
+
+  private static FitNesseContext deeper() throws Exception {
+    FitNesseContext context = wiki();
+    WikiPage kid = context.getRootPage().getChildPage("ParentPage").getChildPage("PageMove").getChildPage("PageKid");
+    WikiPageUtil.addPage(kid, PathParser.parse("PageGrand"), "grand");
     return context;
   }
 
@@ -90,6 +128,23 @@ public class MoveAtomicityTest {
     @Override
     protected void execute() throws RefactorException {
       throw new RefactorException("boom");
+    }
+  }
+
+  private static final class FailAfterCopies extends MovePageResponder {
+    private final int failAfter;
+    private int copies;
+
+    private FailAfterCopies(int failAfter) {
+      this.failAfter = failAfter;
+    }
+
+    @Override
+    protected void copied() throws RefactorException {
+      copies++;
+      if (copies >= failAfter) {
+        throw new RefactorException("copied");
+      }
     }
   }
 }

@@ -197,7 +197,7 @@ The pattern used in the hybrid table is the below.
 ```
 
 
-### IMPORTANT: to avoid side effects always add a TearDown page to reset the mappings to the defaults.
+### IMPORTANT: to avoid side effects always add a >TearDown page to reset the mappings to the defaults.
 
 
 

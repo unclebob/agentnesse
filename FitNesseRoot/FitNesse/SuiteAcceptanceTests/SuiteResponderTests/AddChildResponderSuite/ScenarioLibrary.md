@@ -15,7 +15,7 @@
 | add child page | @page | containing | @content | to parent page | @parentPage | should return | 404 |
 
 
-| scenario | add child page | page | containing | content | to parent page | parent page | should return BadRequest |
+| scenario | add child page | page | containing | content | to parent page | parent page | should return `BadRequest` |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | add child page | @page | containing | @content | to parent page | @parentPage | should return | 400 |
 
