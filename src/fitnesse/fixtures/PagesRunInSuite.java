@@ -62,9 +62,6 @@ public class PagesRunInSuite {
     if (start < 0) {
       return null;
     }
-    if (end < 0) {
-      return null;
-    }
     try {
       return new JSONObject(line.substring(start, end + 1));
     } catch (Exception ignored) {

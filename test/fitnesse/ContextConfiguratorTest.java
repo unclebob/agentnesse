@@ -4,6 +4,7 @@ import fitnesse.util.ClassUtils;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageFactory;
 import fitnesse.wiki.VariableSource;
+import fitnesse.wiki.fs.WikiFiles;
 import org.junit.After;
 import org.junit.Test;
 
@@ -89,6 +90,20 @@ public class ContextConfiguratorTest {
       .makeFitNesseContext();
 
     assertEquals(12, (int) context.maximumWorkers);
+  }
+
+  @Test
+  public void anUnsetVersionsControllerIsCreated() throws IOException {
+    FitNesseContext context = ContextConfigurator.empty().makeFitNesseContext();
+    assertThat(context.versionsController, is(instanceOf(WikiFiles.class)));
+  }
+
+  @Test
+  public void anUnknownParameterIsStoredForLookup() throws IOException {
+    FitNesseContext context = ContextConfigurator.empty()
+      .withParameter("not-a-config-key", "kept")
+      .makeFitNesseContext();
+    assertEquals("kept", context.variableSource.findVariable("not-a-config-key").orElse(null));
   }
 
   @Test
