@@ -77,6 +77,34 @@ public final class SlimFailure {
     return message;
   }
 
+  /** The sentence a result page shows for a Slim status code. */
+  public String sentence() {
+    String coded = constructionSentence();
+    if (coded != null) {
+      return coded;
+    }
+    coded = lookupSentence();
+    return coded != null ? coded : message == null ? "" : message;
+  }
+
+  private String constructionSentence() {
+    return switch (type == null ? "" : type) {
+      case "COULD_NOT_INVOKE_CONSTRUCTOR" -> "Could not invoke constructor for " + message;
+      case "NO_CONSTRUCTOR" -> "Could not find constructor for " + message;
+      case "NO_CONVERTER_FOR_ARGUMENT_NUMBER" -> "No converter for " + message;
+      case "NO_CLASS" -> "Could not find class " + message;
+      default -> null;
+    };
+  }
+
+  private String lookupSentence() {
+    return switch (type == null ? "" : type) {
+      case "NO_INSTANCE" -> "The instance " + message + " does not exist";
+      case "TIMED_OUT" -> "The instruction timed out after " + message + " seconds";
+      default -> null;
+    };
+  }
+
   public String stack() {
     return stack == null ? "" : stack;
   }
@@ -163,19 +191,18 @@ public final class SlimFailure {
   }
 
   private static String messageOf(String body, String type) {
+    String rest = body;
     if (!type.isEmpty() && body.startsWith(type)) {
-      String rest = body.substring(type.length()).trim();
+      rest = body.substring(type.length()).trim();
       if (rest.startsWith(":")) {
         rest = rest.substring(1).trim();
       }
-      int newline = rest.indexOf('\n');
-      if (newline >= 0) {
-        rest = rest.substring(0, newline).trim();
-      }
-      return rest.isEmpty() ? body : rest;
     }
-    int newline = body.indexOf('\n');
-    return newline < 0 ? body : body.substring(0, newline);
+    int trace = rest.indexOf("\n\tat ");
+    if (trace >= 0) {
+      rest = rest.substring(0, trace);
+    }
+    return rest.trim().isEmpty() ? body : rest.trim();
   }
 
   private static String stackOf(String raw, String body) {

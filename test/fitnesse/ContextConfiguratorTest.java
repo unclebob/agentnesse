@@ -92,13 +92,25 @@ public class ContextConfiguratorTest {
   }
 
   @Test
-  public void bootstrapIsDefaultTheme() throws IOException {
+  public void aCommandWithoutAPortUsesTheCommandPort() throws IOException {
+    FitNesseContext context = ContextConfigurator.empty()
+      .withParameter(ConfigurationParameter.COMMAND, "FrontPage")
+      .makeFitNesseContext();
+    assertEquals(9123, context.port);
+    assertThat(context.getRootPage(), notNullValue());
+    ContextConfigurator configurator = ContextConfigurator.empty();
+    configurator.makeFitNesseContext();
+    assertEquals("127.0.0.1", configurator.get(ConfigurationParameter.LISTEN));
+  }
+
+  @Test
+  public void agentnesseIsDefaultTheme() throws IOException {
     String theme = ContextConfigurator
       .empty()
       .makeFitNesseContext()
       .theme;
 
-    assertThat(theme, is("bootstrap"));
+    assertThat(theme, is("agentnesse"));
   }
 
   @Test

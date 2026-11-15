@@ -5,7 +5,10 @@ package fitnesse.testsystems.slim;
 import java.util.List;
 
 import fitnesse.html.HtmlUtil;
+import fitnesse.results.BlockJson;
 import fitnesse.wiki.PageData;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import fitnesse.testsystems.TestExecutionException;
 import fitnesse.testsystems.TestPage;
 import fitnesse.testsystems.slim.results.SlimTestResult;
@@ -57,8 +60,11 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
           }
         } catch (SyntaxError e) {
           String tableName = theTable.getTable().getCellContents(0, 0);
-          theTable.getTable().updateContent(0, 0, SlimTestResult.error(String.format("<strong> %s: Bad table! %s</strong>", tableName, e.getMessage())));
+          theTable.getTable().updateContent(0, 0, SlimTestResult.error(tableName + ": Bad table! " + e.getMessage()));
           getTestContext().incrementErroredTestsCount();
+          if (theTable.getTable() instanceof MarkdownTable markdown) {
+            publishTree(pageToTest, markdown);
+          }
         }
 
         String html = createHtmlResults(startWithTable, nextTable);
@@ -75,16 +81,12 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
   }
 
   private String createHtmlResults(SlimTable startWithTable, SlimTable stopBeforeTable) {
-    if (startWithTable == null && stopBeforeTable == null) {
-      return slimPage.getTableScanner().toHtml();
-    }
     return htmlFrom(startWithTable, stopBeforeTable);
   }
 
   private String htmlFrom(SlimTable startWithTable, SlimTable stopBeforeTable) {
     StringBuilder html = new StringBuilder();
-    StringBuilder section = new StringBuilder();
-    String sectionName = "";
+    SectionBuffer section = new SectionBuffer();
     boolean started = startWithTable == null;
     String testPage = pageName();
     for (MarkdownTable table : slimPage.getTableScanner()) {
@@ -95,10 +97,10 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
         break;
       }
       if (started) {
-        sectionName = appendTable(html, section, sectionName, testPage, table);
+        section.add(html, testPage, table);
       }
     }
-    appendSection(html, sectionName, section);
+    section.flush(html);
     return html.toString();
   }
 
@@ -106,27 +108,35 @@ public class HtmlSlimTestSystem extends SlimTestSystem {
     return getTestContext().getPageToTest() == null ? "" : getTestContext().getPageToTest().getName();
   }
 
-  private static String appendTable(StringBuilder html, StringBuilder section, String sectionName,
-                                    String testPage, MarkdownTable table) {
-    String name = ResultSections.section(table.origin(), testPage, table.getCellContents(0, 0));
-    if (!name.equals(sectionName)) {
-      appendSection(html, sectionName, section);
-      sectionName = name;
-    }
-    if (name.isEmpty()) {
-      html.append(table.toHtml());
-    } else {
-      section.append(table.toHtml());
-    }
-    return sectionName;
-  }
+  private static final class SectionBuffer {
+    private final StringBuilder html = new StringBuilder();
+    private final JSONArray blocks = new JSONArray();
+    private String name = "";
 
-  private static void appendSection(StringBuilder html, String name, StringBuilder section) {
-    if (name.isEmpty() || section.length() == 0) {
-      section.setLength(0);
-      return;
+    void add(StringBuilder out, String testPage, MarkdownTable table) {
+      String next = ResultSections.section(table.origin(), testPage, table.getCellContents(0, 0));
+      if (!next.equals(name)) {
+        flush(out);
+        name = next;
+      }
+      JSONObject block = BlockJson.from(table);
+      String rendered = ResultHtml.block(block);
+      if (next.isEmpty()) {
+        out.append(rendered);
+      } else {
+        html.append(rendered);
+        blocks.put(block);
+      }
     }
-    html.append(ResultSections.details(name, section.toString()));
-    section.setLength(0);
+
+    void flush(StringBuilder out) {
+      if (!name.isEmpty() && html.length() > 0) {
+        out.append(ResultSections.details(name, html.toString(), ResultSections.shouldOpen(blocks)));
+      }
+      html.setLength(0);
+      while (blocks.length() > 0) {
+        blocks.remove(0);
+      }
+    }
   }
 }

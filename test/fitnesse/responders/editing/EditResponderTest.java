@@ -54,11 +54,13 @@ public class EditResponderTest {
     assertNotSubString("SpreadsheetTranslator.js", body);
     assertNotSubString("wysiwyg.js", body);
     assertNotSubString("jquery.tagsinput.js", body);
-    assertNotSubString("codemirror.js", body);
+    assertSubString("codemirror.js", body);
+    assertSubString("mode/markdown/markdown.js", body);
+    assertNotSubString("codemirror/fitnesse/fitnesse.js", body);
 
     assertSubString("type=\"submit\"", body);
     assertSubString("textarea", body);
-    assertSubString("<label for=\"suites\">Tags:</label>", body);
+    assertNotSubString("<label for=\"suites\">Tags:</label>", body);
   }
 
   private SimpleResponse makeResponse() throws Exception {

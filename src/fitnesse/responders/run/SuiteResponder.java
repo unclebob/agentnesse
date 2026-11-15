@@ -98,10 +98,10 @@ public class SuiteResponder extends ChunkingResponder {
     createMainFormatter();
     rerunFormatter = createRerunFormatter();
 
-    if (isInteractive()) {
-      makeHtml().render(response.getWriter(), request);
-    } else {
+    if (response.isJsonFormat()) {
       doExecuteTests();
+    } else {
+      makeHtml().render(response.getWriter(), request);
     }
 
     closeHtmlResponse(exitCode);
@@ -133,6 +133,7 @@ public class SuiteResponder extends ChunkingResponder {
     htmlPage.put("footerContent", new WikiPageFooterRenderer());
     htmlPage.setErrorNavTemplate("errorNavigator");
     htmlPage.put("multipleTestsRun", isMultipleTestsRun());
+    htmlPage.put("testId", testRunId);
     if (rerunFormatter != null) {
       htmlPage.put("rerunPage", getRerunPageName());
     }
@@ -202,16 +203,14 @@ public class SuiteResponder extends ChunkingResponder {
   }
 
   private void createMainFormatter() {
-    if (response.isJsonFormat()) {
-      boolean stream = request == null || !request.hasInput(fitnesse.http.Request.NOCHUNK);
-      java.io.File failures = FailedPages.defaultFile(context.getRootPagePath());
-      JsonResultsFormatter json = new JsonResultsFormatter(response.getWriter(), stream, failures);
-      json.setRunId(testRunId);
-      json.setSuiteName(fitnesse.wiki.PathParser.render(page.getFullPath()));
-      mainFormatter = json;
-    } else {
-      mainFormatter = newHtmlFormatter();
-    }
+    boolean jsonFormat = response.isJsonFormat();
+    boolean document = jsonFormat && request != null && request.hasInput(fitnesse.http.Request.NOCHUNK);
+    java.io.File failures = FailedPages.defaultFile(context.getRootPagePath());
+    Appendable sink = jsonFormat ? response.getWriter() : new fitnesse.results.HtmlEventStream(response.getWriter());
+    JsonResultsFormatter json = new JsonResultsFormatter(sink, !document, failures);
+    json.setRunId(testRunId);
+    json.setSuiteName(fitnesse.wiki.PathParser.render(page.getFullPath()));
+    mainFormatter = json;
   }
 
   protected Formatter createRerunFormatter() {
@@ -272,6 +271,7 @@ public class SuiteResponder extends ChunkingResponder {
     }
     try {
       runner.executeTestPages();
+    } finally {
       if (mainFormatter instanceof JsonResultsFormatter json) {
         try {
           json.finish();
@@ -279,7 +279,6 @@ public class SuiteResponder extends ChunkingResponder {
           throw new TestExecutionException(e);
         }
       }
-    } finally {
       runningTestingTracker.removeEndedProcess(testRunId);
     }
   }

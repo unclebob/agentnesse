@@ -18,7 +18,7 @@ public class PageFactory {
 
   public PageFactory(FitNesseContext context) {
     this.theme = context.theme;
-    this.velocityEngine = newVelocityEngine(context.getRootPagePath(), this.theme);
+    this.velocityEngine = newVelocityEngine(context.getRootPagePath());
   }
 
   public HtmlPage newPage() {
@@ -45,20 +45,15 @@ public class PageFactory {
     return getClass().getName();
   }
 
-  private VelocityEngine newVelocityEngine(String rootPagePath, String theme) {
+  private VelocityEngine newVelocityEngine(String rootPagePath) {
     Properties properties = new Properties();
     properties.setProperty(VelocityEngine.CHECK_EMPTY_OBJECTS, "false");
     properties.setProperty(VelocityEngine.INPUT_ENCODING, FileUtil.CHARENCODING);
 
-    properties.setProperty(VelocityEngine.RESOURCE_LOADERS, "file,themepath,classpath");
+    properties.setProperty(VelocityEngine.RESOURCE_LOADERS, "file,classpath");
 
     properties.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH,
         String.format("%s/files/fitnesse/templates", rootPagePath));
-
-    properties.setProperty(VelocityEngine.RESOURCE_LOADER + ".themepath.class",
-        ClasspathResourceLoader.class.getName());
-    properties.setProperty(VelocityEngine.RESOURCE_LOADER + ".themepath.base",
-        String.format("/fitnesse/resources/%s/templates", theme));
 
     properties.setProperty(VelocityEngine.RESOURCE_LOADER + ".classpath.class",
         ClasspathResourceLoader.class.getName());

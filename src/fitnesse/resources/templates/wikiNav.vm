@@ -1,1 +1,7 @@
 #parse( "menu.vm" )
+<form class="search" action="?search">
+ <input type="hidden" name="responder" value="search" />
+ <input type="hidden" name="searchScope" value="root" />
+ <input type="text" id="searchString" name="q" placeholder="Search for page" />
+ <input type="hidden" name="type" value="title" />
+</form>

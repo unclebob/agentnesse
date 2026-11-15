@@ -124,11 +124,11 @@ public class SuiteResponderTest {
   @Test
   public void testWithOneTest() throws Exception {
     String results = runSuite();
-    assertSubString("href=\\\"#TestOne1\\\"", results);
-    assertSubString("1 right", results);
-    assertSubString("name=\"TestOne1\"", results);
-    assertSubString(" href=\"SuitePage.TestOne\"", results);
+    assertSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertSubString("\"right\":1", results);
     assertSubString("EchoFixture", results);
+    assertSubString("Test Summaries", results);
+    assertNotSubString("RerunLastFailures", results);
   }
 
   @Test
@@ -140,8 +140,8 @@ public class SuiteResponderTest {
     addTestPage(root, "XrefTwo", fitPassFixture);
 
     String results = runSuite();
-    assertSubString("href=\\\"#XrefOne2\\\"", results);
-    assertSubString("href=\\\"#XrefTwo3\\\"", results);
+    assertSubString("\"path\":\"XrefOne\"", results);
+    assertSubString("\"path\":\"XrefTwo\"", results);
   }
 
   @Test
@@ -149,12 +149,10 @@ public class SuiteResponderTest {
     addTestToSuite("TestTwo", fitFailFixture + "\n" + fitFailFixture);
     String results = runSuite();
 
-    assertSubString("href=\\\"#TestOne1\\\"", results);
-    assertSubString("href=\\\"#TestTwo2\\\"", results);
-    assertSubString("1 right", results);
-    assertSubString("2 wrong", results);
-    assertSubString("name=\"TestOne1\"", results);
-    assertSubString("name=\"TestTwo2\"", results);
+    assertSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"right\":1", results);
+    assertSubString("\"wrong\":2", results);
     assertSubString("EchoFixture", results);
     assertSubString("bad", results);
 
@@ -197,12 +195,10 @@ public class SuiteResponderTest {
     pageTwo.commit(data);
     String results = runSuite();
 
-    assertSubString("href=\\\"#TestOne1\\\"", results);
-    assertNotSubString("href=\\\"#TestTwo2\\\"", results);
-    assertSubString("1 right", results);
-    assertSubString("0 wrong", results);
-    assertSubString("name=\"TestOne1\"", results);
-    assertNotSubString("id=\"TestTwo2\"", results);
+    assertSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"right\":1", results);
+    assertSubString("\"wrong\":0", results);
     assertSubString("EchoFixture", results);
     assertNotSubString("bad", results);
 
@@ -248,19 +244,21 @@ public class SuiteResponderTest {
     String results = runSuite();
     // Lots of escaping: the content is escaped, since it's written from Javascript.
     // Everything needs to be double escaped because it's handled as a regexp.
-    assertHasRegexp("class=\\\\\"ok\\\\\">Execution Log", results);
+    assertSubString("\"event\":\"server\"", results);
   }
 
   @Test
   public void testTestSummaryInformationIncludesPageSummary() throws Exception {
     String results = runSuite();
-    assertHasRegexp(".*?Test Pages:.*?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.*?Assertions:.*?", results);
+    assertSubString("\"event\":\"page-done\"", results);
+    assertSubString("\"right\":", results);
   }
 
   @Test
   public void testFormatTestSummaryInformation() throws Exception {
     String results = runSuite();
-    assertHasRegexp(".*?<strong>Test Pages:</strong>.*?<strong>Assertions:</strong>.*?", results);
+    assertSubString("\"event\":\"page-done\"", results);
+    assertSubString("\"status\":", results);
   }
 
   private String classpathWidgets() {
@@ -273,9 +271,9 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("suiteFilter=xxx");
     String results = runSuite();
-    assertDoesntHaveRegexp(".*href=\\\"#TestOne\\\".*", results);
-    assertDoesntHaveRegexp(".*href=\\\"#TestTwo\\\".*", results);
-    assertDoesntHaveRegexp(".*href=\\\"#TestThree\\\".*", results);
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -283,9 +281,9 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("suiteFilter=foo");
     String results = runSuite();
-    assertDoesntHaveRegexp(".*href=\\\"#TestOne.*", results);
-    assertSubString("href=\\\"#TestTwo1\\\"", results);
-    assertDoesntHaveRegexp(".*href=\\\"#TestThree.*", results);
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -293,8 +291,8 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("suiteFilter=");
     String results = runSuite();
-    assertSubString("href=\\\"#TestTwo3\\\"", results);
-    assertSubString("href=\\\"#TestThree2\\\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -302,9 +300,9 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("suiteFilter=smoke");
     String results = runSuite();
-    assertDoesntHaveRegexp(".*href=\\\"#TestOne.*", results);
-    assertDoesntHaveRegexp(".*href=\\\"#TestTwo.*", results);
-    assertSubString("href=\\\"#TestThree1\\\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -312,9 +310,9 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("suiteFilter=smoke,foo");
     String results = runSuite();
-    assertDoesntHaveRegexp("#TestOne", results);
-    assertHasRegexp("#TestTwo", results);
-    assertHasRegexp("#TestThree", results);
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -322,9 +320,9 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("excludeSuiteFilter=foo");
     String results = runSuite();
-    assertHasRegexp("#TestOne", results);
-    assertDoesntHaveRegexp("#TestTwo", results);
-    assertHasRegexp("#TestThree", results);
+    assertSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -332,9 +330,9 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("excludeSuiteFilter=bar&suiteFilter=smoke,foo");
     String results = runSuite();
-    assertDoesntHaveRegexp("#TestOne", results);
-    assertHasRegexp("#TestTwo", results);
-    assertDoesntHaveRegexp("#TestThree", results);
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -342,9 +340,9 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("firstTest=TestThree");
     String results = runSuite();
-    assertDoesntHaveRegexp("#TestOne", results);
-    assertHasRegexp("#TestTwo", results);
-    assertHasRegexp("#TestThree", results);
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"path\":\"SuitePage.TestThree\"", results);
   }
 
   @Test
@@ -352,9 +350,19 @@ public class SuiteResponderTest {
     addTestPagesWithSuiteProperty();
     request.setQueryString("firstTest=SuitePage.TestThree");
     String results = runSuite();
-    assertDoesntHaveRegexp("#TestOne", results);
-    assertHasRegexp("#TestTwo", results);
-    assertHasRegexp("#TestThree", results);
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
+    assertSubString("\"path\":\"SuitePage.TestThree\"", results);
+  }
+
+  @Test
+  public void anAndTagFilterKeepsOnlyPagesWithEveryTag() throws Exception {
+    addTestPagesWithSuiteProperty();
+    request.setQueryString("runTestsMatchingAllTags=foo");
+    String results = runSuite();
+    assertNotSubString("\"path\":\"SuitePage.TestOne\"", results);
+    assertNotSubString("\"path\":\"SuitePage.TestThree\"", results);
+    assertSubString("\"path\":\"SuitePage.TestTwo\"", results);
   }
 
   @Test
@@ -366,7 +374,7 @@ public class SuiteResponderTest {
 
     request.setQueryString("suiteFilter=tag");
     String results = runSuite();
-    assertHasRegexp("#TestInheritsTag", results);
+    assertSubString("\"path\":\"SuitePage.TestInheritsTag\"", results);
   }
 
   private void addTestPagesWithSuiteProperty() {
@@ -384,9 +392,10 @@ public class SuiteResponderTest {
   public void testCanMixSlimAndFitTests() throws Exception {
     addTestToSuite("SlimTest", simpleSlimDecisionTable);
     String results = runSuite();
-    assertHasRegexp("EchoFixture", results);
-    assertHasRegexp("<td><span class=\"pass\">wow</span></td>", results);
-    assertHasRegexp("<h3>slim:in-process", results);
+    assertSubString("EchoFixture", results);
+    assertSubString("wow", results);
+    assertSubString("\"status\":\"pass\"", results);
+    assertSubString("slim:in-process", results);
     assertNotSubString("fit:fit.FitServer", results);
   }
 

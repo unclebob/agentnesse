@@ -13,6 +13,6 @@ A value that cannot be converted names the target type. A valid call still passe
 | make | ConvertPage | a test page | |
 | test results for page | ConvertPage | should contain | Can't convert twenty to integer |
 | and should contain | Can't convert Hello to long | | |
-| and should contain | class="pass" | | |
+| and should contain | "symbol":"ok" | | |
 | and should contain | Can't convert aWrongValue to long | | |
 | and should contain | No converter for java.time.temporal.TemporalAccessor | | |

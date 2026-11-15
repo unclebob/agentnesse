@@ -28,6 +28,6 @@ For normal (HTML) responses:
 | --- |
 | check | request page | SuiteParent?suite | 200 |
 | show | content |
-| ensure | content contains | &lt;strong&gt;Test Pages:&lt;/strong&gt;&amp;nbsp;4 right, 0 wrong, 0 ignored, 0 exceptions |
-| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.*>SuiteSetUp |
-| ensure | content matches | 0 right, 0 wrong, 0 ignored, 0 exceptions.*>SuiteTearDown |
+| ensure | content contains | 4 right, 0 wrong, 0 ignored, 0 exceptions |
+| ensure | content contains | SuiteParent.SuiteSetUp |
+| ensure | content contains | SuiteParent.SuiteTearDown |

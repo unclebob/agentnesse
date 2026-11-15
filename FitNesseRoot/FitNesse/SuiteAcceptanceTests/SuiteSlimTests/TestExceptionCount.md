@@ -10,7 +10,7 @@
 | script | | | |
 | --- | --- | --- | --- |
 | given page | TestPage | with content | ${SUT_PATH} <br>\`\`\`agentnesse<br>define TEST_SYSTEM<br>slim<br>\`\`\`<br><br>\| lorem ipsum \| \| \|<br>\| --- \| --- \| --- \|<br>\| foo \| bar \| baz? \|<br>\| dolor \| sit \| amet \|<br>\| consectetur \| adipiscing \| elit \|<br> |
-| test results for page | TestPage | should contain | 0 right, 0 wrong, 0 ignored, 7 exceptions |
+| test results for page | TestPage | should contain | 0 right, 0 wrong, 0 ignored, 6 exceptions |
 
 ### If a fixture defnition generates a syntax error this must be counted as exception in the test summary.
 

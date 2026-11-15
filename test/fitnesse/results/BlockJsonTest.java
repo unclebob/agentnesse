@@ -70,6 +70,22 @@ public class BlockJsonTest {
   }
 
   @Test
+  public void oneOfEachCountedStatusKeepsItsOutcome() {
+    assertEquals("fail", statusOf(SlimTestResult.fail("no", "yes")));
+    assertEquals("error", statusOf(SlimTestResult.error("boom", "x")));
+    assertEquals("pass", statusOf((SlimTestResult) SlimTestResult.pass("ok", "ok")));
+    assertEquals("ignore", statusOf(SlimTestResult.ignore("skip")));
+    assertEquals("table-failure", statusOf(SlimTestResult.error("bad table")));
+    assertEquals("script", BlockJson.from(MarkdownTable.parse("| script |\n")).getString("name"));
+  }
+
+  private static String statusOf(SlimTestResult result) {
+    MarkdownTable table = MarkdownTable.parse("| script |\n");
+    table.updateContent(0, 0, result);
+    return BlockJson.from(table).getString("status");
+  }
+
+  @Test
   public void anEmptyTableHasNoName() {
     JSONObject block = BlockJson.from(MarkdownTable.parse(""));
     assertEquals("", block.getString("name"));

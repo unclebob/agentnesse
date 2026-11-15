@@ -1,33 +1,17 @@
-<script type="text/javascript">
-    window.onbeforeunload = function () {
-        var stoptestDiv = document.querySelector("li#test-action a.stop");
-
-        if (stoptestDiv){
-            return "There is a test or suite currently running.  Are you sure you want to navigate away from this page?";
-        }
-    }
-</script>
-
 $!headerContent.render()
 
-<div id="test-summary"><div id="progressBar">Preparing Tests ...</div></div>
-
-<div id="test-action">
-## Filled with stop/output buttons
-</div>
+<div id="test-summary">Preparing Tests ...</div>
+<label class="hide-passed"><input type="checkbox" id="hidePassedTests"> Hide passed</label>
+<p id="test-stop"><span id="test-action"><a class="stop" href="?responder=stoptest&amp;id=$testId">Stop</a></span></p>
 
 #if ($multipleTestsRun)
 <div id="test-summaries">
-    <h2>Test Summaries</h2>
-## Filled with test results
+ <h2>Test Summaries</h2>
 </div>
-
 <h2>Test output</h2>
 #end
 
-## Test results are placed here:
+<div id="test-results"></div>
 $testExecutor.execute()
 
-##Keyboard shortcuts
 #parse("keyboardShortcuts.vm")
-	

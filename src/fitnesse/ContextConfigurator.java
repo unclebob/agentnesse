@@ -29,7 +29,7 @@ public class ContextConfigurator {
   private static final int DEFAULT_COMMAND_PORT = 9123;
   public static final int DEFAULT_PORT = 80;
   public static final String DEFAULT_CONFIG_FILE = "agentnesse.json";
-  public static final String DEFAULT_THEME = "bootstrap";
+  public static final String DEFAULT_THEME = "agentnesse";
   public static final String DEFAULT_LISTEN = "127.0.0.1";
   public static final int DEFAULT_MAXIMUM_WORKERS = 100;
 

@@ -54,7 +54,7 @@ Configuration is `agentnesse.json` in the working directory. If that file is mis
   "pageRoot": "FitNesseRoot",
   "logDirectory": null,
   "maximumWorkers": 100,
-  "theme": "bootstrap",
+  "theme": "agentnesse",
   "refactorStartPath": null,
   "listen": "127.0.0.1"
 }

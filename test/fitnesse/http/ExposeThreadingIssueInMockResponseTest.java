@@ -43,7 +43,8 @@ public class ExposeThreadingIssueInMockResponseTest {
   @Test
   public void testDoSimpleSlimTable() throws Exception {
     doSimpleRun(simpleSlimDecisionTable());
-    assertHasRegexp("<td><span class=\"pass\">wow</span></td>", results);
+    assertHasRegexp("\"status\":\"pass\"", results);
+    assertHasRegexp("wow", results);
   }
 
   private String simpleSlimDecisionTable() {

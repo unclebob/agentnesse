@@ -69,6 +69,22 @@ public class SlimFailureTest {
   }
 
   @Test
+  public void theResultPageUsesTheSameSentences() {
+    assertEquals("Could not invoke constructor for Foo", failureSentence("COULD_NOT_INVOKE_CONSTRUCTOR Foo"));
+    assertEquals("Could not find constructor for Foo", failureSentence("NO_CONSTRUCTOR Foo"));
+    assertEquals("No converter for Foo", failureSentence("NO_CONVERTER_FOR_ARGUMENT_NUMBER Foo"));
+    assertEquals("Could not find class Foo", failureSentence("NO_CLASS Foo"));
+    assertEquals("The instance Foo does not exist", failureSentence("NO_INSTANCE Foo"));
+    assertEquals("The instruction timed out after 2 seconds", failureSentence("TIMED_OUT 2"));
+    assertEquals("plain text", failureSentence("plain text"));
+    assertEquals("", SlimFailure.parse(null).sentence());
+  }
+
+  private static String failureSentence(String body) {
+    return SlimFailure.parse(EXCEPTION_TAG + "message:<<" + body + ">>").sentence();
+  }
+
+  @Test
   public void aServerThatCannotStartIsALaunchFailure() {
     SlimFailure failure = SlimFailure.parse(EXCEPTION_TAG + "message:<<java.net.BindException: Address already in use>>");
     assertEquals(SlimFailure.Kind.LAUNCH_FAILURE, failure.kind());

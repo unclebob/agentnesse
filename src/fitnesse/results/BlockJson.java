@@ -42,10 +42,13 @@ public final class BlockJson {
   }
 
   private static Object jsonStatus(CellRecord record) {
+    if (record.status() == null) {
+      return JSONObject.NULL;
+    }
     if ("symbol".equals(record.status())) {
       return "symbol";
     }
-    if (!record.assertion() || record.status() == null) {
+    if (!record.assertion() && "pass".equals(record.status())) {
       return JSONObject.NULL;
     }
     return record.status();
@@ -59,7 +62,11 @@ public final class BlockJson {
     put(cell, "actual", record.actual());
     put(cell, "expected", record.expected());
     put(cell, "symbol", record.symbol());
-    put(cell, "value", record.value());
+    String value = record.value();
+    if (record.symbol() != null && record.symbol().startsWith("SECRET_")) {
+      value = "*****";
+    }
+    put(cell, "value", value);
     cell.put("error", record.failure() == null ? JSONObject.NULL : errorJson(record.failure()));
     return cell;
   }
@@ -68,7 +75,7 @@ public final class BlockJson {
     JSONObject error = new JSONObject();
     error.put("kind", failure.kind().name());
     error.put("type", failure.type() == null ? "" : failure.type());
-    error.put("message", failure.message() == null ? "" : failure.message());
+    error.put("message", failure.sentence());
     error.put("stackTrace", failure.stack());
     error.put("page", json(failure.page()));
     error.put("block", json(failure.block()));
@@ -113,9 +120,17 @@ public final class BlockJson {
     }
 
     private Object status() {
-      if (right + wrong + ignored + exceptions == 0 && trouble) {
+      if (emptyTrouble()) {
         return "table-failure";
       }
+      return countedStatus();
+    }
+
+    private boolean emptyTrouble() {
+      return trouble && right == 0 && wrong == 0 && ignored == 0 && exceptions == 0;
+    }
+
+    private Object countedStatus() {
       if (exceptions > 0) return "error";
       if (wrong > 0) return "fail";
       if (right > 0) return "pass";

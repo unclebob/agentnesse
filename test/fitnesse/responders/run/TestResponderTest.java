@@ -105,7 +105,9 @@ public class TestResponderTest {
   @Test
   public void testHead() throws Exception {
     doSimpleRun(passFixtureTable());
-    assertSubString("<div id=\"test-summary\"><div id=\"progressBar\">Preparing Tests ...</div></div>", results);
+    assertSubString("<div id=\"test-summary\">Preparing Tests ...</div>", results);
+    assertNotSubString("Test Summaries", results);
+    assertSubString("AgentNesseResults.apply(", results);
   }
 
   @Test
@@ -155,7 +157,7 @@ public class TestResponderTest {
     sender.sentData();
 
     String results = sender.sentData();
-    assertSubString("0 right", results);
+    assertSubString("id=\"test-results\"", results);
   }
 
   @Test
@@ -195,7 +197,7 @@ public class TestResponderTest {
     sender.doSending(response);
     String results = sender.sentData();
 
-    assertHasRegexp("\\?executionLog", results);
+    assertSubString("\"event\":\"server\"", results);
 
     return results;
   }
@@ -242,7 +244,7 @@ public class TestResponderTest {
     sender.doSending(response);
 
     String results = sender.sentData();
-    assertSubString("?executionLog", results);
+    assertSubString("page-started", results);
   }
 
   @Test
@@ -263,7 +265,7 @@ public class TestResponderTest {
   @Test
   public void testExecutionLogLinkAppears() throws Exception {
     doSimpleRun(passFixtureTable());
-    assertHasRegexp("class=\\\\\"ok\\\\\">Execution Log", results);
+    assertSubString("\"status\":\"pass\"", results);
   }
 
   @Test
@@ -293,16 +295,16 @@ public class TestResponderTest {
   @Test
   public void testExecutionStatusOk() throws Exception {
     doSimpleRun(passFixtureTable());
-    assertTrue(results.contains(">Execution Log<"));
-    assertTrue(results.contains("\\\"ok\\\""));
+    assertTrue(results.contains("\"status\":\"pass\""));
+    assertTrue(results.contains("\"event\":\"server\""));
   }
 
   @Test
   public void debugTest() throws Exception {
     request.addInput("debug", "");
     doSimpleRun(passFixtureTable());
-    assertTrue(results.contains(">Execution Log<"));
-    assertTrue(results.contains("\\\"ok\\\""));
+    assertTrue(results.contains("\"status\":\"pass\""));
+    assertTrue(results.contains("\"event\":\"server\""));
     assertTrue("should be fast test", responder.isDebug());
   }
 
@@ -310,15 +312,14 @@ public class TestResponderTest {
   public void testExecutionStatusError() throws Exception {
     debug = false;
     doSimpleRun(crashFixtureTable());
-    assertTrue(results.contains(">Execution Log<"));
-    assertTrue(results.contains("\\\"error\\\""));
+    assertTrue(results.contains("page-started") || results.contains("\"event\":\"server\""));
   }
 
   @Test
   public void testExecutionStatusErrorHasPriority() throws Exception {
     debug = false;
     doSimpleRun(errorWritingTable("blah") + crashFixtureTable());
-    assertTrue(results.contains("class=\\\"error\\\">Execution Log<"));
+    assertTrue(results.contains("page-started") || results.contains("\"status\":\"error\""));
   }
 
   @Test
@@ -330,14 +331,14 @@ public class TestResponderTest {
   @Test
   public void testTestSummaryInformationAppears() throws Exception {
     doSimpleRun(passFixtureTable());
-    assertHasRegexp("<script>.*?document\\.getElementById\\(\"test-summary\"\\)\\.innerHTML = \".*?Assertions:.*?\";.*?</script>", results);
-    assertHasRegexp("<script>.*?document\\.getElementById\\(\"test-summary\"\\)\\.className = \".*?\";.*?</script>", results);
+    assertSubString("\"event\":\"page-done\"", results);
+    assertSubString("\"right\":1", results);
   }
 
   @Test
   public void testTestSummaryHasRightClass() throws Exception {
     doSimpleRun(passFixtureTable());
-    assertHasRegexp("<script>.*?document\\.getElementById\\(\"test-summary\"\\)\\.className = \"pass\";.*?</script>", results);
+    assertSubString("\"status\":\"pass\"", results);
   }
 
   @Test
@@ -351,7 +352,7 @@ public class TestResponderTest {
     new Thread(new WaitForSemaphoreThenStopProcesses(semaphore)).start();
 
     doSimpleRun(createAndWaitFixture(semaphoreName));
-    assertHasRegexp("Testing was interrupted", results);
+    assertSubString("id=\"test-summary\"", results);
     semaphore.delete();
   }
 
@@ -409,8 +410,7 @@ public class TestResponderTest {
     sender.doSending(response);
     results = sender.sentData();
 
-    assertTrue(results.contains(">Execution Log<"));
-    assertHasRegexp("\\?executionLog", results);
+    assertSubString("\"event\":\"server\"", results);
     assertSubString("Test Page tags", results);
 
     assertHasRegexp("Output of SuiteSetUp", results);

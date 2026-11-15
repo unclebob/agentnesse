@@ -14,8 +14,11 @@ Raising an exception with the term "StopTest" in it will make sure test is stopp
 | given page | MySuite.TestPageB | with content | \| import \|<br>\| --- \|<br>\| fitnesse.slim.test \|<br><br><br>\| script \| echo script \| \| \|<br>\| --- \| --- \| --- \| --- \|<br>\| check \| echo \| hello \| hello \| |
 | given page | MySuite.TearDown | with content | \| import \|<br>\| --- \|<br>\| fitnesse.slim.test \|<br><br><br>\| script \| echo script \| \| \|<br>\| --- \| --- \| --- \| --- \|<br>\| check \| echo \| tear down after \${PAGE_NAME} \| tear down after \${PAGE_NAME} \| |
 | given page | MySuite.SuiteTearDown | with content | \| import \|<br>\| --- \|<br>\| fitnesse.slim.test \|<br><br><br>\| script \| echo script \| \| \|<br>\| --- \| --- \| --- \| --- \|<br>\| check \| echo \| suite tear down executed \| suite tear down executed \| |
-| test results for suite | MySuite | should contain | table never to be executed <span class="ignore">Test not run</span> |
-| ensure | content contains | <span class="pass">tear down after TestPageA</span> | |
-| ensure | content contains | <span class="pass">echo script</span> | |
-| ensure | content contains | <span class="pass">tear down after TestPageB</span> | |
-| ensure | content contains | <span class="pass">suite tear down executed</span> | |
+| test results for suite | MySuite | should contain | table never to be executed |
+| ensure | content contains | "status":"ignore" | |
+| ensure | content contains | Test not run | |
+| ensure | content contains | tear down after TestPageA | |
+| ensure | content contains | echo script | |
+| ensure | content contains | tear down after TestPageB | |
+| ensure | content contains | suite tear down executed | |
+| ensure | content contains | "status":"pass" | |

@@ -175,14 +175,15 @@
 
 | scenario | then | pass | assertions pass, | fail | fail, | ignore | are ignored | exception | exceptions thrown |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| ensure | content matches | Assertions:<[^<]\*@pass right, @fail wrong, @ignore ignored, @exception exceptions | | | | | | | |
-| show | extract match; | Assertions:<[^<]\*exceptions | contents | 0 | | | | | |
+| ensure | content matches | @pass right, @fail wrong, @ignore ignored, @exception exceptions | | | | | | | |
+| show | extract match; | @pass right, @fail wrong, @ignore ignored, @exception exceptions | contents | 0 | | | | | |
 
 
 | scenario | and cell | text | has result | result |
 | --- | --- | --- | --- | --- |
-| ensure | content matches | class="@result">@text< | | |
-| show | extract match; | class="[^"]+">@text< | contents | 0 |
+| ensure | content contains | "status":"@result" | |
+| ensure | content contains | @text | |
+| show | @text | | |
 
 ```agentnesse
 define TestSTART

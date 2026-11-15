@@ -16,6 +16,7 @@ import java.util.function.LongSupplier;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JsonResultsFormatterTest {
@@ -133,6 +134,136 @@ public class JsonResultsFormatterTest {
     assertTrue(stdout, stdout.contains("agentnesseLog"));
   }
 
+  @Test
+  public void aRunDoneSummaryCountsOnePageOfEachStatus() throws Exception {
+    StringBuilder out = new StringBuilder();
+    long[] now = {10L};
+    JsonResultsFormatter formatter = new JsonResultsFormatter(out, true, new java.io.File("last-failures.json"), () -> now[0]);
+    complete(formatter, "PassPage", passTable());
+    complete(formatter, "SecondPass", passTable());
+    complete(formatter, "FailPage", failTable());
+    TestPage errorPage = page("ErrorPage");
+    formatter.testStarted(errorPage);
+    formatter.tableFinished(errorPage, brokenTable());
+    formatter.tableFinished(errorPage, errorTable());
+    formatter.testComplete(errorPage, new TestSummary(0, 0, 0, 0));
+    complete(formatter, "IgnorePage", ignoreTable());
+    now[0] = 10L;
+    formatter.testStarted(page("SameInstant"));
+    formatter.testComplete(page("SameInstant"), new TestSummary(0, 0, 0, 0));
+    formatter.testOutputChunk(page("PassPage"), null);
+    formatter.testOutputChunk(page("PassPage"), "<table></table>kept");
+    formatter.testOutputChunk(page("PassPage"), "<details class=\"agentnesse-include\"></details>");
+    formatter.testOutputChunk(page("PassPage"), "   ");
+    formatter.testOutputChunk(page("PassPage"), "<span class=\"error\">Bad table! missing</span>");
+    formatter.testSystemStarted(null);
+    formatter.finish();
+    formatter.finish();
+
+    String body = out.toString();
+    assertTrue(body, body.contains("\"summary\":\"2 right, 1 wrong, 1 ignored, 1 exceptions\""));
+    assertFalse(body, body.contains("kept"));
+    assertEquals(0L, formatter.document().getJSONObject("run").getLong("durationMillis"));
+    assertTrue(body, body.contains("\"assertions\":\"0 right, 0 wrong, 0 ignored, 2 exceptions\""));
+    assertTrue(body, body.contains("\"summary\":\"2 right, 1 wrong, 1 ignored, 1 exceptions\",\"event\":\"run-done\",\"status\":\"error\""));
+    assertEquals(1, count(body, "\"event\":\"output\""));
+    assertTrue(body, body.contains("\"text\":\"Bad table! missing\""));
+    assertTrue(body, body.contains("\"durationMillis\":0"));
+    assertEquals(1, count(body, "\"event\":\"run-done\""));
+  }
+
+  @Test
+  public void aPassingRunIsNotReportedAsAFailure() throws Exception {
+    StringBuilder out = new StringBuilder();
+    JsonResultsFormatter formatter = new JsonResultsFormatter(out, true, null);
+    formatter.setSuiteName(null);
+    formatter.setSuiteName("SuitePage");
+    complete(formatter, "PassOnly", passTable());
+    formatter.finish();
+    assertEquals("SuitePage", formatter.document().getJSONObject("run").getString("name"));
+    assertTrue(out.toString(), out.toString().contains("\"summary\":\"1 right, 0 wrong, 0 ignored, 0 exceptions\",\"event\":\"run-done\",\"status\":\"pass\""));
+  }
+
+  @Test
+  public void oneFailingPageIsAFailingRun() throws Exception {
+    StringBuilder out = new StringBuilder();
+    JsonResultsFormatter formatter = new JsonResultsFormatter(out, true, null);
+    complete(formatter, "FailPage", failTable());
+    formatter.finish();
+    assertTrue(out.toString(), out.toString().contains("\"summary\":\"0 right, 1 wrong, 0 ignored, 0 exceptions\",\"event\":\"run-done\",\"status\":\"fail\""));
+  }
+
+  @Test
+  public void aTableOriginAndAStartedSystemAreOnTheEvent() throws Exception {
+    JsonResultsFormatter formatter = new JsonResultsFormatter(new StringBuilder(), true, null);
+    formatter.testSystemStarted(new fitnesse.testsystems.TestSystem() {
+      public String getName() { return "slim:A"; }
+      public void start() {}
+      public void bye() {}
+      public void kill() {}
+      public void runTests(TestPage page) {}
+      public void addTestSystemListener(fitnesse.testsystems.TestSystemListener listener) {}
+      public boolean isSuccessfullyStarted() { return true; }
+    });
+    TestPage page = page("Origin");
+    fitnesse.testsystems.slim.MarkdownTable table = passTable();
+    formatter.tableFinished(page, table);
+    assertTrue(formatter.events().get(0).toString(), formatter.events().get(0).toString().contains("\"origin\":\"\""));
+    table.setOrigin("Included");
+    formatter.testStarted(page);
+    assertEquals("slim:A", formatter.events().get(formatter.events().size() - 1).getString("system"));
+  }
+
+  private static void complete(JsonResultsFormatter formatter, String name, fitnesse.testsystems.slim.MarkdownTable table) {
+    TestPage page = page(name);
+    formatter.testStarted(page);
+    formatter.tableFinished(page, table);
+    formatter.testComplete(page, new TestSummary(0, 0, 0, 0));
+  }
+
+  private static fitnesse.testsystems.slim.MarkdownTable passTable() {
+    fitnesse.testsystems.slim.MarkdownTable table = fitnesse.testsystems.slim.MarkdownTable.parse("| script |\n");
+    table.updateContent(0, 0, (fitnesse.testsystems.slim.results.SlimTestResult) fitnesse.testsystems.slim.results.SlimTestResult.pass("ok", "ok"));
+    return table;
+  }
+
+  private static fitnesse.testsystems.slim.MarkdownTable failTable() {
+    fitnesse.testsystems.slim.MarkdownTable table = fitnesse.testsystems.slim.MarkdownTable.parse("| script |\n");
+    table.updateContent(0, 0, fitnesse.testsystems.slim.results.SlimTestResult.fail("no", "yes"));
+    return table;
+  }
+
+  private static fitnesse.testsystems.slim.MarkdownTable brokenTable() {
+    fitnesse.testsystems.slim.MarkdownTable table = fitnesse.testsystems.slim.MarkdownTable.parse("| script |\n");
+    table.updateContent(0, 0, fitnesse.testsystems.slim.results.SlimTestResult.error("bad table"));
+    return table;
+  }
+
+  private static fitnesse.testsystems.slim.MarkdownTable errorTable() {
+    fitnesse.testsystems.slim.MarkdownTable table = fitnesse.testsystems.slim.MarkdownTable.parse("| script |\n");
+    table.updateContent(0, 0, fitnesse.testsystems.slim.results.SlimTestResult.error("boom", "x"));
+    return table;
+  }
+
+  private static fitnesse.testsystems.slim.MarkdownTable ignoreTable() {
+    fitnesse.testsystems.slim.MarkdownTable table = fitnesse.testsystems.slim.MarkdownTable.parse("| script |\n");
+    table.updateContent(0, 0, fitnesse.testsystems.slim.results.SlimTestResult.ignore("skip"));
+    return table;
+  }
+
+  private static int count(String body, String needle) {
+    int found = 0;
+    int from = 0;
+    while (true) {
+      int at = body.indexOf(needle, from);
+      if (at < 0) {
+        return found;
+      }
+      found++;
+      from = at + needle.length();
+    }
+  }
+
   private static String frame(String kind, JSONObject body) {
     JSONObject frame = new JSONObject().put("agentnesseLog", kind);
     for (String key : body.keySet()) {
@@ -142,7 +273,8 @@ public class JsonResultsFormatterTest {
   }
 
   private static TestPage page(String name) {
-    return new WikiTestPage(new WikiPageDummy(name, "", null));
+    fitnesse.wiki.WikiPage root = new WikiPageDummy("Root", "", null);
+    return new WikiTestPage(new WikiPageDummy(name, "", root));
   }
 
   private static ExecutionLogListener.ExecutionContext context(String system, String command) {

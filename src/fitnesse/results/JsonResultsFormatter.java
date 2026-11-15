@@ -25,7 +25,7 @@ import java.util.function.LongSupplier;
  * Collects Slim run events. HTTP streams them as NDJSON. The command line
  * prints the reduced document instead.
  */
-public class JsonResultsFormatter extends BaseFormatter implements TableFinished, ExecutionLogListener {
+public class JsonResultsFormatter extends BaseFormatter implements TableFinished, ExecutionLogListener, fitnesse.testrunner.TestsRunnerListener {
   private final Appendable out;
   private final boolean streamEvents;
   private final File failuresFile;
@@ -37,6 +37,8 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
   private String runId = "";
   private String suiteName = "";
   private int failures;
+  private String system = "";
+  private boolean finished;
 
   public JsonResultsFormatter(Appendable out, boolean streamEvents, File failuresFile) {
     this(out, streamEvents, failuresFile, System::currentTimeMillis);
@@ -67,13 +69,14 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
     record(new JSONObject()
       .put("event", "table-done")
       .put("path", path(page))
+      .put("origin", table.origin())
       .put("block", BlockJson.from(table)));
   }
 
   @Override
   public void testStarted(TestPage testPage) {
     pageStarted.put(path(testPage), clock.getAsLong());
-    record(new JSONObject().put("event", "page-started").put("path", path(testPage)));
+    record(new JSONObject().put("event", "page-started").put("path", path(testPage)).put("system", system));
   }
 
   @Override
@@ -88,6 +91,7 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
       .put("event", "page-done")
       .put("path", page)
       .put("counts", counts)
+      .put("assertions", assertionSummary(counts))
       .put("durationMillis", elapsed(page))
       .put("status", status));
   }
@@ -123,6 +127,33 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
   }
 
   @Override
+  public void announceNumberTestsToRun(int testsToRun) {
+  }
+
+  @Override
+  public void unableToStartTestSystem(String testSystemName, Throwable cause) {
+    String message = "Unable to start test system '" + testSystemName + "': " + cause;
+    record(new JSONObject().put("event", "output").put("text", message));
+    exceptionOccurred(cause);
+  }
+
+  @Override
+  public void testSystemStarted(fitnesse.testsystems.TestSystem testSystem) {
+    system = testSystem == null || testSystem.getName() == null ? "" : testSystem.getName();
+  }
+
+  @Override
+  public void testOutputChunk(TestPage testPage, String output) {
+    if (output == null || output.contains("<table") || output.contains("<details")) {
+      return;
+    }
+    String text = output.replaceAll("<[^>]+>", " ").replaceAll("\\s+", " ").trim();
+    if (!text.isEmpty()) {
+      record(new JSONObject().put("event", "output").put("path", path(testPage)).put("text", text));
+    }
+  }
+
+  @Override
   public synchronized void exceptionOccurred(Throwable error) {
     SlimFailure parsed = SlimFailure.parse(error.toString());
     SlimFailure launch = parsed.kind() == SlimFailure.Kind.LAUNCH_FAILURE ? parsed : null;
@@ -135,6 +166,10 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
   }
 
   public void finish() throws IOException {
+    if (finished) {
+      return;
+    }
+    finished = true;
     synchronized (this) {
       servers.flush();
       for (JSONObject server : servers.toJson()) {
@@ -145,6 +180,11 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
     if (!streamEvents) {
       out.append(document.toString(2));
       out.append("\n");
+    } else {
+      int[] pages = pageTally();
+      String summary = pages[0] + " right, " + pages[1] + " wrong, " + pages[2] + " ignored, " + pages[3] + " exceptions";
+      String status = pages[3] > 0 ? "error" : pages[1] > 0 ? "fail" : "pass";
+      record(new JSONObject().put("event", "run-done").put("summary", summary).put("status", status));
     }
     writeFailures(document);
   }
@@ -176,6 +216,29 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
       parent.mkdirs();
     }
     Files.writeString(failuresFile.toPath(), new JSONObject().put("failedPages", pages).toString(2), StandardCharsets.UTF_8);
+  }
+
+  private static String assertionSummary(JSONObject counts) {
+    int exceptions = counts.getInt("exceptions") + counts.getInt("tableFailures");
+    return counts.getInt("right") + " right, " + counts.getInt("wrong") + " wrong, "
+      + counts.getInt("ignored") + " ignored, " + exceptions + " exceptions";
+  }
+
+  private int[] pageTally() {
+    int[] pages = new int[4];
+    for (JSONObject event : events) {
+      if (!"page-done".equals(event.optString("event"))) {
+        continue;
+      }
+      switch (event.optString("status")) {
+        case "pass" -> pages[0]++;
+        case "fail" -> pages[1]++;
+        case "ignore" -> pages[2]++;
+        case "error" -> pages[3]++;
+        default -> { }
+      }
+    }
+    return pages;
   }
 
   private long elapsed(String path) {

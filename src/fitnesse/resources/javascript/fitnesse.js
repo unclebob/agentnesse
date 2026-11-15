@@ -1,262 +1,232 @@
+(function () {
+  var SECTIONS = { SetUp: 1, TearDown: 1, SuiteSetUp: 1, SuiteTearDown: 1, ScenarioLibrary: 1 };
+  var pageRoot = null;
+  var title = "";
+  var details = null;
+  var blocks = [];
+  var totals = { right: 0, wrong: 0, exceptions: 0, ignored: 0 };
+  var worst = "pass";
 
-function doSilentRequest(url)
-{
-  $.get(url);
-  return false;
-}
+  function shouldOpen(list) {
+    for (var i = 0; i < list.length; i++) {
+      if (trouble(list[i])) return true;
+    }
+    return false;
+  }
 
-/**
- *  Scenario's and Exceptions (after test execution)
- */
-$(document)
-    .on("click", "article tr.scenario td, article tr.exception td", function () {
-        $(this).parent().toggleClass('closed').nextUntil(":not(.exception-detail, .scenario-detail)").toggleClass("closed-detail");
+  function trouble(block) {
+    var status = block.status || "";
+    if (status === "fail" || status === "error" || status === "table-failure") return true;
+    var rows = block.rows || [];
+    for (var r = 0; r < rows.length; r++) {
+      var cells = rows[r].cells || [];
+      for (var c = 0; c < cells.length; c++) {
+        var cell = cells[c];
+        if (cell.status === "fail" || cell.status === "error" || cell.error) return true;
+      }
+    }
+    return false;
+  }
+
+  function text(cell) {
+    if (cell.symbol) {
+      var secret = cell.symbol.indexOf("SECRET_") === 0;
+      return "$" + cell.symbol + (secret ? "->[*****]" : "<-[" + (cell.value || "") + "]");
+    }
+    var body;
+    if (cell.value) body = cell.value;
+    else {
+      var expected = cell.expected || "";
+      var actual = cell.actual || "";
+      body = (actual && actual !== expected) ? actual : (expected || actual || "");
+    }
+    if (cell.error && cell.error.message) return (body ? body + " " : "") + cell.error.message;
+    return body;
+  }
+
+  function el(name, className, textValue) {
+    var node = document.createElement(name);
+    if (className) node.className = className;
+    if (textValue != null) node.textContent = textValue;
+    return node;
+  }
+
+  function renderBlock(block) {
+    var type = block.name ? " " + block.name : "";
+    var table = el("table", "agentnesse-table" + type);
+    (block.rows || []).forEach(function (row) {
+      var tr = document.createElement("tr");
+      (row.cells || []).forEach(function (cell) {
+        var status = cell.status || (cell.error ? "error" : "");
+        tr.appendChild(el("td", status, text(cell)));
+      });
+      table.appendChild(tr);
     });
+    return table;
+  }
 
-/**
- * Collapsible section
- */
-$(document)
-	.on("touchstart click", "article .collapsible > p.title", function () {
-		$(this).parent().toggleClass('closed');
-	})
-	.on("click", "article .collapsible > p.title a", function (event) {
-		// Do not open section when clicking on a link in the title, just follow the link.
-		event.stopPropagation();
-		return true;
-	})
-	.on('click', 'article .collapsible .expandall', function () {
-		var section = $(this).closest('.collapsible');
-		section.find('.collapsible').addBack().removeClass('closed');
-		section.find('.scenario').removeClass('closed').next().show();
-		return false;
-	})
-	.on('click', 'article .collapsible .collapseall', function () {
-		var section = $(this).closest('.collapsible');
-		section.find('.collapsible, .scenario').addBack().addClass('closed');
-		section.find('.scenario').addClass('closed').next().hide();
-		return false;
-    })
-    .on('click', '.page-actions .expandall', function () {
-        $(document.body).find('.collapsible').addBack().removeClass('closed');
-        $(document.body).find('.scenario').removeClass('closed').next().show();
-        return false;
-	})
-    .on('click', '.page-actions .collapseall', function () {
-        $(document.body).find('.collapsible, .scenario').addBack().addClass('closed');
-        $(document.body).find('.scenario').addClass('closed').next().hide();
-        return false;
-    })
-    .ready(function () {
-        if ($(document.body).find('.collapsible, .scenario').length > 0) {
-            $('.page-actions').show();
-        }
-    });
+  function sectionTitle(event) {
+    var origin = event.origin || "";
+    var name = (event.block && event.block.name) || "";
+    if (SECTIONS[origin]) return origin;
+    if (name.toLowerCase() === "import") return "import";
+    var leaf = (event.path || "").split(".").pop();
+    if (origin && origin !== leaf) return origin;
+    return "";
+  }
 
-/**
- * Modal dialogs
- */
-$(document)
-    .on("keyup", function (e) {
-        if (e.keyCode == 27 && $('.modal-dialog:visible')) {
-            window.location.hash = "";
+  function closeSection() {
+    title = "";
+    details = null;
+    blocks = [];
+  }
+
+  function root() {
+    return document.getElementById("test-results");
+  }
+
+  function worse(status) {
+    if (status === "error" || worst === "error") return "error";
+    if (status === "fail" || worst === "fail") return "fail";
+    return worst || "pass";
+  }
+
+  function summaryText() {
+    return totals.right + " right, " + totals.wrong + " wrong, "
+      + totals.exceptions + " exceptions";
+  }
+
+  function updateSummary(event) {
+    var counts = event.counts || {};
+    totals.right += counts.right || 0;
+    totals.wrong += counts.wrong || 0;
+    totals.exceptions += counts.exceptions || 0;
+    totals.ignored += counts.ignored || 0;
+    worst = worse(event.status || "");
+    var summary = document.getElementById("test-summary");
+    if (summary) {
+      summary.textContent = summaryText();
+      summary.className = worst;
+    }
+    var list = document.getElementById("test-summaries");
+    if (list) {
+      list.appendChild(el("p", event.status || "", (event.path || "") + " — " + (counts.right || 0)
+        + " right, " + (counts.wrong || 0) + " wrong, " + (counts.exceptions || 0) + " exceptions"));
+    }
+  }
+
+  function apply(event) {
+    if (!event || !event.event) return;
+    if (event.event === "page-started") {
+      closeSection();
+      var results = root();
+      if (!results) return;
+      pageRoot = el("section", "page-result");
+      pageRoot.appendChild(el("h2", "", event.path || ""));
+      results.appendChild(pageRoot);
+      document.body.classList.add("test-running");
+    } else if (event.event === "table-done" && pageRoot) {
+      var next = sectionTitle(event);
+      if (next !== title) {
+        closeSection();
+        title = next;
+        if (title) {
+          details = el("details", "agentnesse-include");
+          details.appendChild(el("summary", "", title));
+          pageRoot.appendChild(details);
         }
-    })
-    .ready(function () {
-        $(".modal-dialog").keyup(function (e) {
-           if (e.keyCode == 27) {
-               window.history.back();
-           }
-        }).click(function () {
-            window.history.back();
+      }
+      var block = event.block || {};
+      blocks.push(block);
+      (details || pageRoot).appendChild(renderBlock(block));
+      if (details && shouldOpen(blocks)) details.open = true;
+    } else if (event.event === "output") {
+      var note = el("p", "error", event.text || "");
+      if (pageRoot) pageRoot.appendChild(note);
+      else if (root()) root().appendChild(note);
+    } else if (event.event === "page-done") {
+      closeSection();
+      updateSummary(event);
+    } else if (event.event === "run-done") {
+      closeSection();
+      if (event.summary) {
+        var done = document.getElementById("test-summary");
+        if (done) {
+          done.textContent = event.summary;
+          if (event.status) done.className = event.status;
+        }
+      }
+      document.body.classList.remove("test-running");
+      var menu = document.getElementById("test-menu");
+      if (menu) menu.classList.remove("hidden");
+      initErrorNav();
+    }
+  }
+
+  function renderEvents(events, target) {
+    if (target && target.id !== "test-results") {
+      target.id = "test-results";
+    }
+    events.forEach(apply);
+  }
+
+  function initErrorNav() {
+    var errors = Array.prototype.slice.call(document.querySelectorAll("#test-results td.fail, #test-results td.error"));
+    var max = document.getElementById("error-nav-max");
+    var field = document.getElementById("error-nav-text");
+    var nav = document.getElementById("error-nav");
+    if (!field || errors.length === 0) return;
+    if (max) max.textContent = String(errors.length);
+    if (nav) nav.classList.remove("hidden");
+    var index = 0;
+    function show(next) {
+      if (errors[index]) errors[index].classList.remove("selected-error");
+      index = (next + errors.length) % errors.length;
+      var cell = errors[index];
+      cell.classList.add("selected-error");
+      var opened = cell.closest("details");
+      if (opened) opened.open = true;
+      field.value = String(index + 1);
+      cell.scrollIntoView({ block: "center" });
+    }
+    var prev = document.getElementById("error-nav-prev");
+    var nextButton = document.getElementById("error-nav-next");
+    if (prev) prev.onclick = function () { show(index - 1); };
+    if (nextButton) nextButton.onclick = function () { show(index + 1); };
+    show(0);
+  }
+
+  function rowPassed(row) {
+    var cells = row.children;
+    for (var i = 0; i < cells.length; i++) {
+      if (cells[i].classList.contains("fail") || cells[i].classList.contains("error")) return false;
+    }
+    return true;
+  }
+
+  window.onbeforeunload = function () {
+    if (document.body.classList.contains("test-running")) {
+      return "There is a test or suite currently running.\nAre you sure you want to navigate away from this page?";
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var source = document.getElementById("agentnesse-events");
+    if (source && source.textContent.trim()) {
+      source.textContent.split("\n").forEach(function (line) {
+        if (line.trim()) apply(JSON.parse(line));
+      });
+    }
+    var hide = document.getElementById("hidePassedTests");
+    if (hide) {
+      hide.addEventListener("change", function () {
+        document.querySelectorAll("#test-results tr").forEach(function (row) {
+          var passed = row.querySelector("td.pass") && rowPassed(row);
+          row.classList.toggle("hidden", hide.checked && passed);
         });
-        $(".modal-dialog > div").click(function (e) {
-            e.stopPropagation();
-        });
-    });
-
-/**
- * Hide/show passed tests
- */
-$(document)
-    .on('change', '.pageHistory #hidePassedTests', function () {
-        var elems = $('td.date_field.pass').parent();
-        if (this.checked) {
-            elems.hide();
-        } else {
-            elems.show();
-        }
-    })
-    .on('change', '.testHistory #hidePassedTests', function () {
-        // 3rd column shows failed tests.
-        var elems = $('tr > td:nth-child(5).pass').parent();
-        if (this.checked) {
-            elems.hide();
-        } else {
-            elems.show();
-        }
-    })
-    .on('change', '.suiteExecutionReport #hidePassedTests', function () {
-        var elems = $('tr.pass');
-        if (this.checked) {
-            elems.hide();
-        } else {
-            elems.show();
-        }
-    });
-
-// When checking purgeGlobal then change the href elements to send true
-$(document)
-    .on('change', '.testHistory #purgeGlobal', function() {
-        const purgeGlobal = "&purgeGlobal=true";
-        const elems = $("a[href^='?responder=purgeHistory']");
-
-        if (this.checked) {
-            elems.each((index, link) => {
-                // Only adjust the href if it was not already adjusted
-                if (!link.href.includes(purgeGlobal)) {
-                    link.href = link.href.substring(link.href.indexOf("?")) + purgeGlobal;
-                }
-            });
-        } else {
-            elems.each((index, link) => {
-                // Only adjust the href if it was adjusted before
-                if (link.href.includes(purgeGlobal)) {
-                    link.href = link.href.substring(link.href.indexOf("?"), link.href.length - purgeGlobal.length);
-                }
-            });
-        }
-    });
-
-// When clicking on a purge link then ask before deletion
-function purgeConfirmation(event) {
-    if (!confirm('Are you sure you want to purge the test histories?')) {
-        event.preventDefault();
-        return false;
+      });
     }
-}
+  });
 
-/**
- * Notify user when changing page while test execution is in progress.
- */
-window.onbeforeunload = function () {
-	if (document.querySelector("li#test-action .stop")){
-		return "There is a test or suite currently running.\nAre you sure you want to navigate away from this page?";
-	}
-};
-
-$(document).ready(function() {
-
-	/**
-	 * Field validations
-	 */
-	function validateField(re, msg) {
-		var pageNameError = $(this).data("error");
-		if (!re.test($(this).val())) {
-			if (!pageNameError) {
-				pageNameError = $(msg);
-				$(this).after(pageNameError);
-				$(this).data("error", pageNameError);
-			}
-			pageNameError.show();
-		} else {
-			if (pageNameError) {
-				pageNameError.hide();
-			}
-		}
-	}
-
-	$('input.wikiword').keyup(function () {
-		validateField.apply(this,
-				[/^\w[\w-]*$/,
-		         "<p class='validationerror'>The page name is not valid.</p>"]);
-	});
-
-	$('input.wikipath').keyup(function () {
-		validateField.apply(this,
-				[/^[<>^\.]?\w[\w-]*(\.\w[\w-]+)*$/,
-				 "<p class='validationerror'>The page path is not valid.</p>"]);
-	});
-
-
-});
-
-function initErrorMetadata() {
-    var errors = $(".alternating_block .fail, .alternating_block .error, .alternating_block .exception")
-        .not(".scenario, .scenario>.fail, .scenario>.error, .exception .error");
-
-    $("#error-nav-max").text(errors.length);
-
-    function getCurrentErrorNavIndex() {
-        return parseInt($("#error-nav-text").val());
-    }
-
-    function setCurrentErrorNavIndex(index) {
-        $("#error-nav-text").val(index);
-    }
-
-    function incrementErrorNavIndex(offset) {
-        var currentErrorNavIndex = getCurrentErrorNavIndex();
-        currentErrorNavIndex += offset;
-        if (isNaN(currentErrorNavIndex) || currentErrorNavIndex > errors.length) {
-            currentErrorNavIndex = 1;
-        } else if (currentErrorNavIndex < 1) {
-            currentErrorNavIndex = errors.length;
-        }
-        setCurrentErrorNavIndex(currentErrorNavIndex);
-        navigateToCurrentError();
-    }
-
-    function unfoldErrors(element) {
-        element.parents('.scenario-detail').removeClass('closed-detail').prev().removeClass('closed');
-        element.parents('.collapsible').removeClass('closed invisible');
-        element.parents('tr.hidden').removeClass('hidden');
-    }
-
-    var highlight;
-
-    function navigateToCurrentError() {
-        var currentErrorNavIndex = getCurrentErrorNavIndex();
-
-        if (highlight) {
-            highlight.removeClass("selected-error");
-        }
-
-        highlight = $(errors[currentErrorNavIndex - 1]);
-        unfoldErrors(highlight);
-        highlight.addClass("selected-error");
-        $('html, body').animate({
-            scrollTop: highlight.offset().top - 200
-        }, 500);
-        // Add Left-Scroll here
-        $('html, body').animate({
-            scrollLeft: highlight.offset().left - 200
-        }, 500);
-    }
-
-    $("#error-nav-prev").click(function () {
-        incrementErrorNavIndex(-1);
-    });
-
-    $("#error-nav-next").click(function () {
-        incrementErrorNavIndex(1);
-    });
-
-    $("#error-nav-text").change(function () {
-        incrementErrorNavIndex(0);
-    });
-
-    /**
-     * Open scenario's and collapsed sections which contain failed or errorous tests
-     */
-    if (errors.length > 0) {
-        unfoldErrors($('.fail,.error'));
-        $("#error-nav").removeClass("hidden");
-    }
-}
-
-/** Backwards compatibility */
-function toggleCollapsable(id) { $('#' + id).toggle().parent('.collapse_rim').toggleClass('open'); }
-function expandAll() { $('.collapse_rim').each(function(i, e) { if (!$(e).hasClass('open')) { toggleCollapsable($(e).children().last().attr('id')) } }); }
-function collapseAll() { $('.collapse_rim').each(function(i, e) { if ($(e).hasClass('open')) { toggleCollapsable($(e).children().last().attr('id')) } }); }
-
+  window.AgentNesseResults = { shouldOpen: shouldOpen, apply: apply, renderEvents: renderEvents };
+})();

@@ -38,6 +38,11 @@ public final class HtmlCells {
     if (slim.find()) {
       return unescape(slim.group(1));
     }
+    int tagEnd = cellHtml.indexOf('>');
+    int nested = cellHtml.indexOf('<');
+    if (tagEnd >= 0 && (nested < 0 || tagEnd < nested)) {
+      cellHtml = cellHtml.substring(tagEnd + 1);
+    }
     return unescape(cellHtml.replaceAll("<[^>]+>", "")).trim();
   }
 

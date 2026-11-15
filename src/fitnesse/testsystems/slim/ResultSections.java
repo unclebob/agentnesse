@@ -1,20 +1,30 @@
 package fitnesse.testsystems.slim;
 
 import fitnesse.html.HtmlUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-/** Collapsed sections in a test result, opened when the section failed. */
+/** Collapsed sections in a test result. Open when a table in the section failed. */
 public final class ResultSections {
   private ResultSections() {
   }
 
-  public static String details(String title, String body) {
-    String open = failed(body) ? " open" : "";
-    return "<details class=\"agentnesse-include\"" + open + "><summary>"
+  public static String details(String title, String body, boolean open) {
+    return "<details class=\"agentnesse-include\"" + (open ? " open" : "") + "><summary>"
       + HtmlUtil.escapeHTML(title) + "</summary>" + body + "</details>\n";
   }
 
-  public static boolean failed(String html) {
-    return html.contains("class=\"fail\"") || html.contains("class=\"error\"") || html.contains("exception");
+  /** True when a block or cell failed, errored, or recorded an exception. */
+  public static boolean shouldOpen(JSONArray blocks) {
+    if (blocks == null) {
+      return false;
+    }
+    for (int i = 0; i < blocks.length(); i++) {
+      if (trouble(blocks.getJSONObject(i))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public static String section(String origin, String testPage, String firstCell) {
@@ -28,6 +38,41 @@ public final class ResultSections {
       return origin;
     }
     return "";
+  }
+
+  private static boolean trouble(JSONObject block) {
+    String status = block.optString("status", "");
+    if ("fail".equals(status) || "error".equals(status) || "table-failure".equals(status)) {
+      return true;
+    }
+    JSONArray rows = block.optJSONArray("rows");
+    if (rows == null) {
+      return false;
+    }
+    for (int row = 0; row < rows.length(); row++) {
+      if (rowTrouble(rows.getJSONObject(row))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean rowTrouble(JSONObject row) {
+    JSONArray cells = row.optJSONArray("cells");
+    if (cells == null) {
+      return false;
+    }
+    for (int column = 0; column < cells.length(); column++) {
+      JSONObject cell = cells.getJSONObject(column);
+      String status = cell.optString("status", "");
+      if ("fail".equals(status) || "error".equals(status)) {
+        return true;
+      }
+      if (cell.has("error") && !cell.isNull("error")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean structural(String name) {
