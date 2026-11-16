@@ -1,14 +1,15 @@
 $!headerContent.render()
 
+<div id="progressBar" class="pass" style="width:0%"></div>
 <div id="test-summary">Preparing Tests ...</div>
 <label class="hide-passed"><input type="checkbox" id="hidePassedTests"> Hide passed</label>
 <p id="test-stop"><span id="test-action"><a class="stop" href="?responder=stoptest&amp;id=$testId">Stop</a></span></p>
 
 #if ($multipleTestsRun)
 <div id="test-summaries">
- <h2>Test Summaries</h2>
+ <h2 class="suite-heading">Test Summaries</h2>
 </div>
-<h2>Test output</h2>
+<h2 class="suite-heading">Test output</h2>
 #end
 
 <div id="test-results"></div>

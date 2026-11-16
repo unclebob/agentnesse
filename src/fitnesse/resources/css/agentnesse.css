@@ -26,7 +26,19 @@ td, th { border: 1px solid #ccc; padding: 0.25rem 0.5rem; vertical-align: top; }
 .agentnesse-contents ul { margin: 0.25rem 0; }
 details.agentnesse-include { margin: 0.5rem 0; border: 1px solid #ddd; padding: 0.25rem 0.5rem; }
 details.agentnesse-include > summary { cursor: pointer; font-weight: bold; }
-#test-summary { padding: 0.5rem 1rem; }
+#progressBar { height: 1.2rem; line-height: 1.2rem; margin: 0; padding: 0 0.4rem; white-space: nowrap; overflow: visible; box-sizing: border-box; }
+#progressBar.pass { background: #afa; }
+#progressBar.fail { background: #f88; }
+#test-summary { padding: 0.25rem 1rem; line-height: 1.2; }
+.suite-heading { margin: 0.15rem 0; font-size: 1rem; line-height: 1.2; }
+#test-summaries .suite-line { margin: 0; padding: 0 0.25rem; line-height: 1.2; }
+#test-results { line-height: 1.2; }
+#test-results p, #test-results table { margin: 0; }
+#test-results td, #test-results th { padding: 0 0.3rem; line-height: 1.2; }
+#test-results .page-result { margin: 0; }
+#test-results .page-result > h2 { margin: 0.1rem 0; font-size: 1rem; line-height: 1.2; }
+#test-results details.agentnesse-include { margin: 0; padding: 0 0.25rem; border: 0; }
+#test-results details.agentnesse-include > summary { font-weight: normal; line-height: 1.2; }
 #test-summary.pass { background: #cfc; }
 #test-summary.fail { background: #fcc; }
 #test-summary.error { background: #fc9; }

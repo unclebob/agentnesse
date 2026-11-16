@@ -4,7 +4,6 @@ package fitnesse.reporting;
 
 import fitnesse.html.HtmlTag;
 import fitnesse.html.HtmlUtil;
-import fitnesse.testsystems.ExecutionResult;
 import fitnesse.testsystems.TestPage;
 import fitnesse.testsystems.TestSummary;
 import fitnesse.testsystems.TestSystem;
@@ -26,7 +25,6 @@ public class SuiteHtmlFormatter extends InteractiveFormatter implements Closeabl
 
   private final String testBasePathName;
   private String testSystemName = null;
-  private int totalTests = 1;
   private TimeMeasurement latestTestTime;
   private String testSummariesId = TEST_SUMMARIES_ID;
   private boolean testSummariesPresent;
@@ -39,15 +37,8 @@ public class SuiteHtmlFormatter extends InteractiveFormatter implements Closeabl
     testBasePathName = PathParser.render(page.getFullPath());
   }
 
-  @Override
-  public void announceNumberTestsToRun(int testsToRun) {
-    super.announceNumberTestsToRun(testsToRun);
-    totalTests = (testsToRun != 0) ? testsToRun : 1;
-  }
-
   public void announceStartNewTest(String relativeName, String fullPathName) {
     currentTest++;
-    updateSummaryDiv(getProgressHtml(relativeName));
 
     maybeWriteTestSystem();
     writeTestOutputDiv(relativeName, fullPathName);
@@ -91,22 +82,6 @@ public class SuiteHtmlFormatter extends InteractiveFormatter implements Closeabl
     String fullPathName = testPage.getFullPath();
 
     announceStartNewTest(getRelativeName(), fullPathName);
-  }
-
-  private String getProgressHtml(String relativeName) {
-    float percentFinished = (currentTest - 1) * 100f / totalTests;
-
-    String text = "Running tests ... (" + currentTest + "/" + totalTests + ")";
-    text = text.replaceAll(" ", "&nbsp;");
-    HtmlTag progressDiv = new HtmlTag("div", text);
-
-    // need some results before we can check pageCounts for results
-    ExecutionResult cssClass = (currentTest == 1) ? ExecutionResult.PASS : getExecutionResult(relativeName, this.pageCounts);
-    progressDiv.addAttribute("id", "progressBar");
-    progressDiv.addAttribute("class", cssClass.toString());
-    progressDiv.addAttribute("style", "width:" + percentFinished + "%");
-
-    return progressDiv.html();
   }
 
   public void processTestResults(String relativeName, TestSummary testSummary) {

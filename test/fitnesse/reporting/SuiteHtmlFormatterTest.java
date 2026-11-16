@@ -165,36 +165,6 @@ public class SuiteHtmlFormatterTest {
   }
 
   @Test
-  public void testTestingProgressIndicator() {
-    TestSystem fitMock = mock(TestSystem.class);
-    when(fitMock.getName()).thenReturn("Fit:laughing.fit");
-
-    formatter.testSystemStarted(fitMock);
-    formatter.announceNumberTestsToRun(20);
-    formatter.announceStartNewTest("RelativeName", "FullName");
-
-    assertPageBufferContains("<script>document.getElementById(\"test-summary\").innerHTML =" +
-    		" \"<div id=\\\"progressBar\\\" class=\\\"pass\\\" style=\\\"width:0.0%\\\">");
-    assertPageBufferContains("Running&nbsp;tests&nbsp;...&nbsp;(1/20)");
-    pageBuffer.getBuffer().setLength(0);
-
-    formatter.processTestResults("RelativeName", new TestSummary(1, 0, 0, 0));
-    formatter.announceStartNewTest("RelativeName", "FullName");
-
-    assertPageBufferContains("<script>document.getElementById(\"test-summary\").innerHTML =" +
-        " \"<div id=\\\"progressBar\\\" class=\\\"pass\\\" style=\\\"width:5.0%\\\">");
-    assertPageBufferContains("(2/20)");
-    pageBuffer.getBuffer().setLength(0);
-
-    formatter.processTestResults("RelativeName", new TestSummary(1, 0, 0, 0));
-    formatter.announceStartNewTest("RelativeName", "FullName");
-
-    assertPageBufferContains("<script>document.getElementById(\"test-summary\").innerHTML =" +
-        " \"<div id=\\\"progressBar\\\" class=\\\"pass\\\" style=\\\"width:10.0%\\\">");
-    assertPageBufferContains("(3/20)");
-  }
-
-  @Test
   public void testTotalTimingShouldAppearInSummary() throws Exception {
     formatter.announceNumberTestsToRun(1);
     WikiTestPage firstPage = new WikiTestPage(new WikiPageDummy("page1", "content", null));

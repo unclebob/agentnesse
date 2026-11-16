@@ -22,6 +22,32 @@ import static org.junit.Assert.assertTrue;
 public class JsonResultsFormatterTest {
 
   @Test
+  public void theStreamSaysHowFarTheRunHasGot() throws Exception {
+    StringBuilder out = new StringBuilder();
+    JsonResultsFormatter formatter = new JsonResultsFormatter(out, true, null);
+    formatter.announceNumberTestsToRun(2);
+    complete(formatter, "One", passTable());
+    complete(formatter, "Two", failTable());
+
+    List<JSONObject> lines = new ArrayList<>();
+    for (String line : out.toString().split("\n")) {
+      if (!line.isBlank()) {
+        lines.add(new JSONObject(new JSONTokener(line)));
+      }
+    }
+    assertEquals("run-started", lines.get(0).getString("event"));
+    assertEquals(2, lines.get(0).getInt("pages"));
+    JSONObject first = lines.stream().filter(event -> "One".equals(event.optString("path")) && "page-done".equals(event.optString("event"))).findFirst().orElseThrow();
+    JSONObject second = lines.stream().filter(event -> "Two".equals(event.optString("path")) && "page-done".equals(event.optString("event"))).findFirst().orElseThrow();
+    assertEquals(1, first.getInt("index"));
+    assertEquals(2, first.getInt("pages"));
+    assertEquals("pass", first.getString("status"));
+    assertEquals(2, second.getInt("index"));
+    assertEquals(2, second.getInt("pages"));
+    assertEquals("fail", second.getString("status"));
+  }
+
+  @Test
   public void pageTimeIsTheClockBetweenStartAndFinish() throws Exception {
     long[] now = {1_000L};
     LongSupplier clock = () -> now[0];

@@ -6,6 +6,9 @@
   var blocks = [];
   var totals = { right: 0, wrong: 0, exceptions: 0, ignored: 0 };
   var worst = "pass";
+  var pagesTotal = 0;
+  var pagesFinished = 0;
+  var barFailed = false;
 
   function shouldOpen(list) {
     for (var i = 0; i < list.length; i++) {
@@ -110,14 +113,44 @@
     }
     var list = document.getElementById("test-summaries");
     if (list) {
-      list.appendChild(el("p", event.status || "", (event.path || "") + " — " + (counts.right || 0)
+      list.appendChild(el("div", "suite-line " + (event.status || ""), (event.path || "") + " — " + (counts.right || 0)
         + " right, " + (counts.wrong || 0) + " wrong, " + (counts.exceptions || 0) + " exceptions"));
     }
   }
 
+  function progressBar() {
+    var bar = document.getElementById("progressBar");
+    if (bar) return bar;
+    bar = el("div", "pass", "");
+    bar.id = "progressBar";
+    var summary = document.getElementById("test-summary");
+    if (summary && summary.parentNode) summary.parentNode.insertBefore(bar, summary);
+    return bar;
+  }
+
+  function paintProgress() {
+    var bar = progressBar();
+    if (!bar) return;
+    var total = pagesTotal > 0 ? pagesTotal : 0;
+    var percent = total === 0 ? 0 : (100 * pagesFinished / total);
+    bar.style.width = percent + "%";
+    bar.className = barFailed ? "fail" : "pass";
+    bar.textContent = "Running tests ... (" + pagesFinished + "/" + (total || 0) + ")";
+  }
+
+  function notePageFinished(event) {
+    pagesFinished = event.index || pagesFinished + 1;
+    if (event.pages) pagesTotal = event.pages;
+    if (event.status === "fail" || event.status === "error") barFailed = true;
+    paintProgress();
+  }
+
   function apply(event) {
     if (!event || !event.event) return;
-    if (event.event === "page-started") {
+    if (event.event === "run-started") {
+      pagesTotal = event.pages || 0;
+      paintProgress();
+    } else if (event.event === "page-started") {
       closeSection();
       var results = root();
       if (!results) return;
@@ -146,6 +179,7 @@
       else if (root()) root().appendChild(note);
     } else if (event.event === "page-done") {
       closeSection();
+      notePageFinished(event);
       updateSummary(event);
     } else if (event.event === "run-done") {
       closeSection();

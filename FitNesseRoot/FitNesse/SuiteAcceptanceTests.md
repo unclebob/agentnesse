@@ -6,8 +6,9 @@
 }
 ## *`FitNesse` acceptance tests suites*
 
-| >SuiteWidgetTests | *Specify the markup language of wiki pages.* |
+| Suite | Description |
 | --- | --- |
+| >SuiteWidgetTests | *Specify the markup language of wiki pages.* |
 | >SuiteWikiPageResponderTests | *Specify general behavior of all wiki pages.* |
 | >SuiteEditResponderTests | *Specify the behavior of edit requests.* |
 | >SuiteResponderTests | *Specify the behavior of the responders.* |

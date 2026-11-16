@@ -39,6 +39,8 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
   private int failures;
   private String system = "";
   private boolean finished;
+  private int pagesTotal;
+  private int pagesFinished;
 
   public JsonResultsFormatter(Appendable out, boolean streamEvents, File failuresFile) {
     this(out, streamEvents, failuresFile, System::currentTimeMillis);
@@ -87,13 +89,16 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
     if (RunDocument.failed(status)) {
       failures++;
     }
+    pagesFinished++;
     record(new JSONObject()
       .put("event", "page-done")
       .put("path", page)
       .put("counts", counts)
       .put("assertions", assertionSummary(counts))
       .put("durationMillis", elapsed(page))
-      .put("status", status));
+      .put("status", status)
+      .put("index", pagesFinished)
+      .put("pages", pagesTotal));
   }
 
   private JSONArray blocks(String path) {
@@ -128,6 +133,8 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
 
   @Override
   public void announceNumberTestsToRun(int testsToRun) {
+    pagesTotal = testsToRun;
+    record(new JSONObject().put("event", "run-started").put("pages", pagesTotal));
   }
 
   @Override
