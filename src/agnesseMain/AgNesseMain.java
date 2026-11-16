@@ -31,7 +31,7 @@ public class AgNesseMain {
     }
   }
 
-  static Integer start(String[] args) {
+  public static Integer start(String[] args) {
     final Arguments arguments;
     try {
       arguments = new Arguments(args);
