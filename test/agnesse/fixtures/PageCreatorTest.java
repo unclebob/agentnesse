@@ -58,7 +58,7 @@ public class PageCreatorTest {
   @Test
   public void aCreatedPageWhoseContentIsMarkdownIsStoredAsMarkdown() throws Exception {
     new PageDriver().createPageWithContent("Made", """
-      ```agentnesse
+      ```agnesse
       define SLIM_PORT
       1
       ```

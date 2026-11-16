@@ -63,7 +63,7 @@ public class FileResponderTest {
 
   @Test
   public void testClasspathResourceContent() throws Exception {
-    request.setResource("files/fitnesse/testresource.txt");
+    request.setResource("files/agnesse/testresource.txt");
     response = responder.makeResponse(context, request);
     MockResponseSender sender = new MockResponseSender();
     sender.doSending(response);
@@ -97,7 +97,7 @@ public class FileResponderTest {
   @Test
   public void testLastModifiedHeaderForClasspathResources() throws Exception {
     Locale.setDefault(Locale.US);
-    request.setResource("files/fitnesse/css/agentnesse.css");
+    request.setResource("files/agnesse/css/agnesse.css");
     response = responder.makeResponse(context, request);
     String lastModifiedHeader = response.getHeader("Last-Modified");
     assertMatches(HTTP_DATE_REGEXP, lastModifiedHeader);
@@ -133,7 +133,7 @@ public class FileResponderTest {
 
   @Test
   public void test304IfNotModifiedForClasspathResources() throws Exception {
-    test304IfNotModified("files/fitnesse/css/agentnesse.css");
+    test304IfNotModified("files/agnesse/css/agnesse.css");
   }
 
   @Test

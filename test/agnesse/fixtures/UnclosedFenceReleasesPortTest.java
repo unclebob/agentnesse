@@ -38,7 +38,7 @@ public class UnclosedFenceReleasesPortTest {
   public void anAliasBlockIsRegisteredInDocumentOrder() {
     WikiPage root = InMemoryPage.makeRoot("RooT");
     WikiPageUtil.addPage(root, PathParser.parse("Aliased"), """
-      ```agentnesse
+      ```agnesse
       alias add change
       add up change
       ```
@@ -116,7 +116,7 @@ public class UnclosedFenceReleasesPortTest {
       | --- |
       """);
     String test = """
-      ```agentnesse
+      ```agnesse
       define LEFT_OPEN
       this fence is not closed
       | script | echo fixture |

@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-```agentnesse
+```agnesse
 include .FitNesse.SuiteAcceptanceTests.SuiteSlimTests.LibrarySuite.SetUp
 ```
 

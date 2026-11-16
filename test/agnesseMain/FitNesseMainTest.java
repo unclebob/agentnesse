@@ -135,11 +135,11 @@ public class FitNesseMainTest {
 
   @Test
   public void unknownConfigKeyExitsNonZeroAndNamesTheFileAndKey() throws Exception {
-    File config = new File("bad-agentnesse.json");
+    File config = new File("bad-agnesse.json");
     FileUtil.createFile(config.getPath(), "{\"bogus\": 1}\n");
     try {
       assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
-        "bad-agentnesse.json", "bogus");
+        "bad-agnesse.json", "bogus");
     } finally {
       config.delete();
     }
@@ -147,11 +147,11 @@ public class FitNesseMainTest {
 
   @Test
   public void malformedConfigExitsNonZeroAndNamesTheFile() throws Exception {
-    File config = new File("malformed-agentnesse.json");
+    File config = new File("malformed-agnesse.json");
     FileUtil.createFile(config.getPath(), "{");
     try {
       assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
-        "malformed-agentnesse.json", "malformed");
+        "malformed-agnesse.json", "malformed");
     } finally {
       config.delete();
     }
@@ -159,8 +159,8 @@ public class FitNesseMainTest {
 
   @Test
   public void missingExplicitConfigFileExitsNonZero() throws Exception {
-    assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", "no-such-agentnesse.json", "-c", "/root"),
-      "no-such-agentnesse.json", "not found");
+    assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", "no-such-agnesse.json", "-c", "/root"),
+      "no-such-agnesse.json", "not found");
   }
 
   private void assertConfigError(Arguments arguments, String... expectedText) throws Exception {

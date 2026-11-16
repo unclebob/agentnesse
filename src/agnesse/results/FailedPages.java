@@ -19,7 +19,7 @@ public final class FailedPages {
   public static File defaultFile(String rootPagePath) {
     File root = new File(rootPagePath);
     File parent = root.getParentFile() == null ? root : root.getParentFile();
-    return new File(parent, ".agentnesse/last-failures.json");
+    return new File(parent, ".agnesse/last-failures.json");
   }
 
   public static List<String> read(Path file) throws IOException {

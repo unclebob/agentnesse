@@ -110,7 +110,7 @@ final class MarkdownReferences {
   private static boolean includeFence(String fence) {
     String inner = fence.substring(3, fence.length() - 3);
     int newline = inner.indexOf('\n');
-    if (newline < 0 || !inner.substring(0, newline).trim().equals("agentnesse")) {
+    if (newline < 0 || !inner.substring(0, newline).trim().equals("agnesse")) {
       return false;
     }
     String body = inner.substring(newline + 1).stripLeading();

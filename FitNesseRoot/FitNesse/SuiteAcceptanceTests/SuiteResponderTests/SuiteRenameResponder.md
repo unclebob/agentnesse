@@ -8,6 +8,6 @@
 
 The rename responder is invoked with the *renamePage* url.  This url has an argument named *newPageName* that holds the new name of the page.  Thus the url:{{{http://localhost/SomePage?responder=renamePage&newName=`NewPage`}}} will rename *`SomePage`* to *`NewPage`*
 
-```agentnesse
+```agnesse
 contents
 ```

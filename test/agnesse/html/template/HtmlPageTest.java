@@ -39,8 +39,8 @@ public class HtmlPageTest {
     assertSubString("<link", html);
     assertSubString("rel=\"stylesheet\"", html);
     assertSubString("type=\"text/css\"", html);
-    assertSubString("href=\"/files/fitnesse/css/agentnesse.css\"", html);
-    assertSubString("src=\"/files/fitnesse/javascript/agnesse.js\"", html);
+    assertSubString("href=\"/files/agnesse/css/agnesse.css\"", html);
+    assertSubString("src=\"/files/agnesse/javascript/agnesse.js\"", html);
   }
 
   @Test

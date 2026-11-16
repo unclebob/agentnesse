@@ -9,6 +9,6 @@ The Execution Status Box shows how FIT behaved during test execution:
  - Output Captured - if a FIT fixture wrote to an output stream
  - Error Occurred - if a FIT fixture threw an unhandled exception
 
-```agentnesse
+```agnesse
 contents
 ```

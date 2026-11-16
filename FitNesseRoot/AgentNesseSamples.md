@@ -8,6 +8,6 @@
 
 These pages are the syntax to freeze. Children live in this directory.
 
-```agentnesse
+```agnesse
 contents
 ```

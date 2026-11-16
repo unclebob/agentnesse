@@ -18,7 +18,7 @@ Pages can be Markdown files with JSON front matter. The pages already in this tr
 
 Slim tables are bare GitHub-flavored Markdown tables. The table type is the name in the first header cell, for example `decision:Division`. A name with no prefix is a decision table.
 
-Commands that are not tables go in fenced `agentnesse` blocks.
+Commands that are not tables go in fenced `agnesse` blocks.
 
 Run results are JSON. A JUnit XML file is written from that JSON, for CI. (Planned. HTTP `format=xml` and `format=junit` are already gone. The `agnesse.junit` runner still writes JUnit XML on its own, and it does not read test history.)
 
@@ -45,7 +45,7 @@ Start the wiki on port 8001. It listens on 127.0.0.1. `--listen 0.0.0.0` listens
 java -jar build/libs/fitnesse-*-standalone.jar -p 8001 --listen 127.0.0.1
 ```
 
-Configuration is `agentnesse.json` in the working directory. If that file is missing, the built-in defaults are used. A null value leaves that default too. `-f` names a different file, and that file must exist. A command-line flag overrides the file. The port default is 80. A `-c` command uses port 9123 when port is left unset.
+Configuration is `agnesse.json` in the working directory. If that file is missing, the built-in defaults are used. A null value leaves that default too. `-f` names a different file, and that file must exist. A command-line flag overrides the file. The port default is 80. A `-c` command uses port 9123 when port is left unset.
 
 ```json
 {

@@ -11,7 +11,7 @@
 
 ### The Dynamic Decision Table is just a special case of the Hybrid Decision table.
 With the following rules for getter and setter the behavior of Dynamic Decision Tables is achieved.
-```agentnesse
+```agnesse
 define SLIM_DT_GETTER
 {
 "FormatVersion":"1.0",
@@ -24,7 +24,7 @@ define SLIM_DT_GETTER
  ]
 }
 ```
-```agentnesse
+```agnesse
 define SLIM_DT_SETTER
 {
 "FormatVersion":"1.0",

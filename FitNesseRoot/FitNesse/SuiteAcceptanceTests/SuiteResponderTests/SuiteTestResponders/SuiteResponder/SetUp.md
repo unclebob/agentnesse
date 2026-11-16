@@ -4,11 +4,11 @@
   "help": "",
   "prune": false
 }
-```agentnesse
+```agnesse
 include <SuiteAcceptanceTests.SetUp
 ```
 
-```agentnesse
+```agnesse
 define VariableUsedInTest
 foo
 ```

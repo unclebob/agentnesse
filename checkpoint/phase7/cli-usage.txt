@@ -2,10 +2,10 @@ Usage: java -jar agnesse.jar [-vpdrfcb] [--listen address]
 	-p <port number> {80}
 	-d <working directory> {.}
 	-r <page root directory> {FitNesseRoot}
-	-f <config file> {agentnesse.json}
+	-f <config file> {agnesse.json}
 	-c <command> execute one command and print JSON results.
 	-b <filename> redirect command output.
 	--rerun-failures <json> rerun only failedPages from that file.
-	    A run also writes .agentnesse/last-failures.json beside the wiki root.
+	    A run also writes .agnesse/last-failures.json beside the wiki root.
 	-v {off} Verbose logging
 	--listen <address> {127.0.0.1} Bind to this address. 0.0.0.0 listens on all interfaces.

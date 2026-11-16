@@ -6,29 +6,29 @@
 }
 # Blocks
 
-```agentnesse
+```agnesse
 define MAX
 3
 ```
 
-```agentnesse
+```agnesse
 scenarios
 Login
 ```
 
-```agentnesse
+```agnesse
 path
 agnesse.jar
 ```
 
-```agentnesse
+```agnesse
 contents
 ```
 
-```agentnesse
+```agnesse
 alias Division eg.Division
 ```
 
-```agentnesse
+```agnesse
 include PageFooter
 ```

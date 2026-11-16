@@ -226,7 +226,7 @@ public final class MarkdownTable implements Table {
   }
 
   public String toHtml() {
-    StringBuilder html = new StringBuilder("<table class=\"agentnesse-table\">\n");
+    StringBuilder html = new StringBuilder("<table class=\"agnesse-table\">\n");
     for (int row = 0; row < rows.size(); row++) {
       html.append("<tr>");
       for (Cell cell : rows.get(row)) {

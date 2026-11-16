@@ -59,7 +59,7 @@ public class ResultModelTest {
       | parsing as? |
       | Parsed as Decision fixture |
 
-      ```agentnesse
+      ```agnesse
       alias Table or Decision Fixture
       table:
       ```
@@ -68,7 +68,7 @@ public class ResultModelTest {
       | --- | --- |
       | parsing as? | Parsed as Table fixture |
 
-      ```agentnesse
+      ```agnesse
       alias Table or Decision Fixture
       script:
       ```

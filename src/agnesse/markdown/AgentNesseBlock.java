@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * A fenced {@code agentnesse} block. The first word is the command. Slim
+ * A fenced {@code agnesse} block. The first word is the command. Slim
  * tables are not blocks; they are bare Markdown tables.
  */
 public final class AgentNesseBlock {
@@ -29,13 +29,13 @@ public final class AgentNesseBlock {
     String first = (newline < 0 ? text : text.substring(0, newline)).trim();
     String rest = newline < 0 ? "" : text.substring(newline + 1);
     if (first.isEmpty()) {
-      throw new IllegalArgumentException("agentnesse block needs a command");
+      throw new IllegalArgumentException("agnesse block needs a command");
     }
     int space = first.indexOf(' ');
     String command = (space < 0 ? first : first.substring(0, space)).toLowerCase(Locale.ROOT);
     String inline = space < 0 ? "" : first.substring(space + 1).trim();
     if (!COMMANDS.contains(command)) {
-      throw new IllegalArgumentException("unknown agentnesse command \"" + command + "\"");
+      throw new IllegalArgumentException("unknown agnesse command \"" + command + "\"");
     }
     return new AgentNesseBlock(command, join(inline, rest));
   }
@@ -56,7 +56,7 @@ public final class AgentNesseBlock {
       return contentsHtml(List.of());
     }
     HtmlTag div = new HtmlTag("div");
-    div.addAttribute("class", "agentnesse-" + command);
+    div.addAttribute("class", "agnesse-" + command);
     div.add(new HtmlText(argument));
     return div.htmlInline() + "\n";
   }
@@ -71,7 +71,7 @@ public final class AgentNesseBlock {
       list.add(item);
     }
     HtmlTag div = new HtmlTag("div");
-    div.addAttribute("class", "agentnesse-contents");
+    div.addAttribute("class", "agnesse-contents");
     div.add(list);
     return div.htmlInline() + "\n";
   }
@@ -79,7 +79,7 @@ public final class AgentNesseBlock {
   public String includeWith(String body) {
     HtmlTag summary = new HtmlTag("summary");
     summary.add(new HtmlText(includeName()));
-    return "<details class=\"agentnesse-include\">" + summary.htmlInline() + body + "</details>\n";
+    return "<details class=\"agnesse-include\">" + summary.htmlInline() + body + "</details>\n";
   }
 
   private String includeName() {
@@ -98,7 +98,7 @@ public final class AgentNesseBlock {
     HtmlTag summary = new HtmlTag("summary");
     summary.add(new HtmlText(name));
     HtmlTag details = new HtmlTag("details");
-    details.addAttribute("class", "agentnesse-include");
+    details.addAttribute("class", "agnesse-include");
     details.add(summary);
     if (!more.isEmpty()) {
       details.add(new HtmlText(more));

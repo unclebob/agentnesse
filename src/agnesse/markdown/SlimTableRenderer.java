@@ -43,7 +43,7 @@ final class SlimTableRenderer implements NodeRenderer {
       return;
     }
     if (table.error() != null) {
-      writer.raw("<table class=\"agentnesse-table error\">\n<tr>\n<td><span class=\"error\">");
+      writer.raw("<table class=\"agnesse-table error\">\n<tr>\n<td><span class=\"error\">");
       writer.text(table.error());
       writer.raw("</span></td>\n</tr>\n</table>\n");
       return;
@@ -84,7 +84,7 @@ final class SlimTableRenderer implements NodeRenderer {
   }
 
   private void writeRows(TableBlock block, String type) {
-    writer.raw("<table class=\"agentnesse-table " + type + "\">\n");
+    writer.raw("<table class=\"agnesse-table " + type + "\">\n");
     Node section = block.getFirstChild();
     while (section != null) {
       if (section instanceof TableHead || section instanceof TableBody) {

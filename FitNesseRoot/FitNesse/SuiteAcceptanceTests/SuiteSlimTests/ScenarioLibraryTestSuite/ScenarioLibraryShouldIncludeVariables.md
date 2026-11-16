@@ -7,7 +7,7 @@
 
 | script | | | |
 | --- | --- | --- | --- |
-| create page | SuitePage | with content | <br><br>\`\`\`agentnesse<br>define VARIABLE<br>some value<br>\`\`\`<br> ${SUT_PATH} |
+| create page | SuitePage | with content | <br><br>\`\`\`agnesse<br>define VARIABLE<br>some value<br>\`\`\`<br> ${SUT_PATH} |
 | make | SuitePage | a suite page | |
 | create page | SuitePage.ScenarioLibrary | with content | Scenario Library: "${VARIABLE}" |
 | create page | SuitePage.TestPage | with content | Test Page: "${VARIABLE}" |

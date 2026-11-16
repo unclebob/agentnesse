@@ -10,7 +10,7 @@ public final class ResultSections {
   }
 
   public static String details(String title, String body, boolean open) {
-    return "<details class=\"agentnesse-include\"" + (open ? " open" : "") + "><summary>"
+    return "<details class=\"agnesse-include\"" + (open ? " open" : "") + "><summary>"
       + HtmlUtil.escapeHTML(title) + "</summary>" + body + "</details>\n";
   }
 

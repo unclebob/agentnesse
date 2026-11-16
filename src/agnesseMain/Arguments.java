@@ -57,7 +57,7 @@ public class Arguments {
     System.err.println("\t-c <command> execute one command and print JSON results.");
     System.err.println("\t-b <filename> redirect command output.");
     System.err.println("\t--rerun-failures <json> rerun only failedPages from that file.");
-    System.err.println("\t    A run also writes .agentnesse/last-failures.json beside the wiki root.");
+    System.err.println("\t    A run also writes .agnesse/last-failures.json beside the wiki root.");
     System.err.println("\t-v {off} Verbose logging");
     System.err.println("\t--listen <address> {" + DEFAULT_LISTEN + "} Bind to this address. 0.0.0.0 listens on all interfaces.");
   }

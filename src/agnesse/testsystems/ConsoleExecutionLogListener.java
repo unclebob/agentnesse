@@ -36,7 +36,7 @@ public class ConsoleExecutionLogListener implements ExecutionLogListener {
   }
 
   private static void line(String kind, JSONObject body) {
-    JSONObject frame = new JSONObject().put("agentnesseLog", kind);
+    JSONObject frame = new JSONObject().put("agnesseLog", kind);
     for (String key : body.keySet()) {
       frame.put(key, body.get(key));
     }

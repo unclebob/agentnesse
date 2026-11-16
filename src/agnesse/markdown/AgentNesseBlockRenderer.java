@@ -30,7 +30,7 @@ final class AgentNesseBlockRenderer implements NodeRenderer {
   @Override
   public void render(Node node) {
     FencedCodeBlock code = (FencedCodeBlock) node;
-    if (!"agentnesse".equals(code.getInfo())) {
+    if (!"agnesse".equals(code.getInfo())) {
       renderCode(code);
       return;
     }
@@ -38,7 +38,7 @@ final class AgentNesseBlockRenderer implements NodeRenderer {
       AgentNesseBlock block = AgentNesseBlock.parse(code.getLiteral());
       writer.raw(html(block));
     } catch (IllegalArgumentException e) {
-      writer.raw("<div class=\"agentnesse-error\">" + e.getMessage() + "</div>\n");
+      writer.raw("<div class=\"agnesse-error\">" + e.getMessage() + "</div>\n");
     }
   }
 

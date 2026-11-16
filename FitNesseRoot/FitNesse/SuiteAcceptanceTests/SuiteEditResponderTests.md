@@ -5,6 +5,6 @@
   "prune": false
 }
 The edit responder is invoked with a url of the form {{{`SomePage`?edit}}}
-```agentnesse
+```agnesse
 contents
 ```

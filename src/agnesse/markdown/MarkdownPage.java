@@ -344,7 +344,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   private void collectIncludes(Node node, List<String> names) {
     if (node instanceof FencedCodeBlock) {
       FencedCodeBlock code = (FencedCodeBlock) node;
-      if ("agentnesse".equals(code.getInfo())) {
+      if ("agnesse".equals(code.getInfo())) {
         rememberInclude(names, code.getLiteral());
       }
     }
@@ -423,7 +423,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   private void collectDefines(Node node, Map<String, String> values) {
     if (node instanceof FencedCodeBlock) {
       FencedCodeBlock code = (FencedCodeBlock) node;
-      if ("agentnesse".equals(code.getInfo())) {
+      if ("agnesse".equals(code.getInfo())) {
         rememberDefine(values, code.getLiteral());
       }
     }

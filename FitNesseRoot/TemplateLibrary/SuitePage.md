@@ -5,6 +5,6 @@
   "prune": false
 }
 # Test suite ${PAGE_NAME}
-```agentnesse
+```agnesse
 contents
 ```

@@ -7,6 +7,6 @@
 This suite specifies all the responders that run tests.
 
 These include
-```agentnesse
+```agnesse
 contents
 ```

@@ -14,18 +14,18 @@ td, th { border: 1px solid #ccc; padding: 0.25rem 0.5rem; vertical-align: top; }
 .error, .exception { background: #fc9; }
 .ignore { background: #ddd; }
 .selected-error { outline: 2px solid #c30; }
-.agentnesse-table { border-left: 4px solid #888; }
-.agentnesse-table.decision { border-left-color: #36a; }
-.agentnesse-table.script { border-left-color: #363; }
-.agentnesse-table.query { border-left-color: #a63; }
-.agentnesse-table.scenario { border-left-color: #639; }
-.agentnesse-table.import, .agentnesse-table.library { border-left-color: #666; }
-.agentnesse-define, .agentnesse-alias, .agentnesse-path, .agentnesse-scenarios, .agentnesse-contents {
+.agnesse-table { border-left: 4px solid #888; }
+.agnesse-table.decision { border-left-color: #36a; }
+.agnesse-table.script { border-left-color: #363; }
+.agnesse-table.query { border-left-color: #a63; }
+.agnesse-table.scenario { border-left-color: #639; }
+.agnesse-table.import, .agnesse-table.library { border-left-color: #666; }
+.agnesse-define, .agnesse-alias, .agnesse-path, .agnesse-scenarios, .agnesse-contents {
   margin: 0.5rem 0; padding: 0.4rem 0.6rem; background: #f7f7f7; border-left: 4px solid #888;
 }
-.agentnesse-contents ul { margin: 0.25rem 0; }
-details.agentnesse-include { margin: 0.5rem 0; border: 1px solid #ddd; padding: 0.25rem 0.5rem; }
-details.agentnesse-include > summary { cursor: pointer; font-weight: bold; }
+.agnesse-contents ul { margin: 0.25rem 0; }
+details.agnesse-include { margin: 0.5rem 0; border: 1px solid #ddd; padding: 0.25rem 0.5rem; }
+details.agnesse-include > summary { cursor: pointer; font-weight: bold; }
 #progressBar { height: 1.2rem; line-height: 1.2rem; margin: 0; padding: 0 0.4rem; white-space: nowrap; overflow: visible; box-sizing: border-box; }
 #progressBar.pass { background: #afa; }
 #progressBar.fail { background: #f88; }
@@ -40,8 +40,8 @@ details.agentnesse-include > summary { cursor: pointer; font-weight: bold; }
 #test-results td, #test-results th { padding: 0 0.3rem; line-height: 1.2; }
 #test-results .page-result { margin: 0; }
 #test-results .page-result > h2 { margin: 0.1rem 0; font-size: 1rem; line-height: 1.2; }
-#test-results details.agentnesse-include { margin: 0; padding: 0 0.25rem; border: 0; }
-#test-results details.agentnesse-include > summary { font-weight: normal; line-height: 1.2; }
+#test-results details.agnesse-include { margin: 0; padding: 0 0.25rem; border: 0; }
+#test-results details.agnesse-include > summary { font-weight: normal; line-height: 1.2; }
 #test-summary.pass { background: #cfc; }
 #test-summary.fail { background: #fcc; }
 #test-summary.error { background: #fc9; }

@@ -4,10 +4,10 @@
   "help": null,
   "prune": false
 }
-```agentnesse
+```agnesse
 define SLIM_DT_BASELINE
 ```
 
-```agentnesse
+```agnesse
 include .FitNesse.SuiteAcceptanceTests.TearDown
 ```

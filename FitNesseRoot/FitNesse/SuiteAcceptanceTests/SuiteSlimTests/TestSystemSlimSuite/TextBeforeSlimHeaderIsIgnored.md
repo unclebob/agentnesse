@@ -8,11 +8,11 @@ If we do a remote debug the slim client writes messages to standard out / err be
 The Slim Test Server must skip these until the Slim Header is received.
 
 
-```agentnesse
+```agnesse
 define COMMAND_PATTERN
 java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -cp %p %m
 ```
-```agentnesse
+```agnesse
 define SLIM_PORT
 1
 ```

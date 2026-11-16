@@ -11,7 +11,7 @@ public final class ResultHtml {
 
   public static String block(JSONObject block) {
     StringBuilder html = new StringBuilder();
-    html.append("<table class=\"agentnesse-table");
+    html.append("<table class=\"agnesse-table");
     String name = block.optString("name", "");
     if (!name.isEmpty()) {
       html.append(' ').append(HtmlUtil.escapeHTML(name));

@@ -1,4 +1,4 @@
-```agentnesse
+```agnesse
 path
 agnesse.jar
 ```

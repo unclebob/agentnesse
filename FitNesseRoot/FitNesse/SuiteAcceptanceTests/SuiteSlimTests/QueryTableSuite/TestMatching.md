@@ -51,7 +51,7 @@
 | >3 | 5<_<7 |
 | ~=3 | !=6 |
 
-```agentnesse
+```agnesse
 define TABLE
 | table |
 | --- |

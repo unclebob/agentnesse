@@ -9,6 +9,6 @@
 
 Use the property slim.timeout to define how long the test system should wait for the slim client. The default is 10 seconds.
 
-```agentnesse
+```agnesse
 contents
 ```

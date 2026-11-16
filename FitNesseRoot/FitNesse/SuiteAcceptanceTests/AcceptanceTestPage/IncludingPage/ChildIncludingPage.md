@@ -5,6 +5,6 @@
   "prune": false
 }
 Child Including Page
-```agentnesse
+```agnesse
 include .FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.IncludedPage
 ```

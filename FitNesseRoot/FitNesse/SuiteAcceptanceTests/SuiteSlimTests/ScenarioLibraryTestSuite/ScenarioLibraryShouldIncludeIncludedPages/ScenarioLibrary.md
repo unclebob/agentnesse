@@ -6,6 +6,6 @@
 }
 The Scenario Library
 
-```agentnesse
+```agnesse
 include >IncludedPage
 ```

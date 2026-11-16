@@ -168,10 +168,10 @@ public class JsonResultsFormatterTest {
   public void aBrokenServerMarkerStaysOnTheParentStdout() throws Exception {
     JsonResultsFormatter formatter = new JsonResultsFormatter(new StringBuilder(), false, null);
     formatter.commandStarted(context("slim", "java"));
-    formatter.stdOut("{\"agentnesseLog\":\n");
+    formatter.stdOut("{\"agnesseLog\":\n");
     formatter.finish();
     String stdout = formatter.document().getJSONObject("run").getJSONArray("servers").getJSONObject(0).getString("stdout");
-    assertTrue(stdout, stdout.contains("agentnesseLog"));
+    assertTrue(stdout, stdout.contains("agnesseLog"));
   }
 
   @Test
@@ -193,7 +193,7 @@ public class JsonResultsFormatterTest {
     formatter.testComplete(page("SameInstant"), new TestSummary(0, 0, 0, 0));
     formatter.testOutputChunk(page("PassPage"), null);
     formatter.testOutputChunk(page("PassPage"), "<table></table>kept");
-    formatter.testOutputChunk(page("PassPage"), "<details class=\"agentnesse-include\"></details>");
+    formatter.testOutputChunk(page("PassPage"), "<details class=\"agnesse-include\"></details>");
     formatter.testOutputChunk(page("PassPage"), "   ");
     formatter.testOutputChunk(page("PassPage"), "<span class=\"error\">Bad table! missing</span>");
     formatter.testSystemStarted(null);
@@ -305,7 +305,7 @@ public class JsonResultsFormatterTest {
   }
 
   private static String frame(String kind, JSONObject body) {
-    JSONObject frame = new JSONObject().put("agentnesseLog", kind);
+    JSONObject frame = new JSONObject().put("agnesseLog", kind);
     for (String key : body.keySet()) {
       frame.put(key, body.get(key));
     }

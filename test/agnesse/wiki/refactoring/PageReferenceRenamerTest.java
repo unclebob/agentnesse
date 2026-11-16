@@ -174,7 +174,7 @@ public class PageReferenceRenamerTest {
 
   @Test
   public void testPathNotChanged() {
-    final String PATH_WIDGET = "```agentnesse\npath PageTwo\n```";
+    final String PATH_WIDGET = "```agnesse\npath PageTwo\n```";
     checkChangesOnPageOne(PATH_WIDGET, PATH_WIDGET);
   }
 

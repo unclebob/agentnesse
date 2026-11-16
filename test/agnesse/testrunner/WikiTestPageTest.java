@@ -41,7 +41,7 @@ public class WikiTestPageTest {
   }
 
   private static String define(String name, String value) {
-    return "```agentnesse\ndefine " + name + "\n" + value + "\n```\n";
+    return "```agnesse\ndefine " + name + "\n" + value + "\n```\n";
   }
 
   private WikiPage addPage(String pageName, String content) throws Exception {
@@ -59,7 +59,7 @@ public class WikiTestPageTest {
     assertSubString("teardown", html);
     assertTrue(html.indexOf("<div class=\"teardown\">") > html.indexOf("setup"));
     assertSubString("the content", html);
-    assertSubString("agentnesse-include", html);
+    assertSubString("agnesse-include", html);
     assertNotSubString(">SuiteSetUp<", html);
     assertNotSubString("suite-setup-body", html);
     assertNotSubString(".SuiteTearDown", html);
@@ -75,7 +75,7 @@ public class WikiTestPageTest {
     assertSubString(">TearDown<", html);
     assertSubString("teardown", html);
     assertSubString("the content", html);
-    assertSubString("agentnesse-include", html);
+    assertSubString("agnesse-include", html);
     assertSubString(">SuiteSetUp<", html);
     assertSubString("suite-setup-body", html);
     assertSubString(">SuiteTearDown<", html);
@@ -195,7 +195,7 @@ public class WikiTestPageTest {
   public void testPathSeparatorVariable() throws Exception {
     WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
             define("PATH_SEPARATOR", "|") + """
-            ```agentnesse
+            ```agnesse
             path
             agnesse.jar
             my.jar

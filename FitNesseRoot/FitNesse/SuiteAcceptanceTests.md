@@ -15,7 +15,7 @@
 | >SuiteSlimTests | *Slim Specific Tests* |
 
 ## *Classpaths*
-```agentnesse
+```agnesse
 define SUT_PATH
 path lib/*.jar
 ```
@@ -25,7 +25,7 @@ path lib/*.jar
 
 Use a non-default port number, so SLIM tests systems can be run as well:
 
-```agentnesse
+```agnesse
 define SLIM_PORT
 1
 ```
@@ -38,16 +38,16 @@ define SLIM_PORT
 
 ---
 ## Collapse Set Up and Tear Down
-```agentnesse
+```agnesse
 define COLLAPSE_SETUP
 true
 ```
-```agentnesse
+```agnesse
 define COLLAPSE_TEARDOWN
 true
 ```
 
-```agentnesse
+```agnesse
 define TITLE_TAG
 li
 ```

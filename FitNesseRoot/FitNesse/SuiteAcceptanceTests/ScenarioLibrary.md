@@ -185,11 +185,11 @@
 | ensure | content contains | @text | |
 | show | @text | | |
 
-```agentnesse
+```agnesse
 define TestSTART
 @@@START: Test specific content
 ```
-```agentnesse
+```agnesse
 define TestEND
 @@@END: Test specific content
 ```

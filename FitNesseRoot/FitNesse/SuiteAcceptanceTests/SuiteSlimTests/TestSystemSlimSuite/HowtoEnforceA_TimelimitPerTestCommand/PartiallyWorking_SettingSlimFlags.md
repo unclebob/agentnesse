@@ -11,13 +11,13 @@ The slim client needs an extra parrameter -s timeoutLimit but this is not passed
 
 
 Defining the parameter via slim_flags will do the job. The timeout is now 1 second.
-```agentnesse
+```agnesse
 define SLIM_FLAGS
 -s 1
 ```
 
 To test that slim_flags are parsed correctly we also add the verbose option (-v) and have multiple spaces between the parameters. The extra spaces must be ignored.
-```agentnesse
+```agnesse
 define SLIM_FLAGS
 -v      -s 1
 ```

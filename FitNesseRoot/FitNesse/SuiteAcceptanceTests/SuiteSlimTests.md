@@ -5,7 +5,7 @@
   "prune": false
 }
 
-```agentnesse
+```agnesse
 contents
 ```
 

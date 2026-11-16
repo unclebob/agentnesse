@@ -5,21 +5,21 @@
   "prune": false
 }
 ### Redefine denominator
-```agentnesse
+```agnesse
 define denominator
 2
 ```
 
-```agentnesse
+```agnesse
 include TestWithVariable
 ```
 
 ### Redefine denominator
-```agentnesse
+```agnesse
 define denominator
 2.5
 ```
 
-```agentnesse
+```agnesse
 include TestWithVariable
 ```

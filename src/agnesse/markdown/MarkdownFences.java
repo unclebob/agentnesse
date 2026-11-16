@@ -3,7 +3,7 @@ package agnesse.markdown;
 /**
  * Tracks a CommonMark fence. A fence closes on a line of backticks at least as
  * long as the opener, with nothing after the backticks. A line such as
- * {@code ```agentnesse} inside a fence is content.
+ * {@code ```agnesse} inside a fence is content.
  */
 public final class MarkdownFences {
   private int opener;

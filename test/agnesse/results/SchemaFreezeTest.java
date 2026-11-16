@@ -13,7 +13,7 @@ public class SchemaFreezeTest {
     try (var in = RunDocument.class.getResourceAsStream("results.schema.json")) {
       JSONObject schema = new JSONObject(new JSONTokener(in));
       assertEquals(1, schema.getJSONObject("properties").getJSONObject("schemaVersion").getInt("const"));
-      assertEquals("https://agentnesse.dev/schemas/results-1.json", schema.getString("$id"));
+      assertEquals("https://agnesse.dev/schemas/results-1.json", schema.getString("$id"));
       assertTrue(schema.getString("description").contains("965aad43b"));
       assertTrue(schema.getString("description").contains("Frozen"));
     }

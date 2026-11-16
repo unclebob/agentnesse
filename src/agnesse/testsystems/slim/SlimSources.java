@@ -144,7 +144,7 @@ public final class SlimSources {
 
   private void includeOrSkip(MarkdownPage page, String info, String body, WikiPage context,
                               boolean tearDown, Set<String> seen) {
-    if (!info.startsWith("agentnesse")) {
+    if (!info.startsWith("agnesse")) {
       return;
     }
     try {

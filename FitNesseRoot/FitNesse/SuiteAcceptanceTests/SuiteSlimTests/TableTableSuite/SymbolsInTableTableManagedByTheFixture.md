@@ -12,7 +12,7 @@ A table table whose fixture handles symbols can use a value assigned earlier in 
 | agnesse.slim.test.statementexecutorconsumer |
 
 
-```agentnesse
+```agnesse
 include <SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.SymbolAssignmentAndReferenceOfTheSameInOneTable
 ```
 

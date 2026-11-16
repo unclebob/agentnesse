@@ -22,7 +22,7 @@ import agnesse.wiki.WikiPageUtil;
 public class NewPageResponder implements Responder {
   public static final String DEFAULT_PAGE_CONTENT_PROPERTY = "NewPage.default.content";
   public static final String DEFAULT_PAGE_CONTENT_PROPERTY_DEPRECATED = "newpage.default.content";
-  public static final String DEFAULT_PAGE_CONTENT = "```agentnesse\ncontents\n```\n";
+  public static final String DEFAULT_PAGE_CONTENT = "```agnesse\ncontents\n```\n";
 
   public static final String PAGE_TYPE = "pageType";
   public static final String PAGE_TYPES = "pageTypes";
@@ -75,7 +75,7 @@ public class NewPageResponder implements Responder {
     helpText = request.getInput(EditResponder.HELP_TEXT);
     suites = request.getInput(EditResponder.SUITES);
     if (childContent == null)
-      childContent = "```agentnesse\ncontents\n```\n";
+      childContent = "```agnesse\ncontents\n```\n";
     if (pageType == null)
       pageType = "Default";
   }

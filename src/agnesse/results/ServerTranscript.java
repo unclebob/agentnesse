@@ -95,7 +95,7 @@ final class ServerTranscript {
   }
 
   private boolean frame(String line) {
-    if (!line.contains("\"agentnesseLog\"")) {
+    if (!line.contains("\"agnesseLog\"")) {
       return false;
     }
     try {
@@ -107,7 +107,7 @@ final class ServerTranscript {
   }
 
   private void apply(JSONObject frame) {
-    switch (frame.getString("agentnesseLog")) {
+    switch (frame.getString("agnesseLog")) {
       case "start" -> nested.push(open(frame.optString("name"), frame.optString("command")));
       case "stdout" -> target().stdout.append(frame.optString("text"));
       case "stderr" -> target().stderr.append(frame.optString("text"));

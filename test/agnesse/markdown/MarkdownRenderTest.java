@@ -25,12 +25,12 @@ public class MarkdownRenderTest {
     }
     assertGolden("include");
     for (String removed : new String[] {"setup", "teardown", "collapsible"}) {
-      String html = MarkdownRenderer.render("```agentnesse\n" + removed + "\nx\n```\n");
-      assertTrue(html, html.contains("unknown agentnesse command"));
+      String html = MarkdownRenderer.render("```agnesse\n" + removed + "\nx\n```\n");
+      assertTrue(html, html.contains("unknown agnesse command"));
       assertTrue(html, html.contains(removed));
     }
-    String bad = MarkdownRenderer.render("```agentnesse\nnope\n```\n");
-    assertTrue(bad.contains("agentnesse-error"));
+    String bad = MarkdownRenderer.render("```agnesse\nnope\n```\n");
+    assertTrue(bad.contains("agnesse-error"));
     assertTrue(bad.contains("nope"));
   }
 

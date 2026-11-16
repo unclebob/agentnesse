@@ -47,7 +47,7 @@ public class PageFactory {
     properties.setProperty(VelocityEngine.RESOURCE_LOADERS, "file,classpath");
 
     properties.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH,
-        String.format("%s/files/fitnesse/templates", rootPagePath));
+        String.format("%s/files/agnesse/templates", rootPagePath));
 
     properties.setProperty(VelocityEngine.RESOURCE_LOADER + ".classpath.class",
         ClasspathResourceLoader.class.getName());

@@ -6,6 +6,6 @@
 }
 Tests for components that are displayed on every wiki page.
 
-```agentnesse
+```agnesse
 contents
 ```

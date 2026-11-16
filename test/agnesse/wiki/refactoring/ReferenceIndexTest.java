@@ -37,10 +37,10 @@ public class ReferenceIndexTest {
     WikiPage old = WikiPageUtil.addPage(parent, PathParser.parse("Old"), "Old page");
     WikiPageUtil.addPage(old, PathParser.parse("Kid"), """
       See .Parent.Old and [notes](.Parent.Old#top)
-      ```agentnesse
+      ```agnesse
       include .Parent.Old
       ```
-      ```agentnesse
+      ```agnesse
       scenarios .Parent.Old
       ```
       """);
@@ -82,7 +82,7 @@ public class ReferenceIndexTest {
     FitNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
     child(parent, "PageStay", "<!-- id:stay -->\nnotes");
-    child(parent, "PageMove", "see PageStay and [go](PageStay#part)\n```agentnesse\ninclude PageStay\n```\n```agentnesse\nscenarios PageStay\n```\n");
+    child(parent, "PageMove", "see PageStay and [go](PageStay#part)\n```agnesse\ninclude PageStay\n```\n```agnesse\nscenarios PageStay\n```\n");
     move(context, "ParentPage.PageMove", "OtherPage");
     assertEquals(List.of("move#0=>stay", "move#1=>stay", "move#2=>stay", "move#3=>stay"),
       ReferenceIndex.targets(context.getRootPage()));
@@ -113,7 +113,7 @@ public class ReferenceIndexTest {
   public void childReferenceFollowsAMovedChild() throws Exception {
     FitNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
-    write(parent, "see >PageMove and [go](^PageMove#part)\n```agentnesse\ninclude >PageMove\n```\n```agentnesse\nscenarios ^PageMove\n```\n");
+    write(parent, "see >PageMove and [go](^PageMove#part)\n```agnesse\ninclude >PageMove\n```\n```agnesse\nscenarios ^PageMove\n```\n");
     child(parent, "PageMove", "<!-- id:move -->\nnotes");
     move(context, "ParentPage.PageMove", "OtherPage");
     assertEquals(List.of("parent#0=>move", "parent#1=>move", "parent#2=>move", "parent#3=>move"),
@@ -124,7 +124,7 @@ public class ReferenceIndexTest {
   public void ancestorSearchSurvivesLeavingTheBranch() throws Exception {
     FitNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
-    WikiPage mover = child(parent, "PageMove", "see <ParentPage and [up](<ParentPage#top)\n```agentnesse\ninclude <ParentPage\n```\n```agentnesse\nscenarios <ParentPage\n```\n");
+    WikiPage mover = child(parent, "PageMove", "see <ParentPage and [up](<ParentPage#top)\n```agnesse\ninclude <ParentPage\n```\n```agnesse\nscenarios <ParentPage\n```\n");
     move(context, "ParentPage.PageMove", "OtherPage");
     assertEquals(List.of("move#0=>parent", "move#1=>parent", "move#2=>parent", "move#3=>parent"),
       ReferenceIndex.targets(context.getRootPage()));
@@ -134,7 +134,7 @@ public class ReferenceIndexTest {
   public void caretSubpageStaysOnTheChildAfterRename() throws Exception {
     FitNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
-    WikiPage mover = child(parent, "PageMove", "see ^PageKid and [kid](>PageKid#end)\n```agentnesse\ninclude ^PageKid\n```\n```agentnesse\nscenarios >PageKid\n```\n");
+    WikiPage mover = child(parent, "PageMove", "see ^PageKid and [kid](>PageKid#end)\n```agnesse\ninclude ^PageKid\n```\n```agnesse\nscenarios >PageKid\n```\n");
     child(mover, "PageKid", "<!-- id:kid -->\nnotes");
     rename(context, "ParentPage.PageMove", "RenamedPage");
     assertEquals(List.of("move#0=>kid", "move#1=>kid", "move#2=>kid", "move#3=>kid"),
@@ -249,8 +249,8 @@ public class ReferenceIndexTest {
     switch (form) {
       case "path" -> content.append("see ").append(reference).append(" here\n");
       case "link" -> content.append("[go](").append(reference).append("#part)\n");
-      case "include" -> content.append("```agentnesse\ninclude ").append(reference).append("\n```\n");
-      default -> content.append("```agentnesse\nscenarios ").append(reference).append("\n```\n");
+      case "include" -> content.append("```agnesse\ninclude ").append(reference).append("\n```\n");
+      default -> content.append("```agnesse\nscenarios ").append(reference).append("\n```\n");
     }
   }
 

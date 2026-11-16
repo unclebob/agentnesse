@@ -12,7 +12,7 @@ public class ResultSectionsTest {
   @Test
   public void aPassingSectionStaysCollapsed() {
     String html = ResultSections.details("SetUp", "<table></table>", false);
-    assertTrue(html.contains("<details class=\"agentnesse-include\">"));
+    assertTrue(html.contains("<details class=\"agnesse-include\">"));
     assertFalse(html.contains(" open"));
     assertTrue(html.contains("<summary>SetUp</summary>"));
   }
@@ -21,7 +21,7 @@ public class ResultSectionsTest {
   public void aFailingSectionOpens() {
     assertTrue(ResultSections.shouldOpen(new JSONArray().put(block("fail", "no"))));
     String html = ResultSections.details("TearDown", "<td class=\"fail\">no</td>", true);
-    assertTrue(html.contains("<details class=\"agentnesse-include\" open>"));
+    assertTrue(html.contains("<details class=\"agnesse-include\" open>"));
   }
 
   @Test

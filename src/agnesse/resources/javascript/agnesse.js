@@ -168,7 +168,7 @@ const appendSummaryRow = function (doc, table, event, root) {
 
   function renderBlock(block) {
     var type = block.name ? " " + block.name : "";
-    var table = el("table", "agentnesse-table" + type);
+    var table = el("table", "agnesse-table" + type);
     (block.rows || []).forEach(function (row) {
       var tr = document.createElement("tr");
       (row.cells || []).forEach(function (cell) {
@@ -276,7 +276,7 @@ const appendSummaryRow = function (doc, table, event, root) {
         closeSection();
         title = next;
         if (title) {
-          details = el("details", "agentnesse-include");
+          details = el("details", "agnesse-include");
           details.appendChild(el("summary", "", title));
           pageRoot.appendChild(details);
         }
@@ -357,7 +357,7 @@ const appendSummaryRow = function (doc, table, event, root) {
   };
 
   document.addEventListener("DOMContentLoaded", function () {
-    var source = document.getElementById("agentnesse-events");
+    var source = document.getElementById("agnesse-events");
     if (source && source.textContent.trim()) {
       source.textContent.split("\n").forEach(function (line) {
         if (line.trim()) apply(JSON.parse(line));

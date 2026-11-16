@@ -11,7 +11,7 @@ First, build a page with variable definitions followed immediately by a classpat
 
 | script | | | |
 | --- | --- | --- | --- |
-| given page | ClasspathTestPage | with content | \`\`\`agentnesse<br>define PI<br>3.141592<br>\`\`\`<br><br>\| agnesse.testutil.PassFixture \|<br>\| --- \| |
+| given page | ClasspathTestPage | with content | \`\`\`agnesse<br>define PI<br>3.141592<br>\`\`\`<br><br>\| agnesse.testutil.PassFixture \|<br>\| --- \| |
 | make | ClasspathTestPage | a test page | |
 | its test results should contain | PassFixture | | |
 | and should not contain | Exception | | |

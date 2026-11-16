@@ -37,7 +37,7 @@ Example
 | $S2= | echo | 123456789 |
 | $S3= | echo | "The fox jumps over the wall." |
 
-```agentnesse
+```agnesse
 define SLIM_DT_GETTER
 {
 "FormatVersion":"1.0",
@@ -68,7 +68,7 @@ define SLIM_DT_GETTER
 
 </details>
 
-```agentnesse
+```agnesse
 define SLIM_DT_SETTER
 {
 "FormatVersion":"1.0",
@@ -202,6 +202,6 @@ The pattern used in the hybrid table is the below.
 
 
 Further Reading:
-```agentnesse
+```agnesse
 contents
 ```

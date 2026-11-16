@@ -17,7 +17,7 @@ By default table should be parsed as a decision table.
 However after this table it should be parsed as a **Table: table**.
 
 
-```agentnesse
+```agnesse
 alias Table or Decision Fixture
 table:
 ```
@@ -31,7 +31,7 @@ table:
 The same works for script tables (which parse as decision tables in many respects).
 
 
-```agentnesse
+```agnesse
 alias Table or Decision Fixture
 script:
 ```

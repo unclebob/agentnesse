@@ -31,17 +31,17 @@ public class MarkdownRunTest {
   @Test
   public void classpathComesFromPathBlocksOnThisPageAndItsParents() throws Exception {
     fileSystem.makeFile(new File("root/Parent.md"), """
-      ```agentnesse
+      ```agnesse
       path
       from-parent.jar
       ```
-      ```agentnesse
+      ```agnesse
       define SUT
       !path from-define.jar
       ```
       """);
     fileSystem.makeFile(new File("root/Parent/TestChild.md"), """
-      ```agentnesse
+      ```agnesse
       path
       from-child.jar
       ```
@@ -79,7 +79,7 @@ public class MarkdownRunTest {
     assertTrue(HtmlCells.contains(html, "import"));
     assertTrue(HtmlCells.contains(html, "suite setup ran"));
     assertTrue(HtmlCells.contains(html, "check"));
-    assertTrue(html.contains("agentnesse-include"));
+    assertTrue(html.contains("agnesse-include"));
   }
 
   @Test
@@ -91,14 +91,14 @@ public class MarkdownRunTest {
       | name | hired |
       """);
     fileSystem.makeFile(new File("root/TestHost.md"), """
-      ```agentnesse
+      ```agnesse
       include Included
       ```
       """);
 
     String html = root.getChildPage("TestHost").getHtml();
 
-    assertTrue(html.contains("<details class=\"agentnesse-include\"><summary>Included</summary>"));
+    assertTrue(html.contains("<details class=\"agnesse-include\"><summary>Included</summary>"));
     assertEquals("query:Employees", HtmlCells.cell(html, 0, 0, 0));
   }
 }

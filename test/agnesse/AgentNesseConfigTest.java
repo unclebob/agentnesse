@@ -127,7 +127,7 @@ public class AgentNesseConfigTest {
   }
 
   private File write(String json) throws Exception {
-    File file = folder.newFile("agentnesse.json");
+    File file = folder.newFile("agnesse.json");
     Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
     return file;
   }

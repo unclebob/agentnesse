@@ -56,7 +56,7 @@ public class WikiPageIdentityTest {
   @Test
   public void aDefinedTestSystemIsRejected() throws Exception {
     WikiPage page = page("DefinesSlim", """
-      ```agentnesse
+      ```agnesse
       define TEST_SYSTEM
       foo
       ```

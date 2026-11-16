@@ -25,7 +25,7 @@ public class SamplePagesTest {
       "Blocks", "DecisionDivision", "PageFooter", "PageHeader", "ScriptLogin", "SetUp", "WithSetUp"}) {
       assertTrue(contents, contents.contains("<a href=\"AgentNesseSamples." + child + "\">" + child + "</a>"));
     }
-    assertTrue(!contents.contains("agentnesse-include"));
+    assertTrue(!contents.contains("agnesse-include"));
 
     WikiPage decision = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.DecisionDivision"));
     WikiPage script = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.ScriptLogin"));
@@ -33,16 +33,16 @@ public class SamplePagesTest {
     WikiPage blocks = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.Blocks"));
 
     assertEquals(MarkdownPage.class, decision.getClass());
-    assertTrue(decision.getHtml().contains("agentnesse-table decision"));
+    assertTrue(decision.getHtml().contains("agnesse-table decision"));
     assertTrue(decision.getHtml().contains("id=\"divides-numbers\""));
-    assertTrue(script.getHtml().contains("agentnesse-table scenario"));
-    assertTrue(script.getHtml().contains("agentnesse-table script"));
-    assertTrue(!withSetUp.getHtml().contains("agentnesse-include"));
-    assertTrue(!withSetUp.getHtml().contains("agentnesse-setup"));
-    assertTrue(withSetUp.getHtml().contains("agentnesse-table query"));
-    assertTrue(blocks.getHtml().contains("agentnesse-define"));
-    assertTrue(blocks.getHtml().contains("agentnesse-alias"));
-    assertTrue(blocks.getHtml().contains("agentnesse-contents"));
+    assertTrue(script.getHtml().contains("agnesse-table scenario"));
+    assertTrue(script.getHtml().contains("agnesse-table script"));
+    assertTrue(!withSetUp.getHtml().contains("agnesse-include"));
+    assertTrue(!withSetUp.getHtml().contains("agnesse-setup"));
+    assertTrue(withSetUp.getHtml().contains("agnesse-table query"));
+    assertTrue(blocks.getHtml().contains("agnesse-define"));
+    assertTrue(blocks.getHtml().contains("agnesse-alias"));
+    assertTrue(blocks.getHtml().contains("agnesse-contents"));
     assertEquals("PageHeader", WikiPageUtil.getHeaderPage(decision).getName());
     assertEquals("PageFooter", WikiPageUtil.getFooterPage(decision).getName());
     assertEquals("SetUp", decision.getParent().getChildPage("SetUp").getName());

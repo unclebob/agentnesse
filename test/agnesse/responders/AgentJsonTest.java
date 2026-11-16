@@ -108,7 +108,7 @@ public class AgentJsonTest {
   @Test
   public void variablesComeFromDefineBlocks() throws Exception {
     WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Page"),
-      "```agentnesse\ndefine MAX\n3\n```\n");
+      "```agnesse\ndefine MAX\n3\n```\n");
     request.setResource("Page");
     SimpleResponse response = (SimpleResponse) new ScopeVariablesResponder().makeResponse(context, request);
     assertJsonEquals("{\"variables\":[{\"name\":\"MAX\",\"value\":\"3\",\"page\":\"Page\"}]}", response.getContent());

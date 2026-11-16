@@ -32,13 +32,13 @@ public final class MarkdownTableScanner implements TableScanner<MarkdownTable> {
         }
         continue;
       }
-      if (line.contains("agentnesse-break") || line.contains("agentnesse-teardown")) {
+      if (line.contains("agnesse-break") || line.contains("agnesse-teardown")) {
         if (inTable) {
           add(current, tearDown);
           inTable = false;
         }
         fence = new MarkdownFences();
-        if (line.contains("agentnesse-teardown")) {
+        if (line.contains("agnesse-teardown")) {
           tearDown = true;
         }
         continue;

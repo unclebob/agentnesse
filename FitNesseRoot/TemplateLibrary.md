@@ -6,6 +6,6 @@
 }
 Here all the pages go that are available throughout the wiki.
 
-```agentnesse
+```agnesse
 contents
 ```

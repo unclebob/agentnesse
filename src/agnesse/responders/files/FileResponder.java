@@ -62,7 +62,7 @@ public class FileResponder implements Responder {
   }
 
   private boolean canLoadFromClasspath() {
-    return resource.startsWith("files/fitnesse/");
+    return resource.startsWith("files/agnesse/");
   }
 
   private Response makeClasspathResponse(FitNesseContext context, Request request) throws Exception {
@@ -72,7 +72,7 @@ public class FileResponder implements Responder {
     if (isNotModified(request))
       return createNotModifiedResponse();
 
-    String classpathResource = "/agnesse/resources/" + resource.substring("files/fitnesse/".length());
+    String classpathResource = "/agnesse/resources/" + resource.substring("files/agnesse/".length());
     InputStream input;
 
     input = Thread.currentThread().getContextClassLoader().getResourceAsStream(classpathResource);
@@ -175,7 +175,7 @@ public class FileResponder implements Responder {
   }
 
   public static boolean isInFilesFitNesseDirectory(File rootPath, File file) throws IOException {
-    return isInSubDirectory(new File(new File(rootPath, PathParser.FILES), "fitnesse").getCanonicalFile(),
+    return isInSubDirectory(new File(new File(rootPath, PathParser.FILES), "agnesse").getCanonicalFile(),
       file.getCanonicalFile());
   }
 

@@ -1,4 +1,4 @@
-```agentnesse
+```agnesse
 scenarios
 PayCheck
 ```

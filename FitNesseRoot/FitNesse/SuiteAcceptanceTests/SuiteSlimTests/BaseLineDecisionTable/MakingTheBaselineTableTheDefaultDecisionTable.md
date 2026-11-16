@@ -6,7 +6,7 @@
 }
 `SLIM_DT_BASELINE` makes an ordinary decision table behave as a baseline table, so a blank cell repeats the base scenario.
 
-```agentnesse
+```agnesse
 define SLIM_DT_BASELINE
 true
 ```

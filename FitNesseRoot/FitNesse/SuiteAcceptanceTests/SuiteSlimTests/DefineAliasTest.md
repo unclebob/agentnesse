@@ -31,7 +31,7 @@ Below is a dynamic decision table without any alias. This will be used in the fo
 The business expects a different name "add change" than your class name "add up change"
 
 
-```agentnesse
+```agnesse
 alias add change
 add up change
 ```
@@ -49,7 +49,7 @@ and in addition the test case is defined as decision table but you implemented i
 You can overwrite the table type and the name.
 
 
-```agentnesse
+```agnesse
 alias add up
 ddt: add up change
 ```
@@ -66,7 +66,7 @@ The names are matching but you need to overwrite the table type.
 Note that the `DefineTableType` table will not overwrite type definitions given in the test.
 
 
-```agentnesse
+```agnesse
 alias add up change
 ddt:
 ```
@@ -89,7 +89,7 @@ Your implementation requires that you prepare the test fixture in a script.
 | $myfixture= | get fixture |
 
 
-```agentnesse
+```agnesse
 alias add money
 $myfixture
 ```
@@ -105,7 +105,7 @@ It doesn't matters if you define the alias before or after you create the fixtur
 Again you can add a table type definition if required
 
 
-```agentnesse
+```agnesse
 alias add more money
 ddt: $anotherFixture
 ```
@@ -132,7 +132,7 @@ Another example with a constructor parameter
 | $tq= | get fixture | |
 
 
-```agentnesse
+```agnesse
 alias my query
 query: $tq
 ```
@@ -152,7 +152,7 @@ query: $tq
 | $tq= | get fixture | |
 
 
-```agentnesse
+```agnesse
 alias my query
 subset query: $tq
 ```
@@ -170,7 +170,7 @@ If you can't use an Import statement or you have import conflicts you can't reso
 The alias can help you to get around these.
 
 
-```agentnesse
+```agnesse
 alias what is in my pocket
 ddt: agnesse.slim.test.AddUpChange
 ```

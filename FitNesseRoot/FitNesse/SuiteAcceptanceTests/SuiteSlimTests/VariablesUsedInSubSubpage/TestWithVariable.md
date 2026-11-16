@@ -7,11 +7,11 @@
 #### To test This page three variables must be defined on the parent page: "numerator", "denominator" and "quotient"
 
 #### Define variables on this sub page. They can be used on the main page
-```agentnesse
+```agnesse
 define result
 77.0
 ```
-```agentnesse
+```agnesse
 define quotient4
 ${= ${numerator} / ${denominator} =}.0
 ```

@@ -98,7 +98,7 @@ public class MarkdownPageTest {
   @Test
   public void aVariableWithANewlineStaysInsideTheSlimCell() throws Exception {
     fileSystem.makeFile(new File("root/TestHost.md"), """
-      ```agentnesse
+      ```agnesse
       define SUT
       !path lib/*.jar
       ```
@@ -172,7 +172,7 @@ public class MarkdownPageTest {
   public void contentsListsLinksToTheChildPages() throws Exception {
     fileSystem.makeFile(new File("root/SuiteDemo.md"), """
       { "type": "suite" }
-      ```agentnesse
+      ```agnesse
       contents
       ```
       """);
@@ -181,7 +181,7 @@ public class MarkdownPageTest {
 
     String html = root.getChildPage("SuiteDemo").getHtml();
 
-    assertTrue(html, html.contains("class=\"agentnesse-contents\""));
+    assertTrue(html, html.contains("class=\"agnesse-contents\""));
     assertTrue(html, html.contains("<a href=\"SuiteDemo.Blocks\">Blocks</a>"));
     assertTrue(html, html.contains("<a href=\"SuiteDemo.SetUp\">SetUp</a>"));
   }
@@ -255,7 +255,7 @@ public class MarkdownPageTest {
   public void aDefineIsAVariableHereAndOnAChild() throws Exception {
     fileSystem.makeFile(new File("root/SuiteDemo.md"), """
       { "type": "suite" }
-      ```agentnesse
+      ```agnesse
       define MAX
       3
       ```

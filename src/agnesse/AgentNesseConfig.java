@@ -16,7 +16,7 @@ import static agnesse.ConfigurationParameter.MAXIMUM_WORKERS;
 import static agnesse.ConfigurationParameter.REFACTOR_START_PATH;
 
 /**
- * Reads agentnesse.json. Command-line flags are applied after this, so they win.
+ * Reads agnesse.json. Command-line flags are applied after this, so they win.
  */
 public final class AgentNesseConfig {
   private static final Set<String> KEYS = Set.of(

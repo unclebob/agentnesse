@@ -6,6 +6,6 @@
 }
 A contents block lists the child pages of the current page.
 
-```agentnesse
+```agnesse
 contents
 ```

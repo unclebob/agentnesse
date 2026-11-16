@@ -6,7 +6,7 @@
 }
 
 Setting slim.timeout doesn't works :( 
-```agentnesse
+```agnesse
 define slim.timeout
 1
 ```

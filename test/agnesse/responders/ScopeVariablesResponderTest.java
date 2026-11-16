@@ -30,7 +30,7 @@ public class ScopeVariablesResponderTest {
     WikiPageUtil.addPage(root, PathParser.parse("SimplePageForInclude"), define("y", "Y"));
     WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SimplePage"),
       define("x", "X") + """
-      ```agentnesse
+      ```agnesse
       include .SimplePageForInclude
       ```
       """);
@@ -39,7 +39,7 @@ public class ScopeVariablesResponderTest {
   }
 
   private static String define(String name, String value) {
-    return "```agentnesse\ndefine " + name + "\n" + value + "\n```\n";
+    return "```agnesse\ndefine " + name + "\n" + value + "\n```\n";
   }
 
   @Test

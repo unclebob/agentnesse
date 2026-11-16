@@ -16,7 +16,7 @@ The first implementation used is the Devision class from the eg library.
 | --- |
 | eg |
 
-```agentnesse
+```agnesse
 include >CalculatorRequirements
 ```
 
@@ -40,6 +40,6 @@ Generate an instance of the class used by the scenario:
 
 We retest the requirements and get the same results.
 
-```agentnesse
+```agnesse
 include >CalculatorRequirements
 ```

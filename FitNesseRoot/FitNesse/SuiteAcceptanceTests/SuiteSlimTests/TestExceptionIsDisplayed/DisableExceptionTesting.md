@@ -8,7 +8,7 @@
 This is intended for backward compatibility to be able to switch this feature off
 Don't use in other cases
 
-```agentnesse
+```agnesse
 define SLIM_EXCEPTION_COMPARATOR
 HelloEXCEPTION:
 ```

@@ -7,7 +7,7 @@ const vm = require("vm");
 // Mutation workers overlay the source through the working directory.
 const root = process.cwd();
 const sourcePath = path.join(root, "src/agnesse/resources/javascript/agnesse.js");
-const cssPath = path.join(root, "src/agnesse/resources/css/agentnesse.css");
+const cssPath = path.join(root, "src/agnesse/resources/css/agnesse.css");
 
 function walk(node) {
   const found = [];

@@ -5,9 +5,9 @@
   "prune": false
 }
 Reset variables to get normal behaviour back.
-```agentnesse
+```agnesse
 define SLIM_DT_GETTER
 ```
-```agentnesse
+```agnesse
 define SLIM_DT_SETTER
 ```
