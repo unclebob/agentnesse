@@ -1,4 +1,4 @@
-Usage: java -jar fitnesse.jar [-vpdrfcb] [--listen address]
+Usage: java -jar agnesse.jar [-vpdrfcb] [--listen address]
 	-p <port number> {80}
 	-d <working directory> {.}
 	-r <page root directory> {FitNesseRoot}

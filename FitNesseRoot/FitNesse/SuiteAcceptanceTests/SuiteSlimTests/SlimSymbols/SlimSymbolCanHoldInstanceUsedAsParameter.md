@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 You can store an object instance in a Slim symbol and then use the instance in parameters for methods or constructors.
 Here createTestSlimWithString(string) is a factory method that creates a new `TestSlim` instance, sets the given string and returns the object.

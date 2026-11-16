@@ -9,7 +9,7 @@ You should be able to pass symbols into constructor arguments of slim tables.
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | script | test slim | |

@@ -18,7 +18,7 @@ Login
 
 ```agentnesse
 path
-fitnesse.jar
+agnesse.jar
 ```
 
 ```agentnesse

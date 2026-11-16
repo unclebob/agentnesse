@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 There was a bug in the Scenario selection process that caused a scenario with no inputs to be selected when it should have been method on the driver class.  This happened because the `ScenarioTable` class was enhanced to try all rows as parameterized.  So it took "login" and tried "login _ ".  This resulted in the "login" scenario being used instead of the "loginWithUsernameAndPassword" method when "connect as with" scenario was called.  This page demonstrates the fix.

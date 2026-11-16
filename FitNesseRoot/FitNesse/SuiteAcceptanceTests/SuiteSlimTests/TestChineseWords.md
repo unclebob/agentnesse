@@ -10,7 +10,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | script: echo script | | | |

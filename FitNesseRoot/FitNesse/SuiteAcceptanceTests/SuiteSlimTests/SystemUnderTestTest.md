@@ -7,7 +7,7 @@
 
 | Import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 

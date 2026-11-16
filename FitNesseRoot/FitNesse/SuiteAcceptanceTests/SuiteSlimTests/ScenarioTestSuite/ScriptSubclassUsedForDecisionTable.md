@@ -18,7 +18,7 @@ Scenarios can be called from decision tables. They should respect the actor (i.e
 
 Get the Division implementation from the eg package, and use a script subclass that uses 'verify' instead of the 'check' keyword.
 
-| script | fitnesse.slim.test.Division |
+| script | agnesse.slim.test.Division |
 | --- | --- |
 
 
@@ -42,7 +42,7 @@ Get the Division implementation from the eg package, and use a script subclass t
 
 Get the Division implementation from the eg package, and use a script subclass that uses 'verify' instead of the 'check' keyword.
 
-| verify script | fitnesse.slim.test.Division |
+| verify script | agnesse.slim.test.Division |
 | --- | --- |
 
 

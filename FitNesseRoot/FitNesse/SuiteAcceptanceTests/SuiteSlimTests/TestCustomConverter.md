@@ -15,7 +15,7 @@ Whether a converter is applied to a method's result depends on its declared retu
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | script | TestSlimWithConverter | |

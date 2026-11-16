@@ -1,0 +1,183 @@
+// Copyright (C) 2003-2009 by Object Mentor, Inc. All rights reserved.
+// Released under the terms of the CPL Common Public License version 1.0.
+package agnesse.responders.editing;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static util.RegexTestCase.assertHasRegexp;
+
+import agnesse.FitNesseContext;
+import agnesse.http.MockRequest;
+import agnesse.http.Response;
+import agnesse.http.SimpleResponse;
+import agnesse.testutil.FitNesseUtil;
+import agnesse.wiki.PageData;
+import agnesse.wiki.PathParser;
+import agnesse.wiki.WikiPage;
+import agnesse.wiki.WikiPageUtil;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class SaveResponderTest {
+  private FitNesseContext context;
+  private WikiPage root;
+  private Response response;
+  public MockRequest request;
+  public SaveResponder responder;
+
+  @Before
+  public void setUp() throws Exception {
+    context = FitNesseUtil.makeTestContext();
+    root = context.getRootPage();
+    request = new MockRequest();
+    responder = new SaveResponder();
+  }
+
+  @Test
+  public void testResponse() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("ChildPage"));
+    prepareRequest("ChildPage");
+
+    Response response = responder.makeResponse(context, request);
+    assertEquals(303, response.getStatus());
+    assertHasRegexp("Location: /ChildPage", response.makeHttpHeaders());
+
+    String newContent = root.getChildPage("ChildPage").getData().getContent();
+    assertEquals("some new content", newContent);
+  }
+
+  private void prepareRequest(String pageName) {
+    request.setResource(pageName);
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "some new content");
+    request.addInput(EditResponder.HELP_TEXT, "some help");
+  }
+
+  @Test
+  public void testResponseWithRedirect() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("ChildPage"));
+    prepareRequest("ChildPage");
+    request.addInput("redirect", "http://fitnesse.org:8080/SomePage");
+
+    Response response = responder.makeResponse(context, request);
+    assertEquals(303, response.getStatus());
+    assertHasRegexp("Location: http://fitnesse.org:8080/SomePage", response.makeHttpHeaders());
+  }
+
+  @Test
+  public void testCanCreatePage() throws Exception {
+    prepareRequest("ChildPageTwo");
+
+    responder.makeResponse(context, request);
+
+    assertEquals(true, root.hasChildPage("ChildPageTwo"));
+    String newContent = root.getChildPage("ChildPageTwo").getData().getContent();
+    assertEquals("some new content", newContent);
+  }
+
+  @Test
+  public void testCanCreatePageForNonWikiWord() throws Exception {
+    prepareRequest("child_page_two");
+
+    responder.makeResponse(context, request);
+
+    assertEquals(true, root.hasChildPage("child_page_two"));
+    String newContent = root.getChildPage("child_page_two").getData().getContent();
+    assertEquals("some new content", newContent);
+  }
+
+  @Test
+  public void testCanCreatePageWithoutTicketIdAndEditTime() throws Exception {
+    request.setResource("ChildPageTwo");
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "some new content");
+    request.addInput(EditResponder.HELP_TEXT, "some help");
+    request.addInput(EditResponder.SUITES, "some suite");
+
+    responder.makeResponse(context, request);
+
+    assertEquals(true, root.hasChildPage("ChildPageTwo"));
+    PageData pageData = root.getChildPage("ChildPageTwo").getData();
+    String newContent = pageData.getContent();
+    assertEquals("some new content", newContent);
+    assertEquals("some help", pageData.getAttribute(PageData.PropertyHELP));
+    assertEquals("some suite", pageData.getAttribute(PageData.PropertySUITES));
+  }
+
+  @Test
+  public void testRemovesHelpAndSuitesAttributeIfEmpty() throws Exception {
+    request.setResource("ChildPageTwo");
+    request.addInput(EditResponder.HELP_TEXT, "");
+    request.addInput(EditResponder.SUITES, "");
+
+    responder.makeResponse(context, request);
+
+    PageData pageData = root.getChildPage("ChildPageTwo").getData();
+    assertFalse("should not have help attribute", pageData.hasAttribute(PageData.PropertyHELP));
+    assertFalse("should not have suites attribute", pageData.hasAttribute(PageData.PropertySUITES));
+  }
+
+  @Test
+  public void testKnowsWhenToMerge() throws Exception {
+    String simplePageName = "SimplePageName";
+    createAndSaveANewPage(simplePageName);
+
+    request.setResource(simplePageName);
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "some new content");
+
+    Response response = responder.makeResponse(context, request);
+
+    assertEquals(303, response.getStatus());
+    assertEquals("some new content", root.getChildPage(simplePageName).getData().getContent());
+  }
+
+  @Test
+  public void testKnowWhenNotToMerge() throws Exception {
+    String pageName = "NewPage";
+    createAndSaveANewPage(pageName);
+    String newContent = "some new Content work damn you!";
+    request.setResource(pageName);
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, newContent);
+
+    Response response = responder.makeResponse(context, request);
+    assertEquals(303, response.getStatus());
+
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, newContent + " Ok I'm working now");
+    response = responder.makeResponse(context, request);
+    assertEquals(303, response.getStatus());
+  }
+
+  @Test
+  public void testUsernameIsSavedInPageProperties() throws Exception {
+    addRequestParameters();
+    request.setCredentials("Aladdin", "open sesame");
+    response = responder.makeResponse(context, request);
+
+    String user = root.getChildPage("EditPage").getData().getAttribute(PageData.LAST_MODIFYING_USER);
+    assertEquals("Aladdin", user);
+  }
+
+  private void createAndSaveANewPage(String pageName) throws Exception {
+    WikiPage simplePage = WikiPageUtil.addPage(root, PathParser.parse(pageName));
+
+    PageData data = simplePage.getData();
+    simplePage.commit(data);
+  }
+
+  private void doSimpleEdit() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("EditPage"));
+    addRequestParameters();
+
+    response = responder.makeResponse(context, request);
+  }
+
+  private void addRequestParameters() {
+    prepareRequest("EditPage");
+  }
+
+  @Test
+  public void testHasVersionHeader() throws Exception {
+    doSimpleEdit();
+    assertTrue("header missing", response.getHeader("Current-Version") != null);
+  }
+}

@@ -13,7 +13,7 @@ This page tests the above functions
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | Library |

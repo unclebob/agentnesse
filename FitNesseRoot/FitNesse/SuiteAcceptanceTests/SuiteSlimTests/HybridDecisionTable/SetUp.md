@@ -7,7 +7,7 @@
 
 | Import |
 | --- |
-| fitnesse.fixtures |
+| agnesse.fixtures |
 
 
 

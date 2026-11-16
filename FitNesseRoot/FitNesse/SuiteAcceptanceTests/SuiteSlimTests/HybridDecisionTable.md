@@ -26,7 +26,7 @@ Example
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 | java.util |
 
 ##### define some string variables (just to show that this is supported)

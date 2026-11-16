@@ -19,7 +19,7 @@ If a decision table is implemented with a scenario you can specify constructor a
 
 | library |
 | --- |
-| fitnesse.slim.test.Division |
+| agnesse.slim.test.Division |
 
 ### Calling a Scenario with Constructor Parameters
 

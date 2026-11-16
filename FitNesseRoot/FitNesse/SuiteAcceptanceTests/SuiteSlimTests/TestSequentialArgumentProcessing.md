@@ -8,7 +8,7 @@
 *concatenateThreeArgs(String first, String second, String third)* returns the concatenated arguments, separated by a space
 ### Affixing a semi-colon ";" to the end of a cell's contents should invoke sequential argument processing. Mixing every-other-cell and sequential-cell processing within the same row is permitted.
 
-| script | fitnesse.slim.test.TestSlim | | | |
+| script | agnesse.slim.test.TestSlim | | | |
 | --- | --- | --- | --- | --- |
 | concatenate three args; | 1 | 2.0 | three | |
 | concatenate | a | three args; | b | c |

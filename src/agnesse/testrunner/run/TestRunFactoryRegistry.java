@@ -1,0 +1,37 @@
+package agnesse.testrunner.run;
+
+import agnesse.FitNesseContext;
+import agnesse.wiki.WikiPage;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TestRunFactoryRegistry {
+  public final static TestRunFactory DEFAULT = new PagesByTestSystemTestRunFactory();
+
+  private final List<TestRunFactory> testRunFactories = new ArrayList<>();
+  private final FitNesseContext context;
+
+  public TestRunFactoryRegistry(FitNesseContext context) {
+    this.context = context;
+  }
+
+  public void addFactory(TestRunFactory factory) {
+    testRunFactories.add(0, factory);
+  }
+
+  public TestRun createRun(List<WikiPage> pages) {
+    return getFactory(pages).createRun(pages);
+  }
+
+  public TestRunFactory getFactory(List<WikiPage> pages) {
+    return testRunFactories.stream()
+      .filter(f -> f.canRun(pages))
+      .findFirst()
+      .orElse(DEFAULT);
+  }
+
+  public FitNesseContext getContext() {
+    return context;
+  }
+}

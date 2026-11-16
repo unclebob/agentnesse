@@ -20,7 +20,7 @@ print quotient  = ${quotient}
 print quotient2 = ${quotient2}
 print quotient4 = ${quotient4}
 
-| fitnesse.slim.test.Division |
+| agnesse.slim.test.Division |
 | --- | --- | --- | --- |
 | # Test Description | numerator | denominator | quotient? |
 | Expected result is calculated with expression | ${numerator} | ${denominator} | ${= %3.0f : ${numerator} / ${denominator} =}.0 |

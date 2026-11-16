@@ -8,8 +8,8 @@ A table table whose fixture handles symbols can use a value assigned earlier in 
 
 | import |
 | --- |
-| fitnesse.slim.test |
-| fitnesse.slim.test.statementexecutorconsumer |
+| agnesse.slim.test |
+| agnesse.slim.test.statementexecutorconsumer |
 
 
 ```agentnesse

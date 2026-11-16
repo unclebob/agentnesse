@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 ### The Dynamic Decision Table is just a special case of the Hybrid Decision table.
 With the following rules for getter and setter the behavior of Dynamic Decision Tables is achieved.

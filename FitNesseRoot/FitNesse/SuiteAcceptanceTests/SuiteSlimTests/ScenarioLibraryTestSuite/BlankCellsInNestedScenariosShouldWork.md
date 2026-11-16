@@ -10,12 +10,12 @@ It looks like one-word scenario names, coupled with at least one unnamed argumen
 
 In the tables below, the scenario f should be called by the second table, but instead `FitNesse` tries to find method f for the current script actor. 
 
-This test will pass if this bug is fixed.  Otherwise you'll get `f Method f[2] not found in fitnesse.fixtures.PageDriver`.
+This test will pass if this bug is fixed.  Otherwise you'll get `f Method f[2] not found in agnesse.fixtures.PageDriver`.
 
 
 | scenario | f | a | | b |
 | --- | --- | --- | --- | --- |
-| start | fitnesse.slim.test.TestSlim | | | |
+| start | agnesse.slim.test.TestSlim | | | |
 
 
 | script | | | |

@@ -1,0 +1,60 @@
+package agnesse.junit;
+
+import java.io.Closeable;
+import java.util.logging.Logger;
+
+import agnesse.testrunner.WikiTestPageUtil;
+import agnesse.testsystems.Assertion;
+import agnesse.testsystems.ExceptionResult;
+import agnesse.testsystems.TestPage;
+import agnesse.testsystems.TestResult;
+import agnesse.testsystems.TestSummary;
+import agnesse.testsystems.TestSystem;
+import agnesse.testsystems.TestSystemListener;
+import agnesse.wiki.WikiPagePath;
+import agnesse.util.TimeMeasurement;
+
+public class PrintTestListener implements TestSystemListener, Closeable {
+  private static final Logger LOG = Logger.getLogger(PrintTestListener.class.getName());
+
+  private TimeMeasurement timeMeasurement;
+  private TimeMeasurement totalTimeMeasurement = new TimeMeasurement().start();
+
+  @Override
+  public void close() {
+    LOG.info("--complete: " + totalTimeMeasurement.elapsedSeconds() + " seconds--");
+  }
+
+  @Override
+  public void testStarted(TestPage test) {
+    timeMeasurement = new TimeMeasurement().start();
+  }
+
+  @Override
+  public void testComplete(TestPage test, TestSummary testSummary) {
+    LOG.info(new WikiPagePath(WikiTestPageUtil.getSourcePage(test)).toString() + " r " + testSummary.getRight() + " w "
+        + testSummary.getWrong() + " " + testSummary.getExceptions()
+        + " " + timeMeasurement.elapsedSeconds() + " seconds");
+  }
+
+  @Override
+  public void testOutputChunk(TestPage testPage, String output) {
+  }
+
+  @Override
+  public void testAssertionVerified(Assertion assertion, TestResult testResult) {
+  }
+
+  @Override
+  public void testExceptionOccurred(Assertion assertion, ExceptionResult exceptionResult) {
+  }
+
+  @Override
+  public void testSystemStarted(TestSystem testSystem) {
+  }
+
+  @Override
+  public void testSystemStopped(TestSystem testSystem, Throwable cause) {
+  }
+
+}

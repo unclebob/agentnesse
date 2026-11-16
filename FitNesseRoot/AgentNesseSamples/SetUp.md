@@ -8,4 +8,4 @@
 
 | import |
 | --- |
-| fitnesse.fixtures |
+| agnesse.fixtures |

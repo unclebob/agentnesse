@@ -17,9 +17,9 @@ If a `SuiteSetUp` or `SuiteTearDown` page is executed without errors, it should 
 | make a suite page | SuiteParent |
 | given page | SuiteParent.SuiteSetUp | with content | |
 | given page | SuiteParent.SuiteTearDown | with content | |
-| given page | SuiteParent.TestOneOne | with content | \| script \| fitnesse.fixtures.Pass \|<br>\| --- \|<br>\| ensure \| ok \| |
+| given page | SuiteParent.TestOneOne | with content | \| script \| agnesse.fixtures.Pass \|<br>\| --- \|<br>\| ensure \| ok \| |
 | make a test page | SuiteParent.TestOneOne |
-| given page | SuiteParent.TestOneTwo | with content | \| script \| fitnesse.fixtures.Pass \|<br>\| --- \|<br>\| ensure \| ok \| |
+| given page | SuiteParent.TestOneTwo | with content | \| script \| agnesse.fixtures.Pass \|<br>\| --- \|<br>\| ensure \| ok \| |
 | make a test page | SuiteParent.TestOneTwo |
 
 For normal (HTML) responses:

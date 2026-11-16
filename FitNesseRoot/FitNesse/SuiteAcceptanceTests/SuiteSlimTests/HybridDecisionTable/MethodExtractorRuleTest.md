@@ -8,7 +8,7 @@ The first matching method-extractor rule turns a column name into a method and a
 
 | import |
 | --- |
-| fitnesse.testsystems.slim.tables |
+| agnesse.testsystems.slim.tables |
 
 
 | script | Method Extractor | |

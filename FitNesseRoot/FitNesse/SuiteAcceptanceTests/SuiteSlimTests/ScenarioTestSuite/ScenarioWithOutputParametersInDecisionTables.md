@@ -21,7 +21,7 @@ Get the Division implementation from the eg package
 
 | Library |
 | --- |
-| fitnesse.slim.test.Division |
+| agnesse.slim.test.Division |
 
 
 

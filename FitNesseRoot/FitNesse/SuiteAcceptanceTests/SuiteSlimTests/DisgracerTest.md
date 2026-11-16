@@ -13,7 +13,7 @@ These are passed to the Slim Server and might be disgaraced again based on the i
 
 | import |
 | --- |
-| fitnesse.testsystems.slim.tables |
+| agnesse.testsystems.slim.tables |
 
 <details open>
 <summary>Setup</summary>

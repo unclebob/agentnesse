@@ -26,7 +26,7 @@ Get the Division implementation from the eg package
 
 | Library |
 | --- |
-| fitnesse.slim.test.Division |
+| agnesse.slim.test.Division |
 
 The recommended syntax to call the scnario from a script is as below
 

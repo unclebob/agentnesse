@@ -10,7 +10,7 @@ ${exclamation}${minus}
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 ## if you expect an exception you can test for it and pass the test
@@ -36,7 +36,7 @@ use the keyword **EXCEPTION:**
 This applies to: execute, reset, table, beginTable, endTable
 
 
-| DT:fitnesse.slim.test.DecisionTableExecuteThrows | |
+| DT:agnesse.slim.test.DecisionTableExecuteThrows | |
 | --- | --- |
 | x | x? |
 | 5 | 5 |
@@ -52,7 +52,7 @@ and also to constructor failures
 
 Multiple exceptions can happen in one row and in a in cell in the same row
 
-| DT:fitnesse.slim.test.DecisionTableExecuteThrows | | |
+| DT:agnesse.slim.test.DecisionTableExecuteThrows | | |
 | --- | --- | --- |
 | Which Methods Fail | x | x? |
 | NONE | 5 | 5 |
@@ -67,7 +67,7 @@ The exceptions are added at the right level:
  - table - for table, beginTable and endTable
 
 
-| DT:fitnesse.slim.test.DecisionTableExecuteThrows | Total Disaster |
+| DT:agnesse.slim.test.DecisionTableExecuteThrows | Total Disaster |
 | --- | --- |
 | x | x? |
 | 5 | 5 |
@@ -77,7 +77,7 @@ The exceptions are added at the right level:
 # Scripts behave like decision tables
 
 
-| script:fitnesse.slim.test.DecisionTableExecuteThrows | | |
+| script:agnesse.slim.test.DecisionTableExecuteThrows | | |
 | --- | --- | --- |
 | check | execute | EXCEPTION: =~/EXECUTE_THROWS/ |
 

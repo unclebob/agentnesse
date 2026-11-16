@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | script | test slim |

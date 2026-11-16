@@ -5,7 +5,7 @@
             "type": "java",
             "name": "FitNesse + Template Watcher",
             "request": "launch",
-            "mainClass": "fitnesseMain.FitNesseMain",
+            "mainClass": "agnesseMain.FitNesseMain",
             "args": [
                 "-p",
                 "8081",
@@ -26,7 +26,7 @@
             "type": "java",
             "name": "FitNesse",
             "request": "launch",
-            "mainClass": "fitnesseMain.FitNesseMain",
+            "mainClass": "agnesseMain.FitNesseMain",
             "args": [
                 "-p",
                 "8081",

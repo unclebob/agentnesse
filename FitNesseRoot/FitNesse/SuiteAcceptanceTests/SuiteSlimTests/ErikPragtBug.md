@@ -5,7 +5,7 @@
   "prune": false
 }
 
-| script | fitnesse.slim.test.TestSlim | | |
+| script | agnesse.slim.test.TestSlim | | |
 | --- | --- | --- | --- |
 | $VALUE= | echo string | Bob | |
 | $VALUEX= | echo string | bill | |

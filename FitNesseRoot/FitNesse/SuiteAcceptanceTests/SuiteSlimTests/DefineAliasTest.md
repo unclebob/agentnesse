@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 The "Define Alias" table is designed to help you to segregate requirements from the implementation.
 
@@ -172,7 +172,7 @@ The alias can help you to get around these.
 
 ```agentnesse
 alias what is in my pocket
-ddt: fitnesse.slim.test.AddUpChange
+ddt: agnesse.slim.test.AddUpChange
 ```
 
 

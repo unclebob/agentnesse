@@ -1,0 +1,80 @@
+package agnesse.slim.converters;
+
+import agnesse.slim.Converter;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class BooleanConverterTest extends BooleanConverterTestSupport {
+
+  public BooleanConverterTest() {
+    super(new BooleanConverter());
+  }
+
+  @Test
+  public void fromString_should_return_null_object_when_value_is_not_defined() {
+    String value = "";
+
+    Boolean current = converter.fromString(value);
+
+    assertNull(current);
+  }
+}
+
+abstract class BooleanConverterTestSupport extends AbstractConverterTest<Boolean, BooleanConverter> {
+
+  protected BooleanConverterTestSupport(BooleanConverter booleanConverter) {
+    super(booleanConverter);
+  }
+
+  /*
+   * TO STRING
+   */
+  @Test
+  public void fromNull_shouldCreateNullString() {
+    assertEquals(Converter.NULL_VALUE, converter.toString(null));
+  }
+
+  @Test
+  public void toString_should_return_true_string_when_value_is_true() {
+    Boolean value = Boolean.TRUE;
+
+    String current = converter.toString(value);
+
+    assertEquals(BooleanConverter.TRUE, current);
+  }
+
+  @Test
+  public void toString_should_return_false_string_when_value_is_false() {
+    Boolean value = Boolean.FALSE;
+
+    String current = converter.toString(value);
+
+    assertEquals(BooleanConverter.FALSE, current);
+  }
+
+  /*
+   * FROM STRING
+   */
+  @Test
+  public void fromString_should_return_true_when_value_is_true() {
+    String trueValues[] = { "true", "yes", "YES", "TRUE" };
+
+    for (String value : trueValues) {
+      Boolean current = converter.fromString(value);
+
+      assertTrue(current);
+    }
+  }
+
+  @Test
+  public void fromString_should_return_false_when_value_is_not_true() {
+    String falseValues[] = { "false", "FALSE", "NO", "no", "x", "0" };
+
+    for (String value : falseValues) {
+      Boolean current = converter.fromString(value);
+
+      assertFalse(current);
+    }
+  }
+}

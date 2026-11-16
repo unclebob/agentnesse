@@ -1,0 +1,106 @@
+// Copyright (C) 2003-2009 by Object Mentor, Inc. All rights reserved.
+// Released under the terms of the CPL Common Public License version 1.0.
+package agnesseMain;
+
+import agnesse.ContextConfigurator;
+import util.CommandLine;
+
+import static agnesse.ConfigurationParameter.*;
+import static agnesse.ContextConfigurator.*;
+
+public class Arguments {
+
+  private final CommandLine commandLine = new CommandLine(
+          "[-v][-p port][-d dir][-r root][-f config][-c command][-b output][--listen address][-rerun-failures file]");
+
+  private final String rootPath;
+  private final Integer port;
+  private final String rootDirectory;
+  private final String command;
+  private final String output;
+  private final String configFile;
+  private final boolean verboseLogging;
+  private final String listenAddress;
+  private final String rerunFailures;
+
+  public Arguments(String... args) {
+    if (!commandLine.parse(args)) {
+      throw new IllegalArgumentException("Can not parse command line");
+    }
+    String port = commandLine.getOptionArgument("p", "port");
+    this.port = port != null ? Integer.valueOf(port) : null;
+    this.rootPath = commandLine.getOptionArgument("d", "dir");
+    this.rootDirectory = commandLine.getOptionArgument("r", "root");
+    this.command = commandLine.getOptionArgument("c", "command");
+    this.output = commandLine.getOptionArgument("b", "output");
+    this.configFile = commandLine.getOptionArgument("f", "config");
+    this.verboseLogging = commandLine.hasOption("v");
+    this.listenAddress = commandLine.getOptionArgument("listen", "address");
+    this.rerunFailures = commandLine.getOptionArgument("rerun-failures", "file");
+  }
+
+  public String getRerunFailures() {
+    return rerunFailures;
+  }
+
+  static void printUsage() {
+    ContextConfigurator defaults = ContextConfigurator.systemDefaults();
+
+    System.err.println("Usage: java -jar agnesse.jar [-vpdrfcb] [--listen address]");
+    System.err.println("\t-p <port number> {" + DEFAULT_PORT + "}");
+    System.err.println("\t-d <working directory> {" +
+      defaults.get(ROOT_PATH) + "}");
+    System.err.println("\t-r <page root directory> {" +
+      defaults.get(ROOT_DIRECTORY) + "}");
+    System.err.println("\t-f <config file> {" +
+      defaults.get(CONFIG_FILE) + "}");
+    System.err.println("\t-c <command> execute one command and print JSON results.");
+    System.err.println("\t-b <filename> redirect command output.");
+    System.err.println("\t--rerun-failures <json> rerun only failedPages from that file.");
+    System.err.println("\t    A run also writes .agentnesse/last-failures.json beside the wiki root.");
+    System.err.println("\t-v {off} Verbose logging");
+    System.err.println("\t--listen <address> {" + DEFAULT_LISTEN + "} Bind to this address. 0.0.0.0 listens on all interfaces.");
+  }
+
+  public String getRootPath(ContextConfigurator configurator) {
+    return rootPath == null ? configurator.get(ROOT_PATH) : rootPath;
+  }
+
+  public boolean hasConfigFile() {
+    return configFile != null;
+  }
+
+  public String getConfigFile(ContextConfigurator configurator) {
+    return configFile == null ? (getRootPath(configurator) + "/" + configurator.get(CONFIG_FILE)) : configFile;
+  }
+
+  public ContextConfigurator update(ContextConfigurator defaults) {
+    ContextConfigurator result = defaults.withParameter(LOG_LEVEL, verboseLogging ? "verbose" : "normal");
+    return applyRun(applyLocation(result));
+  }
+
+  private ContextConfigurator applyLocation(ContextConfigurator result) {
+    if (configFile != null)
+      result = result.withParameter(CONFIG_FILE, configFile);
+    if (port != null)
+      result = result.withPort(port);
+    if (rootPath != null)
+      result = result.withRootPath(rootPath);
+    if (rootDirectory != null)
+      result = result.withRootDirectoryName(rootDirectory);
+    return result;
+  }
+
+  private ContextConfigurator applyRun(ContextConfigurator result) {
+    if (output != null)
+      result = result.withParameter(OUTPUT, output);
+    if (command != null)
+      result = result.withParameter(COMMAND, command);
+    if (rerunFailures != null)
+      result = result.withParameter(RERUN_FAILURES, rerunFailures);
+    if (listenAddress != null)
+      result = result.withParameter(LISTEN, listenAddress);
+    return result;
+  }
+
+}

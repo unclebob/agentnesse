@@ -9,7 +9,7 @@
 
 | Import |
 | --- |
-| fitnesse.slim.test.library |
+| agnesse.slim.test.library |
 
 </details>
 

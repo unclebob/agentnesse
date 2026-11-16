@@ -1,0 +1,94 @@
+package agnesse.testsystems.slim.results;
+
+import agnesse.testsystems.ExecutionResult;
+import org.junit.Test;
+
+import static agnesse.slim.SlimServer.EXCEPTION_IGNORE_ALL_TESTS_TAG;
+import static agnesse.slim.SlimServer.EXCEPTION_IGNORE_SCRIPT_TEST_TAG;
+import static agnesse.slim.SlimServer.EXCEPTION_TAG;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class SlimFailureTest {
+
+  @Test
+  public void anIgnoredExceptionStaysIgnoreAndAPlainOneStaysAnError() {
+    assertEquals(ExecutionResult.IGNORE,
+      new SlimExceptionResult("k", EXCEPTION_IGNORE_SCRIPT_TEST_TAG).getIgnoreExecutionResult());
+    assertEquals(ExecutionResult.IGNORE,
+      new SlimExceptionResult("k", EXCEPTION_IGNORE_ALL_TESTS_TAG).getIgnoreExecutionResult());
+    assertEquals(ExecutionResult.ERROR,
+      new SlimExceptionResult("k", "boom").getIgnoreExecutionResult());
+  }
+
+  @Test
+  public void aMissingClassIsAMissingFixture() {
+    SlimFailure failure = SlimFailure.parse(EXCEPTION_TAG + "message:<<NO_CLASS agnesse.missing.Fixture>>");
+    failure.at("Checkout", "decision:pay", 2, 0);
+    assertEquals(SlimFailure.Kind.MISSING_FIXTURE, failure.kind());
+    assertEquals("NO_CLASS", failure.type());
+    assertEquals("agnesse.missing.Fixture", failure.message());
+    assertEquals("Checkout", failure.page());
+    assertEquals(Integer.valueOf(2), failure.row());
+  }
+
+  @Test
+  public void aMissingMethodIsItsOwnKind() {
+    SlimFailure failure = SlimFailure.parse(EXCEPTION_TAG + "message:<<NO_METHOD_IN_CLASS pay[1] agnesse.slim.test.AddUpChange>>");
+    assertEquals(SlimFailure.Kind.MISSING_METHOD, failure.kind());
+    assertEquals("pay[1] agnesse.slim.test.AddUpChange", failure.message());
+  }
+
+  @Test
+  public void aThrownExceptionKeepsItsStack() {
+    SlimFailure failure = SlimFailure.parse(EXCEPTION_TAG + "message:<<java.lang.IllegalStateException: boom\n\tat agnesse.Pay.bill(Pay.java:4)>>");
+    assertEquals(SlimFailure.Kind.EXCEPTION, failure.kind());
+    assertEquals("java.lang.IllegalStateException", failure.type());
+    assertEquals("boom", failure.message());
+    assertEquals("at agnesse.Pay.bill(Pay.java:4)", failure.stack());
+    assertTrue(failure.dump().contains("\"stackTrace\":\"at agnesse.Pay.bill(Pay.java:4)\""));
+  }
+
+  @Test
+  public void slimCodesBecomeTheSentencesThePageShows() {
+    assertEquals("Could not find class Foo", sentence("NO_CLASS Foo"));
+    assertEquals("Could not invoke constructor for Foo", sentence("COULD_NOT_INVOKE_CONSTRUCTOR Foo"));
+    assertEquals("Could not find constructor for Foo", sentence("NO_CONSTRUCTOR Foo"));
+    assertEquals("No converter for Foo", sentence("NO_CONVERTER_FOR_ARGUMENT_NUMBER Foo"));
+    assertEquals("The instance Foo does not exist", sentence("NO_INSTANCE Foo"));
+    assertEquals("Method pay not found in Foo", sentence("NO_METHOD_IN_CLASS pay Foo"));
+    assertEquals("Method pay[1] not found in Foo", sentence("NO_METHOD_IN_CLASS pay[1] Foo"));
+    assertEquals("no method details", sentence("NO_METHOD_IN_CLASS no method details"));
+    assertEquals("The instruction x is malformed", sentence("MALFORMED_INSTRUCTION x"));
+    assertEquals("The instruction timed out after 2 seconds", sentence("TIMED_OUT 2"));
+    assertEquals("plain text", sentence("plain text"));
+  }
+
+  private static String sentence(String body) {
+    return new SlimExceptionResult("k", EXCEPTION_TAG + "message:<<" + body + ">>").getMessage();
+  }
+
+  @Test
+  public void theResultPageUsesTheSameSentences() {
+    assertEquals("Could not invoke constructor for Foo", failureSentence("COULD_NOT_INVOKE_CONSTRUCTOR Foo"));
+    assertEquals("Could not find constructor for Foo", failureSentence("NO_CONSTRUCTOR Foo"));
+    assertEquals("No converter for Foo", failureSentence("NO_CONVERTER_FOR_ARGUMENT_NUMBER Foo"));
+    assertEquals("Could not find class Foo", failureSentence("NO_CLASS Foo"));
+    assertEquals("The instance Foo does not exist", failureSentence("NO_INSTANCE Foo"));
+    assertEquals("The instruction timed out after 2 seconds", failureSentence("TIMED_OUT 2"));
+    assertEquals("plain text", failureSentence("plain text"));
+    assertEquals("", SlimFailure.parse(null).sentence());
+  }
+
+  private static String failureSentence(String body) {
+    return SlimFailure.parse(EXCEPTION_TAG + "message:<<" + body + ">>").sentence();
+  }
+
+  @Test
+  public void aServerThatCannotStartIsALaunchFailure() {
+    SlimFailure failure = SlimFailure.parse(EXCEPTION_TAG + "message:<<java.net.BindException: Address already in use>>");
+    assertEquals(SlimFailure.Kind.LAUNCH_FAILURE, failure.kind());
+    assertEquals("java.net.BindException", failure.type());
+    assertEquals("Address already in use", failure.message());
+  }
+}

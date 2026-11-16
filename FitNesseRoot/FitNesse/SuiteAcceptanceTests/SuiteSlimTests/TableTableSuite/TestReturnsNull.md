@@ -5,7 +5,7 @@
   "prune": false
 }
 
-| Table:fitnesse.slim.test.DummyTableTableReturnsNull |
+| Table:agnesse.slim.test.DummyTableTableReturnsNull |
 | --- |
 | |
 

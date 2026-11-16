@@ -20,7 +20,7 @@ Slim tables are bare GitHub-flavored Markdown tables. The table type is the name
 
 Commands that are not tables go in fenced `agentnesse` blocks.
 
-Run results are JSON. A JUnit XML file is written from that JSON, for CI. (Planned. HTTP `format=xml` and `format=junit` are already gone. The `fitnesse.junit` runner still writes JUnit XML on its own, and it does not read test history.)
+Run results are JSON. A JUnit XML file is written from that JSON, for CI. (Planned. HTTP `format=xml` and `format=junit` are already gone. The `agnesse.junit` runner still writes JUnit XML on its own, and it does not read test history.)
 
 A command line runs a page or a suite and exits with the failure count. (The current entry point does this. A thinner agent CLI is planned.)
 

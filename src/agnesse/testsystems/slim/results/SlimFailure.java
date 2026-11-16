@@ -1,0 +1,216 @@
+package agnesse.testsystems.slim.results;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static agnesse.slim.SlimServer.COULD_NOT_INVOKE_CONSTRUCTOR;
+import static agnesse.slim.SlimServer.NO_CLASS;
+import static agnesse.slim.SlimServer.NO_CONSTRUCTOR;
+import static agnesse.slim.SlimServer.NO_METHOD_IN_CLASS;
+
+/**
+ * A Slim failure pulled out of an {@code __EXCEPTION__} string. The message
+ * and the stack come from the string. Page, block, row, and cell are filled
+ * in by the test system when it knows them.
+ */
+public final class SlimFailure {
+  public enum Kind {
+    MISSING_FIXTURE,
+    MISSING_METHOD,
+    EXCEPTION,
+    LAUNCH_FAILURE
+  }
+
+  private static final Pattern MESSAGE = Pattern.compile("message:<<(.*?)>>(?!>)", Pattern.DOTALL);
+
+  private final Kind kind;
+  private final String type;
+  private final String message;
+  private final String stack;
+  private String page;
+  private String block;
+  private Integer row;
+  private Integer cell;
+
+  private SlimFailure(Kind kind, String type, String message, String stack) {
+    this.kind = kind;
+    this.type = type;
+    this.message = message;
+    this.stack = stack;
+  }
+
+  public static SlimFailure parse(String exceptionValue) {
+    String raw = exceptionValue == null ? "" : exceptionValue;
+    Matcher matcher = MESSAGE.matcher(raw);
+    String body = matcher.find() ? matcher.group(1) : raw;
+    String type = typeOf(body);
+    String message = messageOf(body, type);
+    String stack = stackOf(raw, body);
+    return new SlimFailure(kindOf(raw, type), type, message, stack);
+  }
+
+  public Kind kind() {
+    return kind;
+  }
+
+  public String type() {
+    return type;
+  }
+
+  public String page() {
+    return page;
+  }
+
+  public String block() {
+    return block;
+  }
+
+  public Integer row() {
+    return row;
+  }
+
+  public Integer cell() {
+    return cell;
+  }
+
+  public String message() {
+    return message;
+  }
+
+  /** The sentence a result page shows for a Slim status code. */
+  public String sentence() {
+    String coded = constructionSentence();
+    if (coded != null) {
+      return coded;
+    }
+    coded = lookupSentence();
+    return coded != null ? coded : message == null ? "" : message;
+  }
+
+  private String constructionSentence() {
+    return switch (type == null ? "" : type) {
+      case "COULD_NOT_INVOKE_CONSTRUCTOR" -> "Could not invoke constructor for " + message;
+      case "NO_CONSTRUCTOR" -> "Could not find constructor for " + message;
+      case "NO_CONVERTER_FOR_ARGUMENT_NUMBER" -> "No converter for " + message;
+      case "NO_CLASS" -> "Could not find class " + message;
+      default -> null;
+    };
+  }
+
+  private String lookupSentence() {
+    return switch (type == null ? "" : type) {
+      case "NO_INSTANCE" -> "The instance " + message + " does not exist";
+      case "TIMED_OUT" -> "The instruction timed out after " + message + " seconds";
+      default -> null;
+    };
+  }
+
+  public String stack() {
+    return stack == null ? "" : stack;
+  }
+
+  /** Table coordinates are 0-based. Reported rows and cells are 1-based, and row 1 is the header. */
+  public static Integer oneBased(int zeroBased) {
+    return zeroBased < 0 ? null : zeroBased + 1;
+  }
+
+  public String dump() {
+    return "{\"kind\":" + json(kind.name())
+      + ",\"type\":" + json(type)
+      + ",\"page\":" + json(page)
+      + ",\"block\":" + json(block)
+      + ",\"row\":" + (row == null ? "null" : row)
+      + ",\"cell\":" + (cell == null ? "null" : cell)
+      + ",\"message\":" + json(message)
+      + ",\"stackTrace\":" + json(stack())
+      + "}";
+  }
+
+  static String json(String value) {
+    if (value == null) {
+      return "null";
+    }
+    return "\"" + value
+      .replace("\\", "\\\\")
+      .replace("\"", "\\\"")
+      .replace("\r", "\\r")
+      .replace("\n", "\\n")
+      .replace("\t", "\\t") + "\"";
+  }
+
+  public SlimFailure at(String page, String block, Integer row, Integer cell) {
+    this.page = page;
+    this.block = block;
+    this.row = row;
+    this.cell = cell;
+    return this;
+  }
+
+  private static Kind kindOf(String raw, String type) {
+    if (launchFailure(raw)) {
+      return Kind.LAUNCH_FAILURE;
+    }
+    if (NO_METHOD_IN_CLASS.equals(type)) {
+      return Kind.MISSING_METHOD;
+    }
+    if (missingFixture(type)) {
+      return Kind.MISSING_FIXTURE;
+    }
+    return Kind.EXCEPTION;
+  }
+
+  private static boolean launchFailure(String raw) {
+    String lower = raw.toLowerCase();
+    return lower.contains("bindexception") || lower.contains("could not start")
+      || lower.contains("connection refused") || lower.contains("slim server died")
+      || lower.contains("failed to connect");
+  }
+
+  private static boolean missingFixture(String type) {
+    return NO_CLASS.equals(type) || NO_CONSTRUCTOR.equals(type) || COULD_NOT_INVOKE_CONSTRUCTOR.equals(type);
+  }
+
+  private static String typeOf(String body) {
+    if (body.isEmpty()) {
+      return "";
+    }
+    int space = body.indexOf(' ');
+    String first = space < 0 ? body : body.substring(0, space);
+    if (slimCode(first)) {
+      return first;
+    }
+    int colon = body.indexOf(':');
+    if (colon > 0 && colon < 80 && !body.substring(0, colon).contains(" ")) {
+      return body.substring(0, colon);
+    }
+    return "";
+  }
+
+  private static boolean slimCode(String first) {
+    return first.startsWith("NO_") || first.startsWith("COULD_") || first.startsWith("MALFORMED") || first.startsWith("TIMED");
+  }
+
+  private static String messageOf(String body, String type) {
+    String rest = body;
+    if (!type.isEmpty() && body.startsWith(type)) {
+      rest = body.substring(type.length()).trim();
+      if (rest.startsWith(":")) {
+        rest = rest.substring(1).trim();
+      }
+    }
+    int trace = rest.indexOf("\n\tat ");
+    if (trace >= 0) {
+      rest = rest.substring(0, trace);
+    }
+    return rest.trim().isEmpty() ? body : rest.trim();
+  }
+
+  private static String stackOf(String raw, String body) {
+    int start = body.indexOf('\n');
+    if (start >= 0 && body.substring(start).contains("at ")) {
+      return body.substring(start + 1).trim();
+    }
+    int at = raw.indexOf("\tat ");
+    return at < 0 ? "" : raw.substring(at).trim();
+  }
+}

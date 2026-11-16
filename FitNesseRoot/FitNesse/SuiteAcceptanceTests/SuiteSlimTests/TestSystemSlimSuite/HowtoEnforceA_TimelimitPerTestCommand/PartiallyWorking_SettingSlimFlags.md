@@ -25,14 +25,14 @@ define SLIM_FLAGS
 
 This table passes as the duration is less than the timeout
 
-| fitnesse.slim.test.Sleep | |
+| agnesse.slim.test.Sleep | |
 | --- | --- |
 | Timer | do Sleep ? |
 | 100 | WakeUp 100 |
 
 This table passes as the duration of each command is less than the timeout also the duration of the full table is longer
 
-| fitnesse.slim.test.Sleep | |
+| agnesse.slim.test.Sleep | |
 | --- | --- |
 | Timer | do Sleep ? |
 | 100 | WakeUp 100 |
@@ -45,14 +45,14 @@ This table passes as the duration of each command is less than the timeout also 
 This table fails as the duration is above the timeout
 Note that the endTable command also creates an exception which is wrong
 
-| fitnesse.slim.test.Sleep | |
+| agnesse.slim.test.Sleep | |
 | --- | --- |
 | Timer | do Sleep ? |
 | 20000 | WakeUp 20000 |
 
 Once a Timeout occured every test afterwards fails which is wrong
 
-| fitnesse.slim.test.Sleep | |
+| agnesse.slim.test.Sleep | |
 | --- | --- |
 | Timer | do Sleep ? |
 | 100 | WakeUp 100 |

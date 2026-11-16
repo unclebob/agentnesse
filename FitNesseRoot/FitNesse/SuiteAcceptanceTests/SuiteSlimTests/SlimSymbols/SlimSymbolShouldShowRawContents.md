@@ -6,7 +6,7 @@
 }
 A symbol assigned from HTML is shown as that HTML, not as a rendered table.
 
-| script | fitnesse.fixtures.EchoFixture | |
+| script | agnesse.fixtures.EchoFixture | |
 | --- | --- | --- |
 | $Table= | echo | <table><tr><td>Test</td></tr></table> |
 | check | echo | $Table | $Table |

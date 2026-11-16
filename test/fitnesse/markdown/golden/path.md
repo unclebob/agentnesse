@@ -1,4 +1,0 @@
-```agentnesse
-path
-fitnesse.jar
-```

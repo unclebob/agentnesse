@@ -16,7 +16,7 @@ HelloEXCEPTION:
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | Test Slim | | | |

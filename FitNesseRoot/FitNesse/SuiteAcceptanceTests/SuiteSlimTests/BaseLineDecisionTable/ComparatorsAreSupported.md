@@ -5,7 +5,7 @@
   "prune": false
 }
 
-| baseline: fitnesse.slim.test.Division | | | | |
+| baseline: agnesse.slim.test.Division | | | | |
 | --- | --- | --- | --- | --- |
 | numerator | denominator | quotient? | # Explication | # |
 | 10 | 2 | 5.0 | S1 Base scenario | . |
@@ -18,7 +18,7 @@
 
 
 
-| baseline: fitnesse.slim.test.Division | | | | |
+| baseline: agnesse.slim.test.Division | | | | |
 | --- | --- | --- | --- | --- |
 | numerator | denominator | quotient? | # Explication | # |
 | 10 | 2 | 4<_<6 | S1 Base scenario | . |

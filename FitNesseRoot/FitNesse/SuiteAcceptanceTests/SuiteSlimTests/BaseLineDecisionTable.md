@@ -32,7 +32,7 @@ Let's look at an example of a decision table.
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 </details>
 

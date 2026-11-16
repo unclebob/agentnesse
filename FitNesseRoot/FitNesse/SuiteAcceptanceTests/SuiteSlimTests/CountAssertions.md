@@ -7,7 +7,7 @@ A comparison is an assertion. A fixture that never starts is a table failure, an
 
 | script | page driver |
 | --- | --- |
-| given page | CountAssertions.Mixed | with content | <br><br>\| script \| fitnesse.fixtures.EchoFixture \|<br>\| --- \| --- \|<br>\| check \| echo \| ok \| ok \|<br>\| check \| echo \| ok \| bad \| |
+| given page | CountAssertions.Mixed | with content | <br><br>\| script \| agnesse.fixtures.EchoFixture \|<br>\| --- \| --- \|<br>\| check \| echo \| ok \| ok \|<br>\| check \| echo \| ok \| bad \| |
 | make | CountAssertions.Mixed | a test page |
 | check | request page | CountAssertions.Mixed?test&format=json | 200 |
 | ensure | content contains | "wrong":1 |
@@ -22,20 +22,20 @@ A comparison is an assertion. A fixture that never starts is a table failure, an
 | ensure | content contains | "status":"error" |
 | ensure | content contains | "right":0 |
 | ensure | content contains | "exceptions":0 |
-| given page | CountAssertions.OneFail | with content | <br><br>\| table: fitnesse.slim.test.CellResultTable \|<br>\| --- \|<br>\| fail \| |
+| given page | CountAssertions.OneFail | with content | <br><br>\| table: agnesse.slim.test.CellResultTable \|<br>\| --- \|<br>\| fail \| |
 | make | CountAssertions.OneFail | a test page |
 | check | request page | CountAssertions.OneFail?test&format=json | 200 |
 | ensure | content contains | "wrong":1 |
 | ensure | content contains | "right":0 |
 | ensure | content contains | "status":"fail" |
-| given page | CountAssertions.NoCells | with content | <br><br>\| table: fitnesse.slim.test.CellResultTable \|<br>\| --- \|<br>\| no change \| |
+| given page | CountAssertions.NoCells | with content | <br><br>\| table: agnesse.slim.test.CellResultTable \|<br>\| --- \|<br>\| no change \| |
 | make | CountAssertions.NoCells | a test page |
 | check | request page | CountAssertions.NoCells?test&format=json | 200 |
 | ensure | content contains | "ignored":1 |
 | ensure | content contains | "right":0 |
 | ensure | content contains | "wrong":0 |
 | ensure | content contains | "status":"ignore" |
-| given page | CountAssertions.OnePass | with content | <br><br>\| table: fitnesse.fixtures.TableOrDecisionFixture \|<br>\| --- \| --- \|<br>\| parsing as? \| Parsed as Table fixture \| |
+| given page | CountAssertions.OnePass | with content | <br><br>\| table: agnesse.fixtures.TableOrDecisionFixture \|<br>\| --- \| --- \|<br>\| parsing as? \| Parsed as Table fixture \| |
 | make | CountAssertions.OnePass | a test page |
 | check | request page | CountAssertions.OnePass?test&format=json | 200 |
 | ensure | content contains | "right":1 |

@@ -8,7 +8,7 @@ A symbol can hold null, and a symbol can hold a blank. A blank value is stored a
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | null fixture | |

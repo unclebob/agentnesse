@@ -1,0 +1,81 @@
+// Copyright (C) 2003-2009 by Object Mentor, Inc. All rights reserved.
+// Released under the terms of the CPL Common Public License version 1.0.
+package agnesseMain;
+
+import java.io.IOException;
+import java.util.Properties;
+
+import static org.junit.Assert.*;
+
+import agnesse.ContextConfigurator;
+import org.junit.Test;
+
+public class ArgumentsTest {
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBadArgument() throws Exception {
+    new Arguments("-x");
+  }
+
+  @Test
+  public void defaultConfigLocation() {
+    Arguments args = new Arguments();
+    assertEquals("./agentnesse.json", args.getConfigFile(ContextConfigurator.systemDefaults()));
+  }
+
+  @Test
+  public void configLocationWithDifferentRootPath() {
+    Arguments args = new Arguments("-d", "customDir");
+    assertEquals("customDir/agentnesse.json", args.getConfigFile(ContextConfigurator.systemDefaults()));
+  }
+
+  @Test
+  public void customConfigLocation() {
+    Arguments args = new Arguments("-f", "custom.properties");
+    assertEquals("custom.properties", args.getConfigFile(ContextConfigurator.systemDefaults()));
+  }
+
+  @Test
+  public void argumentsCanBeRepresentedByProperties() throws IOException {
+    Arguments args = new Arguments("-v", "-p", "81", "-d", "directory", "-r", "root", "-b", "someFile.txt",
+              "-f", "agnesse.properties", "-c", "SomeCommand", "--listen", "0.0.0.0");
+    Properties properties = args.update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
+
+    assertEquals("verbose", properties.getProperty("LogLevel"));
+    assertEquals("81", properties.getProperty("Port"));
+    assertEquals("directory", properties.getProperty("RootPath"));
+    assertEquals("root", properties.getProperty("FitNesseRoot"));
+    assertEquals("someFile.txt", properties.getProperty("RedirectOutput"));
+    assertEquals("agnesse.properties", properties.getProperty("ConfigFile"));
+    assertEquals("SomeCommand", properties.getProperty("Command"));
+    assertEquals("0.0.0.0", properties.getProperty("listen"));
+  }
+
+  @Test
+  public void listensOnLoopbackUnlessAnAddressIsGiven() throws IOException {
+    Properties defaults = new Arguments().update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
+    assertEquals("127.0.0.1", defaults.getProperty("listen"));
+
+    Properties all = new Arguments("--listen", "0.0.0.0").update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
+    assertEquals("0.0.0.0", all.getProperty("listen"));
+
+    Properties specific = new Arguments("--listen", "127.0.0.2").update(ContextConfigurator.systemDefaults()).makeFitNesseContext().getProperties();
+    assertEquals("127.0.0.2", specific.getProperty("listen"));
+  }
+
+  @Test
+  public void defaultArgumentsAsProperties() throws IOException {
+    Arguments args = new Arguments();
+    Properties properties = args.update(ContextConfigurator.empty()).makeFitNesseContext().getProperties();
+
+    assertEquals("normal", properties.getProperty("LogLevel"));
+    assertNull(properties.getProperty("ConfigFile"));
+    assertEquals(".", properties.getProperty("RootPath"));
+    assertEquals("FitNesseRoot", properties.getProperty("FitNesseRoot"));
+    assertNull(properties.getProperty("RedirectOutput"));
+    assertNull(properties.getProperty("Command"));
+    assertEquals("127.0.0.1", properties.getProperty("listen"));
+    assertEquals("100", properties.getProperty("MaximumWorkers"));
+  }
+
+}

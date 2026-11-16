@@ -14,7 +14,7 @@ define slim.timeout
 
 This table should fails as the duration is above the slim.timeout but is does not :(
 
-| fitnesse.slim.test.Sleep | |
+| agnesse.slim.test.Sleep | |
 | --- | --- |
 | Timer | do Sleep ? |
 | 12000 | WakeUp 12000 |

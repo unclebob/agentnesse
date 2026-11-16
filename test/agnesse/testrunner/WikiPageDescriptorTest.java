@@ -1,0 +1,74 @@
+// Copyright (C) 2003-2009 by Object Mentor, Inc. All rights reserved.
+// Released under the terms of the CPL Common Public License version 1.0.
+package agnesse.testrunner;
+
+import agnesse.testsystems.Descriptor;
+import agnesse.wiki.PathParser;
+import agnesse.wiki.WikiPage;
+import agnesse.wiki.WikiPageUtil;
+import agnesse.wiki.fs.InMemoryPage;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+public class WikiPageDescriptorTest {
+
+  private WikiPage root;
+
+  @Before
+  public void setUp() throws Exception {
+    root = InMemoryPage.makeRoot("RooT");
+  }
+
+  @Test
+  public void aDefinedTestSystemIsRejected() throws Exception {
+    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
+            "!define TEST_SYSTEM {system}\n");
+    WikiPageDescriptor wikiPageDescriptor = new WikiPageDescriptor(testPage, true, false, "");
+    try {
+      wikiPageDescriptor.getTestSystemType();
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString("Slim is the only test system"));
+    }
+  }
+
+  @Test
+  public void buildTestSystemTypeIsSlimByDefault() throws Exception {
+    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"), "");
+    WikiPageDescriptor wikiPageDescriptor = new WikiPageDescriptor(testPage, false, false, "");
+    String testSystemType = wikiPageDescriptor.getTestSystemType();
+    assertEquals("slim", testSystemType);
+  }
+
+  private WikiPage makeTestPage(String pageText) {
+    WikiPage root = InMemoryPage.makeRoot("RooT");
+    return WikiPageUtil.addPage(root, PathParser.parse("TestPage"), pageText);
+  }
+
+  @Test
+  public void testReadSystemPropertyIfPagePropertyDoesNotExist() {
+    String pageText = "!define TEST_PROPERTY {foo}\n";
+    System.setProperty("test.property", "bar");
+    WikiPage page = makeTestPage(pageText);
+
+    Descriptor descriptor = new WikiPageDescriptor(page, false, false, "");
+    assertEquals("foo", descriptor.getVariable("TEST_PROPERTY"));
+    assertEquals("bar", descriptor.getVariable("test.property"));
+  }
+
+  @Test
+  public void testPageVariableTakesPrecedenceOverSystemProperty() {
+    String pageText = "!define TEST_PROPERTY {foo}\n";
+    System.setProperty("TEST_PROPERTY", "bar");
+    WikiPage page = makeTestPage(pageText);
+
+    Descriptor descriptor = new WikiPageDescriptor(page, false, false, "");
+    assertEquals("foo", descriptor.getVariable("TEST_PROPERTY"));
+  }
+
+}

@@ -1,0 +1,59 @@
+// Copyright (C) 2003-2009 by Object Mentor, Inc. All rights reserved.
+// Released under the terms of the CPL Common Public License version 1.0.
+package agnesse.wiki;
+
+import java.io.File;
+import java.util.List;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import agnesse.wiki.fs.*;
+import util.FileUtil;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class BaseWikiPageTest {
+  private WikiPage linkingPage;
+  private WikiPage root;
+  private MemoryFileSystem fileSystem;
+
+  @Before
+  public void setUp() throws Exception {
+    fileSystem = new MemoryFileSystem();
+    root = InMemoryPage.makeRoot("RooT", fileSystem);
+    WikiPageUtil.addPage(root, PathParser.parse("LinkedPage"), "");
+    linkingPage = WikiPageUtil.addPage(root, PathParser.parse("LinkingPage"), "");
+    WikiPageUtil.addPage(linkingPage, PathParser.parse("ChildPage"), "");
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    FileUtil.deleteFileSystemDirectory("testDir");
+  }
+
+  @Test
+  public void doesNotEqualAnotherRoot() {
+    WikiPage externalRoot = InMemoryPage.makeRoot("ExternalRoot", fileSystem);
+    assertNotEquals(root, externalRoot);
+  }
+
+  @Test
+  public void testThatSpecialCharsAreNotEscapedTwice() throws Exception {
+    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("SpecialChars"), "<b>");
+    String html = page.getHtml();
+    assertTrue(html.contains("<b>"));
+    assertFalse(html.contains("&lt;b&gt;"));
+  }
+
+  @Test
+  public void testIsRoot() throws Exception {
+    assertTrue(root.isRoot());
+    assertFalse(linkingPage.isRoot());
+  }
+
+}

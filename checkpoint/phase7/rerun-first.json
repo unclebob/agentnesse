@@ -33,9 +33,9 @@
                 "status": null
               },
               {
-                "actual": "fitnesse.fixtures.EchoFixture",
+                "actual": "agnesse.fixtures.EchoFixture",
                 "symbol": null,
-                "expected": "fitnesse.fixtures.EchoFixture",
+                "expected": "agnesse.fixtures.EchoFixture",
                 "column": 2,
                 "row": 1,
                 "error": null,
@@ -121,9 +121,9 @@
                 "status": null
               },
               {
-                "actual": "fitnesse.fixtures.EchoFixture",
+                "actual": "agnesse.fixtures.EchoFixture",
                 "symbol": null,
-                "expected": "fitnesse.fixtures.EchoFixture",
+                "expected": "agnesse.fixtures.EchoFixture",
                 "column": 2,
                 "row": 1,
                 "error": null,
@@ -183,10 +183,10 @@
     "servers": [{
       "stdout": "",
       "launchFailure": null,
-      "name": "slim:fitnesse.slim.SlimService",
+      "name": "slim:agnesse.slim.SlimService",
       "exitCode": 0,
       "stderr": "",
-      "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+      "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
       "exceptions": []
     }],
     "failedPages": ["Demo.Fail"],

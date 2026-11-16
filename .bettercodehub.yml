@@ -4,6 +4,6 @@ languages:
 - javascript
 exclude:
 - /extra/.*
-- /src/fitnesse/resources/codemirror/.*
-- /src/fitnesse/resources/javascript/jquery.*.js
-- /src/fitnesse/resources/bootstrap/js/bootstrap.js
+- /src/agnesse/resources/codemirror/.*
+- /src/agnesse/resources/javascript/jquery.*.js
+- /src/agnesse/resources/bootstrap/js/bootstrap.js

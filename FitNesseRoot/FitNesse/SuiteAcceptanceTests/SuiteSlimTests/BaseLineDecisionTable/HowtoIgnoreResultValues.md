@@ -8,7 +8,7 @@ Given you want to **ignore** the results of an output column (like *quotient*)
 Then already in the base scenario the column must be empty.
 
 
-| baseline: fitnesse.slim.test.Division | | | | |
+| baseline: agnesse.slim.test.Division | | | | |
 | --- | --- | --- | --- | --- |
 | numerator | denominator | quotient? | # Explication | # |
 | 10 | 2 | | S1 Base scenario - ignore | . |

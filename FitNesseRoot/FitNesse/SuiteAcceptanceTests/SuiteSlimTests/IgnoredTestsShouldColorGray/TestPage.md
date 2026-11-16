@@ -8,7 +8,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | Scenario | Stop Test | |

@@ -4471,9 +4471,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -4565,9 +4565,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -10249,9 +10249,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -10330,12 +10330,12 @@
               "exceptions": 0,
               "wrong": 0
             },
-            "name": "baseline: fitnesse.slim.test.Division",
+            "name": "baseline: agnesse.slim.test.Division",
             "rows": [
               {"cells": [{
-                "actual": "baseline: fitnesse.slim.test.Division",
+                "actual": "baseline: agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "baseline: fitnesse.slim.test.Division",
+                "expected": "baseline: agnesse.slim.test.Division",
                 "column": 1,
                 "row": 1,
                 "error": null,
@@ -10768,12 +10768,12 @@
               "exceptions": 0,
               "wrong": 0
             },
-            "name": "baseline: fitnesse.slim.test.Division",
+            "name": "baseline: agnesse.slim.test.Division",
             "rows": [
               {"cells": [{
-                "actual": "baseline: fitnesse.slim.test.Division",
+                "actual": "baseline: agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "baseline: fitnesse.slim.test.Division",
+                "expected": "baseline: agnesse.slim.test.Division",
                 "column": 1,
                 "row": 1,
                 "error": null,
@@ -15483,9 +15483,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -15564,12 +15564,12 @@
               "exceptions": 0,
               "wrong": 0
             },
-            "name": "baseline: fitnesse.slim.test.Division",
+            "name": "baseline: agnesse.slim.test.Division",
             "rows": [
               {"cells": [{
-                "actual": "baseline: fitnesse.slim.test.Division",
+                "actual": "baseline: agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "baseline: fitnesse.slim.test.Division",
+                "expected": "baseline: agnesse.slim.test.Division",
                 "column": 1,
                 "row": 1,
                 "error": null,
@@ -20279,9 +20279,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -20373,9 +20373,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -25315,9 +25315,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -25559,9 +25559,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -32231,9 +32231,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -37633,9 +37633,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -37727,9 +37727,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -37737,9 +37737,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 3,
                 "error": null,
@@ -42583,9 +42583,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -42677,9 +42677,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -47979,9 +47979,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -54425,9 +54425,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -54519,9 +54519,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -55388,13 +55388,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.AddUpChange@909217e",
+                  "actual": "agnesse.slim.test.AddUpChange@909217e",
                   "symbol": "myfixture",
                   "expected": "$myfixture=",
                   "column": 1,
                   "row": 2,
                   "error": null,
-                  "value": "fitnesse.slim.test.AddUpChange@909217e",
+                  "value": "agnesse.slim.test.AddUpChange@909217e",
                   "status": "symbol"
                 },
                 {
@@ -55650,13 +55650,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.AddUpChange@18271936",
+                  "actual": "agnesse.slim.test.AddUpChange@18271936",
                   "symbol": "anotherFixture",
                   "expected": "$anotherFixture=",
                   "column": 1,
                   "row": 2,
                   "error": null,
-                  "value": "fitnesse.slim.test.AddUpChange@18271936",
+                  "value": "agnesse.slim.test.AddUpChange@18271936",
                   "status": "symbol"
                 },
                 {
@@ -55954,13 +55954,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.TestQuery@606e4010",
+                  "actual": "agnesse.slim.test.TestQuery@606e4010",
                   "symbol": "tq",
                   "expected": "$tq=",
                   "column": 1,
                   "row": 3,
                   "error": null,
-                  "value": "fitnesse.slim.test.TestQuery@606e4010",
+                  "value": "agnesse.slim.test.TestQuery@606e4010",
                   "status": "symbol"
                 },
                 {
@@ -56140,13 +56140,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "fitnesse.slim.test.TestQuery@8458f04",
+                  "actual": "agnesse.slim.test.TestQuery@8458f04",
                   "symbol": "tq",
                   "expected": "$tq=",
                   "column": 1,
                   "row": 3,
                   "error": null,
-                  "value": "fitnesse.slim.test.TestQuery@8458f04",
+                  "value": "agnesse.slim.test.TestQuery@8458f04",
                   "status": "symbol"
                 },
                 {
@@ -60949,9 +60949,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -65655,9 +65655,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -65749,9 +65749,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.testsystems.slim.tables",
+                "actual": "agnesse.testsystems.slim.tables",
                 "symbol": null,
-                "expected": "fitnesse.testsystems.slim.tables",
+                "expected": "agnesse.testsystems.slim.tables",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -72107,9 +72107,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -72202,9 +72202,9 @@
                   "status": null
                 },
                 {
-                  "actual": "fitnesse.slim.test.TestSlim",
+                  "actual": "agnesse.slim.test.TestSlim",
                   "symbol": null,
-                  "expected": "fitnesse.slim.test.TestSlim",
+                  "expected": "agnesse.slim.test.TestSlim",
                   "column": 2,
                   "row": 1,
                   "error": null,
@@ -76919,9 +76919,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -76983,9 +76983,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -83103,9 +83103,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -83167,9 +83167,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -88051,9 +88051,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -88115,9 +88115,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.testsystems.slim.tables",
+                "actual": "agnesse.testsystems.slim.tables",
                 "symbol": null,
-                "expected": "fitnesse.testsystems.slim.tables",
+                "expected": "agnesse.testsystems.slim.tables",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -93029,9 +93029,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -98943,9 +98943,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -99037,9 +99037,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.library",
+                "actual": "agnesse.slim.test.library",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.library",
+                "expected": "agnesse.slim.test.library",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -99069,9 +99069,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -104573,9 +104573,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -104667,9 +104667,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.library",
+                "actual": "agnesse.slim.test.library",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.library",
+                "expected": "agnesse.slim.test.library",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -104699,9 +104699,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.library",
+                "actual": "agnesse.slim.test.library",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.library",
+                "expected": "agnesse.slim.test.library",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -109999,9 +109999,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -110093,9 +110093,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.library",
+                "actual": "agnesse.slim.test.library",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.library",
+                "expected": "agnesse.slim.test.library",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -115403,9 +115403,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -115497,9 +115497,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.library",
+                "actual": "agnesse.slim.test.library",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.library",
+                "expected": "agnesse.slim.test.library",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -120809,9 +120809,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -120903,9 +120903,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.library",
+                "actual": "agnesse.slim.test.library",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.library",
+                "expected": "agnesse.slim.test.library",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -125679,9 +125679,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -125773,9 +125773,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -130377,9 +130377,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -131775,9 +131775,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -137227,9 +137227,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -137321,9 +137321,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -142099,9 +142099,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -147297,9 +147297,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -152053,9 +152053,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -152360,9 +152360,9 @@
                   "status": null
                 },
                 {
-                  "actual": "fitnesse.slim.test.TestSlim",
+                  "actual": "agnesse.slim.test.TestSlim",
                   "symbol": null,
-                  "expected": "fitnesse.slim.test.TestSlim",
+                  "expected": "agnesse.slim.test.TestSlim",
                   "column": 2,
                   "row": 2,
                   "error": null,
@@ -156941,9 +156941,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -162127,9 +162127,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -167667,9 +167667,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -172685,9 +172685,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -177371,9 +177371,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -182737,9 +182737,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -187591,9 +187591,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -187835,9 +187835,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -194533,9 +194533,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -194777,9 +194777,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -200389,9 +200389,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -200643,9 +200643,9 @@
                 "status": null
               },
               {
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 2,
                 "row": 1,
                 "error": null,
@@ -201081,9 +201081,9 @@
                 "status": null
               },
               {
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 2,
                 "row": 1,
                 "error": null,
@@ -205831,9 +205831,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -211103,9 +211103,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -216115,9 +216115,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -216319,9 +216319,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -222361,9 +222361,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -222875,9 +222875,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.Division",
+                "actual": "agnesse.slim.test.Division",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.Division",
+                "expected": "agnesse.slim.test.Division",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -228427,9 +228427,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -228521,9 +228521,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -233399,9 +233399,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -233493,9 +233493,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -238427,9 +238427,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -238521,9 +238521,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -244763,9 +244763,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -244858,9 +244858,9 @@
                   "status": null
                 },
                 {
-                  "actual": "fitnesse.fixtures.EchoFixture",
+                  "actual": "agnesse.fixtures.EchoFixture",
                   "symbol": null,
-                  "expected": "fitnesse.fixtures.EchoFixture",
+                  "expected": "agnesse.fixtures.EchoFixture",
                   "column": 2,
                   "row": 1,
                   "error": null,
@@ -249479,9 +249479,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -249573,9 +249573,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -254383,9 +254383,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -259289,9 +259289,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -259383,9 +259383,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -264169,9 +264169,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -264263,9 +264263,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -269263,9 +269263,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -275091,9 +275091,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -280919,9 +280919,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -286959,9 +286959,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -287053,9 +287053,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -291733,9 +291733,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -291827,9 +291827,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -292213,9 +292213,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -296985,9 +296985,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -297079,9 +297079,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -297089,9 +297089,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test.statementexecutorconsumer",
+                "actual": "agnesse.slim.test.statementexecutorconsumer",
                 "symbol": null,
-                "expected": "fitnesse.slim.test.statementexecutorconsumer",
+                "expected": "agnesse.slim.test.statementexecutorconsumer",
                 "column": 1,
                 "row": 3,
                 "error": null,
@@ -297121,9 +297121,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -302207,9 +302207,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -302288,12 +302288,12 @@
               "exceptions": 0,
               "wrong": 0
             },
-            "name": "Table:fitnesse.slim.test.DummyTableTableReturnsNull",
+            "name": "Table:agnesse.slim.test.DummyTableTableReturnsNull",
             "rows": [
               {"cells": [{
                 "actual": "No results from table",
                 "symbol": null,
-                "expected": "Table:fitnesse.slim.test.DummyTableTableReturnsNull",
+                "expected": "Table:agnesse.slim.test.DummyTableTableReturnsNull",
                 "column": 1,
                 "row": 1,
                 "error": null,
@@ -306913,9 +306913,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -307007,9 +307007,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -311575,9 +311575,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -320335,9 +320335,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -320429,9 +320429,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -325373,9 +325373,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -330775,9 +330775,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -336233,9 +336233,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -336327,9 +336327,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -336412,7 +336412,7 @@
                   "status": null
                 },
                 {
-                  "actual": "/This is my exception/ found in: __EXCEPTION__:java.lang.Exception: This is my exception\n\tat fitnesse.slim.test.TestSlim.throwNormal(TestSlim.java:261) [fitnesse-20261114-standalone.jar:20261114]\n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) [n/a]\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580) [rt.jar]\n\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.FixtureMethodExecutor.execute(FixtureMethodExecutor.java:18) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.StatementExecutor.call(StatementExecutor.java:112) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.instructions.Instruction.execute(Instruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor.execute(ListExecutor.java:85) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.executeInstructions(SlimServer.java:83) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.serve(SlimServer.java:48) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.handle(SlimService.java:189) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.acceptOne(SlimService.java:197) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.accept(SlimService.java:161) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:118) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.run(SlimService.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.main(SlimService.java:78) [fitnesse-20261114-standalone.jar:20261114]",
+                  "actual": "/This is my exception/ found in: __EXCEPTION__:java.lang.Exception: This is my exception\n\tat agnesse.slim.test.TestSlim.throwNormal(TestSlim.java:261) [fitnesse-20261114-standalone.jar:20261114]\n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) [n/a]\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580) [rt.jar]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.FixtureMethodExecutor.execute(FixtureMethodExecutor.java:18) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.StatementExecutor.call(StatementExecutor.java:112) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.Instruction.execute(Instruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor.execute(ListExecutor.java:85) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.executeInstructions(SlimServer.java:83) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.serve(SlimServer.java:48) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.handle(SlimService.java:189) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.acceptOne(SlimService.java:197) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.accept(SlimService.java:161) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.startWithFactory(SlimService.java:118) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.run(SlimService.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.main(SlimService.java:78) [fitnesse-20261114-standalone.jar:20261114]",
                   "symbol": null,
                   "expected": "HelloEXCEPTION:=~/This is my exception/",
                   "column": 2,
@@ -340937,9 +340937,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -346469,9 +346469,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -346563,9 +346563,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.testsystems.slim.results",
+                "actual": "agnesse.testsystems.slim.results",
                 "symbol": null,
-                "expected": "fitnesse.testsystems.slim.results",
+                "expected": "agnesse.testsystems.slim.results",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -347622,9 +347622,9 @@
                   "status": null
                 },
                 {
-                  "actual": "Method missing[1] not found in fitnesse.slim.test.TestSlim.",
+                  "actual": "Method missing[1] not found in agnesse.slim.test.TestSlim.",
                   "symbol": null,
-                  "expected": "Method missing[1] not found in fitnesse.slim.test.TestSlim.",
+                  "expected": "Method missing[1] not found in agnesse.slim.test.TestSlim.",
                   "column": 3,
                   "row": 3,
                   "error": null,
@@ -352127,9 +352127,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -357575,9 +357575,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -362472,9 +362472,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -367369,9 +367369,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -372163,9 +372163,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -376795,9 +376795,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -381501,9 +381501,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -381595,9 +381595,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -386371,9 +386371,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -386466,9 +386466,9 @@
                   "status": null
                 },
                 {
-                  "actual": "fitnesse.slim.test.TestSlim",
+                  "actual": "agnesse.slim.test.TestSlim",
                   "symbol": null,
-                  "expected": "fitnesse.slim.test.TestSlim",
+                  "expected": "agnesse.slim.test.TestSlim",
                   "column": 2,
                   "row": 1,
                   "error": null,
@@ -393819,9 +393819,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -398627,9 +398627,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -403639,9 +403639,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -403733,9 +403733,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.util",
+                "actual": "agnesse.util",
                 "symbol": null,
-                "expected": "fitnesse.util",
+                "expected": "agnesse.util",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -408599,9 +408599,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -413611,9 +413611,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -418803,9 +418803,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -418897,9 +418897,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -423935,9 +423935,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -428673,9 +428673,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -433475,9 +433475,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -433839,9 +433839,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.fixtures",
+                "actual": "agnesse.fixtures",
                 "symbol": null,
-                "expected": "fitnesse.fixtures",
+                "expected": "agnesse.fixtures",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -433933,9 +433933,9 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "fitnesse.slim.test",
+                "actual": "agnesse.slim.test",
                 "symbol": null,
-                "expected": "fitnesse.slim.test",
+                "expected": "agnesse.slim.test",
                 "column": 1,
                 "row": 2,
                 "error": null,
@@ -434074,182 +434074,182 @@
       {
         "stdout": "这是中文\nme here\nme here\nme here\n",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
-        "exceptions": ["fitnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file."]
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "exceptions": ["agnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file."]
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "slim:fitnesse.slim.SlimService",
+        "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "SLIM:fitnesse.slim.SlimService",
+        "name": "SLIM:agnesse.slim.SlimService",
         "exitCode": 98,
-        "stderr": "java.net.BindException: Address already in use\n\tat java.base/sun.nio.ch.Net.bind0(Native Method)\n\tat java.base/sun.nio.ch.Net.bind(Net.java:577)\n\tat java.base/sun.nio.ch.Net.bind(Net.java:566)\n\tat java.base/sun.nio.ch.NioSocketImpl.bind(NioSocketImpl.java:636)\n\tat java.base/java.net.ServerSocket.bind(ServerSocket.java:391)\n\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:278)\n\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:171)\n\tat fitnesse.socketservice.PlainServerSocketFactory.createServerSocket(PlainServerSocketFactory.java:15)\n\tat fitnesse.slim.SlimService.open(SlimService.java:110)\n\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:114)\n\tat fitnesse.slim.SlimService.run(SlimService.java:88)\n\tat fitnesse.slim.SlimService.main(SlimService.java:78)\nExiting as exception occured: Address already in use\n",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService -v 9123",
+        "stderr": "java.net.BindException: Address already in use\n\tat java.base/sun.nio.ch.Net.bind0(Native Method)\n\tat java.base/sun.nio.ch.Net.bind(Net.java:577)\n\tat java.base/sun.nio.ch.Net.bind(Net.java:566)\n\tat java.base/sun.nio.ch.NioSocketImpl.bind(NioSocketImpl.java:636)\n\tat java.base/java.net.ServerSocket.bind(ServerSocket.java:391)\n\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:278)\n\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:171)\n\tat agnesse.socketservice.PlainServerSocketFactory.createServerSocket(PlainServerSocketFactory.java:15)\n\tat agnesse.slim.SlimService.open(SlimService.java:110)\n\tat agnesse.slim.SlimService.startWithFactory(SlimService.java:114)\n\tat agnesse.slim.SlimService.run(SlimService.java:88)\n\tat agnesse.slim.SlimService.main(SlimService.java:78)\nExiting as exception occured: Address already in use\n",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService -v 9123",
         "exceptions": []
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "SLIM:fitnesse.slim.SlimService",
+        "name": "SLIM:agnesse.slim.SlimService",
         "exitCode": null,
         "stderr": "",
         "command": "Connection to running SlimService: 127.0.0.1:9123",
-        "exceptions": ["fitnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file."]
+        "exceptions": ["agnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file."]
       },
       {
         "stdout": "",
@@ -434272,11 +434272,11 @@
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "SLIM:fitnesse.slim.SlimService",
+        "name": "SLIM:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
-        "exceptions": ["fitnesse.slim.SlimError: Error SLiM server died before a connection could be established. Caused by: java.lang.ClassNotFoundException: something.that.does.not.exists\n"]
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "exceptions": ["agnesse.slim.SlimError: Error SLiM server died before a connection could be established. Caused by: java.lang.ClassNotFoundException: something.that.does.not.exists\n"]
       },
       {
         "stdout": "",
@@ -434290,19 +434290,19 @@
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "SLIM:fitnesse.slim.SlimService",
+        "name": "SLIM:agnesse.slim.SlimService",
         "exitCode": null,
         "stderr": "",
         "command": "Connection to running SlimService: localhost:8099",
-        "exceptions": ["fitnesse.slim.SlimError: Error connecting to SLiM server on localhost:8099"]
+        "exceptions": ["agnesse.slim.SlimError: Error connecting to SLiM server on localhost:8099"]
       },
       {
         "stdout": "",
         "launchFailure": null,
-        "name": "SLIM:remote_debug:fitnesse.slim.SlimService",
+        "name": "SLIM:remote_debug:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+        "command": "java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       }
     ],

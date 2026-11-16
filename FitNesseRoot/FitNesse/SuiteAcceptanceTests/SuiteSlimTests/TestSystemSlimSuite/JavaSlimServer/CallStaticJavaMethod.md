@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.util |
+| agnesse.util |
 | java.time |
 
 ## Static methods can be called in scripts of any object and result can be assigned to slim symbols

@@ -13,7 +13,7 @@ true
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 Given I have at least one milk remaining, I should not go to the store.

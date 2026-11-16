@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 The fixture chaining with instances allows you to store an object instance in a Slim symbol and to use the instance as the table actor for an arbitrary Slim table.
 Here createTestSlimWithString(string) is a factory method that creates a new `TestSlim` instance, sets the given string and returns the object.

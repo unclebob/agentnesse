@@ -104,7 +104,7 @@ task watchTemplates {
         println "Starting template watcher..."
         println "Waiting for changes..."
 
-        def templatesDir = file('src/fitnesse/resources/templates')
+        def templatesDir = file('src/agnesse/resources/templates')
         def lastModified = [:]
 
         // Initialize last modified times
@@ -139,8 +139,8 @@ task watchTemplates {
                 if (hasChanges) {
                     println "Copying templates..."
                     copy {
-                    from 'src/fitnesse/resources/templates'
-                    into 'build/classes/java/main/fitnesse/resources/templates'
+                    from 'src/agnesse/resources/templates'
+                    into 'build/classes/java/main/agnesse/resources/templates'
                         include '**/*.vm'
                     }
                     println "Templates copied. Waiting for changes..."
@@ -209,7 +209,7 @@ task copyRuntimeLibs(type: Copy) {
 task javascriptTest(type: Exec) {
   group = 'verification'
   description = 'Run the suite summary renderer tests.'
-  commandLine 'node', '--test', '--test-concurrency=1', 'test/fitnesse/resources/javascript/suiteSummary.test.js'
+  commandLine 'node', '--test', '--test-concurrency=1', 'test/agnesse/resources/javascript/suiteSummary.test.js'
 }
 
 test {
@@ -235,45 +235,45 @@ jacocoTestReport {
 // A deleted package drops its entry. Values are the baseline, truncated down
 // to two decimal places so a one-line swing does not fail the build.
 def coverageFloors = [
-  'fitnesse': [line: 0.85, branch: 0.80],
-  'fitnesse/components': [line: 0.89, branch: 0.86],
-  'fitnesse/fixtures': [line: 0.18, branch: 0.16],
-  'fitnesse/html': [line: 0.85, branch: 0.78],
-  'fitnesse/html/template': [line: 0.96, branch: 0.79],
-  'fitnesse/http': [line: 0.89, branch: 0.80],
-  'fitnesse/junit': [line: 0.79, branch: 0.66],
-  'fitnesse/logging': [line: 1.00, branch: 0.90],
-  'fitnesse/markdown': [line: 0.90, branch: 0.80],
-  'fitnesse/reporting': [line: 0.95, branch: 0.90],
-  'fitnesse/responders': [line: 0.94, branch: 0.84],
-  'fitnesse/responders/editing': [line: 0.95, branch: 0.86],
-  'fitnesse/responders/files': [line: 0.79, branch: 0.79],
-  'fitnesse/responders/refactoring': [line: 0.85, branch: 0.75],
-  'fitnesse/responders/run': [line: 0.77, branch: 0.75],
-  'fitnesse/responders/search': [line: 0.91, branch: 0.82],
-  'fitnesse/slim': [line: 0.79, branch: 0.77],
-  'fitnesse/slim/converters': [line: 0.94, branch: 0.95],
-  'fitnesse/slim/converters/beans': [line: 0.73, branch: 0.83],
-  'fitnesse/slim/fixtureInteraction': [line: 0.78, branch: 0.67],
-  'fitnesse/slim/instructions': [line: 0.68, branch: 0.45],
-  'fitnesse/slim/protocol': [line: 0.98, branch: 0.92],
-  'fitnesse/slim/test': [line: 0.58, branch: 0.50],
-  'fitnesse/slim/test/library': [line: 0.00],
-  'fitnesse/slim/test/statementexecutorconsumer': [line: 0.95, branch: 0.64],
-  'fitnesse/socketservice': [line: 0.57, branch: 0.46],
-  'fitnesse/testrunner': [line: 0.94, branch: 0.85],
-  'fitnesse/testrunner/run': [line: 0.82, branch: 0.81],
-  'fitnesse/testsystems': [line: 0.88, branch: 0.80],
-  'fitnesse/testsystems/slim': [line: 0.87, branch: 0.84],
-  'fitnesse/testsystems/slim/results': [line: 0.84, branch: 0.74],
-  'fitnesse/testsystems/slim/tables': [line: 0.87, branch: 0.86],
-  'fitnesse/testutil': [line: 0.59, branch: 0.62],
-  'fitnesse/util': [line: 0.90, branch: 0.88],
-  'fitnesse/wiki': [line: 0.93, branch: 0.89],
-  'fitnesse/wiki/fs': [line: 0.83, branch: 0.84],
-  'fitnesse/wiki/refactoring': [line: 0.96, branch: 0.81],
-  'fitnesse/wiki/search': [line: 0.97, branch: 0.90],
-  'fitnesseMain': [line: 0.68, branch: 0.72],
+  'agnesse': [line: 0.85, branch: 0.80],
+  'agnesse/components': [line: 0.89, branch: 0.86],
+  'agnesse/fixtures': [line: 0.18, branch: 0.16],
+  'agnesse/html': [line: 0.85, branch: 0.78],
+  'agnesse/html/template': [line: 0.96, branch: 0.79],
+  'agnesse/http': [line: 0.89, branch: 0.80],
+  'agnesse/junit': [line: 0.79, branch: 0.66],
+  'agnesse/logging': [line: 1.00, branch: 0.90],
+  'agnesse/markdown': [line: 0.90, branch: 0.80],
+  'agnesse/reporting': [line: 0.95, branch: 0.90],
+  'agnesse/responders': [line: 0.94, branch: 0.84],
+  'agnesse/responders/editing': [line: 0.95, branch: 0.86],
+  'agnesse/responders/files': [line: 0.79, branch: 0.79],
+  'agnesse/responders/refactoring': [line: 0.85, branch: 0.75],
+  'agnesse/responders/run': [line: 0.77, branch: 0.75],
+  'agnesse/responders/search': [line: 0.91, branch: 0.82],
+  'agnesse/slim': [line: 0.79, branch: 0.77],
+  'agnesse/slim/converters': [line: 0.94, branch: 0.95],
+  'agnesse/slim/converters/beans': [line: 0.73, branch: 0.83],
+  'agnesse/slim/fixtureInteraction': [line: 0.78, branch: 0.67],
+  'agnesse/slim/instructions': [line: 0.68, branch: 0.45],
+  'agnesse/slim/protocol': [line: 0.98, branch: 0.92],
+  'agnesse/slim/test': [line: 0.58, branch: 0.50],
+  'agnesse/slim/test/library': [line: 0.00],
+  'agnesse/slim/test/statementexecutorconsumer': [line: 0.95, branch: 0.64],
+  'agnesse/socketservice': [line: 0.57, branch: 0.46],
+  'agnesse/testrunner': [line: 0.94, branch: 0.85],
+  'agnesse/testrunner/run': [line: 0.82, branch: 0.81],
+  'agnesse/testsystems': [line: 0.88, branch: 0.80],
+  'agnesse/testsystems/slim': [line: 0.87, branch: 0.84],
+  'agnesse/testsystems/slim/results': [line: 0.84, branch: 0.74],
+  'agnesse/testsystems/slim/tables': [line: 0.87, branch: 0.86],
+  'agnesse/testutil': [line: 0.59, branch: 0.62],
+  'agnesse/util': [line: 0.90, branch: 0.88],
+  'agnesse/wiki': [line: 0.93, branch: 0.89],
+  'agnesse/wiki/fs': [line: 0.83, branch: 0.84],
+  'agnesse/wiki/refactoring': [line: 0.96, branch: 0.81],
+  'agnesse/wiki/search': [line: 0.97, branch: 0.90],
+  'agnesseMain': [line: 0.68, branch: 0.72],
   'util': [line: 0.91, branch: 0.91],
 ]
 
@@ -351,7 +351,7 @@ task verifyNoIgnoredTests {
 check.dependsOn jacocoTestCoverageVerification, verifyRemoved, verifyNoIgnoredTests
 
 pitest {
-  targetClasses = ['fit.*', 'fitnesse.*']
+  targetClasses = ['fit.*', 'agnesse.*']
   pitestVersion = "1.30.1"
   threads = 1 // We can not deal with parallel execution yet
   outputFormats = ['XML', 'HTML']
@@ -360,7 +360,7 @@ pitest {
 task run(type: JavaExec) {
   dependsOn classes, copyRuntimeLibs
   classpath = sourceSets.main.runtimeClasspath
-  mainClass = "fitnesseMain.FitNesseMain"
+  mainClass = "agnesseMain.FitNesseMain"
   args "-p", "8001"
 }
 
@@ -373,7 +373,7 @@ jar {
   }
   duplicatesStrategy = 'exclude'
   manifest {
-    attributes("Main-Class": "fitnesseMain.FitNesseMain",
+    attributes("Main-Class": "agnesseMain.FitNesseMain",
         "Implementation-Version": archiveVersion)
   }
 }
@@ -395,7 +395,7 @@ task standaloneJar(type: Jar) {
     zipTree(it)
   }
   manifest {
-    attributes("Main-Class": "fitnesseMain.FitNesseMain",
+    attributes("Main-Class": "agnesseMain.FitNesseMain",
         "Implementation-Version": archiveVersion)
   }
 }
@@ -406,11 +406,11 @@ task slimJar(type: Jar) {
   archiveClassifier = 'slim'
   from { jar.outputs.files.collect { zipTree(it) } }
     {
-    include 'fitnesse/html/*.class'
-    include 'fitnesse/slim/**/*.class'
-    include 'fitnesse/socketservice/*.class'
+    include 'agnesse/html/*.class'
+    include 'agnesse/slim/**/*.class'
+    include 'agnesse/socketservice/*.class'
     include 'util/*.class'
-    include 'fitnesse/util/StringUtils.class'
+    include 'agnesse/util/StringUtils.class'
   }
   manifest {
     attributes("Implementation-Version": archiveVersion)
@@ -421,14 +421,14 @@ task acceptanceTest(type: JavaExec) {
   mustRunAfter test
   onlyIf { test.didWork }
   classpath = standaloneJar.outputs.files
-  mainClass = "fitnesseMain.FitNesseMain"
+  mainClass = "agnesseMain.FitNesseMain"
   args "-c", "FitNesse.SuiteAcceptanceTests?suite", "-b", "build/reports/acceptance-results.json"
 }
 
 task validateAcceptanceResults(type: JavaExec) {
   dependsOn acceptanceTest
   classpath = sourceSets.main.runtimeClasspath
-  mainClass = "fitnesse.results.SchemaCheck"
+  mainClass = "agnesse.results.SchemaCheck"
   args "build/reports/acceptance-results.json"
 }
 

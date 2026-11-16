@@ -8,7 +8,7 @@ A table table can read symbols and assign new ones. An assignment is not visible
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 
 | script | | |

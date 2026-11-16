@@ -7,8 +7,8 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
-| fitnesse.fixtures |
+| agnesse.slim.test |
+| agnesse.fixtures |
 
 
 | script | echo fixture | |

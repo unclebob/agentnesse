@@ -1,0 +1,23 @@
+package agnesse.wiki;
+
+import java.util.Map;
+import java.util.Optional;
+
+public class UrlPathVariableSource implements VariableSource {
+  private final VariableSource systemVariables;
+  private final Map<String,String> urlParams;
+
+  public UrlPathVariableSource(VariableSource systemVariables, Map<String,String> urlParams) {
+    this.systemVariables = systemVariables;
+    this.urlParams = urlParams;
+  }
+
+  @Override
+  public Optional<String> findVariable(String name) {
+    if(urlParams != null && urlParams.containsKey(name)) {
+        return Optional.ofNullable(urlParams.get(name));
+    }
+
+    return systemVariables.findVariable(name);
+  }
+}

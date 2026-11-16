@@ -40,7 +40,7 @@
               "error": {
                 "kind": "MISSING_FIXTURE",
                 "block": "script",
-                "stackTrace": "at fitnesse.slim.fixtureInteraction.SimpleInteraction.searchPathsForClass(SimpleInteraction.java:87) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.fixtureInteraction.SimpleInteraction.createInstance(SimpleInteraction.java:41) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimExecutionContext.create(SlimExecutionContext.java:52) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.StatementExecutor.create(StatementExecutor.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.instructions.MakeInstruction.executeInternal(MakeInstruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.instructions.Instruction.execute(Instruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.ListExecutor.execute(ListExecutor.java:85) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.executeInstructions(SlimServer.java:83) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimServer.serve(SlimServer.java:48) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.handle(SlimService.java:189) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.acceptOne(SlimService.java:197) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.accept(SlimService.java:161) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.startWithFactory(SlimService.java:118) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.run(SlimService.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat fitnesse.slim.SlimService.main(SlimService.java:78) [fitnesse-20261114-standalone.jar:20261114]",
+                "stackTrace": "at agnesse.slim.fixtureInteraction.SimpleInteraction.searchPathsForClass(SimpleInteraction.java:87) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.createInstance(SimpleInteraction.java:41) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimExecutionContext.create(SlimExecutionContext.java:52) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.StatementExecutor.create(StatementExecutor.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.MakeInstruction.executeInternal(MakeInstruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.Instruction.execute(Instruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor.execute(ListExecutor.java:85) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.executeInstructions(SlimServer.java:83) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.serve(SlimServer.java:48) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.handle(SlimService.java:189) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.acceptOne(SlimService.java:197) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.accept(SlimService.java:161) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.startWithFactory(SlimService.java:118) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.run(SlimService.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.main(SlimService.java:78) [fitnesse-20261114-standalone.jar:20261114]",
                 "page": "Broken",
                 "row": 1,
                 "type": "COULD_NOT_INVOKE_CONSTRUCTOR",
@@ -86,9 +86,9 @@
                 "status": null
               },
               {
-                "actual": "fitnesse.fixtures.EchoFixture",
+                "actual": "agnesse.fixtures.EchoFixture",
                 "symbol": null,
-                "expected": "fitnesse.fixtures.EchoFixture",
+                "expected": "agnesse.fixtures.EchoFixture",
                 "column": 2,
                 "row": 1,
                 "error": null,
@@ -190,10 +190,10 @@
     "servers": [{
       "stdout": "",
       "launchFailure": null,
-      "name": "slim:fitnesse.slim.SlimService",
+      "name": "slim:agnesse.slim.SlimService",
       "exitCode": 0,
       "stderr": "",
-      "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar fitnesse.slim.SlimService 1",
+      "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
       "exceptions": []
     }],
     "failedPages": [

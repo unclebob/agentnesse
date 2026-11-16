@@ -54,7 +54,7 @@ Use the Division class from the eg library to implement the scenario
 
 | Library |
 | --- |
-| fitnesse.slim.test.Division |
+| agnesse.slim.test.Division |
 
 #### Test the scenario with a decision table
 

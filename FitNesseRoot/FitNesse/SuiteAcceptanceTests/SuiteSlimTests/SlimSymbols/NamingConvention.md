@@ -7,7 +7,7 @@
 
 | import |
 | --- |
-| fitnesse.slim.test |
+| agnesse.slim.test |
 
 ### Slim symbols names must start with a letter, followed by letters, digits and underscores
 
