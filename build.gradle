@@ -482,7 +482,7 @@ publishing {
           resolveStrategy = Closure.DELEGATE_FIRST
           name('AgNesse')
           description('The fully integrated standalone wiki, and acceptance testing framework.')
-          url('http://fitnesse.org')
+          url('https://github.com/unclebob/agnesse')
           packaging('jar')
         }
         asNode().append(pomLicenses())
@@ -525,9 +525,9 @@ def pomLicenses() {
 
 def pomScm() {
   new NodeBuilder().scm {
-    connection 'scm:git:git://github.com/unclebob/fitnesse.git'
-    developerConnection 'scm:git:git@github.com:unclebob/fitnesse.git'
-    url 'scm:git:http://github.com/unclebob/fitnesse'
+    connection 'scm:git:git://github.com/unclebob/agnesse.git'
+    developerConnection 'scm:git:git@github.com:unclebob/agnesse.git'
+    url 'https://github.com/unclebob/agnesse'
   }
 }
 

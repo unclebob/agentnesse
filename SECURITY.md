@@ -7,7 +7,7 @@ Security issues will be fixed by creating a new release, in general older versio
 
 ## Reporting a Vulnerability
 
-To report a security vulnerability, please email: fitnesse-security *'at'* hsac *'dot'* nl.
+To report a security vulnerability, open a draft advisory: https://github.com/unclebob/agnesse/security/advisories/new
 
 Report security bugs in third-party modules to the person or team maintaining the module.
 
