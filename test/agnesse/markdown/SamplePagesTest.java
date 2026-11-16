@@ -17,20 +17,20 @@ public class SamplePagesTest {
   @Test
   public void theSamplePagesRenderThroughTheWiki() throws Exception {
     WikiPage root = new FileSystemPageFactory(new agnesse.wiki.fs.DiskFileSystem(), new WikiFiles())
-      .makePage(new File("FitNesseRoot"), "FitNesseRoot", null, new SystemVariableSource());
+      .makePage(new File("AgNesseRoot"), "AgNesseRoot", null, new SystemVariableSource());
 
-    WikiPage samples = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples"));
+    WikiPage samples = root.getPageCrawler().getPage(PathParser.parse("AgNesseSamples"));
     String contents = samples.getHtml();
     for (String child : new String[] {
       "Blocks", "DecisionDivision", "PageFooter", "PageHeader", "ScriptLogin", "SetUp", "WithSetUp"}) {
-      assertTrue(contents, contents.contains("<a href=\"AgentNesseSamples." + child + "\">" + child + "</a>"));
+      assertTrue(contents, contents.contains("<a href=\"AgNesseSamples." + child + "\">" + child + "</a>"));
     }
     assertTrue(!contents.contains("agnesse-include"));
 
-    WikiPage decision = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.DecisionDivision"));
-    WikiPage script = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.ScriptLogin"));
-    WikiPage withSetUp = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.WithSetUp"));
-    WikiPage blocks = root.getPageCrawler().getPage(PathParser.parse("AgentNesseSamples.Blocks"));
+    WikiPage decision = root.getPageCrawler().getPage(PathParser.parse("AgNesseSamples.DecisionDivision"));
+    WikiPage script = root.getPageCrawler().getPage(PathParser.parse("AgNesseSamples.ScriptLogin"));
+    WikiPage withSetUp = root.getPageCrawler().getPage(PathParser.parse("AgNesseSamples.WithSetUp"));
+    WikiPage blocks = root.getPageCrawler().getPage(PathParser.parse("AgNesseSamples.Blocks"));
 
     assertEquals(MarkdownPage.class, decision.getClass());
     assertTrue(decision.getHtml().contains("agnesse-table decision"));

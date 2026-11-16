@@ -24,7 +24,7 @@ import static agnesse.ConfigurationParameter.ROOT_DIRECTORY;
  */
 public class ContextConfigurator {
   private static final String DEFAULT_PATH = ".";
-  public static final String DEFAULT_ROOT = "FitNesseRoot";
+  public static final String DEFAULT_ROOT = "AgNesseRoot";
   private static final int DEFAULT_COMMAND_PORT = 9123;
   public static final int DEFAULT_PORT = 80;
   public static final String DEFAULT_CONFIG_FILE = "agnesse.json";

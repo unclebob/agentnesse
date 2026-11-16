@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * See also FitNesseRoot/FitNesse/SuiteAcceptanceTests/SuiteSlimTests, StopSuite, StopTestInSuiteSetUp and StopTest in particular
+ * See also AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteSlimTests, StopSuite, StopTestInSuiteSetUp and StopTest in particular
  */
 public class SlimTestSystemTableProcessingTest {
 

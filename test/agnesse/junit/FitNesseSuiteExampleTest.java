@@ -7,7 +7,7 @@ import agnesse.junit.FitNesseRunner.FitnesseDir;
 import agnesse.junit.FitNesseSuite.Name;
 import agnesse.junit.FitNesseRunner.OutputDir;
 @RunWith(FitNesseSuite.class)
-@Name("FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite")
+@Name("AgNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite")
 @FitnesseDir(".")
 @OutputDir("tmp")
 public class FitNesseSuiteExampleTest {

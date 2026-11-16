@@ -25,10 +25,10 @@ public class BundledPageReferencesTest {
    * Deliberate create-page links. The acceptance tests assert the [?] markup.
    */
   private static final List<String> CREATE_PAGE_LINKS = List.of(
-    "FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithLinkToNonExistentPage -> .FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.DoesNotExist",
-    "FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithSubPageLinkToNonExistentPage -> .FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithSubPageLinkToNonExistentPage.NonExistentSubPage",
-    "FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithAliasLinkToNonExistentPage -> NonExistentPage",
-    "FitNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithAliasLinkToNonExistentSubPage -> ^NonExistentSubPage"
+    "AgNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithLinkToNonExistentPage -> .AgNesse.SuiteAcceptanceTests.AcceptanceTestPage.DoesNotExist",
+    "AgNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithSubPageLinkToNonExistentPage -> .AgNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithSubPageLinkToNonExistentPage.NonExistentSubPage",
+    "AgNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithAliasLinkToNonExistentPage -> NonExistentPage",
+    "AgNesse.SuiteAcceptanceTests.AcceptanceTestPage.ChildWithAliasLinkToNonExistentSubPage -> ^NonExistentSubPage"
   );
 
   @Test
@@ -40,12 +40,12 @@ public class BundledPageReferencesTest {
 
   @Test
   public void theAcceptanceSuitePageOffersNoCreatePageLinks() {
-    WikiPage page = wiki().getPageCrawler().getPage(PathParser.parse(".FitNesse.SuiteAcceptanceTests"));
+    WikiPage page = wiki().getPageCrawler().getPage(PathParser.parse(".AgNesse.SuiteAcceptanceTests"));
     assertFalse(page.getHtml(), page.getHtml().contains("[?]"));
   }
 
   private static WikiPage wiki() {
     return new FileSystemPageFactory(new agnesse.wiki.fs.DiskFileSystem(), new WikiFiles())
-      .makePage(new File("FitNesseRoot"), "FitNesseRoot", null, new SystemVariableSource());
+      .makePage(new File("AgNesseRoot"), "AgNesseRoot", null, new SystemVariableSource());
   }
 }

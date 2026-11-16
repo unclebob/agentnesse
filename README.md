@@ -14,7 +14,7 @@ No test history. A run returns its results. Nothing is kept afterward.
 
 No page versions inside the tool. Pages are written in place. Git is the history.
 
-Pages can be Markdown files with JSON front matter. The pages already in this tree are still FitNesse wiki text. Samples of the new syntax are under `AgentNesseSamples`.
+Pages can be Markdown files with JSON front matter. The pages already in this tree are still FitNesse wiki text. Samples of the new syntax are under `AgNesseSamples`.
 
 Slim tables are bare GitHub-flavored Markdown tables. The table type is the name in the first header cell, for example `decision:Division`. A name with no prefix is a decision table.
 
@@ -51,7 +51,7 @@ Configuration is `agnesse.json` in the working directory. If that file is missin
 {
   "port": null,
   "rootPath": ".",
-  "pageRoot": "FitNesseRoot",
+  "pageRoot": "AgNesseRoot",
   "logDirectory": null,
   "maximumWorkers": 100,
   "refactorStartPath": null,

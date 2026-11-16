@@ -10,7 +10,7 @@ import agnesse.junit.FitNesseRunner.OutputDir;
 import agnesse.junit.FitNesseRunner.SuiteFilter;
 
 @RunWith(FitNesseSuite.class)
-@Name("FitNesse.SuiteAcceptanceTests.SuiteSlimTests")
+@Name("AgNesse.SuiteAcceptanceTests.SuiteSlimTests")
 @FitnesseDir(".")
 @OutputDir(systemProperty = "java.io.tmpdir", pathExtension = "fitnesse")
 @SuiteFilter("testSuite")

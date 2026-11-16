@@ -1,7 +1,7 @@
 {
   "port": null,
   "rootPath": ".",
-  "pageRoot": "FitNesseRoot",
+  "pageRoot": "AgNesseRoot",
   "maximumWorkers": 100,
   "refactorStartPath": null,
   "listen": "127.0.0.1"

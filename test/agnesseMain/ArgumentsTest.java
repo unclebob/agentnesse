@@ -44,7 +44,7 @@ public class ArgumentsTest {
     assertEquals("verbose", properties.getProperty("LogLevel"));
     assertEquals("81", properties.getProperty("Port"));
     assertEquals("directory", properties.getProperty("RootPath"));
-    assertEquals("root", properties.getProperty("FitNesseRoot"));
+    assertEquals("root", properties.getProperty("AgNesseRoot"));
     assertEquals("someFile.txt", properties.getProperty("RedirectOutput"));
     assertEquals("agnesse.properties", properties.getProperty("ConfigFile"));
     assertEquals("SomeCommand", properties.getProperty("Command"));
@@ -71,7 +71,7 @@ public class ArgumentsTest {
     assertEquals("normal", properties.getProperty("LogLevel"));
     assertNull(properties.getProperty("ConfigFile"));
     assertEquals(".", properties.getProperty("RootPath"));
-    assertEquals("FitNesseRoot", properties.getProperty("FitNesseRoot"));
+    assertEquals("AgNesseRoot", properties.getProperty("AgNesseRoot"));
     assertNull(properties.getProperty("RedirectOutput"));
     assertNull(properties.getProperty("Command"));
     assertEquals("127.0.0.1", properties.getProperty("listen"));

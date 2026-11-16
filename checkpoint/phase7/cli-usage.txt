@@ -1,7 +1,7 @@
 Usage: java -jar agnesse.jar [-vpdrfcb] [--listen address]
 	-p <port number> {80}
 	-d <working directory> {.}
-	-r <page root directory> {FitNesseRoot}
+	-r <page root directory> {AgNesseRoot}
 	-f <config file> {agnesse.json}
 	-c <command> execute one command and print JSON results.
 	-b <filename> redirect command output.

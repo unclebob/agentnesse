@@ -110,7 +110,7 @@ public class FitNesseMainTest {
 
   @Test(expected = Exception.class)
   public void runningCommandWithNonExistentAddressResultsInError() throws Exception {
-    String[] args = {"-c", "/FitNesse.NonExistentTestCase?test"};
+    String[] args = {"-c", "/AgNesse.NonExistentTestCase?test"};
     Arguments arguments = new Arguments(args);
     try {
       new FitNesseMain().launchFitNesse(arguments);

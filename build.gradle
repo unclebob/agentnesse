@@ -185,18 +185,18 @@ task createUpdateLists(type: WikiFileListBuilderTask) {
 
   files = {
     // Make sure only files in version control are added to the default wiki contents
-    "git ls-files FitNesseRoot".execute().text.readLines()
+    "git ls-files AgNesseRoot".execute().text.readLines()
   }
 
   doNotReplaceFiles = [
-    "FitNesseRoot/_root.md",
-    "FitNesseRoot/FrontPage.md",
-    "FitNesseRoot/PageHeader.md",
-    "FitNesseRoot/PageFooter.md",
-    "FitNesseRoot/TemplateLibrary.md",
-    "FitNesseRoot/TemplateLibrary/StaticPage.md",
-    "FitNesseRoot/TemplateLibrary/SuitePage.md",
-    "FitNesseRoot/TemplateLibrary/TestPage.md" ]
+    "AgNesseRoot/_root.md",
+    "AgNesseRoot/FrontPage.md",
+    "AgNesseRoot/PageHeader.md",
+    "AgNesseRoot/PageFooter.md",
+    "AgNesseRoot/TemplateLibrary.md",
+    "AgNesseRoot/TemplateLibrary/StaticPage.md",
+    "AgNesseRoot/TemplateLibrary/SuitePage.md",
+    "AgNesseRoot/TemplateLibrary/TestPage.md" ]
 }
 
 processResources.dependsOn "fitNesseVersion", "createUpdateLists"
@@ -422,7 +422,7 @@ task acceptanceTest(type: JavaExec) {
   onlyIf { test.didWork }
   classpath = standaloneJar.outputs.files
   mainClass = "agnesseMain.FitNesseMain"
-  args "-c", "FitNesse.SuiteAcceptanceTests?suite", "-b", "build/reports/acceptance-results.json"
+  args "-c", "AgNesse.SuiteAcceptanceTests?suite", "-b", "build/reports/acceptance-results.json"
 }
 
 task validateAcceptanceResults(type: JavaExec) {

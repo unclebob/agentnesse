@@ -72,7 +72,7 @@ public class MarkdownRenderTest {
     String html = Files.readString(dir.resolve(name + ".html"));
     assertEquals(html, MarkdownRenderer.render(markdown, word -> {
       if ("SuiteWidgetTests".equals(word) || ">SuiteWidgetTests".equals(word)) {
-        return "FitNesse.SuiteAcceptanceTests.SuiteWidgetTests";
+        return "AgNesse.SuiteAcceptanceTests.SuiteWidgetTests";
       }
       return null;
     }, java.util.List.of(), null, testPage));

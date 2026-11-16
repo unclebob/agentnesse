@@ -23,8 +23,8 @@ import static org.junit.Assert.assertTrue;
 public class JUnitHelperExampleTest {
   JUnitHelper helper;
   private String[] expectedTestsWithSuiteFilter = new String[]{
-    "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.ErikPragtBug",
-    "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.MultiByteCharsInSlim"
+    "AgNesse.SuiteAcceptanceTests.SuiteSlimTests.ErikPragtBug",
+    "AgNesse.SuiteAcceptanceTests.SuiteSlimTests.MultiByteCharsInSlim"
   };
   private List<String> visitedPages;
 
@@ -37,7 +37,7 @@ public class JUnitHelperExampleTest {
 
   @Test
   public void assertTestPasses_RunsATestThroughFitNesseAndWeCanInspectTheResultUsingJavaFormatter() throws Exception {
-    String testName = "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.SystemUnderTestTest";
+    String testName = "AgNesse.SuiteAcceptanceTests.SuiteSlimTests.SystemUnderTestTest";
     helper.assertTestPasses(testName);
     assertEquals(1, visitedPages.size());
     assertEquals(testName, visitedPages.get(0));
@@ -45,7 +45,7 @@ public class JUnitHelperExampleTest {
 
   @Test
   public void assertSuitePasses_appliesSuiteFilterIfDefined() throws Exception {
-    String suiteName = "FitNesse.SuiteAcceptanceTests.SuiteSlimTests";
+    String suiteName = "AgNesse.SuiteAcceptanceTests.SuiteSlimTests";
     helper.assertSuitePasses(suiteName, "testSuite");
 
     assertEquals(new HashSet<>(Arrays.asList(expectedTestsWithSuiteFilter)),
@@ -56,7 +56,7 @@ public class JUnitHelperExampleTest {
   @Test
   public void helperWillFailTestsIfNoTestsAreExecuted() throws Exception{
     try{
-      helper.assertSuitePasses("FitNesse.SuiteAcceptanceTests.SuiteSlimTests", "nonExistingFilter");
+      helper.assertSuitePasses("AgNesse.SuiteAcceptanceTests.SuiteSlimTests", "nonExistingFilter");
 
     }
     catch (AssertionError ae){

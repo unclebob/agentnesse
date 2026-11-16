@@ -19,7 +19,7 @@ public class BundledWikiMarkupTest {
   @Test
   public void bundledPagesDoNotStartALineWithWikiMarkupOutsideCode() throws IOException {
     List<String> hits = new ArrayList<>();
-    try (Stream<Path> files = Files.walk(Path.of("FitNesseRoot"))) {
+    try (Stream<Path> files = Files.walk(Path.of("AgNesseRoot"))) {
       files.filter(path -> path.toString().endsWith(".md")).forEach(path -> collect(path, hits));
     }
     assertEquals(hits.toString(), 0, hits.size());

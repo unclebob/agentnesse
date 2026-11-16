@@ -207,7 +207,7 @@ function countCells(row) {
   return row.children.filter((cell) => classes(cell).includes("count"));
 }
 
-const SUITE = "FitNesse.SuiteAcceptanceTests";
+const SUITE = "AgNesse.SuiteAcceptanceTests";
 const EDIT = `${SUITE}.SuiteEditResponderTests.TestEditNewPage`;
 
 test("summary rows put counts before a name relative to the suite", () => {
@@ -272,7 +272,7 @@ test("a page outside the suite keeps its path, and the suite page names itself",
     },
     {
       event: "page-done",
-      path: "FitNesse.SuiteAcceptanceTestsExtra.Child",
+      path: "AgNesse.SuiteAcceptanceTestsExtra.Child",
       status: "fail",
       counts: { right: 0, wrong: 1, ignored: 0, exceptions: 0 },
       index: 2,
@@ -283,7 +283,7 @@ test("a page outside the suite keeps its path, and the suite page names itself",
   const rows = view.summaries.querySelector("tbody").children;
   assert.equal(rows[0].querySelector("a").textContent, "(SuiteAcceptanceTests)");
   assert.equal(rows[0].querySelector("a").href, `/${SUITE}`);
-  assert.equal(rows[1].querySelector("a").textContent, "FitNesse.SuiteAcceptanceTestsExtra.Child");
+  assert.equal(rows[1].querySelector("a").textContent, "AgNesse.SuiteAcceptanceTestsExtra.Child");
   assert.deepEqual(texts(countCells(rows[2])), ["0", "0", "0", "0"]);
   assert.equal(rows[2].querySelector("a").textContent, "NoCounts");
   assert.equal(rows[2].querySelector("a").href, `/${SUITE}.NoCounts`);

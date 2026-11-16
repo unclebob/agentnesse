@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
  */
 @Deprecated
 @RunWith(FitNesseSuite.class)
-@FitNesseSuite.Name("FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestScriptTable")
+@FitNesseSuite.Name("AgNesse.SuiteAcceptanceTests.SuiteSlimTests.TestScriptTable")
 @FitNesseSuite.FitnesseDir(".")
 @FitNesseSuite.OutputDir("./build/fitnesse-results")
 public class FitNesseSuiteTest {

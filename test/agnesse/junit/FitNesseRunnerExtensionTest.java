@@ -37,7 +37,7 @@ public class FitNesseRunnerExtensionTest {
 
     @Override
     protected String getSuiteName(Class<?> klass) throws InitializationError {
-      return "FitNesse.SuiteAcceptanceTests.SuiteSlimTests.TestScriptTable";
+      return "AgNesse.SuiteAcceptanceTests.SuiteSlimTests.TestScriptTable";
     }
 
     @Override

@@ -52,13 +52,13 @@ public class JsonResultsFormatterTest {
   public void theRunStartedEventNamesTheSuiteThatWasRun() throws Exception {
     StringBuilder out = new StringBuilder();
     JsonResultsFormatter formatter = new JsonResultsFormatter(out, true, null);
-    formatter.setSuiteName("FitNesse.SuiteAcceptanceTests");
+    formatter.setSuiteName("AgNesse.SuiteAcceptanceTests");
     formatter.announceNumberTestsToRun(4);
 
     JSONObject started = new JSONObject(new JSONTokener(out.toString()));
     assertEquals("run-started", started.getString("event"));
     assertEquals(4, started.getInt("pages"));
-    assertEquals("FitNesse.SuiteAcceptanceTests", started.getString("root"));
+    assertEquals("AgNesse.SuiteAcceptanceTests", started.getString("root"));
   }
 
   @Test

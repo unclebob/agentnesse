@@ -1,8 +1,0 @@
-{
-  "type": "static",
-  "tags": [],
-  "help": null,
-  "prune": false
-}
-A WikiPagePath is a set of .FitNesse.SuiteAcceptanceTests.SuiteWidgetTests.WikiWord elements seperated by dots.
-e.g. **`FitNesse.UserGuide`**

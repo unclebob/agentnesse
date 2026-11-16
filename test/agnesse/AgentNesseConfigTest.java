@@ -53,7 +53,7 @@ public class AgentNesseConfigTest {
 
     assertThat(configurator.makeFitNesseContext().port, is(80));
     assertThat(configurator.get(ConfigurationParameter.LISTEN), is("127.0.0.1"));
-    assertThat(configurator.get(ConfigurationParameter.ROOT_DIRECTORY), is("FitNesseRoot"));
+    assertThat(configurator.get(ConfigurationParameter.ROOT_DIRECTORY), is("AgNesseRoot"));
   }
 
   @Test

@@ -81,7 +81,7 @@ public class FitNesseUtil {
       throw new IllegalStateException(e);
     }
 
-    // Ensure Velocity is configured with the default root directory name (FitNesseRoot)
+    // Ensure Velocity is configured with the default root directory name (AgNesseRoot)
     context.pageFactory.getVelocityEngine();
     return context;
   }

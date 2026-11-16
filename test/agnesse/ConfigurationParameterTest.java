@@ -14,11 +14,11 @@ public class ConfigurationParameterTest {
   public void shouldMakePropertiesWithConfigurationParametersAndValues() {
     Properties properties = ConfigurationParameter.makeProperties(ConfigurationParameter.PORT, 8001,
             ConfigurationParameter.ROOT_PATH, ".",
-            ConfigurationParameter.ROOT_DIRECTORY, "FitNesseRoot");
+            ConfigurationParameter.ROOT_DIRECTORY, "AgNesseRoot");
 
     assertThat(properties.getProperty(ConfigurationParameter.PORT.getKey()), is("8001"));
     assertThat(properties.getProperty(ConfigurationParameter.ROOT_PATH.getKey()), is("."));
-    assertThat(properties.getProperty(ConfigurationParameter.ROOT_DIRECTORY.getKey()), is("FitNesseRoot"));
+    assertThat(properties.getProperty(ConfigurationParameter.ROOT_DIRECTORY.getKey()), is("AgNesseRoot"));
   }
 
   @Test(expected = IllegalArgumentException.class)

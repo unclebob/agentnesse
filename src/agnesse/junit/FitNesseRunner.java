@@ -68,9 +68,9 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
   /**
    * The <code>FitnesseDir</code> annotation specifies the absolute or relative
-   * path to the directory in which FitNesseRoot can be found. You can either specify
+   * path to the directory in which AgNesseRoot can be found. You can either specify
    * <ul>
-   * <li>a relative or absolute path directly, e.g.: <code>@FitnesseDir("/parentOfFitNesseRoot")</code>,
+   * <li>a relative or absolute path directly, e.g.: <code>@FitnesseDir("/parentOfAgNesseRoot")</code>,
    * or you can specify
    * <li>a system property the content of which will be taken as base dir and
    * optionally give a path extension, e.g.:
@@ -257,7 +257,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     throw new InitializationError(message);
   }
 
-  protected String getFitNesseRoot(Class<?> klass) {
+  protected String getAgNesseRoot(Class<?> klass) {
     FitnesseDir fitnesseDirAnnotation = klass.getAnnotation(FitnesseDir.class);
     return fitnesseDirAnnotation.fitNesseRoot();
   }
@@ -369,7 +369,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
 
   protected ContextConfigurator initContextConfigurator() throws InitializationError {
     String rootPath = getFitNesseDir(suiteClass);
-    String fitNesseRoot = getFitNesseRoot(suiteClass);
+    String fitNesseRoot = getAgNesseRoot(suiteClass);
     int port = getPort(suiteClass);
     File configFile = getConfigFile(rootPath);
 

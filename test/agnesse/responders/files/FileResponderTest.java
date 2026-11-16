@@ -185,7 +185,7 @@ public class FileResponderTest {
 
   @Test
   public void shouldTellIfFileIsInFilesFolder() throws IOException {
-    File rootPath = new File("./FitNesseRoot");
+    File rootPath = new File("./AgNesseRoot");
     assertTrue(isInFilesDirectory(rootPath, new File(rootPath, "files")));
     assertTrue(isInFilesDirectory(rootPath, new File(rootPath, "files/subfile")));
     assertFalse(isInFilesDirectory(rootPath, new File(rootPath, "files/..")));
