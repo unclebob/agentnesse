@@ -212,8 +212,14 @@ task javascriptTest(type: Exec) {
   commandLine 'node', '--test', '--test-concurrency=1', 'test/agnesse/resources/javascript/suiteSummary.test.js'
 }
 
+task pythonSlimTest(type: Exec) {
+  group = 'verification'
+  description = 'Run the guide Slim script and record its line coverage.'
+  commandLine 'python3', 'test/agnesse/files/tiny_slim_test.py'
+}
+
 test {
-  dependsOn copyRuntimeLibs, javascriptTest
+  dependsOn copyRuntimeLibs, javascriptTest, pythonSlimTest
   maxParallelForks 1
   finalizedBy jacocoTestReport
 }
@@ -418,8 +424,7 @@ task slimJar(type: Jar) {
 }
 
 task acceptanceTest(type: JavaExec) {
-  mustRunAfter test
-  onlyIf { test.didWork }
+  dependsOn test, standaloneJar
   classpath = standaloneJar.outputs.files
   mainClass = "agnesseMain.AgNesseMain"
   args "-c", "AgNesse.SuiteAcceptanceTests?suite", "-b", "build/reports/acceptance-results.json"

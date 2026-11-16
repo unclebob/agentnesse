@@ -33,6 +33,13 @@ jobs:
         with:
           name: libs-java-${{ matrix.java-version }}
           path: build/libs
+      - name: Upload acceptance results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: acceptance-results
+          path: build/reports/acceptance-results.json
+          if-no-files-found: warn
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
