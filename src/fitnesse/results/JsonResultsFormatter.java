@@ -134,7 +134,7 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
   @Override
   public void announceNumberTestsToRun(int testsToRun) {
     pagesTotal = testsToRun;
-    record(new JSONObject().put("event", "run-started").put("pages", pagesTotal));
+    record(new JSONObject().put("event", "run-started").put("pages", pagesTotal).put("root", suiteName));
   }
 
   @Override

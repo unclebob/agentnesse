@@ -37,6 +37,7 @@ public class JsonResultsFormatterTest {
     }
     assertEquals("run-started", lines.get(0).getString("event"));
     assertEquals(2, lines.get(0).getInt("pages"));
+    assertEquals("", lines.get(0).getString("root"));
     JSONObject first = lines.stream().filter(event -> "One".equals(event.optString("path")) && "page-done".equals(event.optString("event"))).findFirst().orElseThrow();
     JSONObject second = lines.stream().filter(event -> "Two".equals(event.optString("path")) && "page-done".equals(event.optString("event"))).findFirst().orElseThrow();
     assertEquals(1, first.getInt("index"));
@@ -45,6 +46,19 @@ public class JsonResultsFormatterTest {
     assertEquals(2, second.getInt("index"));
     assertEquals(2, second.getInt("pages"));
     assertEquals("fail", second.getString("status"));
+  }
+
+  @Test
+  public void theRunStartedEventNamesTheSuiteThatWasRun() throws Exception {
+    StringBuilder out = new StringBuilder();
+    JsonResultsFormatter formatter = new JsonResultsFormatter(out, true, null);
+    formatter.setSuiteName("FitNesse.SuiteAcceptanceTests");
+    formatter.announceNumberTestsToRun(4);
+
+    JSONObject started = new JSONObject(new JSONTokener(out.toString()));
+    assertEquals("run-started", started.getString("event"));
+    assertEquals(4, started.getInt("pages"));
+    assertEquals("FitNesse.SuiteAcceptanceTests", started.getString("root"));
   }
 
   @Test

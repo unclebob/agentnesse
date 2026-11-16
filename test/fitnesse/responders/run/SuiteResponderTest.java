@@ -128,6 +128,7 @@ public class SuiteResponderTest {
     assertSubString("\"right\":1", results);
     assertSubString("EchoFixture", results);
     assertSubString("Test Summaries", results);
+    assertSubString("\"root\":\"SuitePage\"", results);
     assertNotSubString("RerunLastFailures", results);
   }
 
