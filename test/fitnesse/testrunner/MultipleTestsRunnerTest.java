@@ -26,6 +26,7 @@ import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,20 +48,19 @@ public class MultipleTestsRunnerTest {
 
   @Test
   public void shouldExecuteTestPagesGroupedByTestSystem() throws TestExecutionException {
-    WikiPage testPage1 = addTestPage(suite, "TestPage1", "!define TEST_SYSTEM {A}");
-    WikiPage testPage2 = addTestPage(suite, "TestPage2", "!define TEST_SYSTEM {B}");
+    WikiPage testPage1 = addTestPage(suite, "TestPage1", "!define TEST_RUNNER {runnerA}");
+    WikiPage testPage2 = addTestPage(suite, "TestPage2", "!define TEST_RUNNER {runnerB}");
 
     MultipleTestsRunner runner = new MultipleTestsRunner(createRun(testPage1, testPage2), testSystemFactory);
 
     runner.executeTestPages();
 
-    verify(testSystemFactory).create(forTestSystem("B"));
-    verify(testSystemFactory).create(forTestSystem("A"));
+    verify(testSystemFactory, times(2)).create(forTestSystem("slim"));
   }
 
   @Test
   public void shouldCallCloseOnClosableTestSystemListener() throws TestExecutionException, IOException {
-    WikiPage testPage = addTestPage(suite, "TestPage1", "!define TEST_SYSTEM {A}");
+    WikiPage testPage = addTestPage(suite, "TestPage1", "");
     ClosableTestSystemListener listener = mock(ClosableTestSystemListener.class);
 
     MultipleTestsRunner runner = new MultipleTestsRunner(createRun(testPage), testSystemFactory);

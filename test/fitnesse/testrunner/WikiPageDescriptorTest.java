@@ -10,7 +10,10 @@ import fitnesse.wiki.fs.InMemoryPage;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class WikiPageDescriptorTest {
 
@@ -22,23 +25,16 @@ public class WikiPageDescriptorTest {
   }
 
   @Test
-  public void buildFullySpecifiedTestSystemNameForDebugRun() throws Exception {
+  public void aDefinedTestSystemIsRejected() throws Exception {
     WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
-            "!define TEST_SYSTEM {system}\n" +
-                    "!define TEST_RUNNER {runner}\n");
+            "!define TEST_SYSTEM {system}\n");
     WikiPageDescriptor wikiPageDescriptor = new WikiPageDescriptor(testPage, true, false, "");
-    String testSystemType = wikiPageDescriptor.getTestSystemType();
-    assertEquals("system", testSystemType);
-  }
-
-  @Test
-  public void buildFullySpecifiedTestSystemNameAndIdentifierForDebugRun() throws Exception {
-    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
-            "!define TEST_SYSTEM {system:A}\n" +
-                    "!define TEST_RUNNER {runner}\n");
-    WikiPageDescriptor wikiPageDescriptor = new WikiPageDescriptor(testPage, true, false, "");
-    String testSystemType = wikiPageDescriptor.getTestSystemType();
-    assertEquals("system", testSystemType);
+    try {
+      wikiPageDescriptor.getTestSystemType();
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString("Slim is the only test system"));
+    }
   }
 
   @Test

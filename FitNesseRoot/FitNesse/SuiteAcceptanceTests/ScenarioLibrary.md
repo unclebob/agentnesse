@@ -25,7 +25,7 @@
 
 | scenario | given slim test page | page | |
 | --- | --- | --- | --- |
-| given page | @page | with content | &#96;&#96;&#96;agentnesse<br>define TEST_SYSTEM<br>slim<br>&#96;&#96;&#96; |
+| given page | @page | with content |  |
 | make | @page | a test page | |
 
 

@@ -3,7 +3,6 @@
   "rootPath": ".",
   "pageRoot": "FitNesseRoot",
   "maximumWorkers": 100,
-  "theme": "agentnesse",
   "refactorStartPath": null,
   "listen": "127.0.0.1"
 }

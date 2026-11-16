@@ -27,7 +27,7 @@ public class WikiTestPageTest {
   public void setUp() throws Exception {
     properties = new Properties();
     root = InMemoryPage.makeRoot("RooT", properties);
-    wikiPage = addPage("TestPage", define("TEST_SYSTEM", "slim") + "the content");
+    wikiPage = addPage("TestPage", "the content");
     addPage("SetUp", "setup");
     addPage("TearDown", "teardown");
     addPage("SuiteSetUp", "suite-setup-body");
@@ -57,6 +57,7 @@ public class WikiTestPageTest {
     assertSubString("setup", html);
     assertSubString(">TearDown<", html);
     assertSubString("teardown", html);
+    assertTrue(html.indexOf("<div class=\"teardown\">") > html.indexOf("setup"));
     assertSubString("the content", html);
     assertSubString("agentnesse-include", html);
     assertNotSubString(">SuiteSetUp<", html);
@@ -79,6 +80,7 @@ public class WikiTestPageTest {
     assertSubString("suite-setup-body", html);
     assertSubString(">SuiteTearDown<", html);
     assertSubString("suite-teardown-body", html);
+    assertEquals(2, html.split("<div class=\"teardown\">", -1).length - 1);
     assertEquals("SetUp occurs more than once", html.indexOf(" SetUp"), html.lastIndexOf(" SetUp"));
     assertEquals("TearDown occurs more than once", html.indexOf(" TearDown"), html.lastIndexOf(" TearDown"));
   }
@@ -91,7 +93,7 @@ public class WikiTestPageTest {
 
   @Test
   public void includeScenarioLibraryBrother() throws Exception {
-    WikiPage slimTestPage = addPage("SlimTest", define("TEST_SYSTEM", "slim"));
+    WikiPage slimTestPage = addPage("SlimTest", "");
     TestPage testPage = new WikiTestPage(slimTestPage);
     addPage("ScenarioLibrary", "scenario library");
     String html = testPage.getHtml();
@@ -102,7 +104,7 @@ public class WikiTestPageTest {
   public void includeScenarioLibraryUnclesInOrder() throws Exception {
     addPage("TestPage.TestPageChild", "child");
     addPage("TestPage.ScenarioLibrary", "child library");
-    WikiPage nephew = addPage("TestPage.TestPageChild.TestPageGrandChild", define("TEST_SYSTEM", "slim"));
+    WikiPage nephew = addPage("TestPage.TestPageChild.TestPageGrandChild", "");
     addPage("TestPage.TestPageChild.ScenarioLibrary", "grand child library");
 
     TestPage testPage = new WikiTestPage(nephew);
@@ -116,7 +118,7 @@ public class WikiTestPageTest {
   public void includesSetupTearDownUnclesInOrder() throws Exception {
     addPage("TestPage.SuiteSetUp", "child set up");
     addPage("TestPage.SuiteTearDown", "child tear down");
-    WikiPage nephew = addPage("TestPage.TestPageChild.TestPageGrandChild", define("TEST_SYSTEM", "slim"));
+    WikiPage nephew = addPage("TestPage.TestPageChild.TestPageGrandChild", "");
     addPage("TestPage.TestPageChild.SuiteSetUp", "grand child set up");
     addPage("TestPage.TestPageChild.SuiteTearDown", "grand child tear down");
 
@@ -136,7 +138,7 @@ public class WikiTestPageTest {
 
   @Test
   public void shouldNotContainScenarioLibrarySectionIfThereAreNone() throws Exception {
-    WikiPage slimTestPage = addPage("SlimTest", define("TEST_SYSTEM", "slim"));
+    WikiPage slimTestPage = addPage("SlimTest", "");
     TestPage testPage = new WikiTestPage(slimTestPage);
     String html = testPage.getHtml();
     assertNotSubString("Scenario Libraries", html);
@@ -145,7 +147,7 @@ public class WikiTestPageTest {
   @Test
   public void shouldNotContainSuiteSetUpTearDownSectionIfThereAreNone() throws Exception {
     properties.setProperty("ALL_UNCLE_SUITE_SETUPS", "true");
-    WikiPage slimTestPage = addPage("SlimTest", define("TEST_SYSTEM", "slim"));
+    WikiPage slimTestPage = addPage("SlimTest", "");
     TestPage testPage = new WikiTestPage(slimTestPage);
     String html = testPage.getHtml();
     assertNotSubString("Suite Set Ups", html);
@@ -156,19 +158,19 @@ public class WikiTestPageTest {
 
   @Test
   public void shouldReturnDecoratedContentForWikitextPages() throws Exception {
-    WikiPage slimTestPage = addPage("SlimTest", define("TEST_SYSTEM", "slim"));
+    WikiPage slimTestPage = addPage("SlimTest", define("MARKER", "kept"));
     TestPage testPage = new WikiTestPage(slimTestPage);
     String content = testPage.getContent();
-    assertSubString(define("TEST_SYSTEM", "slim"), content);
+    assertSubString(define("MARKER", "kept"), content);
   }
 
   @Test
-  public void shouldNotIncludeScenarioLibrariesIfNotSlimTest() throws Exception {
+  public void shouldIncludeScenarioLibrariesByDefault() throws Exception {
     addPage("ScenarioLibrary", "scenario library");
     WikiPage someTest = addPage("SomeTest", "some test");
     TestPage testPage = new WikiTestPage(someTest);
     String html = testPage.getHtml();
-    assertNotSubString("scenario library", html);
+    assertSubString("scenario library", html);
   }
 
   @Test
@@ -182,7 +184,7 @@ public class WikiTestPageTest {
 
   @Test
   public void shouldNotIncludeScenarioLibrariesIfSlimTestAndIncludeVariableSetToFalse() throws Exception {
-    WikiPage slimTestPage = addPage("SlimTest", define("TEST_SYSTEM", "slim") + define("INCLUDE_SCENARIO_LIBRARIES", "false"));
+    WikiPage slimTestPage = addPage("SlimTest", define("INCLUDE_SCENARIO_LIBRARIES", "false"));
     TestPage testPage = new WikiTestPage(slimTestPage);
     addPage("ScenarioLibrary", "scenario library");
     String html = testPage.getHtml();

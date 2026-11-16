@@ -4,10 +4,6 @@
   "help": null,
   "prune": false
 }
-```agentnesse
-define TEST_SYSTEM
-SLIM
-```
 
 # The following errors can happen during the startup of Slim Server
 

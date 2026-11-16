@@ -4,10 +4,6 @@
   "help": "The test page, as stated in the table",
   "prune": true
 }
-```agentnesse
-define TEST_SYSTEM
-slim
-```
 
 
 | import |

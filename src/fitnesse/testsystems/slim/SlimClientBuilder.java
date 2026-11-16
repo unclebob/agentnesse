@@ -55,39 +55,8 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
           new Thread(new OutputReadingRunnable(stderr, new OutputWriter() {
             @Override
             public void write(String output) {
-              // Separate StdOut and StdErr and remove prefix"
-              String originalMsg;
-              originalMsg = extractOriginalMessage(output, STDOUT_PREFIX);
-              if (originalMsg != null) {
-                executionLogListener.stdOut(originalMsg);
-              } else {
-                originalMsg = extractOriginalMessage(output, STDERR_PREFIX);
-                if (originalMsg != null) {
-                  executionLogListener.stdErr(originalMsg);
-                  setCommandErrorMessage(originalMsg);
-                } else {
-                  executionLogListener.stdOut(output);
-                }
-              }
+              deliverPipeOutput(output, executionLogListener, message -> setCommandErrorMessage(message));
             }
-
-            /**
-             * This reverts the wrap that the LoggingOutputStream.flush method
-             * is doing.
-             *
-             * @param prefixedMessage
-             * @param level
-             * @return == null : the message is not prefixed with the given
-             *         level != null : the original message content
-             */
-            private String extractOriginalMessage(String prefixedMessage,
-                String level) {
-              if (prefixedMessage.startsWith(level))
-                return prefixedMessage.substring(level.length()
-                    + SlimPipeSocket.FOLLOWING_LINE_PREFIX.length());
-              return null;
-            }
-
           }), "CommandRunner stdOutErr").start();
 
         }
@@ -135,14 +104,33 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
 
   protected String[] buildArguments() {
     String[] arguments = new String[] {};
-    String[] slimFlags = getSlimFlags();
-    if (slimFlags != null)
-    	for (String flag : slimFlags)
-    		arguments = ArrayUtils.add(arguments, flag);
-
-  	arguments = ArrayUtils.add(arguments, Integer.toString(getSlimPort()));
-
+    for (String flag : getSlimFlags()) {
+      arguments = ArrayUtils.add(arguments, flag);
+    }
+    arguments = ArrayUtils.add(arguments, Integer.toString(getSlimPort()));
     return arguments;
+  }
+
+  static void deliverPipeOutput(String output, ExecutionLogListener listener, java.util.function.Consumer<String> onError) {
+    String stdout = originalPipeMessage(output, STDOUT_PREFIX);
+    if (stdout != null) {
+      listener.stdOut(stdout);
+      return;
+    }
+    String stderr = originalPipeMessage(output, STDERR_PREFIX);
+    if (stderr != null) {
+      listener.stdErr(stderr);
+      onError.accept(stderr);
+      return;
+    }
+    listener.stdOut(output);
+  }
+
+  static String originalPipeMessage(String prefixedMessage, String level) {
+    if (prefixedMessage.startsWith(level)) {
+      return prefixedMessage.substring(level.length() + SlimPipeSocket.FOLLOWING_LINE_PREFIX.length());
+    }
+    return null;
   }
 
   public int getSlimPort() {
@@ -176,12 +164,9 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
       return SLIM_USE_PIPE_PORT;
 
     synchronized (SlimClientBuilder.class) {
-      int offset = slimPortOffset.get();
-      int port = offset + base;
-      offset = (offset + 1) % poolSize;
-      slimPortOffset.set(offset);
-      // is port available??
-      return port;
+      int offset = Math.floorMod(slimPortOffset.get(), poolSize);
+      slimPortOffset.set((offset + 1) % poolSize);
+      return base + offset;
     }
   }
 

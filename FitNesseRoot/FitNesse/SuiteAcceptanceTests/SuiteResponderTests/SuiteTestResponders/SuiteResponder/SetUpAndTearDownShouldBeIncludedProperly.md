@@ -12,7 +12,7 @@
 
 | script | page driver |
 | --- | --- |
-| given page | SuiteParent | with content | ${SUT_PATH}<br>\`\`\`agentnesse<br>define TEST_SYSTEM<br>slim:A<br>\`\`\` |
+| given page | SuiteParent | with content | ${SUT_PATH}<br> |
 | make a suite page | SuiteParent |
 | given page | SuiteParent.SuiteChildOne | with content | |
 | make a suite page | SuiteParent.SuiteChildOne |
@@ -22,7 +22,7 @@
 | make a test page | SuiteParent.SuiteChildOne.TestOneOne |
 | given page | SuiteParent.SuiteChildOne.TestOneTwo | with content | |
 | make a test page | SuiteParent.SuiteChildOne.TestOneTwo |
-| given page | SuiteParent.SuiteChildOne.TestOneThree | with content | \`\`\`agentnesse<br>define TEST_SYSTEM<br>slim:B<br>\`\`\` |
+| given page | SuiteParent.SuiteChildOne.TestOneThree | with content |  |
 | make a test page | SuiteParent.SuiteChildOne.TestOneThree |
 | given page | SuiteParent.SuiteChildTwo | with content | |
 | make a suite page | SuiteParent.SuiteChildTwo |
@@ -43,22 +43,16 @@
 | --- |
 | check | request page | SuiteParent?suite | 200 |
 
-| ordered query:pages run in suite | SuiteChildOne | A |
+| ordered query:pages run in suite | SuiteChildOne | slim |
 | --- | --- | --- |
 | page name | | |
 | SuiteChildOne.SuiteSetUp | | |
 | SuiteChildOne.TestOneOne | | |
+| SuiteChildOne.TestOneThree | | |
 | SuiteChildOne.TestOneTwo | | |
 | SuiteChildOne.SuiteTearDown | | |
 
-| ordered query:pages run in suite | SuiteChildOne | B |
-| --- | --- | --- |
-| page name | | |
-| SuiteChildOne.SuiteSetUp | | |
-| SuiteChildOne.TestOneThree | | |
-| SuiteChildOne.SuiteTearDown | | |
-
-| ordered query:pages run in suite | SuiteChildTwo | A |
+| ordered query:pages run in suite | SuiteChildTwo | slim |
 | --- | --- | --- |
 | page name | | |
 | SuiteChildTwo.SuiteSetUp | | |
@@ -66,7 +60,7 @@
 | SuiteChildTwo.TestTwoTwo | | |
 | SuiteChildTwo.SuiteTearDown | | |
 
-| ordered query:pages run in suite | SuiteChildThree | A |
+| ordered query:pages run in suite | SuiteChildThree | slim |
 | --- | --- | --- |
 | page name | | |
 | SuiteChildThree.TestThreeOne | | |

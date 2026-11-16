@@ -48,7 +48,7 @@ public class ExposeThreadingIssueInMockResponseTest {
   }
 
   private String simpleSlimDecisionTable() {
-    return "!define TEST_SYSTEM {slim}\n" + "|DT:fitnesse.slim.test.TestSlim|\n" + "|string|get string arg?|\n"
+    return "" + "|DT:fitnesse.slim.test.TestSlim|\n" + "|string|get string arg?|\n"
       + "|wow|wow|\n";
   }
 

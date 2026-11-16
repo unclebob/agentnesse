@@ -30,10 +30,7 @@ public class WikiPageDescriptor implements Descriptor {
 
   @Override
   public String getTestSystem() {
-    String testSystemName = getVariable(WikiPageIdentity.TEST_SYSTEM);
-    if (testSystemName == null)
-      return "slim";
-    return testSystemName;
+    return new WikiPageIdentity(page).testSystem();
   }
 
   @Override

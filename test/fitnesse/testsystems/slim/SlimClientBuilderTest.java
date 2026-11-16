@@ -3,6 +3,7 @@ package fitnesse.testsystems.slim;
 import fitnesse.testsystems.ClassPath;
 import fitnesse.testsystems.CommandRunner;
 import fitnesse.testsystems.Descriptor;
+import fitnesse.testsystems.ExecutionLogListener;
 import fitnesse.testsystems.MockCommandRunner;
 
 import java.util.Collections;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SlimClientBuilderTest {
@@ -69,6 +71,51 @@ public class SlimClientBuilderTest {
     for (int i = 0; i < 25; i++)
       assertEquals(9000 + (i % 20),
           new SlimClientBuilder(descriptor).getSlimPort());
+  }
+
+  @Test
+  public void aSmallerPoolUsesTheBasePort() throws Exception {
+    Descriptor wide = mock(Descriptor.class);
+    when(wide.getVariable("SLIM_PORT")).thenReturn("9000");
+    when(wide.getVariable("slim.pool.size")).thenReturn("10");
+    for (int i = 0; i < 4; i++) {
+      new SlimClientBuilder(wide);
+    }
+
+    Descriptor narrow = mock(Descriptor.class);
+    when(narrow.getVariable("SLIM_PORT")).thenReturn("9000");
+    when(narrow.getVariable("slim.pool.size")).thenReturn("1");
+    assertEquals(9000, new SlimClientBuilder(narrow).getSlimPort());
+  }
+
+  @Test
+  public void slimFlagsFallBackToTheUpperCaseVariable() throws Exception {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.getVariable("SLIM_FLAGS")).thenReturn("-s 1");
+    assertTrue(java.util.Arrays.asList(new SlimClientBuilder(descriptor).buildArguments()).contains("-s"));
+  }
+
+  @Test
+  public void slimFlagsPreferTheLowerCaseVariable() throws Exception {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.getVariable("slim.flags")).thenReturn("-v");
+    when(descriptor.getVariable("SLIM_FLAGS")).thenReturn("-s 1");
+    java.util.List<String> arguments = java.util.Arrays.asList(new SlimClientBuilder(descriptor).buildArguments());
+    assertTrue(arguments.contains("-v"));
+    assertFalse(arguments.contains("-s"));
+  }
+
+  @Test
+  public void pipeOutputKeepsTheMessageAfterThePrefix() {
+    ExecutionLogListener listener = mock(ExecutionLogListener.class);
+    StringBuilder errors = new StringBuilder();
+    SlimClientBuilder.deliverPipeOutput("SOUT :hello", listener, errors::append);
+    SlimClientBuilder.deliverPipeOutput("SERR :boom", listener, errors::append);
+    SlimClientBuilder.deliverPipeOutput("plain", listener, errors::append);
+    verify(listener).stdOut("hello");
+    verify(listener).stdOut("plain");
+    verify(listener).stdErr("boom");
+    assertEquals("boom", errors.toString());
   }
 
   @Test

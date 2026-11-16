@@ -357,7 +357,7 @@ public class TestResponderTest {
   }
 
   private String createAndWaitFixture(String semaphoreName) {
-    return "!define TEST_SYSTEM {slim}\n" +
+    return "" +
       // Set a timeout, so the command can be processed async
       "!define slim.flags {-s 10 }\n" +
       "!|fitnesse.testutil.CreateFileAndWaitFixture|" + semaphoreName + "|\n";
@@ -500,11 +500,11 @@ public class TestResponderTest {
   }
 
   private String errorWritingTable(String message) {
-    return "\n!define TEST_SYSTEM {slim}\n|script|fitnesse.testutil.ErrorWritingFixture|\n|write|!-" + message + "-!|\n\n";
+    return "\n|script|fitnesse.testutil.ErrorWritingFixture|\n|write|!-" + message + "-!|\n\n";
   }
 
   private String outputWritingTable(String message) {
-    return "\n!define TEST_SYSTEM {slim}\n|script|fitnesse.testutil.OutputWritingFixture|\n|write|!-" + message + "-!|\n\n";
+    return "\n|script|fitnesse.testutil.OutputWritingFixture|\n|write|!-" + message + "-!|\n\n";
   }
 
   private String classpathWidgets() {
@@ -512,19 +512,19 @@ public class TestResponderTest {
   }
 
   private String crashFixtureTable() {
-    return "!define TEST_SYSTEM {slim}\n|fitnesse.testutil.CrashFixture|\n";
+    return "|fitnesse.testutil.CrashFixture|\n";
   }
 
   private String passFixtureTable() {
-    return "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
+    return "|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
   }
 
   private String failFixtureTable() {
-    return "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
+    return "|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
   }
 
   private String errorFixtureTable() {
-    return "!define TEST_SYSTEM {slim}\n|script|fitnesse.testutil.ErrorFixture|\n|error|\n";
+    return "|script|fitnesse.testutil.ErrorFixture|\n|error|\n";
   }
 
 }

@@ -2,13 +2,10 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.html.template;
 
-import java.util.Properties;
-
 import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertHasRegexp;
 import static util.RegexTestCase.assertSubString;
 
-import fitnesse.ConfigurationParameter;
 import fitnesse.FitNesseContext;
 import fitnesse.testutil.FitNesseUtil;
 import fitnesse.wiki.PathParser;
@@ -22,10 +19,8 @@ public class HtmlPageTest {
 
   @Before
   public void setUp() throws Exception {
-    Properties properties = new Properties();
-    properties.setProperty(ConfigurationParameter.THEME.getKey(), "fitnesse_straight");
-    FitNesseContext context = FitNesseUtil.makeTestContext(properties);
-    page = new HtmlPage(context.pageFactory.getVelocityEngine(), "skeleton.vm", "fitnesse_theme");
+    FitNesseContext context = FitNesseUtil.makeTestContext();
+    page = new HtmlPage(context.pageFactory.getVelocityEngine(), "skeleton.vm");
     html = page.html(null);
   }
 

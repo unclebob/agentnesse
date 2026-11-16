@@ -8,7 +8,3 @@
 contents
 ```
 
-```agentnesse
-define TEST_SYSTEM
-slim
-```

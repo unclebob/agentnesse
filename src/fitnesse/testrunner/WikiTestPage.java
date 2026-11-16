@@ -20,8 +20,6 @@ public class WikiTestPage implements TestPage {
 
   private final WikiPage sourcePage;
   private List<WikiPage> scenarioLibraries;
-  private WikiPage setUp;
-  private WikiPage tearDown;
 
   public WikiTestPage(WikiPage sourcePage) {
     this.sourcePage = sourcePage;
@@ -76,7 +74,7 @@ public class WikiTestPage implements TestPage {
   }
 
   private String includedHtml(WikiPage page) {
-    if (page instanceof MarkdownPage && page != sourcePage) {
+    if (page instanceof MarkdownPage) {
       return ((MarkdownPage) page).getHtmlWithin(sourcePage);
     }
     return page.getHtml();
@@ -154,15 +152,9 @@ public class WikiTestPage implements TestPage {
   }
 
   public boolean shouldIncludeScenarioLibraries() {
-    // Should consider all of the decorated content to resolve those variables.
-    String testSystem = sourcePage.getVariable(WikiPageIdentity.TEST_SYSTEM);
-    boolean isSlim = "slim".equalsIgnoreCase(testSystem)
-                      || "slimCoverage".equalsIgnoreCase(testSystem);
+    WikiPageIdentity.rejectTestSystem(sourcePage);
     String includeScenarioLibraries = sourcePage.getVariable("INCLUDE_SCENARIO_LIBRARIES");
-    boolean includeScenarios = "true".equalsIgnoreCase(includeScenarioLibraries);
-    boolean notIncludeScenarios = "false".equalsIgnoreCase(includeScenarioLibraries);
-
-    return includeScenarios || (!notIncludeScenarios && isSlim);
+    return !"false".equalsIgnoreCase(includeScenarioLibraries);
   }
 
   public List<WikiPage> getScenarioLibraries() {
@@ -173,20 +165,11 @@ public class WikiTestPage implements TestPage {
   }
 
   public WikiPage getSetUp() {
-    setUp = inheritedPage(setUp, SET_UP);
-    return setUp;
+    return isSuiteSetUpOrTearDownPage() ? null : findInheritedPage(SET_UP);
   }
 
   public WikiPage getTearDown() {
-    tearDown = inheritedPage(tearDown, TEAR_DOWN);
-    return tearDown;
-  }
-
-  private WikiPage inheritedPage(WikiPage cached, String pageName) {
-    if (cached == null && !isSuiteSetUpOrTearDownPage()) {
-      return findInheritedPage(pageName);
-    }
-    return cached;
+    return isSuiteSetUpOrTearDownPage() ? null : findInheritedPage(TEAR_DOWN);
   }
 
   protected boolean isSuiteSetUpOrTearDownPage() {

@@ -47,54 +47,24 @@ public class ClientBuilderTest {
   }
 
   @Test
-  public void buildTestSystemNameWhenTestSystemIsSlim() throws Exception {
-    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"), "!define TEST_SYSTEM {slim}\n");
+  public void buildTestSystemNameUsesTheTestRunner() throws Exception {
+    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
+            "!define TEST_RUNNER {runner}\n");
     WikiPageDescriptor descriptor = new WikiPageDescriptor(testPage, false, false, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    String testSystemName = clientBuilder.getTestSystemName();
-    assertEquals("slim:" + MOCK_TEST_RUNNER, testSystemName);
+    assertEquals("slim:runner", clientBuilder.getTestSystemName());
   }
 
   @Test
-  public void buildTestSystemNameWhenTestSystemIsUnknownDefaultsToFit() throws Exception {
+  public void aDefinedTestSystemIsRejected() throws Exception {
     WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"), "!define TEST_SYSTEM {X}\n");
     WikiPageDescriptor descriptor = new WikiPageDescriptor(testPage, false, false, "");
-    MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    String testSystemName = clientBuilder.getTestSystemName();
-    assertEquals("X:" + MOCK_TEST_RUNNER, testSystemName);
-  }
-
-  @Test
-  public void buildFullySpecifiedTestSystemName() throws Exception {
-    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
-            "!define TEST_SYSTEM {system}\n" +
-                    "!define TEST_RUNNER {runner}\n");
-    WikiPageDescriptor descriptor = new WikiPageDescriptor(testPage, false, false, "");
-    MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    String testSystemName = clientBuilder.getTestSystemName();
-    Assert.assertEquals("system:runner", testSystemName);
-  }
-
-  @Test
-  public void buildFullySpecifiedTestSystemNameForDebugRun() throws Exception {
-    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
-            "!define TEST_SYSTEM {system}\n" +
-                    "!define TEST_RUNNER {runner}\n");
-    WikiPageDescriptor descriptor = new WikiPageDescriptor(testPage, true, false, "");
-    MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    String testSystemName = clientBuilder.getTestSystemName();
-    Assert.assertEquals("system:runner", testSystemName);
-  }
-
-  @Test
-  public void buildFullySpecifiedTestSystemNameAndIdentifierForDebugRun() throws Exception {
-    WikiPage testPage = WikiPageUtil.addPage(root, PathParser.parse("TestPage"),
-            "!define TEST_SYSTEM {system:A}\n" +
-                    "!define TEST_RUNNER {runner}\n");
-    WikiPageDescriptor descriptor = new WikiPageDescriptor(testPage, true, false, "");
-    MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    String testSystemName = clientBuilder.getTestSystemName();
-    Assert.assertEquals("system:A:runner", testSystemName);
+    try {
+      new MockClientBuilder(descriptor).getTestSystemName();
+      Assert.fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      Assert.assertTrue(e.getMessage(), e.getMessage().contains("Slim is the only test system"));
+    }
   }
 
   @Test
@@ -119,8 +89,7 @@ public class ClientBuilderTest {
   @Test
   public void testCommandPatternJava() throws Exception {
 
-    String pageText = "!define TEST_SYSTEM {slim}\n";
-    WikiPage page = makeTestPage(pageText);
+    WikiPage page = makeTestPage("");
     WikiPageDescriptor descriptor = new WikiPageDescriptor(page, false, false, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
     String prefix = join(clientBuilder.getCommandPattern());
@@ -130,8 +99,7 @@ public class ClientBuilderTest {
 
   @Test
   public void testCommandPatternJavaWithDebug() throws Exception {
-    String pageText = "!define TEST_SYSTEM {slim}\n";
-    WikiPage page = makeTestPage(pageText);
+    WikiPage page = makeTestPage("");
     WikiPageDescriptor descriptor = new WikiPageDescriptor(page, false, true, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
     String prefix = join(clientBuilder.getCommandPattern());
@@ -202,8 +170,7 @@ public class ClientBuilderTest {
 
   @Test
   public void testRunnerDefault() throws Exception {
-    String pageText = "!define TEST_SYSTEM {slim}\n";
-    WikiPage page = makeTestPage(pageText);
+    WikiPage page = makeTestPage("");
     WikiPageDescriptor descriptor = new WikiPageDescriptor(page, false, false, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
     assertEquals(MOCK_TEST_RUNNER, clientBuilder.getTestRunner());
@@ -211,8 +178,7 @@ public class ClientBuilderTest {
 
   @Test
   public void testRunnerDefaultWithDebug() throws Exception {
-    String pageText = "!define TEST_SYSTEM {slim}\n";
-    WikiPage page = makeTestPage(pageText);
+    WikiPage page = makeTestPage("");
     WikiPageDescriptor descriptor = new WikiPageDescriptor(page, false, true, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
     assertEquals(MOCK_TEST_RUNNER, clientBuilder.getTestRunner());

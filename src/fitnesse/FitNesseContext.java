@@ -40,7 +40,6 @@ public class FitNesseContext {
   private final String rootDirectoryName;
   public final Integer maximumWorkers;
   public final ResponderFactory responderFactory;
-  public final String theme;
   public final PageFactory pageFactory;
 
   public final SystemVariableSource variableSource;
@@ -55,8 +54,7 @@ public class FitNesseContext {
                             TestSystemFactory testSystemFactory, TestSystemListener testSystemListener,
                             FormatterFactory formatterFactory,
                             Properties properties,
-                            SystemVariableSource variableSource,
-                            String theme) {
+                            SystemVariableSource variableSource) {
     super();
     this.version = version;
     this.wikiPageFactory = wikiPageFactory;
@@ -70,7 +68,6 @@ public class FitNesseContext {
     this.testSystemListener = testSystemListener;
     this.formatterFactory = formatterFactory;
     this.properties = properties;
-    this.theme = theme;
     responderFactory = new ResponderFactory(getRootPagePath());
     this.variableSource = variableSource;
     fitNesse = new FitNesse(this);

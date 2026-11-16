@@ -4,10 +4,6 @@
   "help": null,
   "prune": false
 }
-```agentnesse
-define TEST_SYSTEM
-SLIM
-```
 
 Setting slim.timeout doesn't works :( 
 ```agentnesse

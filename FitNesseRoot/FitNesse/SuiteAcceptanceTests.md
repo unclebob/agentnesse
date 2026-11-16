@@ -12,7 +12,6 @@
 | >SuiteEditResponderTests | *Specify the behavior of edit requests.* |
 | >SuiteResponderTests | *Specify the behavior of the responders.* |
 | >SuiteSlimTests | *Slim Specific Tests* |
-| >SuiteTestSystems | Test interaction with custom test systems |
 
 ## *Classpaths*
 ```agentnesse

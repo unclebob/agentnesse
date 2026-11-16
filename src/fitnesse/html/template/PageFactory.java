@@ -13,16 +13,14 @@ import java.io.Writer;
 import java.util.Properties;
 
 public class PageFactory {
-  private final String theme;
   private VelocityEngine velocityEngine = null;
 
   public PageFactory(FitNesseContext context) {
-    this.theme = context.theme;
     this.velocityEngine = newVelocityEngine(context.getRootPagePath());
   }
 
   public HtmlPage newPage() {
-    return new HtmlPage(getVelocityEngine(), "skeleton.vm", theme);
+    return new HtmlPage(getVelocityEngine(), "skeleton.vm");
   }
 
   public String render(VelocityContext context, String templateName) {
@@ -30,10 +28,6 @@ public class PageFactory {
     Template template = getVelocityEngine().getTemplate(templateName, FileUtil.CHARENCODING);
     template.merge(context, writer);
     return writer.toString();
-  }
-
-  public String getTheme() {
-    return theme;
   }
 
   public VelocityEngine getVelocityEngine() {

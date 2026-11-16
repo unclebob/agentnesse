@@ -13,7 +13,7 @@ We use a test runner class which doesn't exists. This ensures the slim server di
 
 | script | | | |
 | --- | --- | --- | --- |
-| create page | TestPage | with content | \`\`\`agentnesse<br>define TEST_SYSTEM<br>SLIM<br>\`\`\`<br>\`\`\`agentnesse<br>define slim.timeout<br>2<br>\`\`\`<br>\`\`\`agentnesse<br>define SLIM_PORT<br>0<br>\`\`\`<br>\`\`\`agentnesse<br>define TEST_RUNNER<br>something.that.does.not.exists<br>\`\`\` |
+| create page | TestPage | with content | <br>\`\`\`agentnesse<br>define slim.timeout<br>2<br>\`\`\`<br>\`\`\`agentnesse<br>define SLIM_PORT<br>0<br>\`\`\`<br>\`\`\`agentnesse<br>define TEST_RUNNER<br>something.that.does.not.exists<br>\`\`\` |
 | check | request page | TestPage?test | 200 |
 | ensure | content contains | Error SLiM server died before a connection could be established. | |
 | show collapsed | content | | |

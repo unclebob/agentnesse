@@ -118,25 +118,4 @@ public class ContextConfiguratorTest {
     assertEquals("127.0.0.1", configurator.get(ConfigurationParameter.LISTEN));
   }
 
-  @Test
-  public void agentnesseIsDefaultTheme() throws IOException {
-    String theme = ContextConfigurator
-      .empty()
-      .makeFitNesseContext()
-      .theme;
-
-    assertThat(theme, is("agentnesse"));
-  }
-
-  @Test
-  public void themeCanBeSetViaProperties() throws IOException {
-    String theme = ContextConfigurator
-      .empty()
-      .withParameter(ConfigurationParameter.THEME, "othertheme")
-      .makeFitNesseContext()
-      .theme;
-
-    assertThat(theme, is("othertheme"));
-  }
-
 }

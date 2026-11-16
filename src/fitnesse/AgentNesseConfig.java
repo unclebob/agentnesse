@@ -14,7 +14,6 @@ import java.util.Set;
 import static fitnesse.ConfigurationParameter.LISTEN;
 import static fitnesse.ConfigurationParameter.MAXIMUM_WORKERS;
 import static fitnesse.ConfigurationParameter.REFACTOR_START_PATH;
-import static fitnesse.ConfigurationParameter.THEME;
 
 /**
  * Reads agentnesse.json. Command-line flags are applied after this, so they win.
@@ -22,7 +21,7 @@ import static fitnesse.ConfigurationParameter.THEME;
 public final class AgentNesseConfig {
   private static final Set<String> KEYS = Set.of(
     "port", "listen", "rootPath", "pageRoot",
-    "maximumWorkers", "theme", "refactorStartPath");
+    "maximumWorkers", "refactorStartPath");
 
   private AgentNesseConfig() {
   }
@@ -90,9 +89,6 @@ public final class AgentNesseConfig {
       case "maximumWorkers":
         configurator.withParameter(MAXIMUM_WORKERS, Integer.toString(requireInt(file, key, json)));
         return true;
-      case "theme":
-        configurator.withParameter(THEME, requireString(file, key, json));
-        return true;
       case "refactorStartPath":
         configurator.withParameter(REFACTOR_START_PATH, requireString(file, key, json));
         return true;
@@ -107,7 +103,7 @@ public final class AgentNesseConfig {
 
   private static int requireInt(File file, String key, JSONObject json) {
     Object value = json.get(key);
-    if (!(value instanceof Number) || value instanceof Double) {
+    if (!(value instanceof Integer) && !(value instanceof Long)) {
       throw new IllegalArgumentException(file.getPath() + ": key \"" + key + "\" must be an integer");
     }
     return ((Number) value).intValue();

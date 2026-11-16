@@ -45,9 +45,9 @@ public class SuiteResponderTest {
   private WikiPage root;
   private WikiPage suite;
   private FitNesseContext context;
-  private final String fitPassFixture = "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
-  private final String fitFailFixture = "!define TEST_SYSTEM {slim}\n|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
-  private final String simpleSlimDecisionTable = "!define TEST_SYSTEM {slim}\n" +
+  private final String fitPassFixture = "|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
+  private final String fitFailFixture = "|script|fitnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
+  private final String simpleSlimDecisionTable = "" +
     "|DT:fitnesse.slim.test.TestSlim|\n" +
     "|string|get string arg?|\n" +
     "|wow|wow|\n";

@@ -187,7 +187,6 @@ public class FitNesseMain {
     LOG.info("root page: " + context.getRootPage());
     LOG.info("logger: " + (context.logger == null ? "none" : context.logger.toString()));
     LOG.info("page factory: " + context.pageFactory);
-    LOG.info("page theme: " + context.pageFactory.getTheme());
   }
 
   public void configureLogging(boolean verbose) {
@@ -195,19 +194,10 @@ public class FitNesseMain {
       return;
     }
 
-    InputStream in = FitNesseMain.class.getResourceAsStream((verbose ? "verbose-" : "") + "logging.properties");
-    try {
+    try (InputStream in = FitNesseMain.class.getResourceAsStream((verbose ? "verbose-" : "") + "logging.properties")) {
       LogManager.getLogManager().readConfiguration(in);
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Log configuration failed", e);
-    } finally {
-      if (in != null) {
-        try {
-          in.close();
-        } catch (IOException e) {
-          LOG.log(Level.SEVERE, "Unable to close Log configuration file", e);
-        }
-      }
     }
     LOG.finest("Configured verbose logging");
   }

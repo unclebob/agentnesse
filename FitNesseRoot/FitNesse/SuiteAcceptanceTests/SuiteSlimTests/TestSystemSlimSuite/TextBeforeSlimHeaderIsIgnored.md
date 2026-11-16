@@ -9,10 +9,6 @@ The Slim Test Server must skip these until the Slim Header is received.
 
 
 ```agentnesse
-define TEST_SYSTEM
-SLIM:remote_debug
-```
-```agentnesse
 define COMMAND_PATTERN
 java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -cp %p %m
 ```

@@ -2,7 +2,7 @@ package fitnesse;
 
 import fitnesse.components.Logger;
 import fitnesse.reporting.FormatterFactory;
-import fitnesse.testrunner.MultipleTestSystemFactory;
+import fitnesse.testrunner.SlimTestSystemFactory;
 import fitnesse.testsystems.TestSystemListener;
 import fitnesse.testsystems.slim.tables.SlimTableFactory;
 import fitnesse.util.ClassUtils;
@@ -17,7 +17,6 @@ import static fitnesse.ConfigurationParameter.COMMAND;
 import static fitnesse.ConfigurationParameter.CONFIG_FILE;
 import static fitnesse.ConfigurationParameter.LISTEN;
 import static fitnesse.ConfigurationParameter.ROOT_DIRECTORY;
-import static fitnesse.ConfigurationParameter.THEME;
 /**
  * Set up a context for running a FitNesse Instance.
  *
@@ -29,7 +28,6 @@ public class ContextConfigurator {
   private static final int DEFAULT_COMMAND_PORT = 9123;
   public static final int DEFAULT_PORT = 80;
   public static final String DEFAULT_CONFIG_FILE = "agentnesse.json";
-  public static final String DEFAULT_THEME = "agentnesse";
   public static final String DEFAULT_LISTEN = "127.0.0.1";
   public static final int DEFAULT_MAXIMUM_WORKERS = 100;
 
@@ -96,14 +94,9 @@ public class ContextConfigurator {
 
     SystemVariableSource variableSource = new SystemVariableSource(properties);
 
-    String theme = variableSource.getProperty(THEME.getKey());
-    if (theme == null) {
-      theme = DEFAULT_THEME;
-    }
-
     SlimTableFactory slimTableFactory = new SlimTableFactory();
 
-    MultipleTestSystemFactory testSystemFactory = new MultipleTestSystemFactory(slimTableFactory, classLoader);
+    SlimTestSystemFactory testSystemFactory = new SlimTestSystemFactory(slimTableFactory, classLoader);
 
     FormatterFactory formatterFactory = new FormatterFactory();
 
@@ -119,8 +112,7 @@ public class ContextConfigurator {
           testSystemListener,
           formatterFactory,
           properties,
-          variableSource,
-          theme);
+          variableSource);
 
     return context;
   }

@@ -21,7 +21,7 @@ public class AgentNesseConfigTest {
   @Test
   public void appliesEveryKey() throws Exception {
     File file = write("{\"port\": 8123, \"rootPath\": \"work\", \"pageRoot\": \"Pages\", " +
-      "\"maximumWorkers\": 12, \"theme\": \"mint\", " +
+      "\"maximumWorkers\": 12, " +
       "\"refactorStartPath\": \"FrontPage\", \"listen\": \"0.0.0.0\"}");
 
     ContextConfigurator configurator = ContextConfigurator.empty();
@@ -31,7 +31,6 @@ public class AgentNesseConfigTest {
     assertThat(configurator.get(ConfigurationParameter.ROOT_PATH), is("work"));
     assertThat(configurator.get(ConfigurationParameter.ROOT_DIRECTORY), is("Pages"));
     assertThat(configurator.get(ConfigurationParameter.MAXIMUM_WORKERS), is("12"));
-    assertThat(configurator.get(ConfigurationParameter.THEME), is("mint"));
     assertThat(configurator.get(ConfigurationParameter.REFACTOR_START_PATH), is("FrontPage"));
     assertThat(configurator.get(ConfigurationParameter.LISTEN), is("0.0.0.0"));
   }
@@ -86,6 +85,32 @@ public class AgentNesseConfigTest {
       fail("expected an error");
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(), containsString("nope"));
+    }
+  }
+
+  @Test
+  public void themeIsAnUnknownKey() throws Exception {
+    File file = folder.newFile("theme.json");
+    Files.writeString(file.toPath(), "{\"theme\": \"bootstrap\"}", StandardCharsets.UTF_8);
+    try {
+      AgentNesseConfig.apply(ContextConfigurator.empty(), file, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString(file.getName()));
+      assertThat(e.getMessage(), containsString("theme"));
+      assertThat(e.getMessage(), containsString("unknown key"));
+    }
+  }
+
+  @Test
+  public void aDoubleIsNotAnInteger() throws Exception {
+    File file = folder.newFile("double.json");
+    Files.writeString(file.toPath(), "{\"port\": 1.5}", StandardCharsets.UTF_8);
+    try {
+      AgentNesseConfig.apply(ContextConfigurator.empty(), file, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString("integer"));
     }
   }
 

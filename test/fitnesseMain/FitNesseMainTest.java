@@ -2,6 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesseMain;
 
+import fitnesse.AgentNesseConfig;
 import fitnesse.ConfigurationParameter;
 import fitnesse.ContextConfigurator;
 import fitnesse.FitNesse;
@@ -21,6 +22,8 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -204,11 +207,7 @@ public class FitNesseMainTest {
     FileUtil.createFile(TEST_FITNESSE_ROOT + "/FormatPage.md",
       """
       { "type": "test" }
-      ```agentnesse
-      define TEST_SYSTEM
-      slim
-      ```
-
+      
       | script | fitnesse.fixtures.EchoFixture |
       | --- | --- | --- |
       | check | echo | hello | hello |
@@ -257,11 +256,7 @@ public class FitNesseMainTest {
     FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestFail.md",
       """
       { "type": "test" }
-      ```agentnesse
-      define TEST_SYSTEM
-      slim
-      ```
-
+      
       | script | fitnesse.fixtures.EchoFixture |
       | --- | --- | --- |
       | check | echo | hello | goodbye |
@@ -276,11 +271,7 @@ public class FitNesseMainTest {
     FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestPass.md",
       """
       { "type": "test" }
-      ```agentnesse
-      define TEST_SYSTEM
-      slim
-      ```
-
+      
       | script | fitnesse.fixtures.EchoFixture |
       | --- | --- | --- |
       | check | echo | hello | hello |
@@ -307,17 +298,39 @@ public class FitNesseMainTest {
   @Test
   public void systemPropertiesTakePrecedenceOverConfiguredProperties() throws Exception {
     final String configFileName = "systemPropertiesTakePrecedenceOverConfiguredProperties.json";
-    String themeKey = ConfigurationParameter.THEME.getKey();
-    FileUtil.createFile(configFileName, "{\"theme\": \"example\"}\n");
+    String listenKey = ConfigurationParameter.LISTEN.getKey();
+    FileUtil.createFile(configFileName, "{\"listen\": \"0.0.0.0\"}\n");
 
-    System.setProperty(themeKey, "othertheme");
+    System.setProperty(listenKey, "10.9.8.7");
     try {
-      // Checked via logging:
-      String output = runFitnesseMainWith("-c", "/root", "-f", configFileName);
-      assertThat(output, containsString("othertheme"));
+      ContextConfigurator configurator = ContextConfigurator.systemDefaults();
+      AgentNesseConfig.apply(configurator, new File(configFileName), true);
+      configurator = configurator.updatedWith(System.getProperties());
+      assertThat(configurator.get(ConfigurationParameter.LISTEN), is("10.9.8.7"));
     } finally {
-      System.getProperties().remove(themeKey);
+      System.getProperties().remove(listenKey);
       FileUtil.deleteFile(configFileName);
+    }
+  }
+
+  @Test
+  public void oneLoggingPropertySkipsReconfiguration() {
+    String key = "java.util.logging.config.file";
+    String previous = System.getProperty(key);
+    Logger logger = Logger.getLogger("fitnesse.logging.sentinel");
+    Level previousLevel = logger.getLevel();
+    System.setProperty(key, "sentinel.properties");
+    logger.setLevel(Level.FINE);
+    try {
+      new FitNesseMain().configureLogging(false);
+      assertEquals(Level.FINE, logger.getLevel());
+    } finally {
+      if (previous == null) {
+        System.clearProperty(key);
+      } else {
+        System.setProperty(key, previous);
+      }
+      logger.setLevel(previousLevel);
     }
   }
 

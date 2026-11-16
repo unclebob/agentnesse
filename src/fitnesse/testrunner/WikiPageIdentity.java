@@ -7,16 +7,36 @@ public class WikiPageIdentity {
   public static final String COMMAND_PATTERN = "COMMAND_PATTERN";
   public static final String TEST_RUNNER = "TEST_RUNNER";
   public static final String TEST_SYSTEM = "TEST_SYSTEM";
+  private static final String[] LAUNCH = {
+    TEST_RUNNER,
+    COMMAND_PATTERN,
+    "SLIM_PORT",
+    "SLIM_HOST",
+    "SLIM_FLAGS",
+    "SLIM_VERSION",
+    "MANUALLY_START_TEST_RUNNER",
+    "MANUALLY_START_TEST_RUNNER_ON_DEBUG",
+    "REMOTE_DEBUG_COMMAND",
+    "REMOTE_DEBUG_RUNNER",
+    "slim.port",
+    "slim.host",
+    "slim.flags",
+    "slim.timeout",
+    "slim.pool.size"
+  };
   private final WikiPage page;
-  private final String testSystem;
-  private final String testRunner;
-  private final String commandPattern;
+  private final String launch;
 
   public WikiPageIdentity(WikiPage page) {
     this.page = page;
-    testSystem = getTestSystem();
-    testRunner = getTestRunner();
-    commandPattern = getCommandPattern();
+    rejectTestSystem(page);
+    launch = launchKey(page);
+  }
+
+  public static void rejectTestSystem(WikiPage page) {
+    if (page.getVariable(TEST_SYSTEM) != null) {
+      throw new IllegalArgumentException(page.getName() + " defines TEST_SYSTEM. Slim is the only test system.");
+    }
   }
 
   public String getVariable(String name) {
@@ -24,41 +44,21 @@ public class WikiPageIdentity {
   }
 
   public String testSystem() {
-    return testSystem;
+    return "slim";
   }
 
-  private String testRunner() {
-    return testRunner;
-  }
-
-  private String commandPattern() {
-    return commandPattern;
-  }
-
-  private String getTestSystem() {
-    String testSystemName = getVariable(TEST_SYSTEM);
-    if (testSystemName == null)
-      return "slim";
-    return testSystemName;
-  }
-
-  private String getTestRunner() {
-    String program = getVariable(TEST_RUNNER);
-    if (program == null)
-      program = "";
-    return program;
-  }
-
-  private String getCommandPattern() {
-    String testRunner = getVariable(COMMAND_PATTERN);
-    if (testRunner == null)
-      testRunner = "";
-    return testRunner;
+  private static String launchKey(WikiPage page) {
+    StringBuilder key = new StringBuilder();
+    for (String name : LAUNCH) {
+      String value = page.getVariable(name);
+      key.append(name).append('=').append(value == null ? "" : value).append('\n');
+    }
+    return key.toString();
   }
 
   @Override
   public int hashCode() {
-    return testSystem().hashCode() ^ testRunner().hashCode() ^ commandPattern().hashCode();
+    return launch.hashCode();
   }
 
   @Override
@@ -67,8 +67,6 @@ public class WikiPageIdentity {
     if (getClass() != obj.getClass()) return false;
 
     WikiPageIdentity identity = (WikiPageIdentity) obj;
-    return identity.testSystem().equals(testSystem()) &&
-            identity.testRunner().equals(testRunner()) &&
-            identity.commandPattern().equals(commandPattern());
+    return identity.launch.equals(launch);
   }
 }

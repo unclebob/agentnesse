@@ -62,11 +62,7 @@ public class FitNesseRootUnchangedBySuiteRunTest {
       """);
     Files.writeString(suite.resolve("SampleTest.md"), """
       { "type": "test" }
-      ```agentnesse
-      define TEST_SYSTEM
-      slim
-      ```
-
+      
       | script | fitnesse.fixtures.EchoFixture |
       | --- | --- | --- |
       | check | echo | hello | hello |

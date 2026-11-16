@@ -13,7 +13,7 @@ If a `SuiteSetUp` or `SuiteTearDown` page is executed without errors, it should 
 
 | script | page driver |
 | --- | --- |
-| given page | SuiteParent | with content | ${SUT_PATH}<br>\`\`\`agentnesse<br>define TEST_SYSTEM<br>slim<br>\`\`\` |
+| given page | SuiteParent | with content | ${SUT_PATH}<br> |
 | make a suite page | SuiteParent |
 | given page | SuiteParent.SuiteSetUp | with content | |
 | given page | SuiteParent.SuiteTearDown | with content | |

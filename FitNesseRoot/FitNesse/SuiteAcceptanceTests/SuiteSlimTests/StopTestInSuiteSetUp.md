@@ -9,7 +9,7 @@ Raising an exception with the term "StopTest" in it during "`SuiteSetUp`" will m
 
 | script | | | |
 | --- | --- | --- | --- |
-| given page | MySuite | with content | ${SUT_PATH} <br>\`\`\`agentnesse<br>define TEST_SYSTEM<br>slim<br>\`\`\`<br> |
+| given page | MySuite | with content | ${SUT_PATH} <br><br> |
 | given page | MySuite.SuiteSetUp | with content | \| import \|<br>\| --- \|<br>\| fitnesse.slim.test \|<br><br><br>\| constructor throws \| stop test \|<br>\| --- \| --- \|<br><br><br>\| table in page setup never to be executed \|<br>\| --- \| |
 | given page | MySuite.TestPageA | with content | \| import \|<br>\| --- \|<br>\| fitnesse.slim.test \|<br><br><br>\| table in page A never to be executed \|<br>\| --- \| |
 | given page | MySuite.TestPageB | with content | \| import \|<br>\| --- \|<br>\| fitnesse.slim.test \|<br><br><br>\| table in page B never to be executed \|<br>\| --- \| |

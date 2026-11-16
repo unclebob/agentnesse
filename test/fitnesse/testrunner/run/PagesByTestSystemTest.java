@@ -35,7 +35,7 @@ public class PagesByTestSystemTest {
   public void testPagesForTestSystemAreSurroundedBySuiteSetupAndTeardown() throws Exception {
     WikiPage root = context.getRootPage();
     WikiPage testPage = addTestPage(suite, "TestOne", "My test");
-    WikiPage slimPage = addTestPage(suite, "AaSlimTest", "!define TEST_SYSTEM {slim}\n" +
+    WikiPage slimPage = addTestPage(suite, "AaSlimTest",
             "|!-DT:fitnesse.slim.test.TestSlim-!|\n" +
             "|string|get string arg?|\n" +
             "|wow|wow|\n");

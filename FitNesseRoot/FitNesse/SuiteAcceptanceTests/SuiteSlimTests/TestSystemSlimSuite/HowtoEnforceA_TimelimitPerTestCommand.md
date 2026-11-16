@@ -4,10 +4,6 @@
   "help": null,
   "prune": true
 }
-```agentnesse
-define TEST_SYSTEM
-SLIM
-```
 
 # How to enforce that a test command takes only a limited amount of time during testing
 
