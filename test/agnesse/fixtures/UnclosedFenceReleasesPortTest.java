@@ -17,6 +17,9 @@ import agnesse.wiki.fs.InMemoryPage;
 import org.junit.After;
 import org.junit.Test;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -51,6 +54,27 @@ public class UnclosedFenceReleasesPortTest {
     SlimSources sources = SlimSources.collect(new WikiTestPage(root.getChildPage("Aliased")));
     assertTrue(sources.items().stream().anyMatch(item -> "add change".equals(item.alias()) && "add up change".equals(item.target())));
     assertTrue(sources.tables().stream().anyMatch(table -> table.getCellContents(0, 0).startsWith("ddt:")));
+  }
+
+  @Test
+  public void aScenariosBlockLoadsTheNamedPageBeforeTheFollowingTables() {
+    WikiPage root = InMemoryPage.makeRoot("RooT");
+    WikiPageUtil.addPage(root, PathParser.parse("Greetings"), """
+      | scenario | greet | name |
+      | check | echo | hello @name | hello @name |
+      """);
+    WikiPageUtil.addPage(root, PathParser.parse("Speaker"), """
+      ```agnesse
+      scenarios Greetings
+      ```
+
+      | script |
+      | greet | world |
+      """);
+    SlimSources sources = SlimSources.collect(new WikiTestPage(root.getChildPage("Speaker")));
+    List<String> heads = sources.tables().stream().map(table -> table.getCellContents(0, 0)).toList();
+
+    assertEquals(List.of("scenario", "script"), heads);
   }
 
   @Test

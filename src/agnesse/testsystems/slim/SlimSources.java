@@ -153,7 +153,7 @@ public final class SlimSources {
         rememberAlias(block.argument());
         return;
       }
-      if ("include".equals(block.command())) {
+      if ("include".equals(block.command()) || "scenarios".equals(block.command())) {
         include(page, block.argument(), context, tearDown, seen);
       }
     } catch (IllegalArgumentException ignored) {
