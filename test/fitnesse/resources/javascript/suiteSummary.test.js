@@ -4,6 +4,7 @@ const path = require("path");
 const test = require("node:test");
 const vm = require("vm");
 
+// Mutation workers overlay the source through the working directory.
 const root = process.cwd();
 const sourcePath = path.join(root, "src/fitnesse/resources/javascript/fitnesse.js");
 const cssPath = path.join(root, "src/fitnesse/resources/css/agentnesse.css");
@@ -89,6 +90,17 @@ function createElement(tag) {
     el.children.push(child);
     return child;
   };
+  el.remove = () => {
+    const parent = el.parentNode;
+    if (!parent) {
+      return;
+    }
+    const at = parent.children.indexOf(el);
+    if (at >= 0) {
+      parent.children.splice(at, 1);
+    }
+    el.parentNode = null;
+  };
   el.insertBefore = (child, ref) => {
     child.parentNode = el;
     const at = el.children.indexOf(ref);
@@ -137,15 +149,50 @@ function page() {
   return { document, summaries, summary, results, hide };
 }
 
-function render(events) {
+function render(events, prepare) {
   const view = page();
   const context = { document: view.document, console };
   context.window = context;
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(sourcePath, "utf8"), context, { filename: sourcePath });
+  if (prepare) {
+    prepare(view);
+  }
   view.document.dispatchEvent("DOMContentLoaded");
   events.forEach((event) => context.AgentNesseResults.apply(event));
+  view.apply = (event) => context.AgentNesseResults.apply(event);
   return view;
+}
+
+function resultRow(cells) {
+  const row = createElement("tr");
+  cells.forEach(([className, text]) => {
+    const cell = createElement("td");
+    cell.className = className;
+    if (text != null) {
+      cell.textContent = text;
+    }
+    row.appendChild(cell);
+  });
+  return row;
+}
+
+function appendResultRows(parent) {
+  return [
+    [["pass", "ok"]],
+    [["pass", "kept"], ["error", "boom"]],
+    [["fail", "bad"]],
+    [["fail", "bad"], ["pass", "kept"]],
+    [["", "note"]],
+    [["error", "boom"]],
+  ].map((cells) => parent.appendChild(resultRow(cells)));
+}
+
+function assertResultRows(rows, passHidden) {
+  assert.equal(classes(rows[0]).includes("hidden"), passHidden);
+  rows.slice(1).forEach((row) => {
+    assert.ok(!classes(row).includes("hidden"));
+  });
 }
 
 function texts(nodes) {
@@ -190,13 +237,15 @@ test("summary rows put counts before a name relative to the suite", () => {
   const table = view.summaries.querySelector("table.suite-summary");
   assert.ok(table, "summary list is a table");
   const headers = table.querySelector("thead").querySelector("tr").children;
+  assert.equal(table.querySelector("thead").children.length, 1);
   assert.deepEqual(texts(headers), ["right", "wrong", "ignored", "exceptions", "test"]);
-  assert.deepEqual(headers.filter((cell) => classes(cell).includes("count")).length, 4);
+  assert.deepEqual(headers.map((cell) => cell.className), ["count", "count", "count", "count", ""]);
 
   const rows = table.querySelector("tbody").children;
   assert.equal(rows.length, 2);
 
   assert.deepEqual(texts(countCells(rows[0])), ["5", "0", "2", "1"]);
+  assert.deepEqual(rows[0].children.map((cell) => cell.className), ["count", "count", "count", "count", ""]);
   assert.ok(classes(rows[0]).includes("pass"));
   const link = rows[0].querySelector("a");
   assert.equal(link.textContent, "SuiteEditResponderTests.TestEditNewPage");
@@ -283,37 +332,129 @@ test("hide passed still hides passed result rows and leaves the summary list in 
       pages: 2,
     },
   ]);
-  const passed = createElement("tr");
-  const ok = createElement("td");
-  ok.className = "pass";
-  ok.textContent = "ok";
-  passed.appendChild(ok);
-  const mixed = createElement("tr");
-  const mixedOk = createElement("td");
-  mixedOk.className = "pass";
-  const mixedBad = createElement("td");
-  mixedBad.className = "error";
-  mixed.appendChild(mixedOk);
-  mixed.appendChild(mixedBad);
-  const failed = createElement("tr");
-  const bad = createElement("td");
-  bad.className = "fail";
-  bad.textContent = "bad";
-  failed.appendChild(bad);
-  view.results.appendChild(passed);
-  view.results.appendChild(mixed);
-  view.results.appendChild(failed);
+  const rows = appendResultRows(view.results);
+  const summaryRows = () => view.summaries.querySelector("tbody").children;
+
+  assert.ok(!rows.some((row) => classes(row).includes("hidden")));
+  assert.ok(![...summaryRows()].some((row) => classes(row).includes("hidden")));
 
   view.hide.checked = true;
   view.hide.dispatchEvent("change");
-  assert.ok(classes(passed).includes("hidden"));
-  assert.ok(!classes(mixed).includes("hidden"));
-  assert.ok(!classes(failed).includes("hidden"));
-  const summaryRows = view.summaries.querySelector("tbody").children;
-  assert.ok(!classes(summaryRows[0]).includes("hidden"));
-  assert.ok(!classes(summaryRows[1]).includes("hidden"));
+  assertResultRows(rows, true);
+  assert.ok(!classes(summaryRows()[0]).includes("hidden"));
+  assert.ok(!classes(summaryRows()[1]).includes("hidden"));
+
+  view.apply({
+    event: "page-done",
+    path: "SuitePage.Later",
+    status: "pass",
+    counts: { right: 2, wrong: 0, ignored: 0, exceptions: 0 },
+    index: 3,
+    pages: 4,
+  });
+  view.apply({
+    event: "page-done",
+    path: "SuitePage.LaterFail",
+    status: "fail",
+    counts: { right: 0, wrong: 3, ignored: 0, exceptions: 0 },
+    index: 4,
+    pages: 4,
+  });
+  assert.equal(summaryRows().length, 4);
+  assert.ok(!classes(summaryRows()[2]).includes("hidden"));
+  assert.ok(!classes(summaryRows()[3]).includes("hidden"));
+  assert.equal(summaryRows()[2].querySelector("a").textContent, "Later");
+  assert.equal(summaryRows()[3].querySelector("a").textContent, "LaterFail");
 
   view.hide.checked = false;
   view.hide.dispatchEvent("change");
-  assert.ok(!classes(passed).includes("hidden"));
+  assert.ok(!rows.some((row) => classes(row).includes("hidden")));
+  assert.ok(![...summaryRows()].some((row) => classes(row).includes("hidden")));
+});
+
+test("the progress line shows no pages done when the run starts", () => {
+  const view = render([]);
+  view.apply({ event: "run-started", pages: 4, root: SUITE });
+  assert.equal(view.document.getElementById("progressBar").textContent, "Running tests ... (0/4)");
+});
+
+test("a table that never ran stays out of the exceptions column", () => {
+  const view = render([
+    { event: "run-started", pages: 2, root: SUITE },
+    {
+      event: "page-done",
+      path: `${SUITE}.Boom`,
+      status: "error",
+      counts: { right: 0, wrong: 0, ignored: 0, exceptions: 0, tableFailures: 2 },
+      index: 1,
+      pages: 2,
+    },
+    {
+      event: "page-done",
+      path: `${SUITE}.Skipped`,
+      status: "ignore",
+      counts: { right: 0, wrong: 0, ignored: 3, exceptions: 0 },
+      index: 2,
+      pages: 2,
+    },
+  ]);
+  const rows = view.summaries.querySelector("tbody").children;
+  assert.ok(classes(rows[0]).includes("error"));
+  assert.deepEqual(texts(countCells(rows[0])), ["0", "0", "0", "0"]);
+  assert.equal(rows[0].querySelector("a").textContent, "Boom");
+  assert.ok(classes(rows[1]).includes("ignore"));
+  assert.equal(texts(countCells(rows[1]))[2], "3");
+  assert.equal(rows[1].querySelector("a").textContent, "Skipped");
+});
+
+test("a run with no summary list still finishes the page", () => {
+  const view = render([
+    {
+      event: "page-done",
+      path: EDIT,
+      status: "pass",
+      counts: { right: 1, wrong: 0, ignored: 0, exceptions: 0 },
+      index: 1,
+      pages: 1,
+    },
+  ], (next) => {
+    next.summaries.remove();
+  });
+  assert.equal(view.document.getElementById("test-summaries"), null);
+  assert.equal(view.document.querySelectorAll("table.suite-summary").length, 0);
+  assert.match(view.summary.textContent, /1 right/);
+});
+
+test("a summary row stays visible when the hide control is absent", () => {
+  const view = render([
+    { event: "run-started", pages: 1, root: SUITE },
+    {
+      event: "page-done",
+      path: EDIT,
+      status: "pass",
+      counts: { right: 1, wrong: 0, ignored: 0, exceptions: 0 },
+      index: 1,
+      pages: 1,
+    },
+  ], (next) => {
+    next.hide.remove();
+  });
+  const row = view.summaries.querySelector("tbody").children[0];
+  assert.ok(!classes(row).includes("hidden"));
+  assert.equal(view.document.getElementById("hidePassedTests"), null);
+});
+
+test("hide passed still hides result rows when the page has no summary table", () => {
+  const view = render([]);
+  view.summaries.remove();
+  const rows = appendResultRows(view.results);
+  view.hide.checked = true;
+  view.hide.dispatchEvent("change");
+  assertResultRows(rows, true);
+  assert.equal(view.document.querySelectorAll("table.suite-summary").length, 0);
+});
+
+test("the page heading in the output stays the full path", () => {
+  const view = render([{ event: "page-started", path: EDIT }]);
+  assert.equal(view.results.querySelector("h2").textContent, EDIT);
 });

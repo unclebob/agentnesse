@@ -206,8 +206,14 @@ task copyRuntimeLibs(type: Copy) {
   from configurations.runtimeClasspath
 }
 
+task javascriptTest(type: Exec) {
+  group = 'verification'
+  description = 'Run the suite summary renderer tests.'
+  commandLine 'node', '--test', '--test-concurrency=1', 'test/fitnesse/resources/javascript/suiteSummary.test.js'
+}
+
 test {
-  dependsOn copyRuntimeLibs
+  dependsOn copyRuntimeLibs, javascriptTest
   maxParallelForks 1
   finalizedBy jacocoTestReport
 }
