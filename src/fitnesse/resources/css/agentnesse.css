@@ -31,7 +31,10 @@ details.agentnesse-include > summary { cursor: pointer; font-weight: bold; }
 #progressBar.fail { background: #f88; }
 #test-summary { padding: 0.25rem 1rem; line-height: 1.2; }
 .suite-heading { margin: 0.15rem 0; font-size: 1rem; line-height: 1.2; }
-#test-summaries .suite-line { margin: 0; padding: 0 0.25rem; line-height: 1.2; }
+#test-summaries .suite-summary { margin: 0.15rem 0 0.25rem; }
+#test-summaries .suite-summary th,
+#test-summaries .suite-summary td { padding: 0 0.45rem; line-height: 1.2; white-space: nowrap; }
+#test-summaries .suite-summary .count { text-align: right; font-variant-numeric: tabular-nums; }
 #test-results { line-height: 1.2; }
 #test-results p, #test-results table { margin: 0; }
 #test-results td, #test-results th { padding: 0 0.3rem; line-height: 1.2; }

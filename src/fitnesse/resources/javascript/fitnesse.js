@@ -1,3 +1,114 @@
+const summaryColumns = function () {
+  return ["right", "wrong", "ignored", "exceptions"];
+};
+
+const summaryCount = function (value) {
+  if (!value) {
+    return 0;
+  }
+  return value;
+};
+
+const summaryCounts = function (counts) {
+  var source = counts || {};
+  var columns = summaryColumns();
+  var values = [];
+  for (var i = 0; i < columns.length; i++) {
+    values.push(summaryCount(source[columns[i]]));
+  }
+  return values;
+};
+
+const leafName = function (path) {
+  var parts = path.split(".");
+  return parts[parts.length - 1];
+};
+
+const relativePageName = function (path, root) {
+  if (!path) {
+    return "";
+  }
+  if (!root) {
+    return path;
+  }
+  if (path === root) {
+    return "(" + leafName(path) + ")";
+  }
+  var prefix = root + ".";
+  if (path.indexOf(prefix) === 0) {
+    return path.substring(prefix.length);
+  }
+  return path;
+};
+
+const summaryHref = function (path) {
+  if (!path) {
+    return "";
+  }
+  return "/" + path;
+};
+
+const summaryPage = function (event) {
+  return {
+    counts: summaryCounts(event.counts),
+    path: event.path || "",
+    status: event.status || ""
+  };
+};
+
+const summaryCell = function (doc, tag, className, text) {
+  var node = doc.createElement(tag);
+  node.className = className;
+  node.textContent = text;
+  return node;
+};
+
+const summaryHeader = function (doc) {
+  var head = doc.createElement("thead");
+  var row = doc.createElement("tr");
+  var columns = summaryColumns();
+  for (var i = 0; i < columns.length; i++) {
+    row.appendChild(summaryCell(doc, "th", "count", columns[i]));
+  }
+  row.appendChild(summaryCell(doc, "th", "", "test"));
+  head.appendChild(row);
+  return head;
+};
+
+const ensureSummaryTable = function (doc, list) {
+  var table = list.querySelector("table.suite-summary");
+  if (table) {
+    return table;
+  }
+  table = doc.createElement("table");
+  table.className = "suite-summary";
+  table.appendChild(summaryHeader(doc));
+  table.appendChild(doc.createElement("tbody"));
+  list.appendChild(table);
+  return table;
+};
+
+const summaryNameCell = function (doc, path, root) {
+  var cell = doc.createElement("td");
+  var link = doc.createElement("a");
+  link.href = summaryHref(path);
+  link.textContent = relativePageName(path, root);
+  cell.appendChild(link);
+  return cell;
+};
+
+const appendSummaryRow = function (doc, table, event, root) {
+  var done = summaryPage(event);
+  var row = doc.createElement("tr");
+  row.className = done.status;
+  for (var i = 0; i < done.counts.length; i++) {
+    row.appendChild(summaryCell(doc, "td", "count", String(done.counts[i])));
+  }
+  row.appendChild(summaryNameCell(doc, done.path, root));
+  table.querySelector("tbody").appendChild(row);
+  return row;
+};
+
 (function () {
   var SECTIONS = { SetUp: 1, TearDown: 1, SuiteSetUp: 1, SuiteTearDown: 1, ScenarioLibrary: 1 };
   var pageRoot = null;
@@ -9,6 +120,7 @@
   var pagesTotal = 0;
   var pagesFinished = 0;
   var barFailed = false;
+  var suiteRoot = "";
 
   function shouldOpen(list) {
     for (var i = 0; i < list.length; i++) {
@@ -113,8 +225,7 @@
     }
     var list = document.getElementById("test-summaries");
     if (list) {
-      list.appendChild(el("div", "suite-line " + (event.status || ""), (event.path || "") + " — " + (counts.right || 0)
-        + " right, " + (counts.wrong || 0) + " wrong, " + (counts.exceptions || 0) + " exceptions"));
+      appendSummaryRow(document, ensureSummaryTable(document, list), event, suiteRoot);
     }
   }
 
@@ -148,6 +259,7 @@
   function apply(event) {
     if (!event || !event.event) return;
     if (event.event === "run-started") {
+      suiteRoot = event.root || "";
       pagesTotal = event.pages || 0;
       paintProgress();
     } else if (event.event === "page-started") {
