@@ -41,7 +41,7 @@
 
 | script |
 | --- |
-| check | request page | SuiteParent?suite | 200 |
+| check | request page | SuiteParent?suite&format=json | 200 |
 
 | ordered query:pages run in suite | SuiteChildOne | slim |
 | --- | --- | --- |

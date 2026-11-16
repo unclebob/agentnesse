@@ -4,9 +4,4 @@
   "help": null,
   "prune": false
 }
-[Front Page](.FrontPage) | [root](root) (for global 
-```agnesse
-path
-'s
-```
-, *etc.*) | Press '?' for keyboard shortcuts  | [(edit)](.PageFooter?edit)
+[Front Page](.FrontPage) | [User Guide](.AgNesse.UserGuide) | [Acceptance Tests](.AgNesse.SuiteAcceptanceTests)

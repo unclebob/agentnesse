@@ -37,8 +37,8 @@ A `SetUp`, `TearDown`, `SuiteSetUp`, `SuiteTearDown`, and `ScenarioLibrary` that
 | given page | UncleLibrary.Mid | with content | mid |
 | given page | UncleLibrary.Mid.Leaf | with content | \| import \|<br>\| --- \|<br>\| agnesse.fixtures \|<br><br>\| script \| echo fixture \|<br>\| --- \|<br>\| from the uncle \| |
 | make a test page | UncleLibrary.Mid.Leaf |
-| page | UncleInherit.Mid.Leaf?test | should match | uncle setup.*hi.*uncle teardown |
-| page | UncleNear.Mid.Leaf?test | should contain | near setup |
-| page | UncleNear.Mid.Leaf?test | should not contain | far setup |
-| page | UncleSuite?suite | should match | suite uncle setup.*child ran.*suite uncle teardown |
-| page | UncleLibrary.Mid.Leaf?test | should contain | from uncle |
+| page | UncleInherit.Mid.Leaf?test&format=json | should match | uncle setup.*hi.*uncle teardown |
+| page | UncleNear.Mid.Leaf?test&format=json | should contain | near setup |
+| page | UncleNear.Mid.Leaf?test&format=json | should not contain | far setup |
+| page | UncleSuite?suite&format=json | should match | suite uncle setup.*child ran.*suite uncle teardown |
+| page | UncleLibrary.Mid.Leaf?test&format=json | should contain | from uncle |

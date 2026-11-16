@@ -17,6 +17,6 @@ In this test we set it to 1 second.
 | script | | | |
 | --- | --- | --- | --- |
 | create page | TestPage | with content | <br>\`\`\`agnesse<br>define slim.timeout<br>1<br>\`\`\`<br>\`\`\`agnesse<br>define SLIM_PORT<br>8099<br>\`\`\`<br>\`\`\`agnesse<br>define MANUALLY_START_TEST_RUNNER_ON_DEBUG<br>true<br>\`\`\` |
-| check | request page | TestPage?test&remote_debug | 200 |
+| check | request page | TestPage?test&remote_debug&format=json | 200 |
 | ensure | content contains | Error connecting to SLiM server on localhost | |
 | show collapsed | content | | |

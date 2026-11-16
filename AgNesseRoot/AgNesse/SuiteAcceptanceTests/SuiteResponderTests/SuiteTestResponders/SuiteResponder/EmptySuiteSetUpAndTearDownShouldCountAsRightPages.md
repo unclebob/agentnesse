@@ -26,7 +26,7 @@ For normal (HTML) responses:
 
 | script |
 | --- |
-| check | request page | SuiteParent?suite | 200 |
+| check | request page | SuiteParent?suite&format=json | 200 |
 | show | content |
 | ensure | content contains | 4 right, 0 wrong, 0 ignored, 0 exceptions |
 | ensure | content contains | SuiteParent.SuiteSetUp |

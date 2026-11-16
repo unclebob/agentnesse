@@ -95,21 +95,21 @@
 
 | scenario | test results for page | source | should contain | text |
 | --- | --- | --- | --- | --- |
-| check | request page | @source?test | 200 | |
+| check | request page | @source?test&format=json | 200 | |
 | ensure | content contains | @text | | |
 | show | content | | | |
 
 
 | scenario | test results for page in debug mode | source | should contain | text |
 | --- | --- | --- | --- | --- |
-| check | request page | @source?test&debug | 200 | |
+| check | request page | @source?test&debug&format=json | 200 | |
 | ensure | content contains | @text | | |
 | show | content | | | |
 
 
 | scenario | test results for suite | source | should contain | text |
 | --- | --- | --- | --- | --- |
-| check | request page | @source?suite | 200 | |
+| check | request page | @source?suite&format=json | 200 | |
 | ensure | content contains | @text | | |
 | show | content | | | |
 
@@ -121,7 +121,7 @@
 
 | scenario | test ressults for page | source | should not contain | text |
 | --- | --- | --- | --- | --- |
-| check | request page | @source?test | 200 | |
+| check | request page | @source?test&format=json | 200 | |
 | reject | content contains | @text | | |
 | show | content | | | |
 
@@ -233,7 +233,7 @@ define TestEND
 
 | scenario | when page | source | is tested |
 | --- | --- | --- | --- |
-| check | request page | @source?test | 200 |
+| check | request page | @source?test&format=json | 200 |
 | show collapsed | content | | |
 
 

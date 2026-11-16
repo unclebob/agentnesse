@@ -18,7 +18,7 @@ You would expect the variable to be substituted when the test page is executed:
 
 | script | | | |
 | --- | --- | --- | --- |
-| check | request page | SuitePage.TestPage?test | 200 |
+| check | request page | SuitePage.TestPage?test&format=json | 200 |
 | show | content | | |
 | ensure | content contains | Scenario Library: "some value" | |
 | ensure | content contains | Test Page: "some value" | |
@@ -30,7 +30,7 @@ Now, it we execute from Suite level, the variable should be substituted too:
 
 | script | | | |
 | --- | --- | --- | --- |
-| check | request page | SuitePage?suite | 200 |
+| check | request page | SuitePage?suite&format=json | 200 |
 | show | content | | |
 | ensure | content contains | Scenario Library: "some value" | |
 | ensure | content contains | Test Page: "some value" | |

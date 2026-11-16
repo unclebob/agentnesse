@@ -15,4 +15,4 @@ When you execute a test page, `AgNesse` gathers up the classpaths prior to runni
 | given page | ParentPage | with content | \`\`\`agnesse<br>path<br>parentPath<br>\`\`\` |
 | given page | ParentPage.TestPage | with content | <br>\`\`\`agnesse<br>path<br>classes<br>\`\`\`<br>\`\`\`agnesse<br>path<br>agnesse-standalone.jar<br>\`\`\`<br><br>\| Import \|<br>\| --- \|<br>\| agnesse.fixtures \|<br><br>\| script \| java properties \|<br>\| --- \| --- \|<br>\| show \| property \| java.class.path \| |
 | make a test page | ParentPage.TestPage |
-| page | ParentPage.TestPage?test | should contain | classes${path.separator}agnesse-standalone.jar${path.separator}parentPath |
+| page | ParentPage.TestPage?test&format=json | should contain | classes${path.separator}agnesse-standalone.jar${path.separator}parentPath |

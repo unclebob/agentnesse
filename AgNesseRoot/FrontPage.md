@@ -13,6 +13,7 @@ To add your first "page", click the [Edit](.FrontPage?edit) button and add a wik
 
 | **To Learn More...** | |
 | --- | --- |
+| [User Guide](.AgNesse.UserGuide) | *How to write a page, run it, and read the JSON* |
 | [Acceptance Tests](.AgNesse.SuiteAcceptanceTests) | *The suite of acceptance tests* |
 | [Components and Licenses](.AgNesse.ComponentsAndLicenses) | *Libraries shipped with the server* |
 

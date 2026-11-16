@@ -13,6 +13,7 @@
 | >SuiteEditResponderTests | *Specify the behavior of edit requests.* |
 | >SuiteResponderTests | *Specify the behavior of the responders.* |
 | >SuiteSlimTests | *Slim Specific Tests* |
+| >SuiteUserGuide | *The user guide. Each example is a test.* |
 
 ## *Classpaths*
 ```agnesse

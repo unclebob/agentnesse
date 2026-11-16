@@ -14,6 +14,6 @@ We use a test runner class which doesn't exists. This ensures the slim server di
 | script | | | |
 | --- | --- | --- | --- |
 | create page | TestPage | with content | <br>\`\`\`agnesse<br>define slim.timeout<br>2<br>\`\`\`<br>\`\`\`agnesse<br>define SLIM_PORT<br>0<br>\`\`\`<br>\`\`\`agnesse<br>define TEST_RUNNER<br>something.that.does.not.exists<br>\`\`\` |
-| check | request page | TestPage?test | 200 |
+| check | request page | TestPage?test&format=json | 200 |
 | ensure | content contains | Error SLiM server died before a connection could be established. | |
 | show collapsed | content | | |
