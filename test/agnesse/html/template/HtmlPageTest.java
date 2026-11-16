@@ -4,6 +4,7 @@ package agnesse.html.template;
 
 import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertHasRegexp;
+import static util.RegexTestCase.assertNotSubString;
 import static util.RegexTestCase.assertSubString;
 
 import agnesse.AgNesseContext;
@@ -52,6 +53,14 @@ public class HtmlPageTest {
   @Test
   public void testIncludesHeading() throws Exception {
     assertSubString("<header>", html);
+  }
+
+  @Test
+  public void testHeaderLogoLinksHome() throws Exception {
+    String header = html.substring(html.indexOf("<header>"), html.indexOf("</header>"));
+    assertSubString("<a href=\"/FrontPage\" id=\"art_niche\">", header);
+    assertSubString("<img src=\"/files/agnesse/images/agnesse-logo.png\" alt=\"AgNesse\" height=\"80\">", header);
+    assertNotSubString("<span>AgNesse</span>", header);
   }
 
   @Test

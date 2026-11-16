@@ -1,17 +1,17 @@
-<a href="/FrontPage" id="art_niche"><span>AgNesse</span></a>
-
+<a href="/FrontPage" id="art_niche"><img src="/files/agnesse/images/agnesse-logo.png" alt="AgNesse" height="80"></a>
+<div class="header-text">
 <ul>
 #foreach($breadCrumb in $pageTitle.BreadCrumbs)
  <li><a href="/$breadCrumb.Link">$breadCrumb.Name</a></li>
 #end
 </ul>
 <h1>#if($pageTitle.Link)<a href="/$pageTitle.Link">$pageTitle.Title</a>#else$pageTitle.Title#end</h1>
-
 #if($pageTitle.pageTags)
  #foreach($tag in $pageTitle.pageTagsArray)
  <span class="tag">#escape($tag)</span>
  #end
 #end
+</div>
 
 ##if($pageTitle.PageType)<br/><span class="page_type">$pageTitle.PageType</span>#end
 
