@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.run;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.ChunkedResponse;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
@@ -10,7 +10,7 @@ import agnesse.http.Response;
 import agnesse.http.ResponseSender;
 import agnesse.http.SimpleResponse;
 import agnesse.reporting.BaseFormatter;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.util.Clock;
 import agnesse.util.DateAlteringClock;
 import agnesse.util.DateTimeUtil;
@@ -44,7 +44,7 @@ public class SuiteResponderTest {
   private SuiteResponder responder;
   private WikiPage root;
   private WikiPage suite;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private final String fitPassFixture = "|script|agnesse.fixtures.EchoFixture|\n|check|echo|ok|ok|\n";
   private final String fitFailFixture = "|script|agnesse.fixtures.EchoFixture|\n|check|echo|ok|bad|\n";
   private final String simpleSlimDecisionTable = "" +
@@ -55,7 +55,7 @@ public class SuiteResponderTest {
   @Before
   public void setUp() throws Exception {
     String suitePageName = "SuitePage";
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
     PageData data = root.getData();
     data.setContent(classpathWidgets());
@@ -91,7 +91,7 @@ public class SuiteResponderTest {
 
   @After
   public void tearDown() throws Exception {
-    FitNesseUtil.destroyTestContext();
+    AgNesseUtil.destroyTestContext();
   }
 
   @Test

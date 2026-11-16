@@ -13,7 +13,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.FileUtil;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
@@ -24,7 +24,7 @@ import agnesse.html.template.PageTitle;
 class DirectoryResponder implements Responder {
   private String resource;
   private File requestedDirectory;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy, hh:mm a");
 
   public DirectoryResponder(String resource, File requestedFile) {
@@ -33,7 +33,7 @@ class DirectoryResponder implements Responder {
   }
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     this.context = context;
     if (!resource.endsWith("/")) {
       return setRedirectForDirectory(request.getQueryString());

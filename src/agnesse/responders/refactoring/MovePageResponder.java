@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.refactoring;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.Request;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PathParser;
@@ -14,7 +14,7 @@ public class MovePageResponder extends PageMovementResponder {
   private String newParentName;
 
   @Override
-  protected boolean getAndValidateNewParentPage(FitNesseContext context, Request request) {
+  protected boolean getAndValidateNewParentPage(AgNesseContext context, Request request) {
     PageCrawler crawler = context.getRootPage().getPageCrawler();
 
     newParentName = getNameofNewParent(request);

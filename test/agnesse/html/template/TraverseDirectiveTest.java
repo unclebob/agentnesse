@@ -7,19 +7,19 @@ import org.apache.velocity.VelocityContext;
 import org.junit.Before;
 import org.junit.Test;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.components.TraversalListener;
 import agnesse.components.Traverser;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.fs.InMemoryPage;
 
 public class TraverseDirectiveTest {
 
-  private FitNesseContext context;
+  private AgNesseContext context;
   
   @Before
   public void setUp() {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     context.pageFactory.getVelocityEngine().loadDirective(TraverseDirective.class.getName());
   }
   

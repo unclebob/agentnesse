@@ -7,5 +7,5 @@
 
 | script | echo fixture | | |
 | --- | --- | --- | --- |
-| show | echo | ${FITNESSE_VERSION} | |
-| check not | echo | ${FITNESSE_VERSION} | vUnknown |
+| show | echo | ${AGNESSE_VERSION} | |
+| check not | echo | ${AGNESSE_VERSION} | vUnknown |

@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.template.HtmlPage;
 import agnesse.html.template.PageTitle;
 import agnesse.http.Request;
@@ -30,10 +30,10 @@ public class DeletePageResponder implements Responder {
   private SimpleResponse response;
   private String qualifiedPageName;
   private WikiPagePath path;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Override
-  public Response makeResponse(final FitNesseContext context, final Request request) throws Exception {
+  public Response makeResponse(final AgNesseContext context, final Request request) throws Exception {
     this.context = context;
     intializeResponse(request);
 
@@ -79,7 +79,7 @@ public class DeletePageResponder implements Responder {
     }
   }
 
-  private String buildConfirmationHtml(final WikiPage root, final String qualifiedPageName, final FitNesseContext context, Request request) {
+  private String buildConfirmationHtml(final WikiPage root, final String qualifiedPageName, final AgNesseContext context, Request request) {
     HtmlPage html = context.pageFactory.newPage();
 
     String tags = "";

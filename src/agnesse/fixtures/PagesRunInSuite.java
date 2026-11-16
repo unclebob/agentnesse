@@ -23,7 +23,7 @@ public class PagesRunInSuite {
   private List<String> getPagesRunInSuite() throws Exception {
     List<String> testPages = new ArrayList<>();
 
-    String content = FitnesseFixtureContext.sender.sentData();
+    String content = AgNesseFixtureContext.sender.sentData();
     if (content.contains("Testing was interrupted and results are incomplete.")) {
       throw new Exception("Test result page says: Testing was interrupted and results are incomplete.");
     }

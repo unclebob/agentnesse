@@ -2,12 +2,12 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.fixtures;
 
-import static agnesse.fixtures.FitnesseFixtureContext.*;
+import static agnesse.fixtures.AgNesseFixtureContext.*;
 import agnesse.util.Clock;
 
 public class TearDown {
   public TearDown() throws Exception {
-    context.fitNesse.stop();
+    context.agNesse.stop();
     Clock.restoreDefaultClock();
     context = null;
   }

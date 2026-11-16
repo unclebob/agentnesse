@@ -1,5 +1,5 @@
 {
-  "name": "FitNesse",
+  "name": "AgNesse",
   "image": "mcr.microsoft.com/vscode/devcontainers/base:focal",
   "features": {
     "ghcr.io/devcontainers/features/java:1": {

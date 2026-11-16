@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class FitNesseVersionTest {
+public class AgNesseVersionTest {
 
   @Test
   public void doesLoadVersionResourceFile() {
-    FitNesseVersion version = new FitNesseVersion();
+    AgNesseVersion version = new AgNesseVersion();
     assertTrue(version.toString().startsWith("v"));
     assertFalse(version.toString().endsWith("\n"));
   }

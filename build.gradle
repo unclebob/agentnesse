@@ -6,7 +6,7 @@
    - common
    - networking
    - ant
-   - fitnesse, the wiki server
+   - agnesse, the wiki server
  - Move file creation to plugin
 */
 
@@ -30,10 +30,10 @@ plugins {
   id 'jacoco'
 }
 
-group = 'org.fitnesse'
+group = 'org.agnesse'
 version = new Date().format('yyyyMMdd')
 
-println "Building FitNesse v${project.version}..."
+println "Building AgNesse v${project.version}..."
 
 repositories {
   mavenCentral()
@@ -170,13 +170,13 @@ task stopTemplateWatcher {
     }
 }
 
-task fitNesseVersion {
-  def versionFile = new File("${sourceSets.main.output.resourcesDir}/META-INF/FitNesseVersion.txt")
+task agNesseVersion {
+  def versionFile = new File("${sourceSets.main.output.resourcesDir}/META-INF/AgNesseVersion.txt")
   outputs.file(versionFile)
   doLast {
     versionFile.parentFile.mkdirs()
     versionFile.text = "v${version}"
-    println "fitNesseVersion: ${outputs.files.singleFile.text}"
+    println "agNesseVersion: ${outputs.files.singleFile.text}"
   }
 }
 
@@ -199,7 +199,7 @@ task createUpdateLists(type: WikiFileListBuilderTask) {
     "AgNesseRoot/TemplateLibrary/TestPage.md" ]
 }
 
-processResources.dependsOn "fitNesseVersion", "createUpdateLists"
+processResources.dependsOn "agNesseVersion", "createUpdateLists"
 
 task copyRuntimeLibs(type: Copy) {
   into "lib"
@@ -360,7 +360,7 @@ pitest {
 task run(type: JavaExec) {
   dependsOn classes, copyRuntimeLibs
   classpath = sourceSets.main.runtimeClasspath
-  mainClass = "agnesseMain.FitNesseMain"
+  mainClass = "agnesseMain.AgNesseMain"
   args "-p", "8001"
 }
 
@@ -373,7 +373,7 @@ jar {
   }
   duplicatesStrategy = 'exclude'
   manifest {
-    attributes("Main-Class": "agnesseMain.FitNesseMain",
+    attributes("Main-Class": "agnesseMain.AgNesseMain",
         "Implementation-Version": archiveVersion)
   }
 }
@@ -381,7 +381,7 @@ jar {
 task standaloneJar(type: Jar) {
   duplicatesStrategy = 'include'
   dependsOn jar
-  archiveBaseName = 'fitnesse'
+  archiveBaseName = 'agnesse'
   archiveClassifier = 'standalone'
   from {
     configurations.runtimeClasspath.collect { zipTree(it) }
@@ -395,14 +395,14 @@ task standaloneJar(type: Jar) {
     zipTree(it)
   }
   manifest {
-    attributes("Main-Class": "agnesseMain.FitNesseMain",
+    attributes("Main-Class": "agnesseMain.AgNesseMain",
         "Implementation-Version": archiveVersion)
   }
 }
 
 task slimJar(type: Jar) {
   dependsOn jar
-  archiveBaseName = 'fitnesse'
+  archiveBaseName = 'agnesse'
   archiveClassifier = 'slim'
   from { jar.outputs.files.collect { zipTree(it) } }
     {
@@ -421,7 +421,7 @@ task acceptanceTest(type: JavaExec) {
   mustRunAfter test
   onlyIf { test.didWork }
   classpath = standaloneJar.outputs.files
-  mainClass = "agnesseMain.FitNesseMain"
+  mainClass = "agnesseMain.AgNesseMain"
   args "-c", "AgNesse.SuiteAcceptanceTests?suite", "-b", "build/reports/acceptance-results.json"
 }
 
@@ -460,7 +460,7 @@ task publishTag(type: Exec) {
 }
 
 task release {
-  dependsOn 'releaseTag', 'signFitNesseReleasePublication', 'publish', 'publishToSonatype', 'closeAndReleaseSonatypeStagingRepository', 'publishTag'
+  dependsOn 'releaseTag', 'signAgNesseReleasePublication', 'publish', 'publishToSonatype', 'closeAndReleaseSonatypeStagingRepository', 'publishTag'
 }
 
 clean {
@@ -469,18 +469,18 @@ clean {
 
 publishing {
   publications {
-    FitNesseRelease(MavenPublication) {
+    AgNesseRelease(MavenPublication) {
       from components.java
       artifact sourcesJar
       artifact javadocJar
       artifact standaloneJar
       artifact slimJar
-      groupId 'org.fitnesse'
-      artifactId 'fitnesse'
+      groupId 'org.agnesse'
+      artifactId 'agnesse'
       pom.withXml {
         asNode().get('version') + {
           resolveStrategy = Closure.DELEGATE_FIRST
-          name('FitNesse')
+          name('AgNesse')
           description('The fully integrated standalone wiki, and acceptance testing framework.')
           url('http://fitnesse.org')
           packaging('jar')

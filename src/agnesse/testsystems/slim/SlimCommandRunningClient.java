@@ -135,13 +135,13 @@ public class SlimCommandRunningClient implements SlimClient {
       }
       if (Clock.currentTimeInMillis() > timeOut) {
         throw new SlimError(
-            "Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file.");
+            "Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the agnesse properties file.");
       }
       try {
         slimServerVersionMessage = reader.readLine();
       } catch (SocketTimeoutException e) {
         throw new SlimError(
-            "Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file.");
+            "Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the agnesse properties file.");
       }
       LOG.finest("Read Slim Header: >" + slimServerVersionMessage + "<");
     }

@@ -28,10 +28,10 @@ public class UnclosedFenceReleasesPortTest {
 
   @After
   public void releasePort() throws Exception {
-    if (FitnesseFixtureContext.context != null && FitnesseFixtureContext.context.fitNesse != null) {
-      FitnesseFixtureContext.context.fitNesse.stop();
+    if (AgNesseFixtureContext.context != null && AgNesseFixtureContext.context.agNesse != null) {
+      AgNesseFixtureContext.context.agNesse.stop();
     }
-    FitnesseFixtureContext.context = null;
+    AgNesseFixtureContext.context = null;
   }
 
   @Test

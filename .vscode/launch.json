@@ -3,9 +3,9 @@
     "configurations": [
         {
             "type": "java",
-            "name": "FitNesse + Template Watcher",
+            "name": "AgNesse + Template Watcher",
             "request": "launch",
-            "mainClass": "agnesseMain.FitNesseMain",
+            "mainClass": "agnesseMain.AgNesseMain",
             "args": [
                 "-p",
                 "8081",
@@ -24,9 +24,9 @@
         },
         {
             "type": "java",
-            "name": "FitNesse",
+            "name": "AgNesse",
             "request": "launch",
-            "mainClass": "agnesseMain.FitNesseMain",
+            "mainClass": "agnesseMain.AgNesseMain",
             "args": [
                 "-p",
                 "8081",

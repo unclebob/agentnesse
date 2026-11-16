@@ -39,7 +39,7 @@ public final class HtmlEventStream implements Appendable {
     if (line.isBlank()) {
       return;
     }
-    out.append("<script>AgentNesseResults.apply(");
+    out.append("<script>AgNesseResults.apply(");
     out.append(line.replace("<", "\\u003c"));
     out.append(");</script>\n");
   }

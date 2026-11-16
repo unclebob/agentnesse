@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import agnesse.components.LogData;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.util.MockSocket;
 import agnesse.util.SerialExecutorService;
 import agnesse.wiki.PathParser;
@@ -23,18 +23,18 @@ import util.FileUtil;
 import static org.junit.Assert.*;
 import static util.RegexTestCase.assertSubString;
 
-public class FitNesseServerTest {
+public class AgNesseServerTest {
   private WikiPage root;
   private WikiPagePath pageOnePath;
   private WikiPagePath pageOneTwoPath;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
-  public FitNesseServerTest() {
+  public AgNesseServerTest() {
   }
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
     pageOnePath = PathParser.parse("PageOne");
     pageOneTwoPath = PathParser.parse("PageOne.PageTwo");
@@ -108,7 +108,7 @@ public class FitNesseServerTest {
     response.setContent("abc");
     request.setCredentials("billy", "bob");
 
-    LogData data = FitNesseExpediter.makeLogData(socket, request, response);
+    LogData data = AgNesseExpediter.makeLogData(socket, request, response);
 
     assertEquals("1.2.3.4", data.host);
     assertNotNull(data.time);
@@ -122,7 +122,7 @@ public class FitNesseServerTest {
     MockSocket s = new MockSocket(requestLine);
     ExecutorService executorService = new SerialExecutorService();
 
-    FitNesseServer server = new FitNesseServer(context, executorService);
+    AgNesseServer server = new AgNesseServer(context, executorService);
     server.serve(s, 1000);
     return ((ByteArrayOutputStream) s.getOutputStream()).toString(FileUtil.CHARENCODING);
   }

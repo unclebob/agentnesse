@@ -21,25 +21,25 @@ public class ResponseExaminer {
 
   // Content is escaped, since it's used by both FIT and SLiM.
   public String contents() throws Exception {
-    String sentData = FitnesseFixtureContext.sender.sentData();
+    String sentData = AgNesseFixtureContext.sender.sentData();
     return HtmlUtil.escapeHTML(sentData);
   }
 
   public String html() throws Exception {
-    String sentData = FitnesseFixtureContext.sender.sentData();
+    String sentData = AgNesseFixtureContext.sender.sentData();
     int headerEnd = sentData.indexOf("\r\n\r\n");
     return sentData.substring(headerEnd+4); 
   }
 
   public String fullContents() throws Exception {
-    return HtmlUtil.escapeHTML(FitnesseFixtureContext.sender.sentData());
+    return HtmlUtil.escapeHTML(AgNesseFixtureContext.sender.sentData());
   }
 
     public boolean inOrder() throws Exception {
       if (line == null) {
         return false;
       }
-      String pageContent = FitnesseFixtureContext.sender.sentData();
+      String pageContent = AgNesseFixtureContext.sender.sentData();
       String[] lines = arrayifyLines(pageContent);
       String l = line.trim();
       for (int i = currentLine; i < lines.length; i++) {
@@ -55,7 +55,7 @@ public class ResponseExaminer {
         if (line == null) {
             return false;
         }
-        String pageContent = FitnesseFixtureContext.sender.sentData();
+        String pageContent = AgNesseFixtureContext.sender.sentData();
         int matchPosition = pageContent.indexOf(line, currentPosition);
         if (matchPosition < 0) return false;
         currentPosition = matchPosition;
@@ -80,27 +80,27 @@ public class ResponseExaminer {
 
   private String valueFor(String type) throws Exception {
     if (type.equals("contents"))
-      return HtmlUtil.unescapeHTML(FitnesseFixtureContext.sender.sentData());
+      return HtmlUtil.unescapeHTML(AgNesseFixtureContext.sender.sentData());
     if (type.equals("fullContents"))
       return fullContents();
     if (type.equals("rawContents"))
-      return FitnesseFixtureContext.sender.sentData();
+      return AgNesseFixtureContext.sender.sentData();
     if (type.equals("stringContents"))
-      return FitnesseFixtureContext.sender.toString();
+      return AgNesseFixtureContext.sender.toString();
     return pageValue(type);
   }
 
   private String pageValue(String type) throws Exception {
     if (type.equals("pageContents"))
-      return FitnesseFixtureContext.page.toString();
+      return AgNesseFixtureContext.page.toString();
     if (type.equals("pageHtml"))
-      return FitnesseFixtureContext.page.getHtml();
+      return AgNesseFixtureContext.page.getHtml();
     if (type.equals("matchers"))
       return matcher.group(group);
     if (type.equals("status"))
-      return "" + FitnesseFixtureContext.response.getStatus();
+      return "" + AgNesseFixtureContext.response.getStatus();
     if (type.equals("headers")) {
-      String text = FitnesseFixtureContext.sender.sentData();
+      String text = AgNesseFixtureContext.sender.sentData();
       int headerEnd = text.indexOf("\r\n\r\n");
       return text.substring(0, headerEnd + 2);
     }
@@ -113,7 +113,7 @@ public class ResponseExaminer {
 
   public String string() throws Exception {
     if (type.equals("contents")) {
-      return FitnesseFixtureContext.page.getHtml();
+      return AgNesseFixtureContext.page.getHtml();
     } else if (type.equals("line")) {
       return getLine(number);
     } else {
@@ -123,7 +123,7 @@ public class ResponseExaminer {
 
   private String getLine(int number) throws Exception {
     String value = null;
-    String pageContent = FitnesseFixtureContext.page.getHtml();
+    String pageContent = AgNesseFixtureContext.page.getHtml();
     String lineizedContent = convertBreaksToLineSeparators(pageContent);
     StringTokenizer tokenizedLines = tokenizeLines(lineizedContent);
     for (int i = number; i != 0; i--)
@@ -164,7 +164,7 @@ public class ResponseExaminer {
   }
 
   public String wrappedHtml() throws Exception {
-    String txt = FitnesseFixtureContext.sender.sentData();
+    String txt = AgNesseFixtureContext.sender.sentData();
     String txt2 = txt.replaceAll("(<br */?>)", "$1" + System.getProperty("line.separator"));
     return "<pre>" + HtmlUtil.escapeHTML(txt2) + "</pre>";
   }

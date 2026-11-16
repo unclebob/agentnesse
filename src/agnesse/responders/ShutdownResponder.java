@@ -6,7 +6,7 @@ import agnesse.Responder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.template.HtmlPage;
 import agnesse.html.template.PageTitle;
 import agnesse.http.Request;
@@ -17,7 +17,7 @@ public class ShutdownResponder implements Responder {
   private static final Logger LOG = Logger.getLogger(ShutdownResponder.class.getName());
 
   @Override
-  public Response makeResponse(final FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(final AgNesseContext context, Request request) throws Exception {
     SimpleResponse response = new SimpleResponse();
 
     HtmlPage html = context.pageFactory.newPage();
@@ -31,10 +31,10 @@ public class ShutdownResponder implements Responder {
       @Override
       public void run() {
         try {
-          context.fitNesse.stop();
+          context.agNesse.stop();
         }
         catch (Exception e) {
-          LOG.log(Level.WARNING, "Error while stopping FitNesse", e);
+          LOG.log(Level.WARNING, "Error while stopping AgNesse", e);
         }
       }
     };

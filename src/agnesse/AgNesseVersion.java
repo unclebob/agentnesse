@@ -9,27 +9,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represents a version of a fitnesse release. Versions have the following format: v20100103[suffix]
+ * Represents a version of a agnesse release. Versions have the following format: v20100103[suffix]
  * I.e. the suffix is optional.
  **/
-public class FitNesseVersion {
-  private static final Logger LOG = Logger.getLogger(FitNesseVersion.class.getName());
+public class AgNesseVersion {
+  private static final Logger LOG = Logger.getLogger(AgNesseVersion.class.getName());
   private static final String UNKNOWN_VERSION = "vUnknown";
 
   private final String version;
 
-  public FitNesseVersion() {
+  public AgNesseVersion() {
     this(versionFromMetaInf());
   }
 
-  public FitNesseVersion(String version) {
+  public AgNesseVersion(String version) {
     this.version = version;
   }
 
   private static String versionFromMetaInf() {
     InputStream is = null;
     try {
-      is = FitNesseVersion.class.getResourceAsStream("/META-INF/FitNesseVersion.txt");
+      is = AgNesseVersion.class.getResourceAsStream("/META-INF/AgNesseVersion.txt");
       if (is == null) {
         return UNKNOWN_VERSION;
       }
@@ -37,14 +37,14 @@ public class FitNesseVersion {
       int len = is.read(b);
       return new String(b, 0, len, Charset.forName("ISO-8859-1"));
     } catch (IOException e) {
-      LOG.log(Level.WARNING, "Unable to read FitNesse version", e);
+      LOG.log(Level.WARNING, "Unable to read AgNesse version", e);
       return UNKNOWN_VERSION;
     } finally {
       if (is != null) {
         try {
           is.close();
         } catch (IOException e) {
-          LOG.log(Level.SEVERE, "Unable to close FitNesse version file (should never happen)", e);
+          LOG.log(Level.SEVERE, "Unable to close AgNesse version file (should never happen)", e);
         }
       }
     }

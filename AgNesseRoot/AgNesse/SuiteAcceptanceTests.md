@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-## *`FitNesse` acceptance tests suites*
+## *`AgNesse` acceptance tests suites*
 
 | Suite | Description |
 | --- | --- |
@@ -21,7 +21,7 @@ path lib/*.jar
 ```
 ---
 ## *Port*
-`FitNesse` is running on port: ${FITNESSE_PORT}
+`AgNesse` is running on port: ${AGNESSE_PORT}
 
 Use a non-default port number, so SLIM tests systems can be run as well:
 

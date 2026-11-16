@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-One of the key goals of `FitNesse` is to encourage that requirements in `FitNesse` are written before the coding of the implementation starts.
+One of the key goals of `AgNesse` is to encourage that requirements in `AgNesse` are written before the coding of the implementation starts.
 Having said that the defintion of the requirements must be independent of the technical solution used to implement it.
 This sample page shows that the same requirement defintion can be implemented once with a java class implementing the decision table protokoll and once with a senario.
 
@@ -21,7 +21,7 @@ include >CalculatorRequirements
 ```
 
 
-Now we define a second technical solution using a `FitNesse` scenario
+Now we define a second technical solution using a `AgNesse` scenario
 
 | scenario | Division _ _ _ | numerator, denominator, quotient? |
 | --- | --- | --- |

@@ -1,7 +1,7 @@
 package agnesse.responders;
 
 import agnesse.Responder;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
@@ -28,7 +28,7 @@ public class PacketResponder implements Responder {
   List<JSONObject> tables = new ArrayList<>();
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     Response rejected = JsonResponses.unknownParameter(request, "packet");
     if (rejected != null) {
       return rejected;

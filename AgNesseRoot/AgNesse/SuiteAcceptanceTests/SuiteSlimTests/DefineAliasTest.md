@@ -184,6 +184,6 @@ ddt: agnesse.slim.test.AddUpChange
 | some simple addition | 2 | 2 | 4 | 4 | 0 | 1 | 252 | 2.52 |
 
 The alias fixture allows QA people to implement requirements by reusing existing framework functions and without writing new code. 
-Still your test pages are easy to read, especially for project managers, BA's and Product owners who might not understand how Fitnesse works. 
+Still your test pages are easy to read, especially for project managers, BA's and Product owners who might not understand how `AgNesse` works. 
 
 Hint: Try putting the "Define Alias" fixtures in the same place as your "Import" fixtures.   The setup pages are a good place for these!

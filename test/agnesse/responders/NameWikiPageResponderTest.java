@@ -2,11 +2,11 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.*;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NameWikiPageResponderTest {
-  private FitNesseContext context;
+  private AgNesseContext context;
   private WikiPage root;
   private NameWikiPageResponder responder;
   private MockRequest request;
@@ -38,11 +38,11 @@ public class NameWikiPageResponderTest {
   private WikiPagePath pageFivePath;
   private String helloTag;
   private String worldTag;
-  private String fitnesseTag;
+  private String agnesseTag;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
     responder = new NameWikiPageResponder();
     request = new MockRequest();
@@ -63,7 +63,7 @@ public class NameWikiPageResponderTest {
 
 	helloTag = "hello";
 	worldTag = "world";
-	fitnesseTag = "fitnesse";
+	agnesseTag = "agnesse";
   }
 
   @Test
@@ -140,7 +140,7 @@ public class NameWikiPageResponderTest {
 	// | + PageTwo (hello)
 	// + PageThree (world)
 	//   + PageFour
-	//     + PageFive (fitnesse)
+	//     + PageFive (agnesse)
 
     WikiPage frontPage = WikiPageUtil.addPage(root,      frontPagePath, "");
     WikiPage pageOne   = WikiPageUtil.addPage(frontPage, pageOnePath, "");
@@ -151,11 +151,11 @@ public class NameWikiPageResponderTest {
 
     setTag(pageTwo, helloTag);
     setTag(pageThree, worldTag);
-    setTag(pageFive, fitnesseTag);
+    setTag(pageFive, agnesseTag);
 
     assertEquals(helloTag,    pageTwo.getData().getAttribute(PageData.PropertySUITES));
     assertEquals(worldTag,    pageThree.getData().getAttribute(PageData.PropertySUITES));
-    assertEquals(fitnesseTag, pageFive.getData().getAttribute(PageData.PropertySUITES));
+    assertEquals(agnesseTag, pageFive.getData().getAttribute(PageData.PropertySUITES));
   }
 
   private void setTag(WikiPage page, String tag) {
@@ -213,7 +213,7 @@ public class NameWikiPageResponderTest {
     for (int i = 0; i < five.length(); i++) {
       fiveTags.add(five.getString(i));
     }
-    assertEquals(Set.of(fitnesseTag, worldTag), fiveTags);
+    assertEquals(Set.of(agnesseTag, worldTag), fiveTags);
   }
 
   private static org.json.JSONArray tagsOf(JSONArray pages, String name) {

@@ -13,7 +13,7 @@ import agnesse.testsystems.TestSystemFactory;
 import agnesse.testsystems.TestSystemListener;
 import agnesse.testsystems.slim.MarkdownTable;
 import agnesse.testsystems.slim.TableFinished;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
@@ -30,7 +30,7 @@ public class TableResultReachesTheRunnerTest {
 
   @Test
   public void aFormatterAddedToTheRunnerReceivesTheTable() throws Exception {
-    WikiPage root = FitNesseUtil.makeTestContext().getRootPage();
+    WikiPage root = AgNesseUtil.makeTestContext().getRootPage();
     WikiPage suite = WikiPageUtil.addPage(root, PathParser.parse("Suite"), "");
     WikiPage test = WikiPageUtil.addPage(suite, PathParser.parse("One"), "| script |\n| --- |\n| check |\n");
     PageData data = test.getData();

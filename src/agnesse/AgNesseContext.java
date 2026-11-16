@@ -22,11 +22,11 @@ import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
-public class FitNesseContext {
+public class AgNesseContext {
   public static final String rfcCompliantDateFormat = "EEE, d MMM yyyy HH:mm:ss Z";
 
-  public final FitNesseVersion version;
-  public final FitNesse fitNesse;
+  public final AgNesseVersion version;
+  public final AgNesse agNesse;
 
   public final TestSystemFactory testSystemFactory;
   public final TestSystemListener testSystemListener;
@@ -47,7 +47,7 @@ public class FitNesseContext {
   public final Logger logger;
   private final Properties properties;
 
-  protected FitNesseContext(FitNesseVersion version, WikiPageFactory wikiPageFactory, String rootPath,
+  protected AgNesseContext(AgNesseVersion version, WikiPageFactory wikiPageFactory, String rootPath,
                             String rootDirectoryName, int maximumWorkers,
                             WikiFiles versionsController, int port,
                             Logger logger,
@@ -70,7 +70,7 @@ public class FitNesseContext {
     this.properties = properties;
     responderFactory = new ResponderFactory(getRootPagePath());
     this.variableSource = variableSource;
-    fitNesse = new FitNesse(this);
+    agNesse = new AgNesse(this);
     pageFactory = new PageFactory(this);
     testRunFactoryRegistry = new TestRunFactoryRegistry(this);
   }

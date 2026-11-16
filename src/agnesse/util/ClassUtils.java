@@ -12,7 +12,7 @@ import agnesse.ContextConfigurator;
  * static variable. This by itself is enough to desire to get rid of this class: it can mess up test runs in
  * unpredictable ways.
  *
- * Currently this class loader is set from {@link ContextConfigurator#makeFitNesseContext()} whenever a new FitNesseContext is
+ * Currently this class loader is set from {@link ContextConfigurator#makeAgNesseContext()} whenever a new AgNesseContext is
  * created. <code>getClassLoader</code>
  *
  * Note that there are still direct invocations of Class.forName in the code. Those pieces of code are executed on

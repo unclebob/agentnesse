@@ -1,7 +1,7 @@
 package agnesse;
 
 import agnesseMain.Arguments;
-import agnesseMain.FitNesseMain;
+import agnesseMain.AgNesseMain;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -39,7 +39,7 @@ public class AgNesseRootUnchangedBySuiteRunTest {
       System.setErr(capture);
       int exitCode;
       try {
-        exitCode = new FitNesseMain().launchFitNesse(new Arguments(
+        exitCode = new AgNesseMain().launchAgNesse(new Arguments(
           "-c", "NoFilesLeftBehind?suite"));
       } finally {
         System.setOut(out);

@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.fixtures;
 
-import agnesse.FitNesseExpediter;
+import agnesse.AgNesseExpediter;
 import agnesse.html.HtmlUtil;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
@@ -32,24 +32,24 @@ public class ResponseRequester {
 
     request.parseRequestUri("/" + uri);
     WikiPagePath path = PathParser.parse(request.getResource()); // uri;
-    FitnesseFixtureContext.page = FitnesseFixtureContext.context.getRootPage().getPageCrawler().getPage(path);
-    FitNesseExpediter expediter = new FitNesseExpediter(new MockSocket(""), FitnesseFixtureContext.context, new SerialExecutorService());
-    FitnesseFixtureContext.response = expediter.createGoodResponse(request);
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.doSending(FitnesseFixtureContext.response);
+    AgNesseFixtureContext.page = AgNesseFixtureContext.context.getRootPage().getPageCrawler().getPage(path);
+    AgNesseExpediter expediter = new AgNesseExpediter(new MockSocket(""), AgNesseFixtureContext.context, new SerialExecutorService());
+    AgNesseFixtureContext.response = expediter.createGoodResponse(request);
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.doSending(AgNesseFixtureContext.response);
   }
 
   public int status() {
-    int status = FitnesseFixtureContext.response.getStatus();
+    int status = AgNesseFixtureContext.response.getStatus();
     return status;
   }
 
   public String contents() throws Exception {
-    return "<pre>" + HtmlUtil.escapeHTML(FitnesseFixtureContext.sender.sentData()) + "</pre>";
+    return "<pre>" + HtmlUtil.escapeHTML(AgNesseFixtureContext.sender.sentData()) + "</pre>";
   }
 
   public String html() throws Exception {
-    return FitnesseFixtureContext.sender.sentData();
+    return AgNesseFixtureContext.sender.sentData();
   }
 
   protected void details() {

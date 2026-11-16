@@ -1,6 +1,6 @@
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import agnesse.http.Request;
@@ -16,7 +16,7 @@ public class ScopeVariablesResponder extends BasicResponder {
   private List<ScopeVariable> variables;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     Response rejected = JsonResponses.unknownParameter(request, "variables");
     if (rejected != null) {
       return rejected;

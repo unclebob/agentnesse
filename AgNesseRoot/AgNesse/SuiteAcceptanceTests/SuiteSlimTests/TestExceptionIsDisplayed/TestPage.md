@@ -60,7 +60,7 @@ Multiple exceptions can happen in one row and in a in cell in the same row
 | reset | 2 | 2 |
 | reset | 5 | 5 |
 
-#### Everything goes wrong - Fitnesse catches all 7 exceptions
+#### Everything goes wrong - `AgNesse` catches all 7 exceptions
 The exceptions are added at the right level: 
  - cell - for getter and setter 
  - row - for reset and execute

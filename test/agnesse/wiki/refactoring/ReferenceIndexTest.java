@@ -1,10 +1,10 @@
 package agnesse.wiki.refactoring;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.responders.refactoring.MovePageResponder;
 import agnesse.responders.refactoring.RenamePageResponder;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
@@ -31,7 +31,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void renameRewritesLinksIncludesScenariosAndChildren() throws Exception {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
+    AgNesseContext context = AgNesseUtil.makeTestContext();
     WikiPage root = context.getRootPage();
     WikiPage parent = WikiPageUtil.addPage(root, PathParser.parse("Parent"), "");
     WikiPage old = WikiPageUtil.addPage(parent, PathParser.parse("Old"), "Old page");
@@ -62,7 +62,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void moveRewritesThePath() throws Exception {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
+    AgNesseContext context = AgNesseUtil.makeTestContext();
     WikiPage root = context.getRootPage();
     WikiPage from = WikiPageUtil.addPage(root, PathParser.parse("From"), "");
     WikiPageUtil.addPage(from, PathParser.parse("Page"), "body");
@@ -79,7 +79,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void siblingNameOnTheMovedPageKeepsItsTarget() throws Exception {
-    FitNesseContext context = tree();
+    AgNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
     child(parent, "PageStay", "<!-- id:stay -->\nnotes");
     child(parent, "PageMove", "see PageStay and [go](PageStay#part)\n```agnesse\ninclude PageStay\n```\n```agnesse\nscenarios PageStay\n```\n");
@@ -90,7 +90,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void ancestorBelowTheRootSurvivesLeavingTheBranch() throws Exception {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
+    AgNesseContext context = AgNesseUtil.makeTestContext();
     WikiPage outer = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("OuterPage"), "<!-- id:outer -->\nnotes");
     WikiPage parent = WikiPageUtil.addPage(outer, PathParser.parse("ParentPage"), "<!-- id:parent -->\nnotes");
     child(parent, "PageMove", "see <ParentPage here");
@@ -101,7 +101,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void bareSiblingWikiWordFollowsAMovedPage() throws Exception {
-    FitNesseContext context = tree();
+    AgNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
     WikiPage stay = child(parent, "PageStay", "see PageMove here");
     child(parent, "PageMove", "<!-- id:move -->\nnotes");
@@ -111,7 +111,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void childReferenceFollowsAMovedChild() throws Exception {
-    FitNesseContext context = tree();
+    AgNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
     write(parent, "see >PageMove and [go](^PageMove#part)\n```agnesse\ninclude >PageMove\n```\n```agnesse\nscenarios ^PageMove\n```\n");
     child(parent, "PageMove", "<!-- id:move -->\nnotes");
@@ -122,7 +122,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void ancestorSearchSurvivesLeavingTheBranch() throws Exception {
-    FitNesseContext context = tree();
+    AgNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
     WikiPage mover = child(parent, "PageMove", "see <ParentPage and [up](<ParentPage#top)\n```agnesse\ninclude <ParentPage\n```\n```agnesse\nscenarios <ParentPage\n```\n");
     move(context, "ParentPage.PageMove", "OtherPage");
@@ -132,7 +132,7 @@ public class ReferenceIndexTest {
 
   @Test
   public void caretSubpageStaysOnTheChildAfterRename() throws Exception {
-    FitNesseContext context = tree();
+    AgNesseContext context = tree();
     WikiPage parent = page(context, "ParentPage");
     WikiPage mover = child(parent, "PageMove", "see ^PageKid and [kid](>PageKid#end)\n```agnesse\ninclude ^PageKid\n```\n```agnesse\nscenarios >PageKid\n```\n");
     child(mover, "PageKid", "<!-- id:kid -->\nnotes");
@@ -145,7 +145,7 @@ public class ReferenceIndexTest {
   public void randomTreesHaveNoDanglingReferencesAfterRenameOrMove() throws Exception {
     Random random = new Random(8);
     for (int trial = 0; trial < 40; trial++) {
-      FitNesseContext context = FitNesseUtil.makeTestContext();
+      AgNesseContext context = AgNesseUtil.makeTestContext();
       WikiPage root = context.getRootPage();
       List<WikiPage> pages = grow(root, random);
       wire(pages, random);
@@ -165,14 +165,14 @@ public class ReferenceIndexTest {
     }
   }
 
-  private static FitNesseContext tree() throws Exception {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
+  private static AgNesseContext tree() throws Exception {
+    AgNesseContext context = AgNesseUtil.makeTestContext();
     WikiPage root = context.getRootPage();
     WikiPageUtil.addPage(root, PathParser.parse("OtherPage"), "<!-- id:other -->\nnotes");
     return context;
   }
 
-  private static WikiPage page(FitNesseContext context, String name) throws Exception {
+  private static WikiPage page(AgNesseContext context, String name) throws Exception {
     return WikiPageUtil.addPage(context.getRootPage(), PathParser.parse(name), "<!-- id:" + id(name) + " -->\nnotes");
   }
 
@@ -191,7 +191,7 @@ public class ReferenceIndexTest {
     return name.replace("Page", "").replace("Parent", "parent").replace("Other", "other").toLowerCase();
   }
 
-  private static void move(FitNesseContext context, String path, String newParent) throws Exception {
+  private static void move(AgNesseContext context, String path, String newParent) throws Exception {
     MockRequest request = new MockRequest();
     request.setResource(path);
     request.addInput("newLocation", newParent);
@@ -199,7 +199,7 @@ public class ReferenceIndexTest {
     new MovePageResponder().makeResponse(context, request);
   }
 
-  private static void rename(FitNesseContext context, String path, String newName) throws Exception {
+  private static void rename(AgNesseContext context, String path, String newName) throws Exception {
     MockRequest request = new MockRequest();
     request.setResource(path);
     request.addInput("newName", newName);

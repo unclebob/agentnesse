@@ -40,7 +40,7 @@ public class PageCreatorTest {
     creator.setPageContents(pageContent);
     creator.setPageAttributes(pageAttributes);
     assertTrue(creator.valid());
-    WikiPage testPage = FitnesseFixtureContext.context.getRootPage().getChildPage("TestPage");
+    WikiPage testPage = AgNesseFixtureContext.context.getRootPage().getChildPage("TestPage");
     return testPage;
   }
 
@@ -48,7 +48,7 @@ public class PageCreatorTest {
   public void aMarkdownPageIsStoredWithJsonFrontMatter() throws Exception {
     PageDriver driver = new PageDriver();
     driver.createMarkdownPageWithContent("MarkdownNotes", "# Hello");
-    WikiPage page = FitnesseFixtureContext.context.getRootPage().getChildPage("MarkdownNotes");
+    WikiPage page = AgNesseFixtureContext.context.getRootPage().getChildPage("MarkdownNotes");
 
     assertEquals(MarkdownPage.class, page.getClass());
     assertEquals("# Hello", page.getData().getContent());
@@ -63,7 +63,7 @@ public class PageCreatorTest {
       1
       ```
       """);
-    WikiPage page = FitnesseFixtureContext.context.getRootPage().getChildPage("Made");
+    WikiPage page = AgNesseFixtureContext.context.getRootPage().getChildPage("Made");
 
     assertEquals(MarkdownPage.class, page.getClass());
     assertEquals("1", page.getVariable("SLIM_PORT"));

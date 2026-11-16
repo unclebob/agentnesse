@@ -6,36 +6,36 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.RequestBuilder;
 import agnesse.http.ResponseParser;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ShutdownResponderTest {
-  private FitNesseContext context;
+  private AgNesseContext context;
   private boolean doneShuttingDown;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
-    FitNesseUtil.startFitnesseWithContext(context);
+    context = AgNesseUtil.makeTestContext();
+    AgNesseUtil.startAgNesseWithContext(context);
   }
 
   @After
   public void tearDown() throws Exception {
-    context.fitNesse.stop();
+    context.agNesse.stop();
   }
 
   @Test
-  public void testFitNesseGetsShutdown() throws Exception {
+  public void testAgNesseGetsShutdown() throws Exception {
     ShutdownResponder responder = new ShutdownResponder();
     responder.makeResponse(context, new MockRequest());
     Thread.sleep(200);
-    assertFalse(context.fitNesse.isRunning());
+    assertFalse(context.agNesse.isRunning());
   }
 
   @Test
@@ -45,7 +45,7 @@ public class ShutdownResponderTest {
       public void run() {
         try {
           RequestBuilder request = new RequestBuilder("/?responder=shutdown");
-          ResponseParser.performHttpRequest("localhost", FitNesseUtil.PORT, request);
+          ResponseParser.performHttpRequest("localhost", AgNesseUtil.PORT, request);
           doneShuttingDown = true;
         }
         catch (Exception e) {
@@ -58,7 +58,7 @@ public class ShutdownResponderTest {
     Thread.sleep(500);
 
     assertTrue(doneShuttingDown);
-    assertFalse(context.fitNesse.isRunning());
+    assertFalse(context.agNesse.isRunning());
   }
 
 }

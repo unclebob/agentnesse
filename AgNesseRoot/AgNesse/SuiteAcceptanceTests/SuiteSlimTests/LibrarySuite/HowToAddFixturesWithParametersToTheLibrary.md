@@ -37,7 +37,7 @@ At the end assign the fixture itself to a symbol.
 
 | script | test slim | 47 |
 | --- | --- | --- |
-| set string | Hello FitNesse | |
+| set string | Hello AgNesse | |
 | $ts= | get fixture | |
 
 
@@ -52,4 +52,4 @@ And here we go: We can use the methods of the fixture in any script
 | script | echo fixture | | |
 | --- | --- | --- | --- |
 | check | echo | CCC | CCC |
-| check | getStringArg | Hello FitNesse | |
+| check | getStringArg | Hello AgNesse | |

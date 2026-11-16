@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-final class AgentNesseBlockRenderer implements NodeRenderer {
+final class AgNesseBlockRenderer implements NodeRenderer {
   private final HtmlWriter writer;
   private final List<ContentsLink> children;
   private final Function<String, String> includedHtml;
 
-  AgentNesseBlockRenderer(HtmlNodeRendererContext context, List<ContentsLink> children,
+  AgNesseBlockRenderer(HtmlNodeRendererContext context, List<ContentsLink> children,
                           Function<String, String> includedHtml) {
     this.writer = context.getWriter();
     this.children = children;
@@ -35,16 +35,16 @@ final class AgentNesseBlockRenderer implements NodeRenderer {
       return;
     }
     try {
-      AgentNesseBlock block = AgentNesseBlock.parse(code.getLiteral());
+      AgNesseBlock block = AgNesseBlock.parse(code.getLiteral());
       writer.raw(html(block));
     } catch (IllegalArgumentException e) {
       writer.raw("<div class=\"agnesse-error\">" + e.getMessage() + "</div>\n");
     }
   }
 
-  private String html(AgentNesseBlock block) {
+  private String html(AgNesseBlock block) {
     if ("contents".equals(block.command())) {
-      return AgentNesseBlock.contentsHtml(children);
+      return AgNesseBlock.contentsHtml(children);
     }
     if ("include".equals(block.command()) && includedHtml != null) {
       return block.includeWith(includedHtml.apply(block.argument()));

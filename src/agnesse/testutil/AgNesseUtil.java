@@ -3,8 +3,8 @@
 package agnesse.testutil;
 
 import agnesse.ContextConfigurator;
-import agnesse.FitNesse;
-import agnesse.FitNesseContext;
+import agnesse.AgNesse;
+import agnesse.AgNesseContext;
 import agnesse.socketservice.PlainServerSocketFactory;
 import agnesse.wiki.WikiPageFactory;
 import agnesse.wiki.fs.FileSystem;
@@ -16,57 +16,57 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class FitNesseUtil {
+public class AgNesseUtil {
   public static final String base = "RooT";
   public static final int PORT = 1999;
   public static final String URL = "http://localhost:" + PORT + "/";
 
-  private static FitNesse instance = null;
+  private static AgNesse instance = null;
 
-  public static void startFitnesseWithContext(FitNesseContext context) throws IOException {
-    instance = context.fitNesse;
+  public static void startAgNesseWithContext(AgNesseContext context) throws IOException {
+    instance = context.agNesse;
     instance.start(new PlainServerSocketFactory().createServerSocket(context.port));
   }
 
-  public static void stopFitnesse() throws IOException {
+  public static void stopAgNesse() throws IOException {
     instance.stop();
     FileUtil.deleteFileSystemDirectory(base);
   }
 
-  public static FitNesseContext makeTestContext() {
+  public static AgNesseContext makeTestContext() {
     Properties properties = new Properties();
-    properties.setProperty("FITNESSE_PORT", String.valueOf(PORT));
+    properties.setProperty("AGNESSE_PORT", String.valueOf(PORT));
     return makeTestContext(InMemoryPage.newInstance(), properties);
   }
 
-  public static FitNesseContext makeTestContext(Properties properties) {
+  public static AgNesseContext makeTestContext(Properties properties) {
     return makeTestContext(InMemoryPage.newInstance(), properties);
   }
 
-  public static FitNesseContext makeTestContext(WikiPageFactory wikiPageFactory, Properties properties) {
+  public static AgNesseContext makeTestContext(WikiPageFactory wikiPageFactory, Properties properties) {
     File temporaryFolder = createTemporaryFolder();
-    return makeTestContext(wikiPageFactory, temporaryFolder.getPath(), FitNesseUtil.base, PORT, properties);
+    return makeTestContext(wikiPageFactory, temporaryFolder.getPath(), AgNesseUtil.base, PORT, properties);
   }
 
-  public static FitNesseContext makeTestContext(int port) {
-    return makeTestContext(InMemoryPage.newInstance(), createTemporaryFolder().getPath(), FitNesseUtil.base, port, new Properties());
+  public static AgNesseContext makeTestContext(int port) {
+    return makeTestContext(InMemoryPage.newInstance(), createTemporaryFolder().getPath(), AgNesseUtil.base, port, new Properties());
   }
 
-  public static FitNesseContext makeTestContext(int port, Properties properties) {
-    return makeTestContext(InMemoryPage.newInstance(), createTemporaryFolder().getPath(), FitNesseUtil.base, port, properties);
+  public static AgNesseContext makeTestContext(int port, Properties properties) {
+    return makeTestContext(InMemoryPage.newInstance(), createTemporaryFolder().getPath(), AgNesseUtil.base, port, properties);
   }
 
-  public static FitNesseContext makeTestContext(FileSystem fileSystem) {
-    return makeTestContext(InMemoryPage.newInstance(fileSystem), createTemporaryFolder().getPath(), FitNesseUtil.base, PORT, new Properties());
+  public static AgNesseContext makeTestContext(FileSystem fileSystem) {
+    return makeTestContext(InMemoryPage.newInstance(fileSystem), createTemporaryFolder().getPath(), AgNesseUtil.base, PORT, new Properties());
   }
 
-  public static FitNesseContext makeTestContext(WikiPageFactory wikiPageFactory, String rootPath, String name, int port) {
+  public static AgNesseContext makeTestContext(WikiPageFactory wikiPageFactory, String rootPath, String name, int port) {
     return makeTestContext(wikiPageFactory, rootPath, name, port, new Properties());
   }
 
-  public static FitNesseContext makeTestContext(WikiPageFactory wikiPageFactory, String rootPath,
+  public static AgNesseContext makeTestContext(WikiPageFactory wikiPageFactory, String rootPath,
                                                 String rootDirectoryName, int port, Properties properties) {
-    FitNesseContext context;
+    AgNesseContext context;
 
     try {
       context = ContextConfigurator.systemDefaults()
@@ -76,7 +76,7 @@ public class FitNesseUtil {
               .withPort(port)
               .withVersionsController(new WikiFiles())
               .updatedWith(properties)
-              .makeFitNesseContext();
+              .makeAgNesseContext();
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
@@ -89,7 +89,7 @@ public class FitNesseUtil {
   public static File createTemporaryFolder() {
     File createdFolder;
     try {
-      createdFolder = File.createTempFile("fitnesse", "");
+      createdFolder = File.createTempFile("agnesse", "");
     } catch (IOException e) {
       throw new IllegalStateException("Unable to create temporary folder for test execution", e);
     }
@@ -98,11 +98,11 @@ public class FitNesseUtil {
     return createdFolder;
   }
 
-  public static void destroyTestContext(FitNesseContext context) throws IOException {
+  public static void destroyTestContext(AgNesseContext context) throws IOException {
     FileUtil.deleteFileSystemDirectory(context.rootPath);
   }
 
   public static void destroyTestContext() throws IOException {
-    FileUtil.deleteFileSystemDirectory(FitNesseUtil.base);
+    FileUtil.deleteFileSystemDirectory(AgNesseUtil.base);
   }
 }

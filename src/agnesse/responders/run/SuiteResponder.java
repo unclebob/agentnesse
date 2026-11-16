@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.run;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.template.HtmlPage;
 import agnesse.html.template.PageTitle;
 import agnesse.http.Request;
@@ -74,7 +74,7 @@ public class SuiteResponder extends ChunkingResponder {
   }
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     SimpleResponse rejected = unsupportedFormatResponse(request.getInput("format"));
     if (rejected != null) {
       return rejected;
@@ -85,7 +85,7 @@ public class SuiteResponder extends ChunkingResponder {
         return result;
     }
     testRunId = runningTestingTracker.generateNextTicket();
-    response.addHeader("X-Agentnesse-Test-Id", testRunId);
+    response.addHeader("X-AgNesse-Test-Id", testRunId);
     return response;
   }
 

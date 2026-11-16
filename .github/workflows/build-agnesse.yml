@@ -1,4 +1,4 @@
-name: Build FitNesse
+name: Build AgNesse
 
 on: [push, pull_request]
 

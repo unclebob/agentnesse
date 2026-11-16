@@ -158,7 +158,7 @@ public class Request {
       StreamReader reader, String boundary) throws IOException {
     String filename = headers.get("filename");
     String contentType = headers.get("content-type");
-    File tempFile = File.createTempFile("FitNesse", ".uploadedFile");
+    File tempFile = File.createTempFile("AgNesse", ".uploadedFile");
     OutputStream output = null;
     try {
       output = new BufferedOutputStream(new FileOutputStream(tempFile));

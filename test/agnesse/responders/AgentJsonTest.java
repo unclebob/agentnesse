@@ -1,6 +1,6 @@
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Request;
@@ -10,7 +10,7 @@ import agnesse.markdown.FrontMatter;
 import agnesse.responders.run.InstructionResponder;
 import agnesse.responders.search.SearchPropertiesResponder;
 import agnesse.responders.search.SearchResponder;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
@@ -24,12 +24,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class AgentJsonTest {
-  private FitNesseContext context;
+  private AgNesseContext context;
   private MockRequest request;
 
   @Before
   public void setUp() {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     request = new MockRequest();
   }
 

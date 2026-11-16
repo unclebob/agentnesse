@@ -3,7 +3,7 @@
 package agnesse.responders;
 
 import agnesse.Responder;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.template.HtmlPage;
 import agnesse.html.template.PageTitle;
 import agnesse.http.Request;
@@ -27,7 +27,7 @@ public class WikiPageResponder implements Responder {
   private Request request;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     this.request = request;
     WikiPage page = loadPage(context, request.getResource(), request.getMap());
     if (page == null)
@@ -36,11 +36,11 @@ public class WikiPageResponder implements Responder {
       return makePageResponse(context, page);
   }
 
-  protected WikiPage loadPage(FitNesseContext context, String pageName, Map<String,String> inputs) {
+  protected WikiPage loadPage(AgNesseContext context, String pageName, Map<String,String> inputs) {
     return context.getPage(pageName, inputs);
   }
 
-  private Response notFoundResponse(FitNesseContext context, Request request) throws Exception {
+  private Response notFoundResponse(AgNesseContext context, Request request) throws Exception {
     if (dontCreateNonExistentPage(request))
       return new NotFoundResponder().makeResponse(context, request);
     return new EditResponder().makeResponseForNonExistentPage(context, request);
@@ -51,7 +51,7 @@ public class WikiPageResponder implements Responder {
     return dontCreate != null && (dontCreate.isEmpty() || Boolean.parseBoolean(dontCreate));
   }
 
-  private SimpleResponse makePageResponse(FitNesseContext context, WikiPage page) throws UnsupportedEncodingException {
+  private SimpleResponse makePageResponse(AgNesseContext context, WikiPage page) throws UnsupportedEncodingException {
       String html = makeHtml(context, page);
 
       SimpleResponse response = new SimpleResponse();
@@ -60,7 +60,7 @@ public class WikiPageResponder implements Responder {
       return response;
   }
 
-  public String makeHtml(FitNesseContext context, WikiPage page) {
+  public String makeHtml(AgNesseContext context, WikiPage page) {
     PageData pageData = page.getData();
     HtmlPage html = context.pageFactory.newPage();
     WikiPagePath fullPath = page.getFullPath();

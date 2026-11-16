@@ -14,8 +14,8 @@ public class PageDriverTest {
   @Before
   public void setup() throws Exception {
     pageDriver = new PageDriver();
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.send("\r\n\r\n<asdf id=\"123_\" /><asdf id=\"125_\" />".getBytes());
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.send("\r\n\r\n<asdf id=\"123_\" /><asdf id=\"125_\" />".getBytes());
   }
 
   @Test

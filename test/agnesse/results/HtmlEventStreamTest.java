@@ -15,7 +15,7 @@ public class HtmlEventStreamTest {
     assertEquals("", out.toString());
     stream.append('\n');
     String html = out.toString();
-    assertTrue(html.startsWith("<script>AgentNesseResults.apply("));
+    assertTrue(html.startsWith("<script>AgNesseResults.apply("));
     assertTrue(html.endsWith(");</script>\n"));
     assertFalse(html.contains("<b>"));
     assertTrue(html.contains("exception"));

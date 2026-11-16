@@ -6,19 +6,19 @@ import java.io.File;
 
 import org.junit.Test;
 
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 
-public class FitNesseContextTest {
+public class AgNesseContextTest {
 
   @Test
   public void testGetRootPagePath() {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
-    assertEquals(context.rootPath + File.separator + FitNesseUtil.base, context.getRootPagePath());
+    AgNesseContext context = AgNesseUtil.makeTestContext();
+    assertEquals(context.rootPath + File.separator + AgNesseUtil.base, context.getRootPagePath());
   }
 
   @Test
   public void testProgressIsStoredUnderTheRoot() {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
+    AgNesseContext context = AgNesseUtil.makeTestContext();
     assertEquals(context.getRootPagePath() + File.separator + "files" + File.separator + "testProgress",
       context.getTestProgressPath());
   }

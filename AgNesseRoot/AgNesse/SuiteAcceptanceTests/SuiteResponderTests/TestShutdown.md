@@ -4,9 +4,9 @@
   "help": null,
   "prune": false
 }
-`FitNesse` is started in the set up fixture so it's running,
+`AgNesse` is started in the set up fixture so it's running,
 
-| FitNesse Status |
+| AgNesse Status |
 | --- |
 | isRunning? |
 | true |
@@ -23,9 +23,9 @@ Wait a bit for things to settle down
 | Sleep | 100 |
 | --- | --- |
 
-Now `FitNesse` is no longer running.
+Now `AgNesse` is no longer running.
 
-| FitNesse Status |
+| AgNesse Status |
 | --- |
 | isRunning? |
 | false |

@@ -10,7 +10,7 @@ import agnesse.testsystems.Descriptor;
 import static agnesse.testsystems.slim.SlimClientBuilder.SLIM_FLAGS;
 
 /**
- * In-process version, mainly for testing FitNesse itself.
+ * In-process version, mainly for testing AgNesse itself.
  */
 public class InProcessSlimClientBuilder extends ClientBuilder<SlimClient> {
 

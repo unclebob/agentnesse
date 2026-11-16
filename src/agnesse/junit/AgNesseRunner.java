@@ -2,7 +2,7 @@ package agnesse.junit;
 
 import agnesse.ConfigurationParameter;
 import agnesse.ContextConfigurator;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.testrunner.MultipleTestsRunner;
 import agnesse.testrunner.SuiteContentsFinder;
 import agnesse.testrunner.run.TestRun;
@@ -31,9 +31,9 @@ import static agnesse.junit.JUnitHelper.getSuiteRootPage;
 import static agnesse.junit.JUnitHelper.msgAtLeastOneTest;
 import static org.junit.Assert.assertTrue;
 
-public class FitNesseRunner extends ParentRunner<WikiPage> {
+public class AgNesseRunner extends ParentRunner<WikiPage> {
   /**
-   * The <code>Suite</code> annotation specifies the name of the Fitnesse suite
+   * The <code>Suite</code> annotation specifies the name of the AgNesse suite
    * (or single page) to be run, e.g.: MySuite.MySubSuite
    */
   @Retention(RetentionPolicy.RUNTIME)
@@ -44,7 +44,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     String systemProperty() default "";
   }
   /**
-   * The <code>SuiteFilter</code> annotation specifies the suite filter of the Fitnesse suite
+   * The <code>SuiteFilter</code> annotation specifies the suite filter of the AgNesse suite
    * to be run, e.g.: fasttests
    */
   @Retention(RetentionPolicy.RUNTIME)
@@ -56,7 +56,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     boolean andStrategy() default false;
   }
   /**
-   * The <code>ExcludeSuiteFilter</code> annotation specifies a filter for excluding tests from the Fitnesse suite
+   * The <code>ExcludeSuiteFilter</code> annotation specifies a filter for excluding tests from the AgNesse suite
    * to be run, e.g.: slowtests
    */
   @Retention(RetentionPolicy.RUNTIME)
@@ -67,23 +67,23 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     String systemProperty() default "";
   }
   /**
-   * The <code>FitnesseDir</code> annotation specifies the absolute or relative
+   * The <code>AgNesseDir</code> annotation specifies the absolute or relative
    * path to the directory in which AgNesseRoot can be found. You can either specify
    * <ul>
-   * <li>a relative or absolute path directly, e.g.: <code>@FitnesseDir("/parentOfAgNesseRoot")</code>,
+   * <li>a relative or absolute path directly, e.g.: <code>@AgNesseDir("/parentOfAgNesseRoot")</code>,
    * or you can specify
    * <li>a system property the content of which will be taken as base dir and
    * optionally give a path extension, e.g.:
-   * <code>@FitnesseDir(systemProperty = "agnesse.root.dir.parent")</code></li>
+   * <code>@AgNesseDir(systemProperty = "agnesse.root.dir.parent")</code></li>
    * </ul>
    */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
-  public @interface FitnesseDir {
+  public @interface AgNesseDir {
 
     String value() default "";
     String systemProperty() default "";
-    String fitNesseRoot() default ContextConfigurator.DEFAULT_ROOT;
+    String agNesseRoot() default ContextConfigurator.DEFAULT_ROOT;
   }
   /**
    * The <code>OutputDir</code> annotation specifies where the html reports of
@@ -107,8 +107,8 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
 
   }
   /**
-   * The <code>Port</code> annotation specifies the port used by the FitNesse
-   * server. Default is the standard FitNesse port.
+   * The <code>Port</code> annotation specifies the port used by the AgNesse
+   * server. Default is the standard AgNesse port.
    */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
@@ -126,12 +126,12 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   private boolean suiteFilterAndStrategy;
   private String excludeSuiteFilter;
   private boolean debugMode;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private DescriptionFactory descriptionFactory;
   private TestRun testRun;
   private List<WikiPage> children;
 
-  public FitNesseRunner(Class<?> suiteClass) throws InitializationError {
+  public AgNesseRunner(Class<?> suiteClass) throws InitializationError {
     super(suiteClass);
     descriptionFactory = new DescriptionFactory();
   }
@@ -182,9 +182,9 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     }
   }
 
-  protected FitNesseContext createContext(Class<?> suiteClass) throws Exception {
+  protected AgNesseContext createContext(Class<?> suiteClass) throws Exception {
 
-    return initContextConfigurator().makeFitNesseContext();
+    return initContextConfigurator().makeAgNesseContext();
   }
 
   protected String getSuiteName(Class<?> klass) throws InitializationError {
@@ -222,14 +222,14 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
     return optionalFilter(klass.getAnnotation(ExcludeSuiteFilter.class), ExcludeSuiteFilter::value, ExcludeSuiteFilter::systemProperty, "@ExcludeSuiteFilter");
   }
 
-  protected String getFitNesseDir(Class<?> klass)
+  protected String getAgNesseDir(Class<?> klass)
           throws InitializationError {
-    FitnesseDir fitnesseDirAnnotation = klass.getAnnotation(FitnesseDir.class);
-    if (fitnesseDirAnnotation == null) {
-      throw new InitializationError("There must be a @FitnesseDir annotation");
+    AgNesseDir agnesseDirAnnotation = klass.getAnnotation(AgNesseDir.class);
+    if (agnesseDirAnnotation == null) {
+      throw new InitializationError("There must be a @AgNesseDir annotation");
     }
-    return requiredSetting(fitnesseDirAnnotation.value(), fitnesseDirAnnotation.systemProperty(),
-      "In annotation @FitnesseDir you have to specify either 'value' or 'systemProperty'",
+    return requiredSetting(agnesseDirAnnotation.value(), agnesseDirAnnotation.systemProperty(),
+      "In annotation @AgNesseDir you have to specify either 'value' or 'systemProperty'",
       property -> new File(System.getProperty(property)).getAbsolutePath());
   }
 
@@ -258,8 +258,8 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
 
   protected String getAgNesseRoot(Class<?> klass) {
-    FitnesseDir fitnesseDirAnnotation = klass.getAnnotation(FitnesseDir.class);
-    return fitnesseDirAnnotation.fitNesseRoot();
+    AgNesseDir agnesseDirAnnotation = klass.getAnnotation(AgNesseDir.class);
+    return agnesseDirAnnotation.agNesseRoot();
   }
 
   public int getPort(Class<?> klass) {
@@ -368,15 +368,15 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
   }
 
   protected ContextConfigurator initContextConfigurator() throws InitializationError {
-    String rootPath = getFitNesseDir(suiteClass);
-    String fitNesseRoot = getAgNesseRoot(suiteClass);
+    String rootPath = getAgNesseDir(suiteClass);
+    String agNesseRoot = getAgNesseRoot(suiteClass);
     int port = getPort(suiteClass);
     File configFile = getConfigFile(rootPath);
 
     ContextConfigurator configurator = ContextConfigurator.systemDefaults();
     boolean configRequired = false;
     try {
-      agnesse.AgentNesseConfig.apply(configurator, configFile, configRequired);
+      agnesse.AgNesseConfig.apply(configurator, configFile, configRequired);
     } catch (IllegalArgumentException e) {
       throw new InitializationError(e.getMessage());
     }
@@ -385,7 +385,7 @@ public class FitNesseRunner extends ParentRunner<WikiPage> {
       .updatedWith(ConfigurationParameter.makeProperties(
             ConfigurationParameter.PORT, port,
             ConfigurationParameter.ROOT_PATH, rootPath,
-            ConfigurationParameter.ROOT_DIRECTORY, fitNesseRoot));
+            ConfigurationParameter.ROOT_DIRECTORY, agNesseRoot));
   }
 
   private void executeTests(MultipleTestsRunner testRunner) throws IOException, TestExecutionException {

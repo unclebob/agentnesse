@@ -3,7 +3,7 @@ package agnesse;
 import java.util.Properties;
 
 /**
- * Parameters used to configure FitNesse.
+ * Parameters used to configure AgNesse.
  */
 public enum ConfigurationParameter {
 

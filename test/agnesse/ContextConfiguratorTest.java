@@ -36,40 +36,40 @@ public class ContextConfiguratorTest {
       }
     };
 
-    FitNesseContext context = ContextConfigurator.empty()
+    AgNesseContext context = ContextConfigurator.empty()
       .withWikiPageFactory(factory)
       .withParameter(ConfigurationParameter.ROOT_PATH, ".")
-      .makeFitNesseContext();
+      .makeAgNesseContext();
 
-    assertThat(context, is(instanceOf(FitNesseContext.class)));
+    assertThat(context, is(instanceOf(AgNesseContext.class)));
   }
 
   @Test
   public void recordsRootPathAsAWikiVariable() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty()
+    AgNesseContext context = ContextConfigurator.empty()
       .withRootPath("/tmp/wiki-root")
       .withPort(9125)
-      .makeFitNesseContext();
+      .makeAgNesseContext();
 
-    assertThat(context.variableSource.getProperty("FITNESSE_ROOTPATH"), is("/tmp/wiki-root"));
+    assertThat(context.variableSource.getProperty("AGNESSE_ROOTPATH"), is("/tmp/wiki-root"));
   }
 
   @Test
   public void omitsRootPathVariableWhenRootPathIsNull() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty()
+    AgNesseContext context = ContextConfigurator.empty()
       .withRootPath(null)
       .withPort(9125)
-      .makeFitNesseContext();
+      .makeAgNesseContext();
 
-    assertNull(context.variableSource.getProperty("FITNESSE_ROOTPATH"));
+    assertNull(context.variableSource.getProperty("AGNESSE_ROOTPATH"));
   }
 
   @Test
   public void usesThePortItWasGiven() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty()
+    AgNesseContext context = ContextConfigurator.empty()
       .withPort(9124)
       .withParameter(ConfigurationParameter.ROOT_PATH, ".")
-      .makeFitNesseContext();
+      .makeAgNesseContext();
 
     assertThat(context.port, is(9124));
   }
@@ -84,37 +84,37 @@ public class ContextConfiguratorTest {
 
   @Test
   public void maximumWorkersCanBeSetFromProperties() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty()
+    AgNesseContext context = ContextConfigurator.empty()
       .withParameter(ConfigurationParameter.MAXIMUM_WORKERS, "12")
       .withPort(9127)
-      .makeFitNesseContext();
+      .makeAgNesseContext();
 
     assertEquals(12, (int) context.maximumWorkers);
   }
 
   @Test
   public void anUnsetVersionsControllerIsCreated() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty().makeFitNesseContext();
+    AgNesseContext context = ContextConfigurator.empty().makeAgNesseContext();
     assertThat(context.versionsController, is(instanceOf(WikiFiles.class)));
   }
 
   @Test
   public void anUnknownParameterIsStoredForLookup() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty()
+    AgNesseContext context = ContextConfigurator.empty()
       .withParameter("not-a-config-key", "kept")
-      .makeFitNesseContext();
+      .makeAgNesseContext();
     assertEquals("kept", context.variableSource.findVariable("not-a-config-key").orElse(null));
   }
 
   @Test
   public void aCommandWithoutAPortUsesTheCommandPort() throws IOException {
-    FitNesseContext context = ContextConfigurator.empty()
+    AgNesseContext context = ContextConfigurator.empty()
       .withParameter(ConfigurationParameter.COMMAND, "FrontPage")
-      .makeFitNesseContext();
+      .makeAgNesseContext();
     assertEquals(9123, context.port);
     assertThat(context.getRootPage(), notNullValue());
     ContextConfigurator configurator = ContextConfigurator.empty();
-    configurator.makeFitNesseContext();
+    configurator.makeAgNesseContext();
     assertEquals("127.0.0.1", configurator.get(ConfigurationParameter.LISTEN));
   }
 

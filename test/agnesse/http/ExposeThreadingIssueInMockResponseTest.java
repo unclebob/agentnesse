@@ -6,9 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.responders.run.SuiteResponder;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
@@ -21,7 +21,7 @@ public class ExposeThreadingIssueInMockResponseTest {
   private WikiPage root;
   private MockRequest request;
   private SuiteResponder responder;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private String results;
 
   @Before
@@ -29,7 +29,7 @@ public class ExposeThreadingIssueInMockResponseTest {
     request = new MockRequest();
     responder = new SuiteResponder();
     int port = 9123;
-    context = FitNesseUtil.makeTestContext(port);
+    context = AgNesseUtil.makeTestContext(port);
     root = context.getRootPage();
   }
 

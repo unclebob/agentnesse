@@ -3,7 +3,7 @@
 package agnesse.responders;
 
 import agnesse.Responder;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
@@ -15,7 +15,7 @@ import agnesse.wiki.WikiPagePath;
 public class RawContentResponder implements Responder {
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     String resource = request.getResource();
     WikiPagePath path = PathParser.parse(resource);
     WikiPage page = context.getRootPage().getPageCrawler().getPage(path);

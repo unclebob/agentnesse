@@ -1,10 +1,10 @@
 package agnesse.testrunner.run;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.testrunner.WikiPageIdentity;
 import agnesse.testrunner.WikiTestPage;
 import agnesse.testsystems.TestPage;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
@@ -23,11 +23,11 @@ import static org.junit.Assert.assertTrue;
 
 public class PagesByTestSystemTest {
   private WikiPage suite;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     suite = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("SuitePage"), "This is the test suite\n");
   }
 

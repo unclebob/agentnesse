@@ -5,7 +5,7 @@ package agnesse.responders.editing;
 import agnesse.Responder;
 import java.io.UnsupportedEncodingException;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.HtmlUtil;
 import agnesse.http.Request;
 import agnesse.http.Response;
@@ -36,16 +36,16 @@ public class EditResponder implements Responder {
   }
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     boolean nonExistent = request.hasInput("nonExistent");
     return doMakeResponse(context, request, nonExistent);
   }
 
-  public Response makeResponseForNonExistentPage(FitNesseContext context, Request request) throws UnsupportedEncodingException {
+  public Response makeResponseForNonExistentPage(AgNesseContext context, Request request) throws UnsupportedEncodingException {
     return doMakeResponse(context, request, true);
   }
 
-  protected Response doMakeResponse(FitNesseContext context, Request request, boolean firstTimeForNewPage) throws UnsupportedEncodingException {
+  protected Response doMakeResponse(AgNesseContext context, Request request, boolean firstTimeForNewPage) throws UnsupportedEncodingException {
     initializeResponder(context.getRootPage(), request);
 
     SimpleResponse response = new SimpleResponse();
@@ -74,7 +74,7 @@ public class EditResponder implements Responder {
     return pageData.getContent();
   }
 
-  private String doMakeHtml(String resource, FitNesseContext context, boolean firstTimeForNewPage) {
+  private String doMakeHtml(String resource, AgNesseContext context, boolean firstTimeForNewPage) {
     HtmlPage html = context.pageFactory.newPage();
     String title = firstTimeForNewPage ? "Page doesn't exist. Edit: " : "Edit: ";
     html.setTitle(title + resource);

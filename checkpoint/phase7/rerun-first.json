@@ -186,7 +186,7 @@
       "name": "slim:agnesse.slim.SlimService",
       "exitCode": 0,
       "stderr": "",
-      "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+      "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
       "exceptions": []
     }],
     "failedPages": ["Demo.Fail"],

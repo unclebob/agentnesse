@@ -41,7 +41,7 @@ public class PageBuilder {
   public void page(String name) throws Exception {
     String content = stringWriter.toString();
     WikiPagePath path = PathParser.parse(name);
-    WikiPage page = WikiPageUtil.addPage(FitnesseFixtureContext.context.getRootPage(), path, content);
+    WikiPage page = WikiPageUtil.addPage(AgNesseFixtureContext.context.getRootPage(), path, content);
     if (pageAttributes != null) {
       PageData data = page.getData();
       setAttributes(data);

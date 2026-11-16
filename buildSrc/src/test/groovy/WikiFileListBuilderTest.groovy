@@ -14,8 +14,8 @@ class WikiFileListBuilderTest {
 
   @Before
   public void setUp() throws IOException {
-    updateList = File.createTempFile("fitnesse", "")
-    updateDoNotCopyOverList = File.createTempFile("fitnesse", "")
+    updateList = File.createTempFile("agnesse", "")
+    updateDoNotCopyOverList = File.createTempFile("agnesse", "")
     createMultiLevelDirectory();
   }
 

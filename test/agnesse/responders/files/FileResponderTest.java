@@ -8,13 +8,13 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.InputStreamResponse;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.testutil.SampleFileUtility;
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +28,7 @@ public class FileResponderTest {
   MockRequest request;
   private final String HTTP_DATE_REGEXP = "[SMTWF][a-z]{2}\\,\\s[0-9]{2}\\s[JFMASOND][a-z]{2}\\s[0-9]{4}\\s[0-9]{2}\\:[0-9]{2}\\:[0-9]{2}\\sGMT";
   private Response response;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private FileResponder responder;
   private Locale saveLocale;
   // Example: "Tue, 02 Apr 2003 22:18:49 GMT"
@@ -36,11 +36,11 @@ public class FileResponderTest {
   @Before
   public void setUp() throws Exception {
     request = new MockRequest();
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     SampleFileUtility.makeSampleFiles(context.getRootPagePath());
     response = null;
     saveLocale = Locale.getDefault();
-    FitNesseUtil.makeTestContext();
+    AgNesseUtil.makeTestContext();
     responder = new FileResponder();
   }
 

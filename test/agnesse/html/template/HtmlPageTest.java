@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertHasRegexp;
 import static util.RegexTestCase.assertSubString;
 
-import agnesse.FitNesseContext;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.AgNesseContext;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class HtmlPageTest {
 
   @Before
   public void setUp() throws Exception {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
+    AgNesseContext context = AgNesseUtil.makeTestContext();
     page = new HtmlPage(context.pageFactory.getVelocityEngine(), "skeleton.vm");
     html = page.html(null);
   }
@@ -35,7 +35,7 @@ public class HtmlPageTest {
   public void testHead() throws Exception {
     assertSubString("<head>", html);
     assertSubString("</head>", html);
-    assertSubString("<title>FitNesse</title>", html);
+    assertSubString("<title>AgNesse</title>", html);
     assertSubString("<link", html);
     assertSubString("rel=\"stylesheet\"", html);
     assertSubString("type=\"text/css\"", html);

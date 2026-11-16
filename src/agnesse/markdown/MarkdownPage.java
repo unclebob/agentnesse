@@ -357,7 +357,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   private void rememberInclude(List<String> names, String literal) {
     try {
-      AgentNesseBlock block = AgentNesseBlock.parse(literal);
+      AgNesseBlock block = AgNesseBlock.parse(literal);
       if ("include".equals(block.command())) {
         String name = block.argument().trim();
         int split = firstBreak(name);
@@ -440,7 +440,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   private void rememberDefine(Map<String, String> values, String literal) {
     try {
-      AgentNesseBlock block = AgentNesseBlock.parse(literal);
+      AgNesseBlock block = AgNesseBlock.parse(literal);
       if (!"define".equals(block.command())) {
         return;
       }

@@ -59,7 +59,7 @@ public class PagesRunInSuiteTest {
   }
 
   private static void send(String content) throws Exception {
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.send(content.getBytes());
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.send(content.getBytes());
   }
 }

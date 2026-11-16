@@ -1,6 +1,6 @@
 package agnesse.responders.refactoring;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.html.HtmlUtil;
 import agnesse.http.Request;
@@ -26,7 +26,7 @@ public abstract class PageMovementResponder implements Responder {
   protected WikiPage newParentPage;
   protected WikiPagePath newParentPath;
 
-  protected abstract boolean getAndValidateNewParentPage(FitNesseContext context, Request request);
+  protected abstract boolean getAndValidateNewParentPage(AgNesseContext context, Request request);
 
   protected abstract boolean getAndValidateRefactoringParameters(Request request);
 
@@ -39,7 +39,7 @@ public abstract class PageMovementResponder implements Responder {
   protected abstract void execute() throws RefactorException;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     if (!getAndValidateRefactoredPage(context, request)) {
       return new NotFoundResponder().makeResponse(context, request);
     }
@@ -64,7 +64,7 @@ public abstract class PageMovementResponder implements Responder {
     return response;
   }
 
-  private void rewriteThenMove(FitNesseContext context, Request request) throws Exception {
+  private void rewriteThenMove(AgNesseContext context, Request request) throws Exception {
     if (!request.hasInput("refactorReferences")) {
       execute();
       return;
@@ -79,7 +79,7 @@ public abstract class PageMovementResponder implements Responder {
     }
   }
 
-  private void rewriteReferences(FitNesseContext context) {
+  private void rewriteReferences(AgNesseContext context) {
     if (newParentPage != oldRefactoredPage.getParent()) {
       WikiPagePath movedPath = oldRefactoredPage.getFullPath();
       OutboundReferences.absolutize(oldRefactoredPage);
@@ -125,7 +125,7 @@ public abstract class PageMovementResponder implements Responder {
     return rendered == null || rendered.isEmpty() ? "root" : rendered;
   }
 
-  protected boolean getAndValidateRefactoredPage(FitNesseContext context, Request request) {
+  protected boolean getAndValidateRefactoredPage(AgNesseContext context, Request request) {
 
     oldNameOfPageToBeMoved = request.getResource();
 

@@ -165,11 +165,11 @@ public class RequestTest {
 
   @Test
   public void testLeadingSlashIsNotAMountPoint() throws Exception {
-    appendToMessage("GET /fitnesse HTTP/1.1\r\n");
+    appendToMessage("GET /agnesse HTTP/1.1\r\n");
     appendToMessage("\r\n");
     parseMessage();
     assertTrue(request.hasBeenParsed());
-    assertEquals("fitnesse", request.getResource());
+    assertEquals("agnesse", request.getResource());
   }
 
   @Test

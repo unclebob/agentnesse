@@ -16,7 +16,7 @@ public class SampleFileUtility {
   public static File testFile4;
 
   public static void makeSampleFiles(String rootPagePath) throws IOException {
-    File dir = new File(FitNesseUtil.base);
+    File dir = new File(AgNesseUtil.base);
     dir.mkdir();
     filesDir = new File(dir, "files");
     filesDir.mkdir();

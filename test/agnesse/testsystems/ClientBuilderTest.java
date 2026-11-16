@@ -152,20 +152,20 @@ public class ClientBuilderTest {
 
   @Test
   public void testRunnerCSharp() throws Exception {
-    String specifiedPageText = "!define TEST_RUNNER {..\\fitnesse\\fitsharp\\Runner.exe}";
+    String specifiedPageText = "!define TEST_RUNNER {..\\agnesse\\fitsharp\\Runner.exe}";
     WikiPage specifiedPage = makeTestPage(specifiedPageText);
     WikiPageDescriptor descriptor = new WikiPageDescriptor(specifiedPage, false, false, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    assertEquals("..\\fitnesse\\fitsharp\\Runner.exe", clientBuilder.getTestRunner());
+    assertEquals("..\\agnesse\\fitsharp\\Runner.exe", clientBuilder.getTestRunner());
   }
 
   @Test
   public void testRunnerCSharpWithDebug() throws Exception {
-    String specifiedPageText = "!define TEST_RUNNER {..\\fitnesse\\fitsharp\\Runner.exe}";
+    String specifiedPageText = "!define TEST_RUNNER {..\\agnesse\\fitsharp\\Runner.exe}";
     WikiPage specifiedPage = makeTestPage(specifiedPageText);
     WikiPageDescriptor descriptor = new WikiPageDescriptor(specifiedPage, false, true, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    assertEquals("..\\fitnesse\\fitsharp\\runnerw.exe", clientBuilder.getTestRunner());
+    assertEquals("..\\agnesse\\fitsharp\\runnerw.exe", clientBuilder.getTestRunner());
   }
 
   @Test
@@ -195,12 +195,12 @@ public class ClientBuilderTest {
 
   @Test
   public void testTestRunnerWithRootPathVariable() throws Exception {
-    String fitnesseRootpath = System.getProperty("user.home");
+    String agnesseRootpath = System.getProperty("user.home");
     String specifiedPageText = "!define TEST_RUNNER (${user.home}/rubyslim.rb)\n";
     WikiPage specifiedPage = makeTestPage(specifiedPageText);
     WikiPageDescriptor descriptor = new WikiPageDescriptor(specifiedPage, false, false, "");
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
-    assertEquals(fitnesseRootpath + "/rubyslim.rb", clientBuilder.getTestRunner());
+    assertEquals(agnesseRootpath + "/rubyslim.rb", clientBuilder.getTestRunner());
   }
 
   @Test

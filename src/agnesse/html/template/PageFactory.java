@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.html.template;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -15,7 +15,7 @@ import java.util.Properties;
 public class PageFactory {
   private VelocityEngine velocityEngine = null;
 
-  public PageFactory(FitNesseContext context) {
+  public PageFactory(AgNesseContext context) {
     this.velocityEngine = newVelocityEngine(context.getRootPagePath());
   }
 

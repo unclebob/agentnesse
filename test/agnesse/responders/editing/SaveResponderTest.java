@@ -7,11 +7,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertHasRegexp;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SaveResponderTest {
-  private FitNesseContext context;
+  private AgNesseContext context;
   private WikiPage root;
   private Response response;
   public MockRequest request;
@@ -29,7 +29,7 @@ public class SaveResponderTest {
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
     request = new MockRequest();
     responder = new SaveResponder();

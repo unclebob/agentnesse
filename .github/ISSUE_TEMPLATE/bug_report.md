@@ -32,7 +32,7 @@ If applicable, add a stack trace of the error.
 **Configuration:**
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
- - Version [e.g. 20200404] of FitNesse
+ - Version [e.g. 20200404] of AgNesse
  - Test System: [e.g. Fit or Slim]
  - Plugins in use: [xebium, hsac, RestFixture]
 

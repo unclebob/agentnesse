@@ -135,7 +135,7 @@ public class ScenarioTableExtensionTest {
   /**
    * ScenarioTable that looks for input parameters in all its rows, without the
    * parameters having to be specified in the first row also.
-   * based on https://github.com/fhoeben/hsac-fitnesse-plugin/blob/master/src/main/java/nl/hsac/agnesse/slim/AutoArgScenarioTable.java
+   * based on https://github.com/fhoeben/hsac-fitnesse-plugin/blob/master/src/main/java/nl/hsac/fitnesse/slim/AutoArgScenarioTable.java
    */
   public static class AutoArgScenarioTable extends ScenarioTable {
     private static final Pattern ARG_PATTERN = Pattern.compile("@\\{(.+?)\\}");

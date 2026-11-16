@@ -7,9 +7,9 @@ import agnesse.testsystems.TestPage;
 import agnesse.wiki.WikiPage;
 
 /**
- * Annotation used to pass FitNesse page information to test listeners.
+ * Annotation used to pass AgNesse page information to test listeners.
  */
-public class FitNessePageAnnotation implements Annotation {
+public class AgNessePageAnnotation implements Annotation {
   private final TestPage testPage;
   private final WikiPage wikiPage;
 
@@ -18,7 +18,7 @@ public class FitNessePageAnnotation implements Annotation {
    *
    * @param wikiPage page describing test.
    */
-  public FitNessePageAnnotation(WikiPage wikiPage) {
+  public AgNessePageAnnotation(WikiPage wikiPage) {
     this.testPage = null;
     this.wikiPage = wikiPage;
   }
@@ -28,7 +28,7 @@ public class FitNessePageAnnotation implements Annotation {
    *
    * @param testPage page describing test.
    */
-  public FitNessePageAnnotation(TestPage testPage) {
+  public AgNessePageAnnotation(TestPage testPage) {
     this.testPage = testPage;
     if (testPage instanceof WikiTestPage) {
       wikiPage = ((WikiTestPage) testPage).getSourcePage();
@@ -52,7 +52,7 @@ public class FitNessePageAnnotation implements Annotation {
   }
 
   @Override
-  public Class<? extends FitNessePageAnnotation> annotationType() {
-    return FitNessePageAnnotation.class;
+  public Class<? extends AgNessePageAnnotation> annotationType() {
+    return AgNessePageAnnotation.class;
   }
 }

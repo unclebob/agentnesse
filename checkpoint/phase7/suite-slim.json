@@ -77662,7 +77662,7 @@
                 {
                   "actual": null,
                   "symbol": null,
-                  "expected": "FitNesse",
+                  "expected": "AgNesse",
                   "column": 2,
                   "row": 4,
                   "error": null,
@@ -77700,7 +77700,7 @@
                   "status": "pass"
                 },
                 {
-                  "actual": "FitNesse",
+                  "actual": "AgNesse",
                   "symbol": null,
                   "expected": "",
                   "column": 6,
@@ -99406,13 +99406,13 @@
               ]},
               {"cells": [
                 {
-                  "actual": "TestSlim: 47, Hello FitNesse",
+                  "actual": "TestSlim: 47, Hello AgNesse",
                   "symbol": "ts",
                   "expected": "$ts=",
                   "column": 1,
                   "row": 3,
                   "error": null,
-                  "value": "TestSlim: 47, Hello FitNesse",
+                  "value": "TestSlim: 47, Hello AgNesse",
                   "status": "symbol"
                 },
                 {
@@ -99449,7 +99449,7 @@
                 "status": null
               }]},
               {"cells": [{
-                "actual": "$ts->[TestSlim: 47, Hello FitNesse]",
+                "actual": "$ts->[TestSlim: 47, Hello AgNesse]",
                 "symbol": null,
                 "expected": "$ts",
                 "column": 1,
@@ -99556,9 +99556,9 @@
                   "status": null
                 },
                 {
-                  "actual": "Hello FitNesse",
+                  "actual": "Hello AgNesse",
                   "symbol": null,
-                  "expected": "Hello FitNesse",
+                  "expected": "Hello AgNesse",
                   "column": 3,
                   "row": 3,
                   "error": null,
@@ -336412,7 +336412,7 @@
                   "status": null
                 },
                 {
-                  "actual": "/This is my exception/ found in: __EXCEPTION__:java.lang.Exception: This is my exception\n\tat agnesse.slim.test.TestSlim.throwNormal(TestSlim.java:261) [fitnesse-20261114-standalone.jar:20261114]\n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) [n/a]\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580) [rt.jar]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.FixtureMethodExecutor.execute(FixtureMethodExecutor.java:18) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.StatementExecutor.call(StatementExecutor.java:112) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.Instruction.execute(Instruction.java:26) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor.execute(ListExecutor.java:85) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.executeInstructions(SlimServer.java:83) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.serve(SlimServer.java:48) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.handle(SlimService.java:189) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.acceptOne(SlimService.java:197) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.accept(SlimService.java:161) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.startWithFactory(SlimService.java:118) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.run(SlimService.java:88) [fitnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.main(SlimService.java:78) [fitnesse-20261114-standalone.jar:20261114]",
+                  "actual": "/This is my exception/ found in: __EXCEPTION__:java.lang.Exception: This is my exception\n\tat agnesse.slim.test.TestSlim.throwNormal(TestSlim.java:261) [agnesse-20261114-standalone.jar:20261114]\n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) [n/a]\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580) [rt.jar]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.methodInvoke(SimpleInteraction.java:349) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.callMethod(SimpleInteraction.java:334) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.invokeMethod(SimpleInteraction.java:317) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.fixtureInteraction.SimpleInteraction.findAndInvoke(SimpleInteraction.java:245) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.MethodExecutor.findAndInvoke(MethodExecutor.java:17) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.FixtureMethodExecutor.execute(FixtureMethodExecutor.java:18) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.StatementExecutor.getMethodExecutionResult(StatementExecutor.java:139) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.StatementExecutor.call(StatementExecutor.java:112) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.CallAndOptionalAssignInstruction.executeInternal(CallAndOptionalAssignInstruction.java:30) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.instructions.Instruction.execute(Instruction.java:26) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatement(ListExecutor.java:49) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor$Executive.executeStatements(ListExecutor.java:43) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.ListExecutor.execute(ListExecutor.java:85) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.executeInstructions(SlimServer.java:83) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.processOneSetOfInstructions(SlimServer.java:76) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.tryProcessInstructions(SlimServer.java:63) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimServer.serve(SlimServer.java:48) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.handle(SlimService.java:189) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.acceptOne(SlimService.java:197) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.accept(SlimService.java:161) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.startWithFactory(SlimService.java:118) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.run(SlimService.java:88) [agnesse-20261114-standalone.jar:20261114]\n\tat agnesse.slim.SlimService.main(SlimService.java:78) [agnesse-20261114-standalone.jar:20261114]",
                   "symbol": null,
                   "expected": "HelloEXCEPTION:=~/This is my exception/",
                   "column": 2,
@@ -347208,9 +347208,9 @@
                   "status": null
                 },
                 {
-                  "actual": "Hello FitNesse",
+                  "actual": "Hello AgNesse",
                   "symbol": null,
-                  "expected": "Hello FitNesse",
+                  "expected": "Hello AgNesse",
                   "column": 3,
                   "row": 3,
                   "error": null,
@@ -434077,8 +434077,8 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
-        "exceptions": ["agnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file."]
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "exceptions": ["agnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the agnesse properties file."]
       },
       {
         "stdout": "",
@@ -434086,7 +434086,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434095,7 +434095,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434104,7 +434104,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434113,7 +434113,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434122,7 +434122,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434131,7 +434131,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434140,7 +434140,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434149,7 +434149,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434158,7 +434158,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434167,7 +434167,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434176,7 +434176,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434185,7 +434185,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434194,7 +434194,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434203,7 +434203,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434212,7 +434212,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434221,7 +434221,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434230,7 +434230,7 @@
         "name": "slim:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       },
       {
@@ -434239,7 +434239,7 @@
         "name": "SLIM:agnesse.slim.SlimService",
         "exitCode": 98,
         "stderr": "java.net.BindException: Address already in use\n\tat java.base/sun.nio.ch.Net.bind0(Native Method)\n\tat java.base/sun.nio.ch.Net.bind(Net.java:577)\n\tat java.base/sun.nio.ch.Net.bind(Net.java:566)\n\tat java.base/sun.nio.ch.NioSocketImpl.bind(NioSocketImpl.java:636)\n\tat java.base/java.net.ServerSocket.bind(ServerSocket.java:391)\n\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:278)\n\tat java.base/java.net.ServerSocket.<init>(ServerSocket.java:171)\n\tat agnesse.socketservice.PlainServerSocketFactory.createServerSocket(PlainServerSocketFactory.java:15)\n\tat agnesse.slim.SlimService.open(SlimService.java:110)\n\tat agnesse.slim.SlimService.startWithFactory(SlimService.java:114)\n\tat agnesse.slim.SlimService.run(SlimService.java:88)\n\tat agnesse.slim.SlimService.main(SlimService.java:78)\nExiting as exception occured: Address already in use\n",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService -v 9123",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService -v 9123",
         "exceptions": []
       },
       {
@@ -434249,7 +434249,7 @@
         "exitCode": null,
         "stderr": "",
         "command": "Connection to running SlimService: 127.0.0.1:9123",
-        "exceptions": ["agnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the fitnesse properties file."]
+        "exceptions": ["agnesse.slim.SlimError: Timeout while reading slim header from client. Check that you are connecting to the right port and that the slim client is running. You can increase the timeout limit by setting 'slim.timeout' in the agnesse properties file."]
       },
       {
         "stdout": "",
@@ -434275,7 +434275,7 @@
         "name": "SLIM:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": ["agnesse.slim.SlimError: Error SLiM server died before a connection could be established. Caused by: java.lang.ClassNotFoundException: something.that.does.not.exists\n"]
       },
       {
@@ -434302,7 +434302,7 @@
         "name": "SLIM:remote_debug:agnesse.slim.SlimService",
         "exitCode": 0,
         "stderr": "",
-        "command": "java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/fitnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
+        "command": "java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -cp /workspace/lib/groovy-xml-3.0.25.jar:/workspace/lib/diffutils-1.3.0.jar:/workspace/lib/commonmark-0.24.0.jar:/workspace/lib/htmlparser-2.1.jar:/workspace/lib/commonmark-ext-gfm-tables-0.24.0.jar:/workspace/lib/commons-text-1.15.0.jar:/workspace/lib/slf4j-api-2.0.20.jar:/workspace/lib/velocity-engine-core-2.4.1.jar:/workspace/lib/json-20260814.jar:/workspace/lib/groovy-3.0.25.jar:/workspace/lib/htmllexer-2.1.jar:/workspace/lib/slf4j-jdk14-2.0.20.jar:/workspace/lib/commons-lang3-3.21.0.jar:/workspace/build/libs/agnesse-20261114-standalone.jar agnesse.slim.SlimService 1",
         "exceptions": []
       }
     ],

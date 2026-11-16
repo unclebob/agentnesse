@@ -2,11 +2,11 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.html;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.template.HtmlPage;
 import agnesse.reporting.JavascriptUtil;
 import agnesse.responders.WikiPageActions;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPageUtil;
 import org.junit.Before;
@@ -17,11 +17,11 @@ import static util.RegexTestCase.assertSubString;
 
 public class HtmlUtilTest {
 
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Before
   public void setUp() {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
   }
 
   @Test

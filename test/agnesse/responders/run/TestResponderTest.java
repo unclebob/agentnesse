@@ -2,14 +2,14 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.run;
 
-import agnesse.FitNesseContext;
-import agnesse.FitNesseVersion;
+import agnesse.AgNesseContext;
+import agnesse.AgNesseVersion;
 import agnesse.html.HtmlUtil;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.util.Clock;
 import agnesse.util.DateAlteringClock;
 import agnesse.util.DateTimeUtil;
@@ -49,7 +49,7 @@ public class TestResponderTest {
   private WikiPage root;
   private MockRequest request;
   private SuiteResponder responder;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private Response response;
   private MockResponseSender sender;
   private WikiPage testPage;
@@ -62,17 +62,17 @@ public class TestResponderTest {
     File testDir = new File("TestDir");
     testDir.mkdir();
     Properties properties = new Properties();
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
     request = new MockRequest();
     responder = new TestResponder();
-    properties.setProperty("FITNESSE_PORT", String.valueOf(context.port));
+    properties.setProperty("AGNESSE_PORT", String.valueOf(context.port));
     new DateAlteringClock(DateTimeUtil.getDateFromString(TEST_TIME), TimeZone.getTimeZone("CET")).advanceMillisOnEachQuery();
   }
 
   @After
   public void tearDown() throws Exception {
-    FitNesseUtil.destroyTestContext();
+    AgNesseUtil.destroyTestContext();
     Clock.restoreDefaultClock();
   }
 
@@ -107,7 +107,7 @@ public class TestResponderTest {
     doSimpleRun(passFixtureTable());
     assertSubString("<div id=\"test-summary\">Preparing Tests ...</div>", results);
     assertNotSubString("Test Summaries", results);
-    assertSubString("AgentNesseResults.apply(", results);
+    assertSubString("AgNesseResults.apply(", results);
   }
 
   @Test
@@ -231,7 +231,7 @@ public class TestResponderTest {
     sender.doSending(response);
 
     String results = sender.sentData();
-    assertSubString("X-Agentnesse-Test-Id: ", results);
+    assertSubString("X-AgNesse-Test-Id: ", results);
   }
 
   @Test

@@ -18,12 +18,12 @@ import static agnesse.ConfigurationParameter.REFACTOR_START_PATH;
 /**
  * Reads agnesse.json. Command-line flags are applied after this, so they win.
  */
-public final class AgentNesseConfig {
+public final class AgNesseConfig {
   private static final Set<String> KEYS = Set.of(
     "port", "listen", "rootPath", "pageRoot",
     "maximumWorkers", "refactorStartPath");
 
-  private AgentNesseConfig() {
+  private AgNesseConfig() {
   }
 
   public static void apply(ContextConfigurator configurator, File file, boolean required) {

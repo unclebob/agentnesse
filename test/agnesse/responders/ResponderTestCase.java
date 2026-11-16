@@ -2,10 +2,10 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.WikiPage;
 import org.junit.Before;
 
@@ -13,13 +13,13 @@ public abstract class ResponderTestCase {
   protected WikiPage root;
   protected MockRequest request;
   protected Responder responder;
-  protected FitNesseContext context;
+  protected AgNesseContext context;
 
   @Before
   public void setUp() throws Exception {
     request = new MockRequest();
     responder = responderInstance();
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
   }
 

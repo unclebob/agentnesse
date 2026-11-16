@@ -1,6 +1,6 @@
 This section will contain custom resources (css, templates).
 
-NOTE: You can not upload files to files/agnesse via FitNesse. Instead add
+NOTE: You can not upload files to files/agnesse via AgNesse. Instead add
 files directly.
 
 You can override files in files/agnesse or add your own (e.g. a custom
@@ -20,10 +20,10 @@ Say you want to add a custom theme called "custom". What do you do?
  4. Edit the style (e.g. to match the corporate standard)
 
 If you're using Maven for example, you might want to distribute the style to
-FitNesse projects. In that case you can create a jar with the styles in it:
+AgNesse projects. In that case you can create a jar with the styles in it:
 
         /agnesse/resources/css/custom.css
         /agnesse/resources/javascript/custom.js
 
-and provide it as a dependency when launching FitNesse. You still have to
+and provide it as a dependency when launching AgNesse. You still have to
 set "theme" in agnesse.json.

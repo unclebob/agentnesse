@@ -6,12 +6,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static util.RegexTestCase.assertHasRegexp;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.testutil.SampleFileUtility;
 import org.junit.After;
 import org.junit.Before;
@@ -20,12 +20,12 @@ import org.junit.Test;
 public class DirectoryResponderTest {
   MockRequest request;
   private SimpleResponse response;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Before
   public void setUp() throws Exception {
     request = new MockRequest();
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     SampleFileUtility.makeSampleFiles(context.getRootPagePath());
   }
 

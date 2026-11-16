@@ -17,11 +17,11 @@ public class ContentBufferTest {
   @Test
   public void testName() throws Exception {
     String name = new ContentBuffer().getFile().getName();
-    assertTrue(name.startsWith("FitNesse-"));
+    assertTrue(name.startsWith("AgNesse-"));
     assertTrue(name.endsWith(".tmp"));
 
     name = new ContentBuffer(".html").getFile().getName();
-    assertTrue(name.startsWith("FitNesse-"));
+    assertTrue(name.startsWith("AgNesse-"));
     assertTrue(name.endsWith(".html"));
   }
 

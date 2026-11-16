@@ -7,10 +7,10 @@ import static org.junit.Assert.assertFalse;
 import static util.RegexTestCase.assertNotSubString;
 import static util.RegexTestCase.assertSubString;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.*;
 
 import org.junit.Before;
@@ -20,11 +20,11 @@ public class EditResponderTest {
   private WikiPage root;
   private MockRequest request;
   private EditResponder responder;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
     request = new MockRequest();
     responder = new EditResponder();
@@ -57,7 +57,7 @@ public class EditResponderTest {
     assertSubString("codemirror.js", body);
     assertSubString("/files/agnesse/codemirror/codemirror.css", body);
     assertSubString("mode/markdown/markdown.js", body);
-    assertNotSubString("codemirror/fitnesse/fitnesse.js", body);
+    assertNotSubString("codemirror/agnesse/agnesse.js", body);
 
     assertSubString("type=\"submit\"", body);
     assertSubString("textarea", body);

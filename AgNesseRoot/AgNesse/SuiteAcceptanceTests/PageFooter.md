@@ -4,4 +4,4 @@
   "help": null,
   "prune": false
 }
-[FitNesse's own acceptance test suite](.AgNesse.SuiteAcceptanceTests) | [Front Page](.FrontPage)
+[AgNesse's own acceptance test suite](.AgNesse.SuiteAcceptanceTests) | [Front Page](.FrontPage)

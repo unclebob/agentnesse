@@ -2,12 +2,12 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesseMain;
 
-import agnesse.AgentNesseConfig;
+import agnesse.AgNesseConfig;
 import agnesse.ConfigurationParameter;
 import agnesse.ContextConfigurator;
-import agnesse.FitNesse;
-import agnesse.FitNesseContext;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.AgNesse;
+import agnesse.AgNesseContext;
+import agnesse.testutil.AgNesseUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,9 +39,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-public class FitNesseMainTest {
+public class AgNesseMainTest {
 
-  private static final String TEST_FITNESSE_ROOT = "testFitnesseRoot";
+  private static final String TEST_AGNESSE_ROOT = "testAgNesseRoot";
 
   private ContextConfigurator context;
 
@@ -49,63 +49,63 @@ public class FitNesseMainTest {
   public void setUp() throws Exception {
     context = ContextConfigurator.systemDefaults()
       .withRootPath(".")
-      .withRootDirectoryName(TEST_FITNESSE_ROOT)
+      .withRootDirectoryName(TEST_AGNESSE_ROOT)
       .withPort(80);
   }
 
   @After
   public void tearDown() throws Exception {
-    FileUtil.deleteFileSystemDirectory(TEST_FITNESSE_ROOT);
+    FileUtil.deleteFileSystemDirectory(TEST_AGNESSE_ROOT);
   }
 
   @Test
   public void badArgumentsReturnOneWithoutStarting() {
-    assertEquals(Integer.valueOf(1), FitNesseMain.start(new String[] {"-x"}));
+    assertEquals(Integer.valueOf(1), AgNesseMain.start(new String[] {"-x"}));
   }
 
   @Test
   public void commandArgCallsExecuteSingleCommand() throws Exception {
     context.withParameter(ConfigurationParameter.COMMAND, "command");
 
-    FitNesse fitNesse = mock(FitNesse.class);
+    AgNesse agNesse = mock(AgNesse.class);
 
     context = spy(context);
-    doAnswer(fitNesseContextWith(fitNesse)).when(context).makeFitNesseContext();
+    doAnswer(agNesseContextWith(agNesse)).when(context).makeAgNesseContext();
 
-    int exitCode = new FitNesseMain().launchFitNesse(context);
+    int exitCode = new AgNesseMain().launchAgNesse(context);
     assertThat(exitCode, is(0));
-    verify(fitNesse, never()).start(any());
-    verify(fitNesse).executeSingleCommand("command", System.out);
-    verify(fitNesse).stop();
+    verify(agNesse, never()).start(any());
+    verify(agNesse).executeSingleCommand("command", System.out);
+    verify(agNesse).stop();
   }
 
   @Test
   public void testDirCreations() throws Exception {
-    runFitnesseMainWith("-c", "/root", "-r", TEST_FITNESSE_ROOT);
+    runAgNesseMainWith("-c", "/root", "-r", TEST_AGNESSE_ROOT);
 
-    assertTrue(new File(TEST_FITNESSE_ROOT).exists());
-    assertTrue(new File(TEST_FITNESSE_ROOT, "files").exists());
+    assertTrue(new File(TEST_AGNESSE_ROOT).exists());
+    assertTrue(new File(TEST_AGNESSE_ROOT, "files").exists());
   }
 
   @Test
   public void testIsRunning() throws Exception {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
-    FitNesse fitnesse = context.fitNesse;
+    AgNesseContext context = AgNesseUtil.makeTestContext();
+    AgNesse agnesse = context.agNesse;
 
-    assertFalse(fitnesse.isRunning());
+    assertFalse(agnesse.isRunning());
 
-    fitnesse.start(new ServerSocket(0));
-    assertTrue(fitnesse.isRunning());
+    agnesse.start(new ServerSocket(0));
+    assertTrue(agnesse.isRunning());
 
-    fitnesse.stop();
-    assertFalse(fitnesse.isRunning());
+    agnesse.stop();
+    assertFalse(agnesse.isRunning());
   }
 
   @Test
   public void canRunSingleCommand() throws Exception {
-    String response = runFitnesseMainWith("-c", "/root");
+    String response = runAgNesseMainWith("-c", "/root");
     assertThat(response, containsString("Executing command:"));
-    assertThat(response, not(containsString("Starting FitNesse on port:")));
+    assertThat(response, not(containsString("Starting AgNesse on port:")));
   }
 
   @Test(expected = Exception.class)
@@ -113,7 +113,7 @@ public class FitNesseMainTest {
     String[] args = {"-c", "/AgNesse.NonExistentTestCase?test"};
     Arguments arguments = new Arguments(args);
     try {
-      new FitNesseMain().launchFitNesse(arguments);
+      new AgNesseMain().launchAgNesse(arguments);
     } catch (Exception e) {
       assertEquals("error loading page: 404", e.getMessage());
       throw e;
@@ -122,13 +122,13 @@ public class FitNesseMainTest {
 
   @Test
   public void bindsTheListenAddress() throws Exception {
-    try (ServerSocket loopback = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0")))) {
+    try (ServerSocket loopback = AgNesseMain.openSocket(contextFor(new Arguments("-p", "0")))) {
       assertEquals("127.0.0.1", loopback.getInetAddress().getHostAddress());
     }
-    try (ServerSocket all = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "0.0.0.0")))) {
+    try (ServerSocket all = AgNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "0.0.0.0")))) {
       assertTrue(all.getInetAddress().isAnyLocalAddress());
     }
-    try (ServerSocket specific = FitNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "127.0.0.1")))) {
+    try (ServerSocket specific = AgNesseMain.openSocket(contextFor(new Arguments("-p", "0", "--listen", "127.0.0.1")))) {
       assertEquals("127.0.0.1", specific.getInetAddress().getHostAddress());
     }
   }
@@ -138,7 +138,7 @@ public class FitNesseMainTest {
     File config = new File("bad-agnesse.json");
     FileUtil.createFile(config.getPath(), "{\"bogus\": 1}\n");
     try {
-      assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
+      assertConfigError(new Arguments("-r", TEST_AGNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
         "bad-agnesse.json", "bogus");
     } finally {
       config.delete();
@@ -150,7 +150,7 @@ public class FitNesseMainTest {
     File config = new File("malformed-agnesse.json");
     FileUtil.createFile(config.getPath(), "{");
     try {
-      assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
+      assertConfigError(new Arguments("-r", TEST_AGNESSE_ROOT, "-f", config.getPath(), "-c", "/root"),
         "malformed-agnesse.json", "malformed");
     } finally {
       config.delete();
@@ -159,7 +159,7 @@ public class FitNesseMainTest {
 
   @Test
   public void missingExplicitConfigFileExitsNonZero() throws Exception {
-    assertConfigError(new Arguments("-r", TEST_FITNESSE_ROOT, "-f", "no-such-agnesse.json", "-c", "/root"),
+    assertConfigError(new Arguments("-r", TEST_AGNESSE_ROOT, "-f", "no-such-agnesse.json", "-c", "/root"),
       "no-such-agnesse.json", "not found");
   }
 
@@ -169,7 +169,7 @@ public class FitNesseMainTest {
     System.setErr(new PrintStream(captured, true, "UTF-8"));
     int exitCode;
     try {
-      exitCode = new FitNesseMain().launchFitNesse(arguments);
+      exitCode = new AgNesseMain().launchAgNesse(arguments);
     } finally {
       System.setErr(original);
     }
@@ -187,8 +187,8 @@ public class FitNesseMainTest {
     System.setErr(new PrintStream(captured, true, "UTF-8"));
     int exitCode;
     try {
-      exitCode = new FitNesseMain().launchFitNesse(new Arguments(
-        "-r", TEST_FITNESSE_ROOT, "-p", "0", "--listen", "999.999.999.999"));
+      exitCode = new AgNesseMain().launchAgNesse(new Arguments(
+        "-r", TEST_AGNESSE_ROOT, "-p", "0", "--listen", "999.999.999.999"));
     } finally {
       System.setErr(original);
     }
@@ -196,15 +196,15 @@ public class FitNesseMainTest {
     assertThat(captured.toString("UTF-8"), containsString("999.999.999.999"));
   }
 
-  private FitNesseContext contextFor(Arguments arguments) throws Exception {
+  private AgNesseContext contextFor(Arguments arguments) throws Exception {
     return arguments.update(ContextConfigurator.systemDefaults()
       .withRootPath(".")
-      .withRootDirectoryName(TEST_FITNESSE_ROOT)).makeFitNesseContext();
+      .withRootDirectoryName(TEST_AGNESSE_ROOT)).makeAgNesseContext();
   }
 
   @Test
   public void xmlAndJunitCommandsFailWithUnsupportedFormatMessage() throws Exception {
-    FileUtil.createFile(TEST_FITNESSE_ROOT + "/FormatPage.md",
+    FileUtil.createFile(TEST_AGNESSE_ROOT + "/FormatPage.md",
       """
       { "type": "test" }
       
@@ -224,8 +224,8 @@ public class FitNesseMainTest {
     int exitCode;
     try {
       try {
-        exitCode = new FitNesseMain().launchFitNesse(new Arguments(
-          "-r", TEST_FITNESSE_ROOT, "-c", command));
+        exitCode = new AgNesseMain().launchAgNesse(new Arguments(
+          "-r", TEST_AGNESSE_ROOT, "-c", command));
       } catch (Exception e) {
         exitCode = 1;
       }
@@ -242,18 +242,18 @@ public class FitNesseMainTest {
     context.withParameter(ConfigurationParameter.COMMAND, "Suite?suite");
     context.withParameter(ConfigurationParameter.RERUN_FAILURES, "last failures.json");
 
-    FitNesse fitNesse = mock(FitNesse.class);
+    AgNesse agNesse = mock(AgNesse.class);
     context = spy(context);
-    doAnswer(fitNesseContextWith(fitNesse)).when(context).makeFitNesseContext();
+    doAnswer(agNesseContextWith(agNesse)).when(context).makeAgNesseContext();
 
-    new FitNesseMain().launchFitNesse(context);
-    verify(fitNesse).executeSingleCommand(
+    new AgNesseMain().launchAgNesse(context);
+    verify(agNesse).executeSingleCommand(
       "Suite?suite&format=json&rerunFailures=last+failures.json", System.out);
   }
 
   @Test
   public void commandExitCodeIsTheNumberOfFailingTests() throws Exception {
-    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestFail.md",
+    FileUtil.createFile(TEST_AGNESSE_ROOT + "/TestFail.md",
       """
       { "type": "test" }
       
@@ -262,13 +262,13 @@ public class FitNesseMainTest {
       | check | echo | hello | goodbye |
       """);
 
-    int exitCode = launch(new String[]{"-r", TEST_FITNESSE_ROOT, "-c", "TestFail?test"});
+    int exitCode = launch(new String[]{"-r", TEST_AGNESSE_ROOT, "-c", "TestFail?test"});
     assertEquals(1, exitCode);
   }
 
   @Test
   public void passingCommandCanWriteResultsToAFile() throws Exception {
-    FileUtil.createFile(TEST_FITNESSE_ROOT + "/TestPass.md",
+    FileUtil.createFile(TEST_AGNESSE_ROOT + "/TestPass.md",
       """
       { "type": "test" }
       
@@ -276,10 +276,10 @@ public class FitNesseMainTest {
       | --- | --- | --- |
       | check | echo | hello | hello |
       """);
-    File output = new File(TEST_FITNESSE_ROOT, "results.txt");
+    File output = new File(TEST_AGNESSE_ROOT, "results.txt");
 
     int exitCode = launch(new String[]{
-      "-r", TEST_FITNESSE_ROOT, "-c", "TestPass?test", "-b", output.getPath()});
+      "-r", TEST_AGNESSE_ROOT, "-c", "TestPass?test", "-b", output.getPath()});
 
     assertEquals(0, exitCode);
     assertThat(FileUtil.getFileContent(output), containsString("\"schemaVersion\": 1"));
@@ -290,7 +290,7 @@ public class FitNesseMainTest {
   public void occupiedPortReturnsExitCodeOne() throws Exception {
     try (ServerSocket socket = new ServerSocket(0, 50, InetAddress.getByName("127.0.0.1"))) {
       int exitCode = launch(new String[]{
-        "-r", TEST_FITNESSE_ROOT, "-p", Integer.toString(socket.getLocalPort())});
+        "-r", TEST_AGNESSE_ROOT, "-p", Integer.toString(socket.getLocalPort())});
       assertEquals(1, exitCode);
     }
   }
@@ -304,7 +304,7 @@ public class FitNesseMainTest {
     System.setProperty(listenKey, "10.9.8.7");
     try {
       ContextConfigurator configurator = ContextConfigurator.systemDefaults();
-      AgentNesseConfig.apply(configurator, new File(configFileName), true);
+      AgNesseConfig.apply(configurator, new File(configFileName), true);
       configurator = configurator.updatedWith(System.getProperties());
       assertThat(configurator.get(ConfigurationParameter.LISTEN), is("10.9.8.7"));
     } finally {
@@ -322,7 +322,7 @@ public class FitNesseMainTest {
     System.setProperty(key, "sentinel.properties");
     logger.setLevel(Level.FINE);
     try {
-      new FitNesseMain().configureLogging(false);
+      new AgNesseMain().configureLogging(false);
       assertEquals(Level.FINE, logger.getLevel());
     } finally {
       if (previous == null) {
@@ -334,7 +334,7 @@ public class FitNesseMainTest {
     }
   }
 
-  private String runFitnesseMainWith(String... args) throws Exception {
+  private String runAgNesseMainWith(String... args) throws Exception {
     PrintStream err = System.err;
     ByteArrayOutputStream outputBytes = new ByteArrayOutputStream();
     System.setErr(new PrintStream(outputBytes));
@@ -345,17 +345,17 @@ public class FitNesseMainTest {
   }
 
   private int launch(String... args) throws Exception {
-    Integer exitCode = new FitNesseMain().launchFitNesse(new Arguments(args));
+    Integer exitCode = new AgNesseMain().launchAgNesse(new Arguments(args));
     return exitCode == null ? 0 : exitCode;
   }
 
-  private Answer<FitNesseContext> fitNesseContextWith(final FitNesse fitNesse) {
+  private Answer<AgNesseContext> agNesseContextWith(final AgNesse agNesse) {
     return invocation -> {
-      FitNesseContext fitNesseContext = (FitNesseContext) invocation.callRealMethod();
-      Field aField = fitNesseContext.getClass().getDeclaredField("fitNesse");
+      AgNesseContext agNesseContext = (AgNesseContext) invocation.callRealMethod();
+      Field aField = agNesseContext.getClass().getDeclaredField("agNesse");
       aField.setAccessible(true);
-      aField.set(fitNesseContext, fitNesse);
-      return fitNesseContext;
+      aField.set(agNesseContext, agNesse);
+      return agNesseContext;
     };
   }
 

@@ -1,6 +1,6 @@
 package agnesse.testsystems.slim;
 
-import agnesse.markdown.AgentNesseBlock;
+import agnesse.markdown.AgNesseBlock;
 import agnesse.markdown.MarkdownFences;
 import agnesse.markdown.MarkdownPage;
 import agnesse.testrunner.TestPageWithSuiteSetUpAndTearDown;
@@ -148,7 +148,7 @@ public final class SlimSources {
       return;
     }
     try {
-      AgentNesseBlock block = AgentNesseBlock.parse(body);
+      AgNesseBlock block = AgNesseBlock.parse(body);
       if ("alias".equals(block.command())) {
         rememberAlias(block.argument());
         return;

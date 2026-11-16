@@ -15,12 +15,12 @@ public class ApplicationVariableSource implements VariableSource {
   public Optional<String> findVariable(String name) {
     if (variableSource != null) {
       switch (name) {
-        case "FITNESSE_PORT":
-          return Optional.of(variableSource.findVariable("FITNESSE_PORT").orElse("-1"));
-        case "FITNESSE_ROOTPATH":
-          return Optional.of(variableSource.findVariable("FITNESSE_ROOTPATH").orElse(""));
-        case "FITNESSE_VERSION":
-          return Optional.of(variableSource.findVariable("FITNESSE_VERSION").orElse(""));
+        case "AGNESSE_PORT":
+          return Optional.of(variableSource.findVariable("AGNESSE_PORT").orElse("-1"));
+        case "AGNESSE_ROOTPATH":
+          return Optional.of(variableSource.findVariable("AGNESSE_ROOTPATH").orElse(""));
+        case "AGNESSE_VERSION":
+          return Optional.of(variableSource.findVariable("AGNESSE_VERSION").orElse(""));
         default:
           return Optional.empty();
       }

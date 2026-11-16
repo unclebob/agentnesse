@@ -25,7 +25,7 @@ public class LoggerTest {
   private final String dirPath = "testLogs";
   private Logger l;
   private LogData ld;
-  private String filename = "fitnesse20030306134205.log";
+  private String filename = "agnesse20030306134205.log";
   private String logLine = "myHost - - [06/Mar/2003:13:42:05 -0100] \"request\" 42 666";
   private Locale saveLocale;
 

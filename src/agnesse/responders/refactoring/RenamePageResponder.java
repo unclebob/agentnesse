@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.refactoring;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.wiki.WikiPageUtil;
 import agnesse.wiki.refactoring.ChangeReference;
 import agnesse.wiki.refactoring.PageReferenceRenamer;
@@ -14,7 +14,7 @@ public class RenamePageResponder extends PageMovementResponder {
   private String newName;
 
   @Override
-  protected boolean getAndValidateNewParentPage(FitNesseContext context, Request request) {
+  protected boolean getAndValidateNewParentPage(AgNesseContext context, Request request) {
     newParentPath = PathParser.parse(oldNameOfPageToBeMoved).parentPath();
     newParentPage = oldRefactoredPage.getParent();
     return (newParentPage != null);

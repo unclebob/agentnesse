@@ -19,7 +19,7 @@ public class MarkdownRenderTest {
   }
 
   @Test
-  public void eachAgentNesseCommandHasItsOwnClass() throws Exception {
+  public void eachAgNesseCommandHasItsOwnClass() throws Exception {
     for (String command : new String[] {"define", "scenarios", "path", "contents", "alias"}) {
       assertGolden(command);
     }

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNull;
 public class SlimMarkdownTableTest {
 
   @Test
-  public void theHeaderIsFitNesseRowOneAndTheFirstBodyRowIsRowTwo() {
+  public void theHeaderIsAgNesseRowOneAndTheFirstBodyRowIsRowTwo() {
     SlimMarkdownTable table = SlimMarkdownTable.parse("""
       | decision:Division | | |
       | --- | --- | --- |

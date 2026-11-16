@@ -4,20 +4,20 @@ package agnesse.responders.run.slimResponder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.HtmlUtil;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
 import agnesse.slim.MethodExecutionResult;
 import agnesse.testsystems.slim.*;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class HtmlSlimResponderTest {
-  private FitNesseContext context;
+  private AgNesseContext context;
   private MockRequest request;
   protected SlimResponder responder;
   private WikiPage testPage;
@@ -58,7 +58,7 @@ public class HtmlSlimResponderTest {
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     request = new MockRequest();
     responder = getSlimResponder();
     responder.setFastTest(true);

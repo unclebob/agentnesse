@@ -8,17 +8,17 @@ import agnesse.testrunner.Stoppable;
 import org.junit.Before;
 import org.junit.Test;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Request;
 import agnesse.http.Response;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 
 public class StopTestResponderTest {
 
   private Request request;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private StoppedRecorder stoppableA = new StoppedRecorder();
   private StoppedRecorder stoppableB = new StoppedRecorder();
 
@@ -26,7 +26,7 @@ public class StopTestResponderTest {
   public void setUp() throws Exception {
 
     request = new MockRequest();
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
   }
 
   @Test

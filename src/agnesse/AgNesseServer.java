@@ -8,11 +8,11 @@ import java.util.concurrent.ExecutorService;
 
 import agnesse.socketservice.SocketServer;
 
-public class FitNesseServer implements SocketServer {
-  private final FitNesseContext context;
+public class AgNesseServer implements SocketServer {
+  private final AgNesseContext context;
   private final ExecutorService executorService;
 
-  public FitNesseServer(FitNesseContext context, ExecutorService executorService) {
+  public AgNesseServer(AgNesseContext context, ExecutorService executorService) {
     this.context = context;
     this.executorService = executorService;
   }
@@ -23,7 +23,7 @@ public class FitNesseServer implements SocketServer {
   }
 
   public void serve(Socket s, long requestTimeout) throws IOException {
-    FitNesseExpediter sender = new FitNesseExpediter(s, context, executorService, requestTimeout);
+    AgNesseExpediter sender = new AgNesseExpediter(s, context, executorService, requestTimeout);
     executorService.submit(sender);
   }
 }

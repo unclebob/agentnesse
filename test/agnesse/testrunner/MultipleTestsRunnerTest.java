@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.testrunner;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.testrunner.run.TestRun;
 import agnesse.testrunner.run.TestRunFactoryRegistry;
 import agnesse.testsystems.Descriptor;
@@ -10,7 +10,7 @@ import agnesse.testsystems.TestExecutionException;
 import agnesse.testsystems.TestSystem;
 import agnesse.testsystems.TestSystemFactory;
 import agnesse.testsystems.TestSystemListener;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 public class MultipleTestsRunnerTest {
   private WikiPage suite;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   private TestSystemFactory testSystemFactory;
 
@@ -42,7 +42,7 @@ public class MultipleTestsRunnerTest {
     TestSystem testSystem = mock(TestSystem.class);
     when(testSystemFactory.create(any(Descriptor.class))).thenReturn(testSystem);
 
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     suite = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("SuitePage"), "This is the test suite\n");
   }
 

@@ -4,7 +4,7 @@ package agnesse.responders.run.slimResponder;
 
 import java.io.IOException;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.html.HtmlUtil;
 import agnesse.http.Request;
@@ -28,13 +28,13 @@ public abstract class SlimResponder implements Responder, TestSystemListener {
   protected boolean fastTest = false;
   SlimTestSystem testSystem;
   private WikiPage page;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private Throwable slimException;
   private StringBuilder output;
   private TestSummary testSummary;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     this.context = context;
     loadPage(request.getResource(), context);
 
@@ -46,13 +46,13 @@ public abstract class SlimResponder implements Responder, TestSystemListener {
     return response;
   }
 
-  protected void loadPage(String pageName, FitNesseContext context) {
+  protected void loadPage(String pageName, AgNesseContext context) {
     WikiPagePath path = PathParser.parse(pageName);
     PageCrawler crawler = context.getRootPage().getPageCrawler();
     page = crawler.getPage(path);
   }
 
-  public FitNesseContext getContext() {
+  public AgNesseContext getContext() {
     return context;
   }
 

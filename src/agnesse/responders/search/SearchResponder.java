@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.search;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.components.TraversalListener;
 import agnesse.http.Request;
 import agnesse.http.Response;
@@ -25,7 +25,7 @@ public class SearchResponder extends ResultResponder {
   private static final Set<String> TYPES = Set.of("title", "text", "method");
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     Response rejected = JsonResponses.unknownParameter(request, "search", "searchForm", "type", "q", "searchScope");
     if (rejected != null) {
       return rejected;

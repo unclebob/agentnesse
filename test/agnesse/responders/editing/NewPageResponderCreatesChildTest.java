@@ -3,11 +3,11 @@ package agnesse.responders.editing;
 import static org.junit.Assert.*;
 import static util.RegexTestCase.assertSubString;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
@@ -22,14 +22,14 @@ public class NewPageResponderCreatesChildTest {
   private PageCrawler crawler;
   private String childName;
   private MockRequest request;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private Responder responder;
   private WikiPagePath path;
   private WikiPage root;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
 
     crawler = root.getPageCrawler();

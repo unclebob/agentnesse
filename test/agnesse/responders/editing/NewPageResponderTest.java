@@ -3,22 +3,22 @@ package agnesse.responders.editing;
 import static org.junit.Assert.assertEquals;
 import static util.RegexTestCase.assertSubString;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import org.junit.Before;
 import org.junit.Test;
 
 public class NewPageResponderTest {
 
-  private FitNesseContext context;
+  private AgNesseContext context;
   private MockRequest request;
   private NewPageResponder responder;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     request = new MockRequest();
     responder = new NewPageResponder();
   }

@@ -19,23 +19,23 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FitNesseExpediter implements ResponseSender, Runnable {
-  private static final Logger LOG = Logger.getLogger(FitNesseExpediter.class.getName());
+public class AgNesseExpediter implements ResponseSender, Runnable {
+  private static final Logger LOG = Logger.getLogger(AgNesseExpediter.class.getName());
 
   private final Socket socket;
   private final InputStream input;
   private final OutputStream output;
-  private final FitNesseContext context;
+  private final AgNesseContext context;
   private final ExecutorService executorService;
   private final long requestParsingTimeLimit;
   private Request request;
   private Response response;
 
-  public FitNesseExpediter(Socket socket, FitNesseContext context, ExecutorService executorService) throws IOException {
+  public AgNesseExpediter(Socket socket, AgNesseContext context, ExecutorService executorService) throws IOException {
     this(socket, context, executorService, 10000);
   }
 
-  public FitNesseExpediter(Socket socket, FitNesseContext context, ExecutorService executorService, long requestParsingTimeLimit) throws IOException {
+  public AgNesseExpediter(Socket socket, AgNesseContext context, ExecutorService executorService, long requestParsingTimeLimit) throws IOException {
     this.context = context;
     this.socket = socket;
     this.executorService = executorService;
@@ -123,7 +123,7 @@ public class FitNesseExpediter implements ResponseSender, Runnable {
     }
 
     // Add those as default headers?
-    response.addHeader("Server", "FitNesse-" + context.version);
+    response.addHeader("Server", "AgNesse-" + context.version);
     response.addHeader("Connection", "close");
     return response;
   }

@@ -4,7 +4,7 @@ package agnesse.responders;
 
 import java.io.IOException;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.html.template.HtmlPage;
 import agnesse.http.Request;
@@ -17,7 +17,7 @@ import agnesse.wiki.WikiPagePath;
 public class BasicResponder implements Responder {
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     WikiPage requestedPage = getRequestedPage(request, context);
 
     Response response;
@@ -29,30 +29,30 @@ public class BasicResponder implements Responder {
     return response;
   }
 
-  protected WikiPage getPage(FitNesseContext context, Request request) {
+  protected WikiPage getPage(AgNesseContext context, Request request) {
     String resource = request.getResource();
     WikiPagePath path = PathParser.parse(resource);
     return context.getRootPage().getPageCrawler().getPage(path);
   }
 
-  protected HtmlPage prepareResponseDocument(FitNesseContext context) {
+  protected HtmlPage prepareResponseDocument(AgNesseContext context) {
     HtmlPage responseDocument = context.pageFactory.newPage();
     responseDocument.addTitles("Default Responder");
     responseDocument.setMainTemplate("defaultPage.vm");
     return responseDocument;
   }
 
-  protected WikiPage getRequestedPage(Request request, FitNesseContext context) {
+  protected WikiPage getRequestedPage(Request request, AgNesseContext context) {
     WikiPagePath path = PathParser.parse(request.getResource());
     WikiPage requestedPage = context.getRootPage().getPageCrawler().getPage(path);
     return requestedPage;
   }
 
-  protected String contentFrom(FitNesseContext context, Request request, WikiPage requestedPage) {
+  protected String contentFrom(AgNesseContext context, Request request, WikiPage requestedPage) {
     return prepareResponseDocument(context).html(request);
   }
 
-  protected Response pageNotFoundResponse(FitNesseContext context, Request request) throws Exception {
+  protected Response pageNotFoundResponse(AgNesseContext context, Request request) throws Exception {
     return new NotFoundResponder().makeResponse(context, request);
   }
 

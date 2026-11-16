@@ -31,7 +31,7 @@ public class PageBuilderTest {
     builder.attributes("Help=a!COMMA!b,Prune=true");
     builder.page("BuiltPage");
 
-    WikiPage page = FitnesseFixtureContext.context.getRootPage().getChildPage("BuiltPage");
+    WikiPage page = AgNesseFixtureContext.context.getRootPage().getChildPage("BuiltPage");
     assertEquals("hello\n\nkept\na | b ! c $d\n", page.getData().getContent());
     assertEquals("a,b", page.getData().getAttribute("Help"));
     assertTrue(page.getData().hasAttribute("Prune"));

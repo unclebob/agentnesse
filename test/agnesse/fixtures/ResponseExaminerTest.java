@@ -15,16 +15,16 @@ public class ResponseExaminerTest {
   @Before
   public void setup() throws Exception {
     examiner = new ResponseExaminer();
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.send("&lt;hello".getBytes());
-    FitnesseFixtureContext.response = new SimpleResponse();
-    FitnesseFixtureContext.response.setStatus(42);
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.send("&lt;hello".getBytes());
+    AgNesseFixtureContext.response = new SimpleResponse();
+    AgNesseFixtureContext.response.setStatus(42);
   }
 
   @Test
   public void linesAreFoundInOrderAndAMissingLineStopsTheSearch() throws Exception {
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.send("alpha\nbeta\nalpha\n".getBytes());
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.send("alpha\nbeta\nalpha\n".getBytes());
     examiner.line = "alpha";
     assertTrue(examiner.inOrder());
     examiner.line = "beta";
@@ -62,8 +62,8 @@ public class ResponseExaminerTest {
 
   @Test
   public void aLineIsFoundAfterThePreviousMatch() throws Exception {
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.send("alpha beta gamma".getBytes());
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.send("alpha beta gamma".getBytes());
     examiner.line = null;
     assertFalse(examiner.occursAfter());
     examiner.line = "beta";
@@ -76,7 +76,7 @@ public class ResponseExaminerTest {
 
   @Test
   public void stringReadsPageHtmlOrOneLine() throws Exception {
-    FitnesseFixtureContext.page = new WikiPageDummy("P", "line1<br/>line2", null);
+    AgNesseFixtureContext.page = new WikiPageDummy("P", "line1<br/>line2", null);
     examiner.type = "contents";
     assertEquals("<em>line1<br/>line2</em>", examiner.string());
     examiner.type = "line";
@@ -107,12 +107,12 @@ public class ResponseExaminerTest {
 
     examiner.type = "stringContents";
     examiner.extractValueFromResponse();
-    assertEquals(FitnesseFixtureContext.sender.toString(), examiner.getValue());
+    assertEquals(AgNesseFixtureContext.sender.toString(), examiner.getValue());
 
-    FitnesseFixtureContext.page = new WikiPageDummy("P", "body", null);
+    AgNesseFixtureContext.page = new WikiPageDummy("P", "body", null);
     examiner.type = "pageContents";
     examiner.extractValueFromResponse();
-    assertEquals(FitnesseFixtureContext.page.toString(), examiner.getValue());
+    assertEquals(AgNesseFixtureContext.page.toString(), examiner.getValue());
     examiner.type = "pageHtml";
     examiner.extractValueFromResponse();
     assertEquals("<em>body</em>", examiner.getValue());
@@ -132,8 +132,8 @@ public class ResponseExaminerTest {
 
   @Test
   public void shouldBeAbleToExtractHeaders() throws Exception {
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.send("Headers \r\n\r\n bleh".getBytes());
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.send("Headers \r\n\r\n bleh".getBytes());
     examiner.type = "headers";
     examiner.extractValueFromResponse();
     assertEquals("Headers \r\n", examiner.getValue());

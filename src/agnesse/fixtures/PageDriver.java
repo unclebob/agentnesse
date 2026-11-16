@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.fixtures;
 
-import agnesse.FitNesseExpediter;
+import agnesse.AgNesseExpediter;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
 import agnesse.util.MockSocket;
@@ -56,12 +56,12 @@ public class PageDriver {
     request.addInput("pageContent", contents);
     request.parseRequestUri("/" + pageName);
     WikiPagePath path = PathParser.parse(request.getResource()); // uri;
-    FitnesseFixtureContext.page = FitnesseFixtureContext.context.getRootPage().getPageCrawler().getPage(path);
-    FitNesseExpediter expediter = new FitNesseExpediter(new MockSocket(""), FitnesseFixtureContext.context, new SerialExecutorService());
-    FitnesseFixtureContext.response = expediter.createGoodResponse(request);
-    FitnesseFixtureContext.sender = new MockResponseSender();
-    FitnesseFixtureContext.sender.doSending(FitnesseFixtureContext.response);
-    return FitnesseFixtureContext.response.getStatus();
+    AgNesseFixtureContext.page = AgNesseFixtureContext.context.getRootPage().getPageCrawler().getPage(path);
+    AgNesseExpediter expediter = new AgNesseExpediter(new MockSocket(""), AgNesseFixtureContext.context, new SerialExecutorService());
+    AgNesseFixtureContext.response = expediter.createGoodResponse(request);
+    AgNesseFixtureContext.sender = new MockResponseSender();
+    AgNesseFixtureContext.sender.doSending(AgNesseFixtureContext.response);
+    return AgNesseFixtureContext.response.getStatus();
   }
 
   public int requestPageSaveWithContents(String pageName, String contents) throws Exception {
@@ -69,7 +69,7 @@ public class PageDriver {
   }
 
   public String lastModifiedOfPage(String pageName) throws Exception {
-    WikiPage root = FitnesseFixtureContext.context.getRootPage();
+    WikiPage root = AgNesseFixtureContext.context.getRootPage();
     WikiPagePath pagePath = PathParser.parse(pageName);
     WikiPage thePage = root.getPageCrawler().getPage(pagePath);
     PageData data = thePage.getData();
@@ -85,7 +85,7 @@ public class PageDriver {
   }
 
   private void onPageSetAttribute(String pageName, String attrName) {
-    WikiPage root = FitnesseFixtureContext.context.getRootPage();
+    WikiPage root = AgNesseFixtureContext.context.getRootPage();
     WikiPagePath pagePath = PathParser.parse(pageName);
     WikiPage thePage = root.getPageCrawler().getPage(pagePath);
     PageData data = thePage.getData();
@@ -132,7 +132,7 @@ public class PageDriver {
   }
 
   public boolean pageHasAttribute(String fullPathOfPage, String attribute) throws Exception {
-    PageCrawler crawler = FitnesseFixtureContext.context.getRootPage().getPageCrawler();
+    PageCrawler crawler = AgNesseFixtureContext.context.getRootPage().getPageCrawler();
     WikiPage page = crawler.getPage(PathParser.parse(fullPathOfPage));
     PageData data = page.getData();
     return data.hasAttribute(attribute);

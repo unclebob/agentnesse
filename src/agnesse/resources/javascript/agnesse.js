@@ -374,5 +374,5 @@ const appendSummaryRow = function (doc, table, event, root) {
     }
   });
 
-  window.AgentNesseResults = { shouldOpen: shouldOpen, apply: apply, renderEvents: renderEvents };
+  window.AgNesseResults = { shouldOpen: shouldOpen, apply: apply, renderEvents: renderEvents };
 })();

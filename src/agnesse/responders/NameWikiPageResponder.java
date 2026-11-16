@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.Request;
 import agnesse.wiki.PageData;
 import agnesse.wiki.WikiPage;
@@ -14,7 +14,7 @@ import java.util.*;
 
 public class NameWikiPageResponder extends BasicResponder {
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     Response rejected = JsonResponses.unknownParameter(request, "names", "Recursive", "ShowTags", "LeafOnly");
     if (rejected != null) {
       return rejected;
@@ -23,7 +23,7 @@ public class NameWikiPageResponder extends BasicResponder {
   }
 
   @Override
-  protected String contentFrom(FitNesseContext context, Request request, WikiPage requestedPage) {
+  protected String contentFrom(AgNesseContext context, Request request, WikiPage requestedPage) {
     JSONArray pages = new JSONArray();
     for (NamedPage named : addLines(request, requestedPage, "")) {
       JSONObject item = new JSONObject().put("name", named.name);

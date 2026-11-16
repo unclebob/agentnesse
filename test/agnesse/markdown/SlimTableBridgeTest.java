@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 public class SlimTableBridgeTest {
 
   @Test
-  public void aRenderedTableIsReadByTheSlimScannerAsFitNesseRows() {
+  public void aRenderedTableIsReadByTheSlimScannerAsAgNesseRows() {
     String html = MarkdownRenderer.render(true, """
       | decision:Division | | |
       | --- | --- | --- |

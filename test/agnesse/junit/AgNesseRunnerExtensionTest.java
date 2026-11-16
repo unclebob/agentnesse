@@ -1,7 +1,7 @@
 package agnesse.junit;
 
 import agnesse.ContextConfigurator;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.testrunner.MultipleTestsRunner;
 import agnesse.testsystems.*;
 import agnesse.util.ClassUtils;
@@ -12,12 +12,12 @@ import org.junit.runners.model.InitializationError;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(FitNesseRunnerExtensionTest.SuiteExtension.class)
-@FitNesseRunner.FitnesseDir(".")
-@FitNesseRunner.OutputDir("./build/fitnesse-results")
-public class FitNesseRunnerExtensionTest {
+@RunWith(AgNesseRunnerExtensionTest.SuiteExtension.class)
+@AgNesseRunner.AgNesseDir(".")
+@AgNesseRunner.OutputDir("./build/agnesse-results")
+public class AgNesseRunnerExtensionTest {
 
-  public static class SuiteExtension extends FitNesseRunner {
+  public static class SuiteExtension extends AgNesseRunner {
     private DescriptionFactory myDescriptionFactory = new DescriptionFactory();
 
     public SuiteExtension(Class<?> suiteClass) throws InitializationError {
@@ -41,13 +41,13 @@ public class FitNesseRunnerExtensionTest {
     }
 
     @Override
-    protected FitNesseContext createContext(Class<?> suiteClass) throws Exception {
-      ClassLoader classLoader = FitNesseRunnerExtensionTest.class.getClassLoader();
+    protected AgNesseContext createContext(Class<?> suiteClass) throws Exception {
+      ClassLoader classLoader = AgNesseRunnerExtensionTest.class.getClassLoader();
       ClassUtils.setClassLoader(classLoader);
 
       return initContextConfigurator()
         .withClassLoader(classLoader)
-        .makeFitNesseContext();
+        .makeAgNesseContext();
     }
   }
 

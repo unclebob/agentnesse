@@ -18,7 +18,7 @@ import static agnesse.ConfigurationParameter.CONFIG_FILE;
 import static agnesse.ConfigurationParameter.LISTEN;
 import static agnesse.ConfigurationParameter.ROOT_DIRECTORY;
 /**
- * Set up a context for running a FitNesse Instance.
+ * Set up a context for running a AgNesse Instance.
  *
  * Please call this only once: some features are registered on (static) factories.
  */
@@ -72,7 +72,7 @@ public class ContextConfigurator {
     return this;
   }
 
-  public FitNesseContext makeFitNesseContext() throws IOException {
+  public AgNesseContext makeAgNesseContext() throws IOException {
 
     // BIG WARNING: We're setting a static variable here!
     ClassUtils.setClassLoader(classLoader);
@@ -80,9 +80,9 @@ public class ContextConfigurator {
 
     port = getPort();
 
-    FitNesseVersion version = new FitNesseVersion();
+    AgNesseVersion version = new AgNesseVersion();
 
-    updateFitNesseProperties(version);
+    updateAgNesseProperties(version);
 
     if (wikiPageFactory == null) {
       wikiPageFactory = new FileSystemPageFactory();
@@ -100,7 +100,7 @@ public class ContextConfigurator {
 
     FormatterFactory formatterFactory = new FormatterFactory();
 
-    FitNesseContext context = new FitNesseContext(version,
+    AgNesseContext context = new AgNesseContext(version,
           wikiPageFactory,
           rootPath,
           rootDirectoryName,
@@ -117,13 +117,13 @@ public class ContextConfigurator {
     return context;
   }
 
-  private void updateFitNesseProperties(FitNesseVersion version) {
+  private void updateAgNesseProperties(AgNesseVersion version) {
     // Those variables are defined so they can be looked up for as wiki variables.
     if (rootPath != null) {
-      properties.setProperty("FITNESSE_ROOTPATH", rootPath);
+      properties.setProperty("AGNESSE_ROOTPATH", rootPath);
     }
-    properties.setProperty("FITNESSE_PORT", Integer.toString(port));
-    properties.setProperty("FITNESSE_VERSION", version.toString());
+    properties.setProperty("AGNESSE_PORT", Integer.toString(port));
+    properties.setProperty("AGNESSE_VERSION", version.toString());
 
     // Some code may still expect the values in the properties file rather than their 'typed'
     // counterparts, so provide that:

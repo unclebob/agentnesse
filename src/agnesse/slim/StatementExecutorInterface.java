@@ -9,7 +9,7 @@ public interface StatementExecutorInterface extends InstructionExecutor {
    * to the table of symbols. This enables elaborate fixtures that can
    * both assign and resolve any symbols on their own.
    *
-   * Have a look to this FitNesse page for some examples:
+   * Have a look to this AgNesse page for some examples:
    * AgNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.SymbolsInTableTableManagedByTheFixture
    *
    * Please note: this method returns a String version (after conversion by converter as configured in
@@ -27,7 +27,7 @@ public interface StatementExecutorInterface extends InstructionExecutor {
    * to the table of symbols. This enables elaborate fixtures that can
    * both assign and resolve any symbols on their own.
    *
-   * Have a look to this FitNesse page for some examples:
+   * Have a look to this AgNesse page for some examples:
    * AgNesse.SuiteAcceptanceTests.SuiteSlimTests.TableTableSuite.SymbolsInTableTableManagedByTheFixture
    *
    * This method is similar to {@link #getSymbol(String)}, but it always returns the Object for the object, without

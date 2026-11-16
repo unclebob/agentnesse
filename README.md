@@ -1,8 +1,8 @@
-# AgentNesse
+# AgNesse
 
-AgentNesse is a fork of [FitNesse](https://github.com/unclebob/fitnesse). It is for AI agents that write and run acceptance tests. The mission is a minimal, agent-friendly acceptance-testing system.
+AgNesse is a fork of [FitNesse](https://github.com/unclebob/fitnesse). It is for AI agents that write and run acceptance tests. The mission is a minimal, agent-friendly acceptance-testing system.
 
-FitNesse accumulated a wiki, two test systems, page history, its own version store, plugins, and authentication. An agent does not need that. It needs pages it can read and write, Slim tables it can fill in, and a run whose result it can read. AgentNesse is that, and nothing else.
+FitNesse accumulated a wiki, two test systems, page history, its own version store, plugins, and authentication. An agent does not need that. It needs pages it can read and write, Slim tables it can fill in, and a run whose result it can read. AgNesse is that, and nothing else.
 
 This tree is early and under active rework, phase by phase. What you find here is not the finished tool. Features below marked planned are not built yet.
 
@@ -30,7 +30,7 @@ No plugins. No authentication. One author. (Planned. Plugins and authentication 
 
 ## Build and run
 
-AgentNesse requires Java 21. That is the version the project compiles for, and the version the wiki and the Slim server run on.
+AgNesse requires Java 21. That is the version the project compiles for, and the version the wiki and the Slim server run on.
 
 Build and test:
 
@@ -42,7 +42,7 @@ Start the wiki on port 8001. It listens on 127.0.0.1. `--listen 0.0.0.0` listens
 
 ```
 ./gradlew run
-java -jar build/libs/fitnesse-*-standalone.jar -p 8001 --listen 127.0.0.1
+java -jar build/libs/agnesse-*-standalone.jar -p 8001 --listen 127.0.0.1
 ```
 
 Configuration is `agnesse.json` in the working directory. If that file is missing, the built-in defaults are used. A null value leaves that default too. `-f` names a different file, and that file must exist. A command-line flag overrides the file. The port default is 80. A `-c` command uses port 9123 when port is left unset.
@@ -63,4 +63,4 @@ On Windows, use `gradlew.bat` instead of `./gradlew`.
 
 ## Credit and license
 
-AgentNesse is derived from FitNesse, originally at <https://github.com/unclebob/fitnesse>. The license is unchanged: Common Public License 1.0, in `LICENSE.txt`.
+AgNesse is derived from FitNesse, originally at <https://github.com/unclebob/fitnesse>. The license is unchanged: Common Public License 1.0, in `LICENSE.txt`.

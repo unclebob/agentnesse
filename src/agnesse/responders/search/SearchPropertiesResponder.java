@@ -1,6 +1,6 @@
 package agnesse.responders.search;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.components.TraversalListener;
 import agnesse.http.Request;
 import agnesse.http.Response;
@@ -19,7 +19,7 @@ public class SearchPropertiesResponder extends ResultResponder {
   private static final Set<String> TYPES = Set.of("test", "suite", "static");
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     Response rejected = JsonResponses.unknownParameter(request, "searchProperties", "executeSearchProperties",
       "type", "tags", "help", "prune", "searchScope");
     if (rejected != null) {

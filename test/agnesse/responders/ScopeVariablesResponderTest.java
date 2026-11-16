@@ -1,10 +1,10 @@
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
@@ -19,11 +19,11 @@ public class ScopeVariablesResponderTest {
   protected WikiPage root;
   protected MockRequest request;
   protected Responder responder;
-  protected FitNesseContext context;
+  protected AgNesseContext context;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
     request = new MockRequest();
     responder = new ScopeVariablesResponder();

@@ -23,7 +23,7 @@ public class ContentBuffer {
   }
 
   public ContentBuffer(String ext) throws IOException {
-    tempFile = File.createTempFile("FitNesse-", ext);
+    tempFile = File.createTempFile("AgNesse-", ext);
     tempFile.deleteOnExit();
   }
 

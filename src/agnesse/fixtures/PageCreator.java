@@ -26,7 +26,7 @@ public class PageCreator {
       pageContents = pageContents.replaceAll("<br>", "\n");
       pageContents = pageContents.replaceAll("<br/>", "\n");
     }
-    WikiPage root = FitnesseFixtureContext.context.getRootPage();
+    WikiPage root = AgNesseFixtureContext.context.getRootPage();
     WikiPagePath pagePath = PathParser.parse(pageName);
     WikiPage thePage = addMarkdown(root, pagePath);
     PageData data = thePage.getData();

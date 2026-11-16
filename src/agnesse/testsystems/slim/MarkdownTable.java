@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Slim {@link Table} whose cells are a GFM Markdown table. FitNesse row 1 is
+ * A Slim {@link Table} whose cells are a GFM Markdown table. AgNesse row 1 is
  * the header ({@code type:Name} plus constructor arguments). The first body
  * row is the column names. Trailing empty cells are not cells.
  */

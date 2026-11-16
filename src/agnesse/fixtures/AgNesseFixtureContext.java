@@ -2,14 +2,14 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.fixtures;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Response;
 import agnesse.wiki.WikiPage;
 
-public class FitnesseFixtureContext {
+public class AgNesseFixtureContext {
   static WikiPage page;
   static Response response;
   static MockResponseSender sender;
-  static FitNesseContext context;
+  static AgNesseContext context;
 }

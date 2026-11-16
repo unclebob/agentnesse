@@ -6,21 +6,21 @@ import static org.junit.Assert.assertEquals;
 import static util.RegexTestCase.assertHasRegexp;
 import static util.RegexTestCase.assertSubString;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ErrorResponderTest {
 
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Before
   public void setUp() {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
   }
 
   @Test

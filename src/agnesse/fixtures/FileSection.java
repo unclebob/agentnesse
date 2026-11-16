@@ -12,12 +12,12 @@ public class FileSection {
 
   public FileSection(String type) throws Exception {
     if ("setup".equalsIgnoreCase(type)) {
-      File dir = new File(FitnesseFixtureContext.context.getRootPagePath());
+      File dir = new File(AgNesseFixtureContext.context.getRootPagePath());
       dir.mkdir();
       fileSection = new File(dir, PathParser.FILES);
       fileSection.mkdir();
     } else {
-      FileUtil.deleteFileSystemDirectory(FitnesseFixtureContext.context.getRootPagePath());
+      FileUtil.deleteFileSystemDirectory(AgNesseFixtureContext.context.getRootPagePath());
       fileSection = null;
     }
   }

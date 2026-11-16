@@ -3,7 +3,7 @@
 package agnesse.responders.editing;
 
 import agnesse.Responder;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
@@ -12,13 +12,13 @@ import agnesse.wiki.*;
 public class SaveResponder implements Responder {
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     String resource = request.getResource();
     WikiPage page = getPage(resource, context);
     return saveEdits(context, request, page);
   }
 
-  private Response saveEdits(FitNesseContext context, Request request, WikiPage page) {
+  private Response saveEdits(AgNesseContext context, Request request, WikiPage page) {
     String savedContent = request.getInput(EditResponder.CONTENT_INPUT_NAME);
     String helpText = request.getInput(EditResponder.HELP_TEXT);
     String suites = request.getInput(EditResponder.SUITES);
@@ -39,7 +39,7 @@ public class SaveResponder implements Responder {
     return response;
   }
 
-  private WikiPage getPage(String resource, FitNesseContext context) {
+  private WikiPage getPage(String resource, AgNesseContext context) {
     WikiPagePath path = PathParser.parse(resource);
     PageCrawler pageCrawler = context.getRootPage().getPageCrawler();
     WikiPage page = pageCrawler.getPage(path);

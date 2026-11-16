@@ -1,8 +1,8 @@
 package agnesse.responders.refactoring;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.NoPruningStrategy;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
 public class MoveAtomicityTest {
   @Test
   public void targetExistsLeavesEveryPageUnchanged() throws Exception {
-    FitNesseContext context = wiki();
+    AgNesseContext context = wiki();
     Map<String, String> before = contents(context.getRootPage());
     MockRequest request = moveRequest("ParentPage.PageMove", "OtherPage");
     new MovePageResponder().makeResponse(context, request);
@@ -30,7 +30,7 @@ public class MoveAtomicityTest {
 
   @Test
   public void moveIntoOwnSubtreeLeavesEveryPageUnchanged() throws Exception {
-    FitNesseContext context = wiki();
+    AgNesseContext context = wiki();
     Map<String, String> before = contents(context.getRootPage());
     MockRequest request = moveRequest("ParentPage.PageMove", "ParentPage.PageMove.PageKid");
     new MovePageResponder().makeResponse(context, request);
@@ -39,7 +39,7 @@ public class MoveAtomicityTest {
 
   @Test
   public void executeFailureRestoresEveryPage() throws Exception {
-    FitNesseContext context = wiki();
+    AgNesseContext context = wiki();
     Map<String, String> before = contents(context.getRootPage());
     try {
       new FailingMove().makeResponse(context, moveRequest("ParentPage.PageMove", "Elsewhere"));
@@ -53,7 +53,7 @@ public class MoveAtomicityTest {
 
   @Test
   public void copyFailureAfterTheFirstPageRemovesTheDestinationAndRestoresContent() throws Exception {
-    FitNesseContext context = wiki();
+    AgNesseContext context = wiki();
     Map<String, String> before = contents(context.getRootPage());
     try {
       new FailAfterCopies(1).makeResponse(context, moveRequest("ParentPage.PageMove", "Elsewhere"));
@@ -68,7 +68,7 @@ public class MoveAtomicityTest {
   public void aRandomCopyFailureLeavesTheTreeByteIdentical() throws Exception {
     Random random = new Random(8);
     for (int trial = 0; trial < 12; trial++) {
-      FitNesseContext context = deeper();
+      AgNesseContext context = deeper();
       Map<String, String> before = contents(context.getRootPage());
       int failAfter = 1 + random.nextInt(3);
       try {
@@ -83,14 +83,14 @@ public class MoveAtomicityTest {
 
   @Test
   public void passingMoveAbsolutizesOutboundReferencesAndKeepsInsideOnesRelative() throws Exception {
-    FitNesseContext context = wiki();
+    AgNesseContext context = wiki();
     new MovePageResponder().makeResponse(context, moveRequest("ParentPage.PageMove", "Elsewhere"));
     String content = context.getRootPage().getChildPage("Elsewhere").getChildPage("PageMove").getData().getContent();
     assertEquals("see .ParentPage.PageStay here\n>PageKid\n", content);
   }
 
-  private static FitNesseContext wiki() throws Exception {
-    FitNesseContext context = FitNesseUtil.makeTestContext();
+  private static AgNesseContext wiki() throws Exception {
+    AgNesseContext context = AgNesseUtil.makeTestContext();
     WikiPage root = context.getRootPage();
     WikiPage parent = WikiPageUtil.addPage(root, PathParser.parse("ParentPage"), "");
     WikiPageUtil.addPage(parent, PathParser.parse("PageStay"), "stay");
@@ -102,8 +102,8 @@ public class MoveAtomicityTest {
     return context;
   }
 
-  private static FitNesseContext deeper() throws Exception {
-    FitNesseContext context = wiki();
+  private static AgNesseContext deeper() throws Exception {
+    AgNesseContext context = wiki();
     WikiPage kid = context.getRootPage().getChildPage("ParentPage").getChildPage("PageMove").getChildPage("PageKid");
     WikiPageUtil.addPage(kid, PathParser.parse("PageGrand"), "grand");
     return context;

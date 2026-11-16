@@ -1,7 +1,7 @@
 package agnesse.junit;
 
 import agnesse.ContextConfigurator;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.testrunner.MultipleTestsRunner;
 import agnesse.testrunner.SuiteContentsFinder;
 import agnesse.testrunner.run.TestRun;
@@ -25,18 +25,18 @@ public class JUnitHelper {
   public static final String PAGE_TYPE_SUITE="suite";
   public static final String PAGE_TYPE_TEST="test";
   private final String outputDir;
-  private final String fitNesseRootPath;
+  private final String agNesseRootPath;
   private final TestSystemListener resultsListener;
   private int port = 0;
   private boolean debugMode = true;
 
-  public JUnitHelper(String fitNesseRootPath, String outputPath) {
-    this(fitNesseRootPath, outputPath, new PrintTestListener());
+  public JUnitHelper(String agNesseRootPath, String outputPath) {
+    this(agNesseRootPath, outputPath, new PrintTestListener());
   }
 
-  public JUnitHelper(String fitNesseDir, String outputDir,
+  public JUnitHelper(String agNesseDir, String outputDir,
                      TestSystemListener resultsListener) {
-    this.fitNesseRootPath = fitNesseDir;
+    this.agNesseRootPath = agNesseDir;
     this.outputDir = outputDir;
     this.resultsListener = resultsListener;
   }
@@ -70,11 +70,11 @@ public class JUnitHelper {
   }
 
   public void assertPasses(String pageName, String pageType, String suiteFilter, String excludeSuiteFilter) throws Exception {
-    FitNesseContext context = ContextConfigurator
+    AgNesseContext context = ContextConfigurator
       .systemDefaults()
-      .withRootPath(fitNesseRootPath)
+      .withRootPath(agNesseRootPath)
       .withPort(port)
-      .makeFitNesseContext();
+      .makeAgNesseContext();
 
     agnesse.results.JsonResultsFormatter results = new agnesse.results.JsonResultsFormatter(new StringBuilder(), false, null);
     results.setSuiteName(pageName);
@@ -97,7 +97,7 @@ public class JUnitHelper {
     assertTrue(msgAtLeastOneTest(pageName, summary), summary.getRight() > 0);
   }
 
-  private List<WikiPage> initChildren(String suiteName, String suiteFilter, String excludeSuiteFilter, FitNesseContext context) {
+  private List<WikiPage> initChildren(String suiteName, String suiteFilter, String excludeSuiteFilter, AgNesseContext context) {
     WikiPage suiteRoot = getSuiteRootPage(suiteName, context, Collections.emptyMap());
     if (!suiteRoot.getData().hasAttribute("Suite")) {
       return Arrays.asList(suiteRoot);
@@ -105,17 +105,17 @@ public class JUnitHelper {
     return new SuiteContentsFinder(suiteRoot, new agnesse.testrunner.SuiteFilter(suiteFilter, excludeSuiteFilter), context.getRootPage()).getAllPagesToRunForThisSuite();
   }
 
-  static WikiPage getSuiteRootPage(String suiteName, FitNesseContext context, Map<String, String> customProperties) {
+  static WikiPage getSuiteRootPage(String suiteName, AgNesseContext context, Map<String, String> customProperties) {
     return context.getPage(suiteName, customProperties);
   }
 
-  static MultipleTestsRunner createTestRunner(TestRun run, FitNesseContext context, boolean debugMode) {
+  static MultipleTestsRunner createTestRunner(TestRun run, AgNesseContext context, boolean debugMode) {
     MultipleTestsRunner runner = new MultipleTestsRunner(run, context.testSystemFactory);
     runner.setRunInProcess(debugMode);
     return runner;
   }
 
-  static TestRun createTestRun(FitNesseContext context, List<WikiPage> pages) {
+  static TestRun createTestRun(AgNesseContext context, List<WikiPage> pages) {
     return context.testRunFactoryRegistry.createRun(pages);
   }
 

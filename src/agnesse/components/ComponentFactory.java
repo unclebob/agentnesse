@@ -10,7 +10,7 @@ import java.util.Properties;
 import agnesse.ConfigurationParameter;
 
 /**
- * Create components for FitNesse.
+ * Create components for AgNesse.
  *
  * Components have one of the following constructors:
  * <ul>

@@ -1,6 +1,6 @@
 package agnesse.testrunner.run;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.wiki.WikiPage;
 
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ public class TestRunFactoryRegistry {
   public final static TestRunFactory DEFAULT = new PagesByTestSystemTestRunFactory();
 
   private final List<TestRunFactory> testRunFactories = new ArrayList<>();
-  private final FitNesseContext context;
+  private final AgNesseContext context;
 
-  public TestRunFactoryRegistry(FitNesseContext context) {
+  public TestRunFactoryRegistry(AgNesseContext context) {
     this.context = context;
   }
 
@@ -31,7 +31,7 @@ public class TestRunFactoryRegistry {
       .orElse(DEFAULT);
   }
 
-  public FitNesseContext getContext() {
+  public AgNesseContext getContext() {
     return context;
   }
 }

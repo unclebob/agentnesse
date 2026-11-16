@@ -12,7 +12,7 @@ import org.apache.velocity.app.VelocityEngine;
 
 public class HtmlPage {
   private static final String HEADER_TEMPLATE = "header.vm";
-  private static final String TITLE = "FitNesse";
+  private static final String TITLE = "AgNesse";
 
   private VelocityEngine velocityEngine;
   private VelocityContext velocityContext;

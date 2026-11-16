@@ -1,13 +1,13 @@
 package agnesse.responders.search;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
 import agnesse.markdown.FrontMatter;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPageUtil;
 import org.junit.Before;
@@ -19,13 +19,13 @@ import static org.junit.Assert.assertEquals;
 import static util.RegexTestCase.assertSubString;
 
 public class SearchPropertiesResponderTest {
-  private FitNesseContext context;
+  private AgNesseContext context;
   private MockRequest request;
   private SearchPropertiesResponder responder;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Kept"),
       FrontMatter.write("test", List.of("ready"), "how to start", false, "body"));
     WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Other"),

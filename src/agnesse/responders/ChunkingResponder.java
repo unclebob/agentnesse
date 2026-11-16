@@ -2,7 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.ChunkedDataProvider;
 import agnesse.http.ChunkedResponse;
@@ -27,11 +27,11 @@ public abstract class ChunkingResponder implements Responder, ChunkedDataProvide
   protected WikiPagePath path;
   protected Request request;
   protected ChunkedResponse response;
-  protected FitNesseContext context;
+  protected AgNesseContext context;
   private boolean dontChunk = false;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     this.context = context;
     this.request = request;
     this.root = context.getRootPage(request.getMap());
@@ -60,7 +60,7 @@ public abstract class ChunkingResponder implements Responder, ChunkedDataProvide
     return root.getPageCrawler();
   }
 
-  private Response pageNotFoundResponse(FitNesseContext context, Request request) throws Exception {
+  private Response pageNotFoundResponse(AgNesseContext context, Request request) throws Exception {
     return new NotFoundResponder().makeResponse(context, request);
   }
 

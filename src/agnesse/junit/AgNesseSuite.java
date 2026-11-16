@@ -8,15 +8,15 @@ import java.lang.annotation.Target;
 import org.junit.runners.model.InitializationError;
 
 /**
- * Use agnesse.junit.FitNesseRunner.
- * @deprecated Use agnesse.junit.FitNesseRunner.
+ * Use agnesse.junit.AgNesseRunner.
+ * @deprecated Use agnesse.junit.AgNesseRunner.
  */
 @Deprecated
-public class FitNesseSuite extends FitNesseRunner {
+public class AgNesseSuite extends AgNesseRunner {
   /**
-   * The <code>Name</code> annotation specifies the name of the Fitnesse suite
+   * The <code>Name</code> annotation specifies the name of the AgNesse suite
    * to be run, e.g.: MySuite.MySubSuite
-   * @deprecated Use FitNesseRunner.Suite
+   * @deprecated Use AgNesseRunner.Suite
    */
   @Deprecated
   @Retention(RetentionPolicy.RUNTIME)
@@ -26,7 +26,7 @@ public class FitNesseSuite extends FitNesseRunner {
     String value();
   }
 
-  public FitNesseSuite(Class<?> suiteClass) throws InitializationError {
+  public AgNesseSuite(Class<?> suiteClass) throws InitializationError {
     super(suiteClass);
   }
 

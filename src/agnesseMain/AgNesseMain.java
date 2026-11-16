@@ -2,8 +2,8 @@ package agnesseMain;
 
 import agnesse.ConfigurationParameter;
 import agnesse.ContextConfigurator;
-import agnesse.FitNesse;
-import agnesse.FitNesseContext;
+import agnesse.AgNesse;
+import agnesse.AgNesseContext;
 import agnesse.reporting.ExitCodeListener;
 import agnesse.socketservice.PlainServerSocketFactory;
 import agnesse.wiki.PathParser;
@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 
 import static agnesse.ConfigurationParameter.*;
 
-public class FitNesseMain {
-  private static final Logger LOG = Logger.getLogger(FitNesseMain.class.getName());
+public class AgNesseMain {
+  private static final Logger LOG = Logger.getLogger(AgNesseMain.class.getName());
 
   private final ExitCodeListener exitCodeListener = new ExitCodeListener();
 
@@ -40,9 +40,9 @@ public class FitNesseMain {
       return 1;
     }
     try {
-      return new FitNesseMain().launchFitNesse(arguments);
+      return new AgNesseMain().launchAgNesse(arguments);
     } catch (Exception e) {
-      LOG.log(Level.SEVERE, "Error while starting the FitNesse", e);
+      LOG.log(Level.SEVERE, "Error while starting the AgNesse", e);
       return 1;
     }
   }
@@ -51,11 +51,11 @@ public class FitNesseMain {
     System.exit(exitCode);
   }
 
-  public Integer launchFitNesse(Arguments arguments) throws Exception {
+  public Integer launchAgNesse(Arguments arguments) throws Exception {
     ContextConfigurator contextConfigurator = ContextConfigurator.systemDefaults();
     File configFile = new File(arguments.getConfigFile(contextConfigurator));
     try {
-      agnesse.AgentNesseConfig.apply(contextConfigurator, configFile, arguments.hasConfigFile());
+      agnesse.AgNesseConfig.apply(contextConfigurator, configFile, arguments.hasConfigFile());
     } catch (IllegalArgumentException e) {
       System.err.println(e.getMessage());
       return 1;
@@ -63,24 +63,24 @@ public class FitNesseMain {
     contextConfigurator = contextConfigurator.updatedWith(System.getProperties());
     contextConfigurator = arguments.update(contextConfigurator);
 
-    return launchFitNesse(contextConfigurator);
+    return launchAgNesse(contextConfigurator);
   }
 
-  public Integer launchFitNesse(ContextConfigurator contextConfigurator) throws Exception {
+  public Integer launchAgNesse(ContextConfigurator contextConfigurator) throws Exception {
     configureLogging("verbose".equalsIgnoreCase(contextConfigurator.get(LOG_LEVEL)));
 
-    ClassLoader classLoader = FitNesseMain.class.getClassLoader();
+    ClassLoader classLoader = AgNesseMain.class.getClassLoader();
     contextConfigurator.withClassLoader(classLoader);
 
     if (contextConfigurator.get(COMMAND) != null) {
       contextConfigurator.withTestSystemListener(exitCodeListener);
     }
 
-    FitNesseContext context = contextConfigurator.makeFitNesseContext();
+    AgNesseContext context = contextConfigurator.makeAgNesseContext();
 
     if (!establishRequiredDirectories(context.getRootPagePath())) {
-      LOG.severe("FitNesse cannot be started...");
-      LOG.severe("Unable to create FitNesse root directory in " + context.getRootPagePath());
+      LOG.severe("AgNesse cannot be started...");
+      LOG.severe("Unable to create AgNesse root directory in " + context.getRootPagePath());
       LOG.severe("Ensure you have sufficient permissions to create this folder.");
       return 1;
     }
@@ -90,7 +90,7 @@ public class FitNesseMain {
     try {
       return launch(context, classLoader);
     } catch (BindException e) {
-      LOG.severe("FitNesse cannot be started...");
+      LOG.severe("AgNesse cannot be started...");
       LOG.severe("Port " + context.port + " is already in use.");
       LOG.severe("Use the -p <port#> command line argument to use a different port.");
       return 1;
@@ -107,16 +107,16 @@ public class FitNesseMain {
     return path.exists() || path.mkdir();
   }
 
-  private Integer launch(FitNesseContext context, ClassLoader classLoader) throws Exception {
+  private Integer launch(AgNesseContext context, ClassLoader classLoader) throws Exception {
     String command = context.getProperty(COMMAND.getKey());
       if (command != null) {
         String output = context.getProperty(OUTPUT.getKey());
-        executeSingleCommand(context.fitNesse, jsonCommand(context, command), output);
+        executeSingleCommand(context.agNesse, jsonCommand(context, command), output);
 
         return exitCodeListener.getFailCount();
       } else {
         String listen = context.getProperty(LISTEN.getKey());
-        LOG.info("Starting FitNesse on " + listen + ":" + context.port);
+        LOG.info("Starting AgNesse on " + listen + ":" + context.port);
         ServerSocket serverSocket;
         try {
           serverSocket = openSocket(context);
@@ -124,12 +124,12 @@ public class FitNesseMain {
           System.err.println(e.getMessage());
           return 1;
         }
-        context.fitNesse.start(serverSocket);
+        context.agNesse.start(serverSocket);
       }
     return null;
   }
 
-  static ServerSocket openSocket(FitNesseContext context) throws IOException {
+  static ServerSocket openSocket(AgNesseContext context) throws IOException {
     String listen = context.getProperty(LISTEN.getKey());
     final InetAddress address;
     try {
@@ -144,7 +144,7 @@ public class FitNesseMain {
     return sockets.createServerSocket(context.port, address);
   }
 
-  private String jsonCommand(FitNesseContext context, String command) {
+  private String jsonCommand(AgNesseContext context, String command) {
     String withFormat = command;
     if (command.contains("?") && !command.contains("format=")) {
       withFormat = command + "&format=json";
@@ -156,7 +156,7 @@ public class FitNesseMain {
     return withFormat + "&rerunFailures=" + java.net.URLEncoder.encode(rerun, java.nio.charset.StandardCharsets.UTF_8);
   }
 
-  private void executeSingleCommand(FitNesse fitNesse, String command, String outputFile) throws Exception {
+  private void executeSingleCommand(AgNesse agNesse, String command, String outputFile) throws Exception {
 
     LOG.info("Executing command: " + command);
 
@@ -171,18 +171,18 @@ public class FitNesseMain {
       os = System.out;
     }
 
-    fitNesse.executeSingleCommand(command, os);
-    fitNesse.stop();
+    agNesse.executeSingleCommand(command, os);
+    agNesse.stop();
 
     if (outputRedirectedToFile) {
       os.close();
     }
   }
 
-  private void logStartupInfo(FitNesseContext context) {
+  private void logStartupInfo(AgNesseContext context) {
     // This message is on standard output for backward compatibility with Jenkins Fitnesse plugin.
     // (ConsoleHandler of JUL uses standard error output for all messages).
-    System.out.println("Bootstrapping FitNesse, the fully integrated standalone wiki and acceptance testing framework.");
+    System.out.println("Bootstrapping AgNesse, the fully integrated standalone wiki and acceptance testing framework.");
 
     LOG.info("root page: " + context.getRootPage());
     LOG.info("logger: " + (context.logger == null ? "none" : context.logger.toString()));
@@ -194,7 +194,7 @@ public class FitNesseMain {
       return;
     }
 
-    try (InputStream in = FitNesseMain.class.getResourceAsStream((verbose ? "verbose-" : "") + "logging.properties")) {
+    try (InputStream in = AgNesseMain.class.getResourceAsStream((verbose ? "verbose-" : "") + "logging.properties")) {
       LogManager.getLogManager().readConfiguration(in);
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Log configuration failed", e);

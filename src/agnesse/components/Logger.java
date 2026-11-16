@@ -47,7 +47,7 @@ public class Logger {
   }
 
   static String makeLogFileName(Calendar calendar) {
-    return "fitnesse" + format(makeFileNameFormat(), calendar) + ".log";
+    return "agnesse" + format(makeFileNameFormat(), calendar) + ".log";
   }
 
   public void log(LogData data) {

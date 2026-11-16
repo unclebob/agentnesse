@@ -19,8 +19,8 @@
 
 | script | | | |
 | --- | --- | --- | --- |
-| message of | Hello FitNesse | is | null |
-| message of | message:<<Hello FitNesse>> | is | Hello FitNesse |
+| message of | Hello AgNesse | is | null |
+| message of | message:<<Hello AgNesse>> | is | Hello AgNesse |
 | message of | message:<<NO_CONVERTER_FOR_ARGUMENT_NUMBER java.time.temporal.TemporalAccessor. ignores the rest>> | is | No converter for java.time.temporal.TemporalAccessor. |
 | message of | message:<<COULD_NOT_INVOKE_CONSTRUCTOR TestSlim[1] ignores the rest>> | is | Could not invoke constructor for TestSlim[1] |
 | message of | message:<<NO_METHOD_IN_CLASS missing[1] agnesse.slim.test.TestSlim.>> | is | Method missing[1] not found in agnesse.slim.test.TestSlim. |

@@ -1,5 +1,5 @@
 ---
-name: FitNesse Question Template
+name: AgNesse Question Template
 about: If you have a question or issue that isn't a bug and can't find an answer elsewhere.
 title: "[Question]"
 labels: ''

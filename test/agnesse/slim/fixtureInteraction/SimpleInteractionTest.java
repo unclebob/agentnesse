@@ -98,7 +98,7 @@ public class SimpleInteractionTest {
     Object convertedArgs[] = defaultInteraction.getConvertedConstructorArgsTypes(constructor, args);
     Testee testee = (Testee) constructor.newInstance(convertedArgs);
     //then
-    // we have support only for Double convertor in FitNesse
+    // we have support only for Double convertor in AgNesse
     assertEquals(2.0d, testee.getDoubleVal(), 0.0d);
     assertEquals(1, testee.getIntVal());
   }

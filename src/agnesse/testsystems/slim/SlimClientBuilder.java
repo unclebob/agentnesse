@@ -1,6 +1,6 @@
 package agnesse.testsystems.slim;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.slim.SlimPipeSocket;
 import agnesse.socketservice.*;
 import agnesse.testsystems.*;

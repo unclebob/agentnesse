@@ -5,16 +5,16 @@ package agnesse.responders;
 import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertSubString;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.ChunkedResponse;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import org.junit.Test;
 
 public class ChunkingResponderTest {
 
-  private final FitNesseContext context = FitNesseUtil.makeTestContext();
+  private final AgNesseContext context = AgNesseUtil.makeTestContext();
 
   private Exception exception;
   private ChunkingResponder responder = new ChunkingResponder() {

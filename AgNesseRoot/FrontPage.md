@@ -16,6 +16,6 @@ To add your first "page", click the [Edit](.FrontPage?edit) button and add a wik
 | [Acceptance Tests](.AgNesse.SuiteAcceptanceTests) | *The suite of acceptance tests* |
 | [Components and Licenses](.AgNesse.ComponentsAndLicenses) | *Libraries shipped with the server* |
 
-*Release ${FITNESSE_VERSION}*
+*Release ${AGNESSE_VERSION}*
 
 And *I like this*.   

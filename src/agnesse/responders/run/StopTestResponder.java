@@ -3,7 +3,7 @@
 package agnesse.responders.run;
 
 import agnesse.Responder;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.template.HtmlPage;
 import agnesse.http.Request;
 import agnesse.http.Response;
@@ -14,7 +14,7 @@ public class StopTestResponder implements Responder {
   String testId = null;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     SimpleResponse response = new SimpleResponse();
     if (request.hasInput("id")) {
       testId = request.getInput("id");
@@ -25,7 +25,7 @@ public class StopTestResponder implements Responder {
     return response;
   }
 
-  private String html(FitNesseContext context, Request request) {
+  private String html(AgNesseContext context, Request request) {
     HtmlPage page = context.pageFactory.newPage();
     page.addTitles("Stopping tests");
     page.put("testId", testId);

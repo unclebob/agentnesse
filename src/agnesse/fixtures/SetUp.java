@@ -5,10 +5,10 @@ package agnesse.fixtures;
 import java.io.ByteArrayInputStream;
 import java.util.Properties;
 
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import util.FileUtil;
 
-import static agnesse.fixtures.FitnesseFixtureContext.context;
+import static agnesse.fixtures.AgNesseFixtureContext.context;
 
 public class SetUp {
   public SetUp() throws Exception {
@@ -21,9 +21,9 @@ public class SetUp {
 
   private SetUp(Properties properties) throws Exception {
     final int port = 9123;
-    properties.setProperty("FITNESSE_PORT", String.valueOf(port));
-    context = FitNesseUtil.makeTestContext(port, properties);
-    FitNesseUtil.startFitnesseWithContext(context);
+    properties.setProperty("AGNESSE_PORT", String.valueOf(port));
+    context = AgNesseUtil.makeTestContext(port, properties);
+    AgNesseUtil.startAgNesseWithContext(context);
   }
 
   private static Properties asProperties(String configuration) throws Exception {

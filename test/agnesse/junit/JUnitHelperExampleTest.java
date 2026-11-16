@@ -31,12 +31,12 @@ public class JUnitHelperExampleTest {
   @Before
   public void prepare() {
     helper = new JUnitHelper(".",
-      new File(System.getProperty("java.io.tmpdir"), "fitnesse").getAbsolutePath(), new TestRecordingListener());
+      new File(System.getProperty("java.io.tmpdir"), "agnesse").getAbsolutePath(), new TestRecordingListener());
     visitedPages = new LinkedList<>();
   }
 
   @Test
-  public void assertTestPasses_RunsATestThroughFitNesseAndWeCanInspectTheResultUsingJavaFormatter() throws Exception {
+  public void assertTestPasses_RunsATestThroughAgNesseAndWeCanInspectTheResultUsingJavaFormatter() throws Exception {
     String testName = "AgNesse.SuiteAcceptanceTests.SuiteSlimTests.SystemUnderTestTest";
     helper.assertTestPasses(testName);
     assertEquals(1, visitedPages.size());

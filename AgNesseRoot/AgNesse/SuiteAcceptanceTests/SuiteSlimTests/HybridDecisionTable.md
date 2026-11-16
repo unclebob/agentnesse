@@ -110,9 +110,9 @@ define SLIM_DT_SETTER
 
 | Properties | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| # | property NEW | property a | property b | size? | property NEW? | property b? | has Value '123456789' ? | has Value 'FitNesse' ? |
+| # | property NEW | property a | property b | size? | property NEW? | property b? | has Value '123456789' ? | has Value 'AgNesse' ? |
 | | Hello | $S1 | $S2 | 3 | Hello | 123456789 | true | false |
-| | FitNesse | $S2 | $S3 | 3 | | $S3 | true | true |
+| | AgNesse | $S2 | $S3 | 3 | | $S3 | true | true |
 | | World | $S3 | $S1 | 3 | World | $S1 | false | false |
 
 

@@ -159,8 +159,8 @@ function render(events, prepare) {
     prepare(view);
   }
   view.document.dispatchEvent("DOMContentLoaded");
-  events.forEach((event) => context.AgentNesseResults.apply(event));
-  view.apply = (event) => context.AgentNesseResults.apply(event);
+  events.forEach((event) => context.AgNesseResults.apply(event));
+  view.apply = (event) => context.AgNesseResults.apply(event);
   return view;
 }
 

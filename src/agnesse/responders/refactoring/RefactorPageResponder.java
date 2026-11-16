@@ -3,7 +3,7 @@
 package agnesse.responders.refactoring;
 
 import agnesse.Responder;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.html.template.HtmlPage;
 import agnesse.html.template.PageTitle;
 import agnesse.http.Request;
@@ -19,7 +19,7 @@ import agnesse.wiki.WikiPageProperty;
 public class RefactorPageResponder implements Responder {
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     String resource = request.getResource();
     String tags = "";
     WikiPage wikiPage = null;

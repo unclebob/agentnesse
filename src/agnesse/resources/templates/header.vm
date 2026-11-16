@@ -1,4 +1,4 @@
-<a href="/FrontPage" id="art_niche"><span>FitNesse</span></a>
+<a href="/FrontPage" id="art_niche"><span>AgNesse</span></a>
 
 <ul>
 #foreach($breadCrumb in $pageTitle.BreadCrumbs)

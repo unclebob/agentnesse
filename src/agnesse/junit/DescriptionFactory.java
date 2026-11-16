@@ -28,7 +28,7 @@ public class DescriptionFactory {
    */
   public Description createDescription(Class<?> clazz, WikiPage page) {
     String name = page.getFullPath().toString();
-    FitNessePageAnnotation wikiPageAnnotation = new FitNessePageAnnotation(page);
+    AgNessePageAnnotation wikiPageAnnotation = new AgNessePageAnnotation(page);
     return createDescription(clazz, name, wikiPageAnnotation);
   }
 
@@ -41,7 +41,7 @@ public class DescriptionFactory {
    */
   public Description createDescription(Class<?> clazz, TestPage page) {
     String name = page.getFullPath();
-    FitNessePageAnnotation wikiPageAnnotation = new FitNessePageAnnotation(page);
+    AgNessePageAnnotation wikiPageAnnotation = new AgNessePageAnnotation(page);
     return createDescription(clazz, name, wikiPageAnnotation);
   }
 

@@ -24,7 +24,7 @@ public class DescriptionHelper {
    */
   public static WikiPage getWikiPage(Description description) {
     WikiPage result = null;
-    FitNessePageAnnotation pageAnn = description.getAnnotation(FitNessePageAnnotation.class);
+    AgNessePageAnnotation pageAnn = description.getAnnotation(AgNessePageAnnotation.class);
     if (pageAnn != null) {
       result = pageAnn.getWikiPage();
     }
@@ -37,7 +37,7 @@ public class DescriptionHelper {
    */
   public static TestPage getTestPage(Description description) {
     TestPage result = null;
-    FitNessePageAnnotation pageAnn = description.getAnnotation(FitNessePageAnnotation.class);
+    AgNessePageAnnotation pageAnn = description.getAnnotation(AgNessePageAnnotation.class);
     if (pageAnn != null) {
       result = pageAnn.getTestPage();
     }

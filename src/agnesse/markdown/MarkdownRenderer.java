@@ -73,7 +73,7 @@ public final class MarkdownRenderer {
       .nodeRendererFactory(context -> new PageLinkRenderer(context,
         pageTarget != null ? pageTarget : word -> pageExists.test(word) ? word : null))
       .nodeRendererFactory(context -> new HeadingRenderer(context, headingIds))
-      .nodeRendererFactory(context -> new AgentNesseBlockRenderer(context, children, includedHtml))
+      .nodeRendererFactory(context -> new AgNesseBlockRenderer(context, children, includedHtml))
       .build();
     return html.render(parser.parse(markdown == null ? "" : markdown));
   }

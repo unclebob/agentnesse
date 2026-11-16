@@ -8,8 +8,8 @@ import org.junit.runner.notification.RunListener;
 import java.io.File;
 
 /**
- * JUnit RunListener to be used during integration test executing FitNesse pages.
- * It will create a result XML file per FitNesse page, instead of default (surefire/maven) behavior that creates only
+ * JUnit RunListener to be used during integration test executing AgNesse pages.
+ * It will create a result XML file per AgNesse page, instead of default (surefire/maven) behavior that creates only
  * 1 file per Java class (and we have only 1 class that runs all pages).
  * This allows build servers to report progress during the run.
  * The page names are used as test names, the Java class executing them is ignored.

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A GFM table read as a FitNesse Slim table. The header is row 1: its first
+ * A GFM table read as a AgNesse Slim table. The header is row 1: its first
  * cell is {@code type:Name} and the rest are constructor arguments. The first
  * body row is row 2.
  */
@@ -57,8 +57,8 @@ public final class SlimMarkdownTable {
     return error;
   }
 
-  public List<String> row(int fitNesseRow) {
-    return rows.get(fitNesseRow - 1);
+  public List<String> row(int agNesseRow) {
+    return rows.get(agNesseRow - 1);
   }
 
   public int rowCount() {

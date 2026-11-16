@@ -11,19 +11,19 @@ import java.util.Set;
  * A fenced {@code agnesse} block. The first word is the command. Slim
  * tables are not blocks; they are bare Markdown tables.
  */
-public final class AgentNesseBlock {
+public final class AgNesseBlock {
   public static final Set<String> COMMANDS = Set.of(
     "define", "include", "scenarios", "path", "contents", "alias");
 
   private final String command;
   private final String argument;
 
-  private AgentNesseBlock(String command, String argument) {
+  private AgNesseBlock(String command, String argument) {
     this.command = command;
     this.argument = argument;
   }
 
-  public static AgentNesseBlock parse(String body) {
+  public static AgNesseBlock parse(String body) {
     String text = body == null ? "" : body.replaceFirst("\\n\\z", "");
     int newline = text.indexOf('\n');
     String first = (newline < 0 ? text : text.substring(0, newline)).trim();
@@ -37,7 +37,7 @@ public final class AgentNesseBlock {
     if (!COMMANDS.contains(command)) {
       throw new IllegalArgumentException("unknown agnesse command \"" + command + "\"");
     }
-    return new AgentNesseBlock(command, join(inline, rest));
+    return new AgNesseBlock(command, join(inline, rest));
   }
 
   public String command() {

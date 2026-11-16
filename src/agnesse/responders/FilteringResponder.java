@@ -2,7 +2,7 @@ package agnesse.responders;
 
 import java.util.List;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.Request;
 import agnesse.http.Response;
@@ -17,7 +17,7 @@ public class FilteringResponder implements Responder {
   }
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     Response response;
     for (Responder filter : filters) {
       response = filter.makeResponse(context, request);

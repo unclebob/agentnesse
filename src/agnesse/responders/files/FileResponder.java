@@ -18,7 +18,7 @@ import agnesse.util.Clock;
 import agnesse.wiki.PathParser;
 import util.FileUtil;
 import util.StreamReader;
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.InputStreamResponse;
 import agnesse.http.Request;
 import agnesse.http.Response;
@@ -37,7 +37,7 @@ public class FileResponder implements Responder {
   Date lastModifiedDate;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     String rootPath = context.getRootPagePath();
     try {
       resource = URLDecoder.decode(request.getResource(), FileUtil.CHARENCODING);
@@ -65,7 +65,7 @@ public class FileResponder implements Responder {
     return resource.startsWith("files/agnesse/");
   }
 
-  private Response makeClasspathResponse(FitNesseContext context, Request request) throws Exception {
+  private Response makeClasspathResponse(AgNesseContext context, Request request) throws Exception {
 
     determineLastModifiedInfo(LAST_MODIFIED_FOR_RESOURCES);
 
@@ -174,7 +174,7 @@ public class FileResponder implements Responder {
       file.getCanonicalFile());
   }
 
-  public static boolean isInFilesFitNesseDirectory(File rootPath, File file) throws IOException {
+  public static boolean isInFilesAgNesseDirectory(File rootPath, File file) throws IOException {
     return isInSubDirectory(new File(new File(rootPath, PathParser.FILES), "agnesse").getCanonicalFile(),
       file.getCanonicalFile());
   }

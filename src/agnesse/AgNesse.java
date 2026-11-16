@@ -23,14 +23,14 @@ import agnesse.socketservice.SocketService;
 import agnesse.util.MockSocket;
 import agnesse.util.SerialExecutorService;
 
-public class FitNesse {
-  private static final Logger LOG = Logger.getLogger(FitNesse.class.getName());
+public class AgNesse {
+  private static final Logger LOG = Logger.getLogger(AgNesse.class.getName());
 
-  private final FitNesseContext context;
+  private final AgNesseContext context;
   private final ExecutorService executorService;
   private volatile SocketService theService;
 
-  public FitNesse(FitNesseContext context) {
+  public AgNesse(AgNesseContext context) {
     this.context = context;
     RejectedExecutionHandler rejectionHandler = new RejectedExecutionHandler() {
       @Override
@@ -43,7 +43,7 @@ public class FitNesse {
   }
 
   public void start(ServerSocket serverSocket) throws IOException {
-    theService = new SocketService(new FitNesseServer(context, executorService), false, serverSocket);
+    theService = new SocketService(new AgNesseServer(context, executorService), false, serverSocket);
   }
 
   public synchronized void stop() throws IOException {
@@ -62,7 +62,7 @@ public class FitNesse {
 
   public void executeSingleCommand(String command, OutputStream out) throws Exception {
     Request request = new MockRequestBuilder(command).noChunk().build();
-    FitNesseExpediter expediter = new FitNesseExpediter(new MockSocket(), context, new SerialExecutorService());
+    AgNesseExpediter expediter = new AgNesseExpediter(new MockSocket(), context, new SerialExecutorService());
     Response response = expediter.createGoodResponse(request);
     int responseStatus = response.getStatus();
     response.withoutHttpHeaders();

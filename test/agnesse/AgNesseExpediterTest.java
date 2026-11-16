@@ -7,7 +7,7 @@ import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.ResponseParser;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.util.MockSocket;
 import agnesse.wiki.WikiPage;
 import org.junit.Before;
@@ -21,11 +21,11 @@ import java.util.concurrent.Executors;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
-public class FitNesseExpediterTest {
+public class AgNesseExpediterTest {
   public static final int REQUEST_PARSING_TIME_LIMIT = 200;
-  private FitNesseExpediter expediter;
+  private AgNesseExpediter expediter;
   private MockSocket socket;
-  private FitNesseContext context;
+  private AgNesseContext context;
   private PipedInputStream clientInput;
   private PipedOutputStream clientOutput;
   private ResponseParser response;
@@ -33,12 +33,12 @@ public class FitNesseExpediterTest {
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     executorService = Executors.newFixedThreadPool(2);
     WikiPage root = context.getRootPage();
     root.addChildPage("FrontPage");
     socket = new MockSocket();
-    expediter = new FitNesseExpediter(socket, context, executorService);
+    expediter = new AgNesseExpediter(socket, context, executorService);
   }
 
   @Test(expected = IOException.class)
@@ -51,7 +51,7 @@ public class FitNesseExpediterTest {
 
   @Test
   public void testIncompleteRequestsTimeOut() throws Exception {
-    final FitNesseExpediter sender = preparePipedFitNesseExpediter();
+    final AgNesseExpediter sender = preparePipedAgNesseExpediter();
 
     Thread senderThread = makeSendingThread(sender);
     senderThread.start();
@@ -64,18 +64,18 @@ public class FitNesseExpediterTest {
     assertEquals(408, response.getStatus());
   }
 
-  private FitNesseExpediter preparePipedFitNesseExpediter() throws Exception {
+  private AgNesseExpediter preparePipedAgNesseExpediter() throws Exception {
     PipedInputStream socketInput = new PipedInputStream();
     clientOutput = new PipedOutputStream(socketInput);
     clientInput = new PipedInputStream();
     PipedOutputStream socketOutput = new PipedOutputStream(clientInput);
     MockSocket socket = new MockSocket(socketInput, socketOutput);
-    return new FitNesseExpediter(socket, context, executorService, REQUEST_PARSING_TIME_LIMIT);
+    return new AgNesseExpediter(socket, context, executorService, REQUEST_PARSING_TIME_LIMIT);
   }
 
   @Test
   public void testCompleteRequest() throws Exception {
-    final FitNesseExpediter sender = preparePipedFitNesseExpediter();
+    final AgNesseExpediter sender = preparePipedAgNesseExpediter();
 
     Thread senderThread = makeSendingThread(sender);
     senderThread.start();
@@ -92,7 +92,7 @@ public class FitNesseExpediterTest {
 
   @Test
   public void testBadRequest() throws Exception {
-    final FitNesseExpediter sender = preparePipedFitNesseExpediter();
+    final AgNesseExpediter sender = preparePipedAgNesseExpediter();
 
     Thread senderThread = makeSendingThread(sender);
     senderThread.start();
@@ -111,7 +111,7 @@ public class FitNesseExpediterTest {
 
   @Test
   public void slowButCompleteRequestCanTimeOut() throws Exception {
-    final FitNesseExpediter sender = preparePipedFitNesseExpediter();
+    final AgNesseExpediter sender = preparePipedAgNesseExpediter();
 
     Thread senderThread = makeSendingThread(sender);
     senderThread.start();
@@ -140,7 +140,7 @@ public class FitNesseExpediterTest {
     assertThat(response.getBody(), containsString("The client request has been unproductive for too long. It has timed out and will no longer be processed."));
   }
 
-  private Thread makeSendingThread(final FitNesseExpediter sender) {
+  private Thread makeSendingThread(final AgNesseExpediter sender) {
     return new Thread(new Runnable() {
       @Override
       public void run() {

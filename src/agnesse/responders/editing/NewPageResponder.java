@@ -2,7 +2,7 @@ package agnesse.responders.editing;
 
 import static agnesse.wiki.PageData.PAGE_TYPE_ATTRIBUTES;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.Request;
 import agnesse.http.Response;
@@ -37,7 +37,7 @@ public class NewPageResponder implements Responder {
   private String user;
 
   @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
     if (request.hasInput(EditResponder.PAGE_NAME)) {
       return createChild(context, request);
     }
@@ -46,7 +46,7 @@ public class NewPageResponder implements Responder {
     return response;
   }
 
-  private Response createChild(FitNesseContext context, Request request) throws Exception {
+  private Response createChild(AgNesseContext context, Request request) throws Exception {
     parseRequest(context, request);
     if (currentPage == null)
       return new NotFoundResponder().makeResponse(context, request);
@@ -62,7 +62,7 @@ public class NewPageResponder implements Responder {
     return response;
   }
 
-  private void parseRequest(FitNesseContext context, Request request) {
+  private void parseRequest(AgNesseContext context, Request request) {
     user = request.getAuthorizationUsername();
     childName = request.getInput(EditResponder.PAGE_NAME);
     childName = childName == null ? "null" : childName;
@@ -102,7 +102,7 @@ public class NewPageResponder implements Responder {
     childPage.commit(childPageData);
   }
 
-  private String doMakeHtml(FitNesseContext context, Request request) {
+  private String doMakeHtml(AgNesseContext context, Request request) {
     HtmlPage html = context.pageFactory.newPage();
     html.setTitle("New page");
 
@@ -113,7 +113,7 @@ public class NewPageResponder implements Responder {
     return html.html(request);
   }
 
-  private void makeEditForm(HtmlPage html, FitNesseContext context, Request request) {
+  private void makeEditForm(HtmlPage html, AgNesseContext context, Request request) {
     html.put("resource", request.getResource());
 
     html.put("isNewPage", true);
@@ -140,7 +140,7 @@ public class NewPageResponder implements Responder {
     return content;
   }
 
-  private WikiPage getParentWikiPage(FitNesseContext context, Request request) {
+  private WikiPage getParentWikiPage(AgNesseContext context, Request request) {
     WikiPagePath parentPath = PathParser.parse(request.getResource());
     PageCrawler crawler = context.getRootPage().getPageCrawler();
     return crawler.getPage(parentPath);

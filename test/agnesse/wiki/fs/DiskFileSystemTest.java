@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +17,7 @@ public class DiskFileSystemTest {
 
   @Before
   public void setUp() {
-    rootDir = FitNesseUtil.createTemporaryFolder();
+    rootDir = AgNesseUtil.createTemporaryFolder();
   }
 
   @Test

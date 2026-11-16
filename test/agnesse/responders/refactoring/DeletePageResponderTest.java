@@ -12,13 +12,13 @@ import static util.RegexTestCase.assertSubString;
 import java.io.File;
 import java.util.List;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
 import agnesse.responders.ResponderTestCase;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPagePath;

@@ -2,13 +2,13 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.search;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
@@ -23,11 +23,11 @@ import static util.RegexTestCase.assertSubString;
 public class SearchResponderTest {
   private SearchResponder responder;
   private MockRequest request;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     WikiPage somePage = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("SomePage"), "has something in it");
 
     WikiPageUtil.addPage(somePage, PathParser.parse("SomeTest"), "test page content");

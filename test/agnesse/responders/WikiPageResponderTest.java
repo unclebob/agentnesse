@@ -8,11 +8,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import agnesse.wiki.*;
 
 import static org.junit.Assert.assertEquals;
@@ -24,11 +24,11 @@ import static util.RegexTestCase.assertSubString;
 
 public class WikiPageResponderTest {
   private WikiPage root;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   @Before
   public void setUp() throws Exception {
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
     root = context.getRootPage();
   }
 

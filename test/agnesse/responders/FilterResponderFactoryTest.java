@@ -1,12 +1,12 @@
 package agnesse.responders;
 
-import agnesse.FitNesseContext;
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
-import agnesse.testutil.FitNesseUtil;
+import agnesse.testutil.AgNesseUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertSame;
 public class FilterResponderFactoryTest {
   private ResponderFactory factory;
   private MockRequest request;
-  private FitNesseContext context;
+  private AgNesseContext context;
 
   // Responses set my mockResponder/mockFilter
   private static Response expectedFilterResponse;
@@ -37,7 +37,7 @@ public class FilterResponderFactoryTest {
 
     request = new MockRequest();
     request.addInput("responder", "mock");
-    context = FitNesseUtil.makeTestContext();
+    context = AgNesseUtil.makeTestContext();
   }
 
   @Test
@@ -70,21 +70,21 @@ public class FilterResponderFactoryTest {
 
   public static class MockFilter implements Responder {
     @Override
-    public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    public Response makeResponse(AgNesseContext context, Request request) throws Exception {
       return expectedFilterResponse;
     }
   }
 
   public static class AnotherMockFilter implements Responder {
     @Override
-    public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    public Response makeResponse(AgNesseContext context, Request request) throws Exception {
       return expectedAnotherFilterResponse;
     }
   }
 
   public static class MockResponder implements Responder {
     @Override
-    public Response makeResponse(FitNesseContext context, Request request) throws Exception {
+    public Response makeResponse(AgNesseContext context, Request request) throws Exception {
       return expectedResponderResponse;
     }
   }
