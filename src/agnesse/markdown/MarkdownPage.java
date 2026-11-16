@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -507,24 +506,6 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     return PageType.getPageTypeForPageName(getName()).toString().toLowerCase();
   }
 
-  private String typeOf(PageData data) {
-    if (data.hasAttribute(PageType.SUITE.toString())) {
-      return "suite";
-    }
-    if (data.hasAttribute(PageType.TEST.toString())) {
-      return "test";
-    }
-    return "static";
-  }
-
-  private List<String> tagsOf(PageData data) {
-    String suites = data.getAttribute(WikiPageProperty.SUITES);
-    if (suites == null || suites.isBlank()) {
-      return List.of();
-    }
-    return Arrays.stream(suites.split("\\s*,\\s*")).filter(tag -> !tag.isEmpty()).toList();
-  }
-
   private void applyType(WikiPageProperty properties, String type) {
     if ("test".equals(type)) {
       properties.set(PageType.TEST.toString());
@@ -547,7 +528,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
     @Override
     public InputStream getContent() {
-      String text = FrontMatter.write(typeOf(data), tagsOf(data), data.getAttribute(WikiPageProperty.HELP),
+      String text = FrontMatter.write(FrontMatter.typeFrom(data), FrontMatter.tagsFrom(data), data.getAttribute(WikiPageProperty.HELP),
         data.hasAttribute(WikiPageProperty.PRUNE), data.getAttribute(WikiPageProperty.LAST_MODIFYING_USER),
         data.getContent());
       return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));

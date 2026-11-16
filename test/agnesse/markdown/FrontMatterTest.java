@@ -1,5 +1,7 @@
 package agnesse.markdown;
 
+import agnesse.wiki.PageData;
+import agnesse.wiki.WikiPageProperty;
 import org.junit.Test;
 
 import java.util.List;
@@ -42,6 +44,49 @@ public class FrontMatterTest {
     assertNull(matter.help());
     assertFalse(matter.prune());
     assertEquals("# Just markdown\n", matter.body());
+  }
+
+  @Test
+  public void propertiesStandInWhenTheBodyHasNoFrontMatter() {
+    WikiPageProperty properties = new WikiPageProperty();
+    properties.set("Test");
+    properties.set("Suites", "guide, slow");
+    properties.set("Help", "how");
+    properties.set("Prune");
+    properties.set("LastModifyingUser", "robert");
+    PageData data = new PageData("body\n", properties);
+
+    FrontMatter matter = FrontMatter.from(data);
+
+    assertEquals("test", matter.type());
+    assertEquals(List.of("guide", "slow"), matter.tags());
+    assertEquals("how", matter.help());
+    assertTrue(matter.prune());
+    assertEquals("robert", matter.user());
+    assertEquals("body\n", matter.body());
+  }
+
+  @Test
+  public void aSuiteAttributeWinsOverATestAttribute() {
+    WikiPageProperty properties = new WikiPageProperty();
+    properties.set("Suite");
+    properties.set("Test");
+    FrontMatter matter = FrontMatter.from(new PageData("body\n", properties));
+
+    assertEquals("suite", matter.type());
+  }
+
+  @Test
+  public void frontMatterInTheBodyWinsOverProperties() {
+    WikiPageProperty properties = new WikiPageProperty();
+    properties.set("Suite");
+    PageData data = new PageData(FrontMatter.write("test", List.of("ready"), "how", false, "body"), properties);
+
+    FrontMatter matter = FrontMatter.from(data);
+
+    assertEquals("test", matter.type());
+    assertEquals(List.of("ready"), matter.tags());
+    assertEquals("body", matter.body());
   }
 
   @Test

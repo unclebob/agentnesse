@@ -2,6 +2,7 @@ package agnesse.markdown;
 
 import agnesse.components.TraversalListener;
 import agnesse.wiki.PageData;
+import agnesse.wiki.search.FrontMatterFinder;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPageLoadException;
 import agnesse.wiki.PrunedPagePruningStrategy;
@@ -109,6 +110,16 @@ public class MarkdownPageTest {
     String html = root.getChildPage("TestHost").getHtml();
     assertEquals("!path lib/*.jar", agnesse.testsystems.slim.HtmlCells.cell(html, 0, 1, 1).trim());
     assertEquals(1, agnesse.testsystems.slim.HtmlCells.tables(html));
+  }
+
+  @Test
+  public void aTagOnAMarkdownFileIsFound() {
+    fileSystem.makeFile(new File("root/Kept.md"), FrontMatter.write("test", List.of("ready"), null, false, "body\n"));
+    fileSystem.makeFile(new File("root/Other.md"), FrontMatter.write("test", List.of("later"), null, false, "body\n"));
+    List<String> found = new ArrayList<>();
+    new FrontMatterFinder(page -> found.add(page.getName()), "test", "ready", null, null).search(root);
+
+    assertEquals(List.of("Kept"), found);
   }
 
   @Test

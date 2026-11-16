@@ -36,7 +36,7 @@ public class SearchPropertiesResponder extends ResultResponder {
   protected JSONObject jsonFor(List<WikiPage> hits) {
     JSONArray pages = new JSONArray();
     for (WikiPage hit : hits) {
-      FrontMatter matter = FrontMatter.read(hit.getData().getContent());
+      FrontMatter matter = FrontMatter.from(hit.getData());
       pages.put(new JSONObject()
         .put("path", hit.getFullPath().toString())
         .put("type", matter.type() == null ? "static" : matter.type())

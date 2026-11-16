@@ -1,10 +1,14 @@
 package agnesse.markdown;
 
+import agnesse.wiki.PageData;
+import agnesse.wiki.PageType;
+import agnesse.wiki.WikiPageProperty;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +36,19 @@ public final class FrontMatter {
     this.prune = prune;
     this.user = user;
     this.body = body;
+  }
+
+  public static FrontMatter from(PageData data) {
+    String content = data.getContent() == null ? "" : data.getContent();
+    FrontMatter inBody = read(content);
+    if (inBody.present()) {
+      return inBody;
+    }
+    return new FrontMatter(true, typeFrom(data), tagsFrom(data),
+      data.getAttribute(WikiPageProperty.HELP),
+      data.hasAttribute(WikiPageProperty.PRUNE),
+      data.getAttribute(WikiPageProperty.LAST_MODIFYING_USER),
+      content);
   }
 
   public static FrontMatter read(String text) {
@@ -95,6 +112,24 @@ public final class FrontMatter {
 
   public String body() {
     return body;
+  }
+
+  static String typeFrom(PageData data) {
+    if (data.hasAttribute(PageType.SUITE.toString())) {
+      return "suite";
+    }
+    if (data.hasAttribute(PageType.TEST.toString())) {
+      return "test";
+    }
+    return "static";
+  }
+
+  static List<String> tagsFrom(PageData data) {
+    String suites = data.getAttribute(WikiPageProperty.SUITES);
+    if (suites == null || suites.isBlank()) {
+      return List.of();
+    }
+    return Arrays.stream(suites.split("\\s*,\\s*")).filter(tag -> !tag.isEmpty()).toList();
   }
 
   private static FrontMatter absent(String text) {

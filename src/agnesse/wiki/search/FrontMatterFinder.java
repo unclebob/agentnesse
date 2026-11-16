@@ -34,7 +34,7 @@ public class FrontMatterFinder implements PageFinder {
   }
 
   private void consider(WikiPage page) {
-    if (matches(FrontMatter.read(page.getData().getContent()))) {
+    if (matches(FrontMatter.from(page.getData()))) {
       observer.process(page);
     }
   }
