@@ -55,6 +55,7 @@ public class EditResponderTest {
     assertNotSubString("wysiwyg.js", body);
     assertNotSubString("jquery.tagsinput.js", body);
     assertSubString("codemirror.js", body);
+    assertSubString("/files/fitnesse/codemirror/codemirror.css", body);
     assertSubString("mode/markdown/markdown.js", body);
     assertNotSubString("codemirror/fitnesse/fitnesse.js", body);
 
