@@ -191,6 +191,9 @@ public class Request {
     Matcher match = queryStringPattern.matcher(queryString);
     while (match.find()) {
       String key = decodeContent(match.group(1));
+      if (key == null || key.isEmpty()) {
+        continue;
+      }
       String value = decodeContent(match.group(2));
       addUniqueInputString(key, value);
     }

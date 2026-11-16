@@ -119,6 +119,16 @@ public class RequestTest {
   }
 
   @Test
+  public void aQueryDoesNotInventABlankParameter() throws Exception {
+    appendToMessage("GET /FrontPage?responder=search&searchType=title HTTP/1.1\r\n\r\n");
+    parseMessage();
+
+    assertFalse(request.hasInput(""));
+    assertEquals("search", request.getInput("responder"));
+    assertEquals("title", request.getInput("searchType"));
+  }
+
+  @Test
   public void testMalformedRequestLine() throws Exception {
     appendToMessage("/resource HTTP/1.1\r\n");
     appendToMessage("\r\n");
