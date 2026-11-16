@@ -234,6 +234,20 @@ public class JsonResultsFormatterTest {
   }
 
   @Test
+  public void unableToStartTestSystemIsReportedAsOutputAndAsAServerException() throws Exception {
+    StringBuilder out = new StringBuilder();
+    JsonResultsFormatter formatter = new JsonResultsFormatter(out, true, null);
+
+    formatter.unableToStartTestSystem("slim", new IllegalStateException("down"));
+    formatter.finish();
+
+    String message = "Unable to start test system 'slim': java.lang.IllegalStateException: down";
+    assertTrue(out.toString(), out.toString().contains("\"text\":\"" + message + "\""));
+    JSONObject server = formatter.document().getJSONObject("run").getJSONArray("servers").getJSONObject(0);
+    assertEquals("java.lang.IllegalStateException: down", server.getJSONArray("exceptions").getString(0));
+  }
+
+  @Test
   public void aTableOriginAndAStartedSystemAreOnTheEvent() throws Exception {
     JsonResultsFormatter formatter = new JsonResultsFormatter(new StringBuilder(), true, null);
     formatter.testSystemStarted(new agnesse.testsystems.TestSystem() {

@@ -12,8 +12,8 @@ import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPagePath;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import java.nio.file.Files;
 
 public class PageDriver {
   private PageCreator creator = new PageCreator();
@@ -94,6 +94,10 @@ public class PageDriver {
   }
 
   public boolean contentMatches(String pattern) throws Exception {
+    JsonBody json = responseJson();
+    if (json.isJson()) {
+      return json.matches(pattern);
+    }
     examiner.type = "contents";
     examiner.pattern = pattern;
     return examiner.matches();
@@ -106,29 +110,40 @@ public class PageDriver {
   }
 
   public boolean contentContains(String subString) throws Exception {
+    JsonBody json = responseJson();
+    if (json.isJson()) {
+      return json.contains(subString);
+    }
     examiner.type = "contents";
     examiner.extractValueFromResponse();
     return examiner.getValue().contains(subString);
   }
 
-  public String content() throws Exception {
-    return requester.html();
+  public boolean sourceContains(String pageName, String text) {
+    return pageSource(pageName).contains(text);
   }
 
-  public int countOfTagWithIdPrefix(String tag, String idPrefix) throws Exception {
-    if (tag == null || idPrefix == null || tag.isEmpty()) {
-      return 0;
+  /** The shipped wiki file, not the in-memory wiki the acceptance suite builds. */
+  public boolean bundledSourceContains(String pageName, String text) throws Exception {
+    String relative = pageName.replace('.', '/') + ".md";
+    String source = Files.readString(java.nio.file.Path.of("AgNesseRoot", relative));
+    return text != null && source.contains(text);
+  }
+
+  public String pageSource(String pageName) {
+    WikiPage page = AgNesseFixtureContext.context.getRootPage().getPageCrawler().getPage(PathParser.parse(pageName));
+    return page.getData().getContent();
+  }
+
+  private JsonBody responseJson() throws Exception {
+    if (AgNesseFixtureContext.sender == null) {
+      return JsonBody.parse(null);
     }
-    String html = examiner.html();
-    Matcher tags = Pattern.compile("<" + Pattern.quote(tag) + "\\b([^>]*)>", Pattern.CASE_INSENSITIVE).matcher(html);
-    int count = 0;
-    while (tags.find()) {
-      Matcher id = Pattern.compile("\\bid\\s*=\\s*([\"'])(.*?)\\1", Pattern.CASE_INSENSITIVE).matcher(tags.group(1));
-      if (id.find() && id.group(2).startsWith(idPrefix)) {
-        count++;
-      }
-    }
-    return count;
+    return JsonBody.parse(AgNesseFixtureContext.sender.sentData());
+  }
+
+  public String content() throws Exception {
+    return requester.html();
   }
 
   public boolean pageHasAttribute(String fullPathOfPage, String attribute) throws Exception {
