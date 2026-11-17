@@ -13,6 +13,7 @@ import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -21,6 +22,8 @@ import static agnesse.ConfigurationParameter.*;
 
 public class AgNesseMain {
   private static final Logger LOG = Logger.getLogger(AgNesseMain.class.getName());
+
+  static Consumer<Integer> halt = System::exit;
 
   private final ExitCodeListener exitCodeListener = new ExitCodeListener();
 
@@ -48,7 +51,7 @@ public class AgNesseMain {
   }
 
   protected static void exit(int exitCode) {
-    System.exit(exitCode);
+    halt.accept(exitCode);
   }
 
   public Integer launchAgNesse(Arguments arguments) throws Exception {

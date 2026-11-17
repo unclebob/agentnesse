@@ -22,6 +22,9 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,6 +64,31 @@ public class AgNesseMainTest {
   @Test
   public void badArgumentsReturnOneWithoutStarting() {
     assertEquals(Integer.valueOf(1), AgNesseMain.start(new String[] {"-x"}));
+  }
+
+  @Test
+  public void mainExitsWithTheCodeStartReturns() {
+    List<Integer> codes = new ArrayList<>();
+    Consumer<Integer> previous = AgNesseMain.halt;
+    AgNesseMain.halt = codes::add;
+    try {
+      AgNesseMain.main(new String[] {"-x"});
+      assertEquals(List.of(1), codes);
+    } finally {
+      AgNesseMain.halt = previous;
+    }
+  }
+
+  @Test
+  public void startReturnsOneWhenLaunchThrows() {
+    assertEquals(Integer.valueOf(1), AgNesseMain.start(new String[] {
+      "-r", TEST_AGNESSE_ROOT, "-c", "/MissingPage?test"}));
+  }
+
+  @Test
+  public void aRootPathThatCannotBeCreatedReturnsOne() throws Exception {
+    int exitCode = launch("-d", TEST_AGNESSE_ROOT + "/no-such-parent", "-r", "wiki", "-c", "/root");
+    assertEquals(1, exitCode);
   }
 
   @Test
