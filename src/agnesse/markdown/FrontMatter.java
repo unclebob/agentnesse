@@ -57,9 +57,6 @@ public final class FrontMatter {
       return absent(text);
     }
     int end = endOfObject(text, start);
-    if (end < 0) {
-      throw new IllegalArgumentException("malformed JSON front matter");
-    }
     JSONObject json = object(text.substring(start, end + 1));
     return new FrontMatter(true, typeOf(json), tagsOf(json), helpOf(json), pruneOf(json), userOf(json), bodyAfter(text, end));
   }
@@ -137,16 +134,11 @@ public final class FrontMatter {
   }
 
   private static int indexOfObject(String text) {
-    for (int i = 0; i < text.length(); i++) {
-      char c = text.charAt(i);
-      if (c == '{') {
-        return i;
-      }
-      if (!Character.isWhitespace(c)) {
-        return -1;
-      }
+    String trimmed = text.stripLeading();
+    if (trimmed.isEmpty() || trimmed.charAt(0) != '{') {
+      return -1;
     }
-    return -1;
+    return text.length() - trimmed.length();
   }
 
   private static int endOfObject(String text, int start) {
@@ -156,7 +148,7 @@ public final class FrontMatter {
         return i;
       }
     }
-    return -1;
+    throw new IllegalArgumentException("malformed JSON front matter");
   }
 
   private static final class Scan {
@@ -217,7 +209,7 @@ public final class FrontMatter {
 
   private static String typeOf(JSONObject json) {
     knownKeys(json);
-    if (!json.has("type") || json.isNull("type")) {
+    if (json.isNull("type")) {
       return null;
     }
     Object value = json.get("type");
@@ -228,7 +220,7 @@ public final class FrontMatter {
   }
 
   private static List<String> tagsOf(JSONObject json) {
-    if (!json.has("tags") || json.isNull("tags")) {
+    if (json.isNull("tags")) {
       return List.of();
     }
     Object value = json.get("tags");
@@ -260,7 +252,7 @@ public final class FrontMatter {
   }
 
   private static <T> T value(JSONObject json, String key, Class<T> type, T fallback, String message) {
-    if (!json.has(key) || json.isNull(key)) {
+    if (json.isNull(key)) {
       return fallback;
     }
     Object found = json.get(key);
@@ -271,11 +263,8 @@ public final class FrontMatter {
   }
 
   private static String bodyAfter(String text, int end) {
-    int body = end + 1;
-    if (body < text.length() && text.charAt(body) == '\n') {
-      body++;
-    }
-    return text.substring(body);
+    String rest = text.substring(end + 1);
+    return rest.startsWith("\n") ? rest.substring(1) : rest;
   }
 
   private static String tagsJson(List<String> tags) {
