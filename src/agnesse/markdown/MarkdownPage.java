@@ -188,12 +188,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private String includedHtml(String name) {
-    String pageName = name;
-    int breakAt = pageName.indexOf('\n');
-    if (breakAt >= 0) {
-      pageName = pageName.substring(0, breakAt);
-    }
-    WikiPagePath includedPath = PathParser.parse(pageName.trim());
+    WikiPagePath includedPath = PathParser.parse(name.split("\n", 2)[0].trim());
     if (includedPath == null) {
       return "";
     }
@@ -237,15 +232,19 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     return expanded.toString();
   }
 
+  private static boolean plainLine(boolean fence, String trimmed) {
+    return !fence && !trimmed.startsWith("|");
+  }
+
   private static String escapeWikiPrefixes(String content) {
     StringBuilder out = new StringBuilder();
     boolean fence = false;
-    for (String line : content.split("\n", -1)) {
+    for (String line : content.split("\n")) {
       String trimmed = line.trim();
       if (trimmed.startsWith("```")) {
         fence = !fence;
       }
-      if (!fence && !trimmed.startsWith("|")) {
+      if (plainLine(fence, trimmed)) {
         line = line.replaceAll("<(?=[A-Z][a-zA-Z0-9])", "\\\\<");
       }
       out.append(line).append('\n');
@@ -331,7 +330,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     List<String> names = new ArrayList<>();
     String content = getData().getContent();
     collectIncludes(Parser.builder().build().parse(content), names);
-    for (String line : content.split("\n", -1)) {
+    for (String line : content.split("\n")) {
       String trimmed = line.trim();
       if (trimmed.startsWith("!include ")) {
         names.add(trimmed.substring("!include ".length()).trim());
@@ -358,9 +357,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     try {
       AgNesseBlock block = AgNesseBlock.parse(literal);
       if ("include".equals(block.command())) {
-        String name = block.argument().trim();
-        int split = firstBreak(name);
-        names.add(split < 0 ? name : name.substring(0, split).trim());
+        names.add(block.argument().trim().split("[ \\n]", 2)[0].trim());
       }
     } catch (IllegalArgumentException ignored) {
       // An unknown block is not an include.
@@ -371,7 +368,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     Map<String, String> values = new LinkedHashMap<>();
     String content = getData().getContent();
     collectDefines(Parser.builder().build().parse(content), values);
-    for (String line : content.split("\n", -1)) {
+    for (String line : content.split("\n")) {
       rememberBangDefine(values, line.trim());
     }
     expandDefines(values);
@@ -405,18 +402,20 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     if (!line.startsWith("!define ")) {
       return;
     }
-    String rest = line.substring("!define ".length()).trim();
-    int space = rest.indexOf(' ');
-    if (space < 0) {
-      values.putIfAbsent(rest, "");
-      return;
+    String[] parts = line.substring("!define ".length()).trim().split(" ", 2);
+    String value = parts.length < 2 ? "" : unwrapDefined(parts[1].trim());
+    values.putIfAbsent(parts[0], value);
+  }
+
+  private static String unwrapDefined(String value) {
+    if (wrapped(value, '{', '}') || wrapped(value, '(', ')')) {
+      return value.substring(1, value.length() - 1);
     }
-    String name = rest.substring(0, space);
-    String value = rest.substring(space + 1).trim();
-    if (value.length() >= 2 && ((value.startsWith("{") && value.endsWith("}")) || (value.startsWith("(") && value.endsWith(")")))) {
-      value = value.substring(1, value.length() - 1);
-    }
-    values.putIfAbsent(name, value);
+    return value;
+  }
+
+  private static boolean wrapped(String value, char open, char close) {
+    return value.length() >= 2 && value.charAt(0) == open && value.charAt(value.length() - 1) == close;
   }
 
   private void collectDefines(Node node, Map<String, String> values) {
@@ -433,23 +432,14 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     }
   }
 
-  private static int firstBreak(String argument) {
-    return agnesse.wiki.WikiPaths.firstOf(argument, ' ', '\n');
-  }
-
   private void rememberDefine(Map<String, String> values, String literal) {
     try {
       AgNesseBlock block = AgNesseBlock.parse(literal);
       if (!"define".equals(block.command())) {
         return;
       }
-      String argument = block.argument().trim();
-      int split = firstBreak(argument);
-      if (split < 0) {
-        values.put(argument, "");
-      } else {
-        values.put(argument.substring(0, split).trim(), argument.substring(split + 1).trim());
-      }
+      String[] parts = block.argument().trim().split("[ \\n]", 2);
+      values.put(parts[0].trim(), parts.length < 2 ? "" : parts[1].trim());
     } catch (IllegalArgumentException ignored) {
       // An unknown block does not define a variable.
     }
