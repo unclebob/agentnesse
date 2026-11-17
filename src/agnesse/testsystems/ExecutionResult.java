@@ -1,5 +1,7 @@
 package agnesse.testsystems;
 
+import agnesse.wiki.TestAdjunct;
+
 public enum ExecutionResult {
   ERROR,
   FAIL,
@@ -47,10 +49,12 @@ public enum ExecutionResult {
   }
   
   public static boolean isSuiteMetaPage(String relativeName) {
-    return relativeName != null && (relativeName.equals("SuiteSetUp")
-        || relativeName.endsWith(".SuiteSetUp")
-        || relativeName.equals("SuiteTearDown")
-        || relativeName.endsWith(".SuiteTearDown"));
+    return relativeName != null && (samePage(relativeName, TestAdjunct.SUITE_SET_UP)
+        || samePage(relativeName, TestAdjunct.SUITE_TEAR_DOWN));
+  }
+
+  private static boolean samePage(String relativeName, String name) {
+    return relativeName.equals(name) || relativeName.endsWith("." + name);
   }
 
 }

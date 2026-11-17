@@ -1,6 +1,7 @@
 package agnesse.reporting;
 
 import agnesse.testsystems.TestPage;
+import agnesse.wiki.TestAdjunct;
 import agnesse.testsystems.TestSummary;
 
 import java.io.Closeable;
@@ -56,8 +57,8 @@ public class RerunSuiteFormatter extends BaseFormatter implements Closeable {
 
   protected void recordFailure(TestPage testPage) {
     String testPageName = testPage.getName();
-    if (!"SuiteSetUp".equals(testPageName)
-      && !"SuiteTearDown".equals(testPageName)) {
+    if (!TestAdjunct.SUITE_SET_UP.equals(testPageName)
+      && !TestAdjunct.SUITE_TEAR_DOWN.equals(testPageName)) {
       errorCount++;
       if (errorCount == 1) {
         appendHeader(pw);

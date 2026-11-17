@@ -2,6 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.testrunner;
 
+import agnesse.wiki.TestAdjunct;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
@@ -80,9 +81,7 @@ public class SuiteContentsFinder {
    */
   private static boolean structural(WikiPage page) {
     String name = page.getName();
-    return "SetUp".equals(name) || "TearDown".equals(name)
-      || "SuiteSetUp".equals(name) || "SuiteTearDown".equals(name)
-      || "ScenarioLibrary".equals(name);
+    return TestAdjunct.named(name);
   }
 
   private void addXrefPages(List<WikiPage> pages, WikiPage thePage) {

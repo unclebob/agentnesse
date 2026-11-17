@@ -10,12 +10,13 @@ import java.util.Map;
 import agnesse.components.TraversalListener;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PageType;
+import agnesse.wiki.TestAdjunct;
 import agnesse.wiki.WikiPage;
 
 public class AttributeWikiPageFinder extends WikiPageFinder {
 
-  private static final List<String> setUpPageNames = Arrays.asList("SetUp", "SuiteSetUp");
-  private static final List<String> tearDownPageNames = Arrays.asList("TearDown", "SuiteTearDown");
+  private static final List<String> setUpPageNames = TestAdjunct.SET_UPS;
+  private static final List<String> tearDownPageNames = TestAdjunct.TEAR_DOWNS;
 
   private List<PageType> requestedPageTypes;
   private Map<String, Boolean> attributes;
@@ -68,7 +69,7 @@ public class AttributeWikiPageFinder extends WikiPageFinder {
     }
 
     for (Map.Entry<String, Boolean> input : attributes.entrySet()) {
-      if ("SetUp".equals(input.getKey()) || "TearDown".equals(input.getKey()))
+      if (TestAdjunct.SET_UP.equals(input.getKey()) || TestAdjunct.TEAR_DOWN.equals(input.getKey()))
         continue;
 
       if (!attributeMatchesInput(pageData.hasAttribute(input.getKey()), input
@@ -81,9 +82,9 @@ public class AttributeWikiPageFinder extends WikiPageFinder {
 
   private boolean meetsSetUpTearDownConditions(WikiPage page) {
 
-    if (attributes.containsKey("SetUp") && attributes.containsKey("TearDown")) {
-      Boolean setupWanted = attributes.get("SetUp");
-      Boolean teardownWanted = attributes.get("TearDown");
+    if (attributes.containsKey(TestAdjunct.SET_UP) && attributes.containsKey(TestAdjunct.TEAR_DOWN)) {
+      Boolean setupWanted = attributes.get(TestAdjunct.SET_UP);
+      Boolean teardownWanted = attributes.get(TestAdjunct.TEAR_DOWN);
 
       if (setupWanted && teardownWanted) {
         return isSetUpPage(page) || isTearDownPage(page);
@@ -93,12 +94,12 @@ public class AttributeWikiPageFinder extends WikiPageFinder {
 
     }
 
-    if (attributes.containsKey("SetUp")) {
-      return isSetUpPage(page) == attributes.get("SetUp");
+    if (attributes.containsKey(TestAdjunct.SET_UP)) {
+      return isSetUpPage(page) == attributes.get(TestAdjunct.SET_UP);
     }
 
-    if (attributes.containsKey("TearDown")) {
-      return isTearDownPage(page) == attributes.get("TearDown");
+    if (attributes.containsKey(TestAdjunct.TEAR_DOWN)) {
+      return isTearDownPage(page) == attributes.get(TestAdjunct.TEAR_DOWN);
     }
 
     return true;

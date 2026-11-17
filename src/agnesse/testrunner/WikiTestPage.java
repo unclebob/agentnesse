@@ -4,6 +4,7 @@ import agnesse.markdown.MarkdownPage;
 import agnesse.testsystems.ClassPath;
 import agnesse.testsystems.TestPage;
 import agnesse.wiki.PageData;
+import agnesse.wiki.TestAdjunct;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPagePath;
@@ -14,9 +15,9 @@ import java.util.List;
 
 // TODO: need 2 implementations, one for wiki text pages (Fit, Slim) and one for non-wiki text pages. See PagesByTestSystem
 public class WikiTestPage implements TestPage {
-  public static final String TEAR_DOWN = "TearDown";
-  public static final String SET_UP = "SetUp";
-  public static final String SCENARIO_LIBRARY = "ScenarioLibrary";
+  public static final String TEAR_DOWN = TestAdjunct.TEAR_DOWN;
+  public static final String SET_UP = TestAdjunct.SET_UP;
+  public static final String SCENARIO_LIBRARY = TestAdjunct.SCENARIO_LIBRARY;
 
   private final WikiPage sourcePage;
   private List<WikiPage> scenarioLibraries;

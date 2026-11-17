@@ -1,6 +1,7 @@
 package agnesse.testsystems.slim;
 
 import agnesse.html.HtmlUtil;
+import agnesse.wiki.TestAdjunct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -76,8 +77,6 @@ public final class ResultSections {
   }
 
   private static boolean structural(String name) {
-    return "SetUp".equals(name) || "TearDown".equals(name)
-      || "SuiteSetUp".equals(name) || "SuiteTearDown".equals(name)
-      || "ScenarioLibrary".equals(name);
+    return TestAdjunct.named(name);
   }
 }
