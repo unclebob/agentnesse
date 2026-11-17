@@ -140,9 +140,6 @@ public class PageDriver {
   }
 
   private JsonBody responseJson() throws Exception {
-    if (AgNesseFixtureContext.sender == null) {
-      return JsonBody.parse(null);
-    }
     return JsonBody.parse(AgNesseFixtureContext.sender.sentData());
   }
 
