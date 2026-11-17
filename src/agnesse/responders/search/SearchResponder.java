@@ -2,11 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders.search;
 
-import agnesse.AgNesseContext;
 import agnesse.components.TraversalListener;
-import agnesse.http.Request;
-import agnesse.http.Response;
-import agnesse.responders.JsonResponses;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.search.MethodWikiPageFinder;
 import agnesse.wiki.search.PageFinder;
@@ -22,19 +18,8 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.LITERAL;
 
 public class SearchResponder extends ResultResponder {
-  private static final Set<String> TYPES = Set.of("title", "text", "method");
-
-  @Override
-  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
-    Response rejected = JsonResponses.unknownParameter(request, "search", "searchForm", "type", "q", "searchScope");
-    if (rejected != null) {
-      return rejected;
-    }
-    String type = request.getInput("type");
-    if (type != null && !type.isEmpty() && !TYPES.contains(type)) {
-      return JsonResponses.error(400, "badRequest", "Unknown search type " + type);
-    }
-    return super.makeResponse(context, request);
+  public SearchResponder() {
+    super("search", Set.of("title", "text", "method"), "search", "searchForm", "type", "q", "searchScope");
   }
 
   private String query() {

@@ -1,11 +1,7 @@
 package agnesse.responders.search;
 
-import agnesse.AgNesseContext;
 import agnesse.components.TraversalListener;
-import agnesse.http.Request;
-import agnesse.http.Response;
 import agnesse.markdown.FrontMatter;
-import agnesse.responders.JsonResponses;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.search.FrontMatterFinder;
 import agnesse.wiki.search.PageFinder;
@@ -16,20 +12,9 @@ import java.util.List;
 import java.util.Set;
 
 public class SearchPropertiesResponder extends ResultResponder {
-  private static final Set<String> TYPES = Set.of("test", "suite", "static");
-
-  @Override
-  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
-    Response rejected = JsonResponses.unknownParameter(request, "searchProperties", "executeSearchProperties",
+  public SearchPropertiesResponder() {
+    super("page", Set.of("test", "suite", "static"), "searchProperties", "executeSearchProperties",
       "type", "tags", "help", "prune", "searchScope");
-    if (rejected != null) {
-      return rejected;
-    }
-    String type = request.getInput("type");
-    if (type != null && !type.isEmpty() && !TYPES.contains(type)) {
-      return JsonResponses.error(400, "badRequest", "Unknown page type " + type);
-    }
-    return super.makeResponse(context, request);
   }
 
   @Override
