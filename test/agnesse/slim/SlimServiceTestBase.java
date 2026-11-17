@@ -58,12 +58,8 @@ public abstract class SlimServiceTestBase {
   }
 
   public static void waitForServiceToStopAsync() throws InterruptedException {
-    // wait for service to close.
-    for (int i = 0; i < 1000; i++) {
-      if (!service.isAlive())
-        break;
-      Thread.sleep(50);
-    }
+    if (service != null)
+      service.join(5_000);
   }
 
   protected abstract void startSlimService() throws Exception;
@@ -77,29 +73,17 @@ public abstract class SlimServiceTestBase {
   protected abstract String expectedStopTestExceptionMessage();
 
   @Before
-  public void setUp() throws InterruptedException, IOException {
+  public void setUp() throws Exception {
     createSlimService();
     slimClient = new SlimCommandRunningClient(new MockCommandRunner(new CompositeExecutionLogListener()), LOOPBACK.getHostAddress(), port, 10, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
     statements = new ArrayList<>();
     slimClient.connect();
   }
 
-  protected void createSlimService() throws InterruptedException {
-    for (int attempt = 0; attempt < 1000; attempt++) {
-      if (tryCreateSlimService())
-        return;
-      Thread.sleep(10);
-    }
-    throw new IllegalStateException("The previous in-process Slim service never stopped");
-  }
-
-  private boolean tryCreateSlimService() {
-    try {
-      startSlimService();
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
+  protected void createSlimService() throws Exception {
+    if (service != null && service.isAlive())
+      service.join(5_000);
+    startSlimService();
   }
 
   @After
@@ -279,6 +263,7 @@ public abstract class SlimServiceTestBase {
     final SlimService.Options options = SlimService.parseCommandLine(new String[]{"-i", "agnesse.slim.fixtureInteraction.DefaultInteraction"});
     assertNotNull("should parse correctly", options);
     assertEquals("agnesse.slim.fixtureInteraction.DefaultInteraction", options.interaction.getClass().getName());
+    assertEquals(1, options.port);
   }
 
   @Test

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,12 +23,14 @@ public class SocketServiceTest {
   private SocketServer connectionCounter;
   private SocketService ss;
   private int port;
+  private CountDownLatch served = new CountDownLatch(0);
 
   public SocketServiceTest() {
     connectionCounter = new SocketServer() {
       @Override
       public void serve(Socket s) {
         connections++;
+        served.countDown();
       }
     };
   }
@@ -53,7 +57,9 @@ public class SocketServiceTest {
   @Test
   public void testOneConnection() throws Exception {
     ss = createSocketService(connectionCounter);
+    served = new CountDownLatch(1);
     connect(port);
+    assertEquals(true, served.await(5, TimeUnit.SECONDS));
     ss.close();
     assertEquals(1, connections);
   }
@@ -61,8 +67,10 @@ public class SocketServiceTest {
   @Test
   public void testManyConnections() throws Exception {
     ss = createSocketService(connectionCounter);
+    served = new CountDownLatch(10);
     for (int i = 0; i < 10; i++)
       connect(port);
+    assertEquals(true, served.await(5, TimeUnit.SECONDS));
     ss.close();
     assertEquals(10, connections);
   }
@@ -81,16 +89,19 @@ public class SocketServiceTest {
   @Test
   public void keepsAcceptingAfterAServeFailure() throws Exception {
     final int[] calls = {0};
+    CountDownLatch bothServed = new CountDownLatch(2);
     ss = createSocketService(new SocketServer() {
       @Override
       public void serve(Socket s) throws IOException {
         calls[0]++;
+        bothServed.countDown();
         s.close();
         throw new IOException("boom");
       }
     });
     connect(port);
     connect(port);
+    assertEquals(true, bothServed.await(5, TimeUnit.SECONDS));
     ss.close();
     assertEquals(2, calls[0]);
   }
@@ -111,19 +122,10 @@ public class SocketServiceTest {
   private void connect(int port) {
     try {
       Socket s = new Socket("localhost", port);
-      sleep(30);
       s.close();
     }
     catch (IOException e) {
       fail("could not connect");
-    }
-  }
-
-  private void sleep(int ms) {
-    try {
-      Thread.sleep(ms);
-    }
-    catch (InterruptedException e) {
     }
   }
 }

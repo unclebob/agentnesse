@@ -37,7 +37,7 @@ public class ShutdownResponderTest {
   public void testAgNesseGetsShutdown() throws Exception {
     ShutdownResponder responder = new ShutdownResponder();
     responder.makeResponse(context, new MockRequest());
-    Thread.sleep(200);
+    waitUntilStopped();
     assertFalse(context.agNesse.isRunning());
   }
 
@@ -57,11 +57,20 @@ public class ShutdownResponderTest {
       }
     };
     thread.start();
-
-    Thread.sleep(500);
+    thread.join(5_000);
 
     assertTrue(doneShuttingDown);
+    waitUntilStopped();
     assertFalse(context.agNesse.isRunning());
+  }
+
+  private void waitUntilStopped() {
+    long deadline = System.nanoTime() + 5_000_000_000L;
+    while (context.agNesse.isRunning()) {
+      if (System.nanoTime() > deadline)
+        break;
+      Thread.onSpinWait();
+    }
   }
 
 }

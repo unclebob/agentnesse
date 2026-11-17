@@ -7,162 +7,140 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertHasRegexp;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class StreamReaderTest {
-  private PipedOutputStream output;
+  private ByteArrayOutputStream written;
   private StreamReader reader;
-  private String readResult;
-  private byte[] byteResult;
-  private Thread thread;
-  @SuppressWarnings("unused")
-  private Exception exception;
 
   @Before
-  public void setUp() throws Exception {
-    output = new PipedOutputStream();
-    reader = new StreamReader(new PipedInputStream(output));
+  public void setUp() {
+    written = new ByteArrayOutputStream();
   }
 
   @After
   public void tearDown() throws Exception {
-    output.close();
-    reader.close();
+    if (reader != null)
+      reader.close();
   }
 
-  private void writeToPipe(String value) throws Exception {
-    byte[] bytes = value.getBytes();
-    output.write(bytes);
+  private void write(String value) throws Exception {
+    written.write(value.getBytes());
+  }
+
+  private StreamReader openReader() {
+    reader = new StreamReader(new ByteArrayInputStream(written.toByteArray()));
+    return reader;
   }
 
   @Test
   public void testReadLine() throws Exception {
-    startReading(new ReadLine());
-    writeToPipe("a line\r\n");
-    finishReading();
-    assertEquals("a line", readResult);
+    write("a line\r\n");
+    assertEquals("a line", openReader().readLine());
   }
 
   @Test
   public void testReadLineBytes() throws Exception {
-    startReading(new ReadLineBytes());
-    writeToPipe("a line\r\n");
-    finishReading();
-    assertEquals("a line", new String(byteResult));
+    write("a line\r\n");
+    assertEquals("a line", new String(openReader().readLineBytes()));
   }
 
   @Test
   public void testBufferCanGrow() throws Exception {
-    startReading(new ReadLine());
     for (int i = 0; i < 1001; i++)
-      writeToPipe(i + ",");
-    writeToPipe("\r\n");
+      write(i + ",");
+    write("\r\n");
 
-    finishReading();
-    assertHasRegexp("1000", readResult);
+    assertHasRegexp("1000", openReader().readLine());
   }
 
   @Test
   public void testReadNumberOfBytesAsString() throws Exception {
-    startReading(new ReadCount(100));
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < 100; i++) {
       buffer.append("*");
-      writeToPipe("*");
+      write("*");
     }
-    finishReading();
 
-    assertEquals(buffer.toString(), readResult);
+    assertEquals(buffer.toString(), openReader().read(100));
   }
 
   @Test
   public void testReadNumberOfBytes() throws Exception {
-    startReading(new ReadCountBytes(100));
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < 100; i++) {
       buffer.append("*");
-      writeToPipe("*");
+      write("*");
     }
-    finishReading();
 
-    assertEquals(buffer.toString(), new String(byteResult));
+    assertEquals(buffer.toString(), new String(openReader().readBytes(100)));
   }
 
   @Test
   public void testReadNumberOfBytesWithClosedInput() throws Exception {
-    startReading(new ReadCountBytes(100));
-
     for (int i = 0; i < 50; i++)
-      writeToPipe("*");
-    output.close();
-    finishReading();
+      write("*");
+    StreamReader reader = openReader();
+
+    byte[] bytes = reader.readBytes(100);
 
     assertEquals("bytes consumed", 50, reader.numberOfBytesConsumed());
-    assertEquals("bytes returned", 50, byteResult.length);
+    assertEquals("bytes returned", 50, bytes.length);
   }
 
   @Test
   public void testReadingZeroBytes() throws Exception {
-    startReading(new ReadCount(0));
-    finishReading();
-    assertEquals("", readResult);
+    assertEquals("", openReader().read(0));
   }
 
   @Test
   public void testReadUpTo() throws Exception {
-    checkReadUoTo("--boundary", "some bytes--boundary", "some bytes");
+    checkReadUpTo("--boundary", "some bytes--boundary", "some bytes");
   }
 
   @Test
   public void testReadUpToNonEnd() throws Exception {
-    checkReadUoTo("--bound", "some bytes--boundary", "some bytes");
+    checkReadUpTo("--bound", "some bytes--boundary", "some bytes");
   }
 
   @Test
   public void testReadBytesUpTo() throws Exception {
-    startReading(new ReadUpToBytes("--boundary"));
-    writeToPipe("some bytes--boundary");
-    finishReading();
-
-    assertEquals("some bytes", new String(byteResult));
+    write("some bytes--boundary");
+    assertEquals("some bytes", new String(openReader().readBytesUpTo("--boundary")));
   }
 
   @Test
   public void testReadUpTo2() throws Exception {
-    checkReadUoTo("--bob", "----bob\r\n", "--");
+    checkReadUpTo("--bob", "----bob\r\n", "--");
   }
 
   @Test
   public void testReadUpTo3() throws Exception {
-    checkReadUoTo("12345", "112123123412345", "1121231234");
+    checkReadUpTo("12345", "112123123412345", "1121231234");
   }
 
-  private void checkReadUoTo(String boundary, String input, String expected) throws Exception {
-    startReading(new ReadUpTo(boundary));
-    writeToPipe(input);
-    finishReading();
-
-    assertEquals(expected, readResult);
+  private void checkReadUpTo(String boundary, String input, String expected) throws Exception {
+    write(input);
+    assertEquals(expected, openReader().readUpTo(boundary));
   }
 
   @Test
   public void testCopyBytesUpTo() throws Exception {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    writeToPipe("some bytes--boundary");
-    reader.copyBytesUpTo("--boundary", outputStream);
+    write("some bytes--boundary");
+    openReader().copyBytesUpTo("--boundary", outputStream);
     assertEquals("some bytes", outputStream.toString());
   }
 
   @Test
   public void testEofReadCount() throws Exception {
-    writeToPipe("abcdefghijklmnopqrstuvwxyz");
-    output.close();
+    write("abcdefghijklmnopqrstuvwxyz");
+    StreamReader reader = openReader();
     assertFalse(reader.isEof());
     reader.read(10);
     assertFalse(reader.isEof());
@@ -174,8 +152,8 @@ public class StreamReaderTest {
 
   @Test
   public void testEofReadLine() throws Exception {
-    writeToPipe("one line\ntwo lines\nthree lines");
-    output.close();
+    write("one line\ntwo lines\nthree lines");
+    StreamReader reader = openReader();
     assertFalse(reader.isEof());
     reader.readLine();
     assertFalse(reader.isEof());
@@ -187,8 +165,8 @@ public class StreamReaderTest {
 
   @Test
   public void testEofReadUpTo() throws Exception {
-    writeToPipe("mark one, mark two, the end");
-    output.close();
+    write("mark one, mark two, the end");
+    StreamReader reader = openReader();
     assertFalse(reader.isEof());
     reader.readUpTo("one");
     assertFalse(reader.isEof());
@@ -200,7 +178,8 @@ public class StreamReaderTest {
 
   @Test
   public void testBytesConsumed() throws Exception {
-    writeToPipe("One line\r\n12345abc-boundary");
+    write("One line\r\n12345abc-boundary");
+    StreamReader reader = openReader();
     assertEquals(0, reader.numberOfBytesConsumed());
 
     reader.readLine();
@@ -215,99 +194,6 @@ public class StreamReaderTest {
 
   @Test
   public void testEarlyClosingStream() throws Exception {
-    startReading(new ReadCount(10));
-    output.close();
-    finishReading();
-    assertEquals("", readResult);
+    assertEquals("", openReader().read(10));
   }
-
-  private void startReading(ReadThread thread) {
-    this.thread = thread;
-    this.thread.start();
-  }
-
-  private void finishReading() throws Exception {
-    thread.join();
-  }
-
-  abstract class ReadThread extends Thread {
-    @Override
-    public void run() {
-      try {
-        doRead();
-      }
-      catch (Exception e) {
-        exception = e;
-      }
-    }
-
-    public abstract void doRead() throws Exception;
-  }
-
-  class ReadLine extends ReadThread {
-    @Override
-    public void doRead() throws Exception {
-      readResult = reader.readLine();
-    }
-  }
-
-  class ReadCount extends ReadThread {
-    private int amount;
-
-    public ReadCount(int amount) {
-      this.amount = amount;
-    }
-
-    @Override
-    public void doRead() throws Exception {
-      readResult = reader.read(amount);
-    }
-  }
-
-  class ReadUpTo extends ReadThread {
-    private String boundary;
-
-    public ReadUpTo(String b) {
-      boundary = b;
-    }
-
-    @Override
-    public void doRead() throws Exception {
-      readResult = reader.readUpTo(boundary);
-    }
-  }
-
-  class ReadLineBytes extends ReadThread {
-    @Override
-    public void doRead() throws Exception {
-      byteResult = reader.readLineBytes();
-    }
-  }
-
-  class ReadCountBytes extends ReadThread {
-    private int amount;
-
-    public ReadCountBytes(int amount) {
-      this.amount = amount;
-    }
-
-    @Override
-    public void doRead() throws Exception {
-      byteResult = reader.readBytes(amount);
-    }
-  }
-
-  class ReadUpToBytes extends ReadThread {
-    private String boundary;
-
-    public ReadUpToBytes(String b) {
-      boundary = b;
-    }
-
-    @Override
-    public void doRead() throws Exception {
-      byteResult = reader.readBytesUpTo(boundary);
-    }
-  }
-
 }

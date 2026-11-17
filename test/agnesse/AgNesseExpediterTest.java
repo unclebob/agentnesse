@@ -9,20 +9,29 @@ import agnesse.http.ResponseParser;
 import agnesse.http.SimpleResponse;
 import agnesse.testutil.AgNesseUtil;
 import agnesse.util.MockSocket;
+import agnesse.util.SerialExecutorService;
 import agnesse.wiki.WikiPage;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
 public class AgNesseExpediterTest {
-  public static final int REQUEST_PARSING_TIME_LIMIT = 200;
+  public static final int REQUEST_PARSING_TIME_LIMIT = 40;
   private AgNesseExpediter expediter;
   private MockSocket socket;
   private AgNesseContext context;
@@ -50,6 +59,48 @@ public class AgNesseExpediterTest {
   }
 
   @Test
+  public void aResetConnectionWhileSendingIsIgnored() throws Exception {
+    MockSocket reset = new MockSocket("GET /root HTTP/1.1\r\n\r\n") {
+      @Override
+      public synchronized OutputStream getOutputStream() {
+        return new OutputStream() {
+          @Override
+          public void write(int b) throws IOException {
+            throw new SocketException("connection reset");
+          }
+        };
+      }
+    };
+    AgNesseExpediter sender = new AgNesseExpediter(reset, context, new SerialExecutorService());
+    List<String> warnings = new ArrayList<>();
+    Logger log = Logger.getLogger(AgNesseExpediter.class.getName());
+    Handler handler = new Handler() {
+      @Override
+      public void publish(LogRecord record) {
+        if (record.getLevel().intValue() >= Level.WARNING.intValue())
+          warnings.add(record.getMessage());
+      }
+
+      @Override
+      public void flush() {
+      }
+
+      @Override
+      public void close() {
+      }
+    };
+    log.addHandler(handler);
+    try {
+      sender.run();
+    } finally {
+      log.removeHandler(handler);
+    }
+
+    assertTrue(reset.isClosed());
+    assertFalse(warnings.contains("Unexpected exception"));
+  }
+
+  @Test
   public void testIncompleteRequestsTimeOut() throws Exception {
     final AgNesseExpediter sender = preparePipedAgNesseExpediter();
 
@@ -57,9 +108,8 @@ public class AgNesseExpediterTest {
     senderThread.start();
     Thread parseResponseThread = makeParsingThread();
     parseResponseThread.start();
-    Thread.sleep(REQUEST_PARSING_TIME_LIMIT + 100);
 
-    parseResponseThread.join();
+    parseResponseThread.join(5_000);
 
     assertEquals(408, response.getStatus());
   }
@@ -120,13 +170,13 @@ public class AgNesseExpediterTest {
 
     boolean pipeHasBeenClosed = false;
 
-    // 22 bytes * 20ms sleep => 440 ms for the whole request. Time limit is set to 200ms.
+    // 22 bytes * 5ms sleep => 110ms for the whole request. Time limit is 40ms.
     byte[] bytes = "GET /root HTTP/1.1\r\n\r\n".getBytes();
     try {
       for (byte aByte : bytes) {
         clientOutput.write(aByte);
         clientOutput.flush();
-        Thread.sleep(20);
+        Thread.sleep(5);
       }
     }
     catch (IOException pipedClosed) {

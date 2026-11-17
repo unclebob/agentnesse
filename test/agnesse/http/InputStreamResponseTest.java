@@ -86,10 +86,17 @@ public class InputStreamResponseTest implements ResponseSender {
   private void writeLinesToFile(int lines) throws IOException {
     String sampleLine = "This is a sample line of a large file that's created for the large file tests. It's 100 bytes long.\n";
     byte[] bytes = sampleLine.getBytes();
-    FileOutputStream testFileOutput = new FileOutputStream(testFile);
-    for (int i = 0; i < lines; i++)
-      testFileOutput.write(bytes);
-    testFileOutput.close();
+    int chunkLines = 1000;
+    byte[] chunk = new byte[bytes.length * chunkLines];
+    for (int i = 0; i < chunkLines; i++)
+      System.arraycopy(bytes, 0, chunk, i * bytes.length, bytes.length);
+    try (FileOutputStream testFileOutput = new FileOutputStream(testFile)) {
+      int fullChunks = lines / chunkLines;
+      for (int i = 0; i < fullChunks; i++)
+        testFileOutput.write(chunk);
+      for (int i = 0; i < lines % chunkLines; i++)
+        testFileOutput.write(bytes);
+    }
   }
 
   @Override
