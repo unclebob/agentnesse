@@ -3,6 +3,8 @@ build
 .metrics/
 .agnesse/
 .venv/
+__pycache__/
+*.pyc
 target/
 out
 lib/*
