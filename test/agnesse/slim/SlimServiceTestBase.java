@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import static org.junit.Assert.*;
 
 public abstract class SlimServiceTestBase {
   static Thread service;
+  static int port;
   protected List<Instruction> statements;
   protected SlimCommandRunningClient slimClient;
 
@@ -36,7 +38,9 @@ public abstract class SlimServiceTestBase {
       throw new SlimError("Already an in-process server running: " + service.getName() + " (alive=" + service.isAlive() + ")");
     }
     ServerSocketFactory serverSocketFactory = new PlainServerSocketFactory();
-    final SlimService slimservice = new SlimService(slimFactory.getSlimServer(), serverSocketFactory.createServerSocket(options.port), options.daemon);
+    ServerSocket socket = serverSocketFactory.createServerSocket(options.port);
+    port = socket.getLocalPort();
+    final SlimService slimservice = new SlimService(slimFactory.getSlimServer(), socket, options.daemon);
     service = new Thread() {
       @Override
       public void run() {
@@ -72,7 +76,7 @@ public abstract class SlimServiceTestBase {
   @Before
   public void setUp() throws InterruptedException, IOException {
     createSlimService();
-    slimClient = new SlimCommandRunningClient(new MockCommandRunner(new CompositeExecutionLogListener()), "localhost", 8099, 10, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
+    slimClient = new SlimCommandRunningClient(new MockCommandRunner(new CompositeExecutionLogListener()), "localhost", port, 10, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
     statements = new ArrayList<>();
     slimClient.connect();
   }

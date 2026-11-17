@@ -29,7 +29,7 @@ public class SlimServiceTest extends SlimServiceTestBase {
 
   @Override
   protected void startSlimService() throws IOException {
-    SlimService.Options options = SlimService.parseCommandLine(new String[]{"8099"});
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"0"});
     startWithFactoryAsync(JavaSlimFactory.createJavaSlimFactory(options), options);
   }
 
