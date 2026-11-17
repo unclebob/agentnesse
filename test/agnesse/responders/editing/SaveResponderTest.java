@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertHasRegexp;
+import static util.RegexTestCase.assertSubString;
 
 import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
@@ -16,6 +17,10 @@ import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
+import agnesse.wiki.fs.FileBasedWikiPage;
+import agnesse.wiki.fs.MemoryFileSystem;
+
+import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -179,5 +184,121 @@ public class SaveResponderTest {
   public void testHasVersionHeader() throws Exception {
     doSimpleEdit();
     assertTrue("header missing", response.getHeader("Current-Version") != null);
+  }
+
+  @Test
+  public void anUntouchedFrontMatterStaysByteForByte() throws Exception {
+    MemoryFileSystem files = new MemoryFileSystem();
+    context = AgNesseUtil.makeTestContext(files);
+    root = context.getRootPage();
+    File page = new File(((FileBasedWikiPage) root).getFileSystemPath(), "Kept.md");
+    String json = "{ \"type\" : \"test\", \"tags\" : [ \"keep\" ], \"help\" : \"h\", \"prune\" : false, \"user\" : \"ada\" }";
+    files.makeFile(page, json + "\nOLD");
+
+    request.setResource("Kept");
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "NEW");
+    request.addInput(EditResponder.FRONT_MATTER, json);
+    request.addInput(EditResponder.HELP_TEXT, "from the field");
+    request.addInput(EditResponder.SUITES, "from-the-field");
+    request.setCredentials("bob", "secret");
+
+    response = responder.makeResponse(context, request);
+
+    assertEquals(303, response.getStatus());
+    assertEquals(json + "\nNEW", files.getContent(page));
+    PageData data = root.getChildPage("Kept").getData();
+    assertEquals("NEW", data.getContent());
+    assertEquals("ada", data.getAttribute(PageData.LAST_MODIFYING_USER));
+    assertEquals("h", data.getAttribute(PageData.PropertyHELP));
+    assertEquals("keep", data.getAttribute(PageData.PropertySUITES));
+    assertTrue(data.hasAttribute("Test"));
+  }
+
+  @Test
+  public void editedFrontMatterReplacesTheProperties() throws Exception {
+    MemoryFileSystem files = new MemoryFileSystem();
+    context = AgNesseUtil.makeTestContext(files);
+    root = context.getRootPage();
+    File page = new File(((FileBasedWikiPage) root).getFileSystemPath(), "Kept.md");
+    files.makeFile(page, "{ \"type\" : \"static\" }\nOLD");
+
+    request.setResource("Kept");
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "NEW");
+    request.addInput(EditResponder.FRONT_MATTER, "{ \"type\": \"suite\", \"tags\": [\"later\"], \"help\": \"how\", \"prune\": true, \"user\": \"ada\" }");
+    request.addInput(EditResponder.HELP_TEXT, "from the field");
+    request.addInput(EditResponder.SUITES, "from-the-field");
+    request.setCredentials("bob", "secret");
+
+    response = responder.makeResponse(context, request);
+
+    assertEquals(303, response.getStatus());
+    String saved = files.getContent(page);
+    assertTrue(saved.contains("\"type\": \"suite\""));
+    assertTrue(saved.contains("\"later\""));
+    assertFalse(saved.contains("\"type\" : \"static\""));
+    PageData data = root.getChildPage("Kept").getData();
+    assertEquals("NEW", data.getContent());
+    assertTrue(data.hasAttribute("Suite"));
+    assertFalse(data.hasAttribute("Test"));
+    assertEquals("later", data.getAttribute(PageData.PropertySUITES));
+    assertEquals("how", data.getAttribute(PageData.PropertyHELP));
+    assertTrue(data.hasAttribute(PageData.PropertyPRUNE));
+    assertEquals("ada", data.getAttribute(PageData.LAST_MODIFYING_USER));
+  }
+
+  @Test
+  public void blankFrontMatterRemovesTheObject() throws Exception {
+    MemoryFileSystem files = new MemoryFileSystem();
+    context = AgNesseUtil.makeTestContext(files);
+    root = context.getRootPage();
+    File page = new File(((FileBasedWikiPage) root).getFileSystemPath(), "Kept.md");
+    files.makeFile(page, "{ \"type\": \"test\" }\nOLD");
+
+    request.setResource("Kept");
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "NEW");
+    request.addInput(EditResponder.FRONT_MATTER, "  \n");
+    responder.makeResponse(context, request);
+
+    assertEquals("NEW", files.getContent(page));
+    assertFalse(root.getChildPage("Kept").getData().hasAttribute("Test"));
+  }
+
+  @Test
+  public void invalidJsonDoesNotSaveAndShowsTheEditPage() throws Exception {
+    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("Kept"), "original");
+    page.commit(page.getData());
+    request.setResource("Kept");
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "KEPT<b>");
+    request.addInput(EditResponder.FRONT_MATTER, "{ \"type\":");
+    request.addInput("redirect", "/elsewhere");
+
+    response = responder.makeResponse(context, request);
+
+    assertEquals(400, response.getStatus());
+    String body = ((SimpleResponse) response).getContent();
+    assertSubString("malformed JSON", body);
+    assertSubString("KEPT&lt;b&gt;", body);
+    assertSubString("{ \"type\":", body);
+    assertSubString("Front Matter ▾", body);
+    assertSubString("id=\"front-matter\" open", body);
+    assertSubString("value=\"/elsewhere\"", body);
+    assertEquals("original", root.getChildPage("Kept").getData().getContent());
+  }
+
+  @Test
+  public void anInvalidTypeDoesNotSaveOrCreate() throws Exception {
+    request.setResource("Missing");
+    request.addInput(EditResponder.CONTENT_INPUT_NAME, "nope");
+    request.addInput(EditResponder.FRONT_MATTER, "{ \"type\": \"wiki\" }");
+
+    response = responder.makeResponse(context, request);
+
+    assertEquals(400, response.getStatus());
+    String body = ((SimpleResponse) response).getContent();
+    assertSubString("wiki", body);
+    assertSubString("nope", body);
+    assertSubString("{ \"type\": \"wiki\" }", body);
+    assertFalse(body.contains("name=\"redirect\""));
+    assertFalse(root.hasChildPage("Missing"));
   }
 }

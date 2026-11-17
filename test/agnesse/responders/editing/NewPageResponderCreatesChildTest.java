@@ -8,6 +8,7 @@ import agnesse.Responder;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
 import agnesse.testutil.AgNesseUtil;
+import agnesse.markdown.FrontMatter;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
@@ -181,6 +182,57 @@ public class NewPageResponderCreatesChildTest {
     getChildPage("TestChildPage");
     assertFalse(isTest());
     assertTrue(isSuite());
+  }
+
+  @Test
+  public void jsonWinsOverThePageTypeRadioHelpAndSuites() throws Exception {
+    request.addInput("pageType", "Suite");
+    request.addInput("helpText", "from the field");
+    request.addInput("suites", "from-the-field");
+    request.addInput("frontMatter", "{ \"type\": \"test\", \"tags\": [\"from-json\"], \"help\": \"from json\", \"prune\": true, \"user\": \"ada\" }");
+    request.setCredentials("bob", "secret");
+
+    responder.makeResponse(context, request);
+    getChildPage(childName);
+
+    assertTrue(isTest());
+    assertFalse(isSuite());
+    assertEquals("from-json", childPageData.getAttribute("Suites"));
+    assertEquals("from json", childPageData.getAttribute("Help"));
+    assertTrue(childPageData.hasAttribute("Prune"));
+    assertEquals("ada", childPageData.getAttribute(PageData.LAST_MODIFYING_USER));
+  }
+
+  @Test
+  public void aNullTypeFollowsThePageName() throws Exception {
+    request.addInput("pageName", "TestChild");
+    request.addInput("pageType", "Static");
+    request.addInput("frontMatter", FrontMatter.defaultJson("Default"));
+
+    responder.makeResponse(context, request);
+    getChildPage("TestChild");
+
+    assertTrue(isTest());
+    assertFalse(isSuite());
+  }
+
+  @Test
+  public void invalidFrontMatterDoesNotCreateThePage() throws Exception {
+    request.addInput("pageName", "BadChild");
+    request.addInput("pageContent", "KEPT<b>");
+    request.addInput("pageType", "Suite");
+    request.addInput("frontMatter", "{ \"type\": \"wiki\" }");
+
+    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+
+    assertEquals(400, response.getStatus());
+    assertSubString("wiki", response.getContent());
+    assertSubString("KEPT&lt;b&gt;", response.getContent());
+    assertSubString("value=\"BadChild\"", response.getContent());
+    assertSubString("Front Matter ▾", response.getContent());
+    assertSubString("id=\"front-matter\" open", response.getContent());
+    assertSubString("pageType_Suite", response.getContent());
+    assertEquals(null, crawler.getPage(PathParser.parse("TestPage.BadChild")));
   }
 
   private boolean isTest() {

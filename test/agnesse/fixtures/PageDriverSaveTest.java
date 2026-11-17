@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class PageDriverSaveTest {
@@ -36,6 +37,35 @@ public class PageDriverSaveTest {
     assertEquals(303, driver.requestPageSaveWithContentsByUserAndPassword("Saved", "new content", "Aladdin", ""));
     assertEquals("Aladdin", driver.lastModifiedOfPage("Saved"));
     assertEquals("new content", driver.pageSource("Saved"));
+  }
+
+  @Test
+  public void saveWithFrontMatterStoresTheJson() throws Exception {
+    PageDriver driver = new PageDriver();
+    driver.createPageWithContent("Saved", "old");
+
+    assertEquals(303, driver.requestPageSaveWithContentsAndFrontMatter("Saved", "new content",
+      "{ \"type\": \"suite\", \"tags\": [\"later\"], \"help\": \"how\", \"prune\": false }"));
+
+    assertEquals("new content", driver.pageSource("Saved"));
+    assertTrue(driver.pageHasAttribute("Saved", "Suite"));
+    assertFalse(driver.pageHasAttribute("Saved", "Test"));
+  }
+
+  @Test
+  public void newPageFrontMatterWinsOverTheTypeRadio() throws Exception {
+    PageDriver driver = new PageDriver();
+    driver.createPageWithContent("Parent", "parent");
+
+    assertEquals(303, driver.requestNewPageNamedWithContentsOfTypeAndFrontMatter(
+      "Parent", "Child", "hello", "Suite", "{ \"type\": \"test\", \"tags\": [], \"help\": null, \"prune\": false }"));
+    assertTrue(driver.pageHasAttribute("Parent.Child", "Test"));
+    assertFalse(driver.pageHasAttribute("Parent.Child", "Suite"));
+
+    assertEquals(400, driver.requestNewPageNamedWithContentsOfTypeAndFrontMatter(
+      "Parent", "Bad", "hello", "Test", "{"));
+    assertTrue(driver.contentContains("malformed JSON"));
+    assertEquals(404, driver.requestPage("Parent.Bad?getPage&dontCreatePage"));
   }
 
   @Test

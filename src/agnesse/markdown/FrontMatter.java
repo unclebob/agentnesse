@@ -27,8 +27,9 @@ public final class FrontMatter {
   private final boolean prune;
   private final String user;
   private final String body;
+  private final String prefix;
 
-  private FrontMatter(boolean present, String type, List<String> tags, String help, boolean prune, String user, String body) {
+  private FrontMatter(boolean present, String type, List<String> tags, String help, boolean prune, String user, String body, String prefix) {
     this.present = present;
     this.type = type;
     this.tags = tags;
@@ -36,6 +37,7 @@ public final class FrontMatter {
     this.prune = prune;
     this.user = user;
     this.body = body;
+    this.prefix = prefix;
   }
 
   public static FrontMatter from(PageData data) {
@@ -48,7 +50,7 @@ public final class FrontMatter {
       data.getAttribute(WikiPageProperty.HELP),
       data.hasAttribute(WikiPageProperty.PRUNE),
       data.getAttribute(WikiPageProperty.LAST_MODIFYING_USER),
-      content);
+      content, "");
   }
 
   public static FrontMatter read(String text) {
@@ -57,8 +59,95 @@ public final class FrontMatter {
       return absent(text);
     }
     int end = endOfObject(text, start);
+    String rest = text.substring(end + 1);
+    String prefix = text.substring(0, end + 1);
+    if (rest.startsWith("\n")) {
+      prefix = prefix + "\n";
+      rest = rest.substring(1);
+    }
     JSONObject json = object(text.substring(start, end + 1));
-    return new FrontMatter(true, typeOf(json), tagsOf(json), helpOf(json), pruneOf(json), userOf(json), bodyAfter(text, end));
+    return new FrontMatter(true, typeOf(json), tagsOf(json), helpOf(json), pruneOf(json), userOf(json), rest, prefix);
+  }
+
+  /** The JSON an editor submitted. Blank clears the front matter. Anything else must be an object. */
+  public static FrontMatter readSubmitted(String submitted) {
+    String json = submitted == null ? "" : submitted;
+    if (json.isBlank()) {
+      return absent("");
+    }
+    FrontMatter matter = read(json);
+    if (!matter.present()) {
+      throw new IllegalArgumentException("malformed JSON front matter");
+    }
+    return matter;
+  }
+
+  /**
+   * Keep the file's front matter bytes when the submitted text is the text the editor showed.
+   * Otherwise the JSON replaces type, tags, help, prune, and user.
+   */
+  public static void keepOrApply(PageData data, FrontMatter matter, String submitted, String pageName) {
+    String json = submitted == null ? "" : submitted;
+    if (!matter.present() || json.equals(objectText(data.getFrontMatterPrefix()))) {
+      data.setPreserveFrontMatter(true);
+      if (!matter.present()) {
+        data.setFrontMatterPrefix("");
+      }
+      return;
+    }
+    apply(data, matter, pageName);
+  }
+
+  public static void apply(PageData data, FrontMatter matter, String pageName) {
+    String type = matter.type() == null
+      ? PageType.getPageTypeForPageName(pageName).toString().toLowerCase()
+      : matter.type();
+    data.getProperties().remove(PageType.TEST.toString());
+    data.getProperties().remove(PageType.SUITE.toString());
+    if ("test".equals(type)) {
+      data.setAttribute(PageType.TEST.toString());
+    } else if ("suite".equals(type)) {
+      data.setAttribute(PageType.SUITE.toString());
+    }
+    if (matter.tags().isEmpty()) {
+      data.removeAttribute(WikiPageProperty.SUITES);
+    } else {
+      data.setAttribute(WikiPageProperty.SUITES, String.join(", ", matter.tags()));
+    }
+    data.setOrRemoveAttribute(WikiPageProperty.HELP, matter.help());
+    if (matter.prune()) {
+      data.setAttribute(WikiPageProperty.PRUNE);
+    } else {
+      data.removeAttribute(WikiPageProperty.PRUNE);
+    }
+    data.setOrRemoveAttribute(WikiPageProperty.LAST_MODIFYING_USER, matter.user());
+  }
+
+  public static String defaultJson(String pageType) {
+    return objectText(write(jsonType(pageType), List.of(), null, false, null, ""));
+  }
+
+  public static String objectText(String prefix) {
+    if (prefix == null) {
+      return "";
+    }
+    if (prefix.endsWith("\n")) {
+      return prefix.substring(0, prefix.length() - 1);
+    }
+    return prefix;
+  }
+
+  private static String jsonType(String pageType) {
+    if ("Test".equals(pageType)) {
+      return "test";
+    }
+    if ("Suite".equals(pageType)) {
+      return "suite";
+    }
+    if ("Static".equals(pageType)) {
+      return "static";
+    }
+    return null;
   }
 
   public static String write(String type, List<String> tags, String help, boolean prune, String body) {
@@ -68,7 +157,7 @@ public final class FrontMatter {
   public static String write(String type, List<String> tags, String help, boolean prune, String user, String body) {
     StringBuilder json = new StringBuilder();
     json.append("{\n");
-    json.append("  \"type\": ").append(JSONObject.quote(type)).append(",\n");
+    json.append("  \"type\": ").append(type == null ? "null" : JSONObject.quote(type)).append(",\n");
     json.append("  \"tags\": ").append(tagsJson(tags)).append(",\n");
     json.append("  \"help\": ").append(help == null ? "null" : JSONObject.quote(help)).append(",\n");
     json.append("  \"prune\": ").append(prune);
@@ -111,6 +200,10 @@ public final class FrontMatter {
     return body;
   }
 
+  public String prefix() {
+    return prefix;
+  }
+
   static String typeFrom(PageData data) {
     if (data.hasAttribute(PageType.SUITE.toString())) {
       return "suite";
@@ -130,7 +223,7 @@ public final class FrontMatter {
   }
 
   private static FrontMatter absent(String text) {
-    return new FrontMatter(false, null, List.of(), null, false, null, text);
+    return new FrontMatter(false, null, List.of(), null, false, null, text, "");
   }
 
   private static int indexOfObject(String text) {
@@ -260,11 +353,6 @@ public final class FrontMatter {
       throw new IllegalArgumentException(message);
     }
     return type.cast(found);
-  }
-
-  private static String bodyAfter(String text, int end) {
-    String rest = text.substring(end + 1);
-    return rest.startsWith("\n") ? rest.substring(1) : rest;
   }
 
   private static String tagsJson(List<String> tags) {

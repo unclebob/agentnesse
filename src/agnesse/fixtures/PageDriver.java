@@ -53,13 +53,38 @@ public class PageDriver {
   }
 
   public int requestPageSaveWithContentsByUserAndPassword(String pageName, String contents, String username, String password) throws Exception {
+    return post(pageName, contents, null, username, password);
+  }
+
+  public int requestPageSaveWithContentsAndFrontMatter(String pageName, String contents, String frontMatter) throws Exception {
+    return post(pageName, contents, frontMatter, null, null);
+  }
+
+  public int requestNewPageNamedWithContentsOfTypeAndFrontMatter(String parent, String name, String contents, String type, String frontMatter) throws Exception {
+    MockRequest request = new MockRequest();
+    request.addInput("responder", "new");
+    request.addInput("pageName", name);
+    request.addInput("pageContent", contents);
+    request.addInput("pageType", type);
+    request.addInput("frontMatter", frontMatter);
+    request.parseRequestUri("/" + parent);
+    return send(request);
+  }
+
+  private int post(String pageName, String contents, String frontMatter, String username, String password) throws Exception {
     MockRequest request = new MockRequest();
     if (username != null)
       request.setCredentials(username, password);
     request.addInput("responder", "saveData");
     request.addInput("pageContent", contents);
+    if (frontMatter != null)
+      request.addInput("frontMatter", frontMatter);
     request.parseRequestUri("/" + pageName);
-    WikiPagePath path = PathParser.parse(request.getResource()); // uri;
+    return send(request);
+  }
+
+  private int send(MockRequest request) throws Exception {
+    WikiPagePath path = PathParser.parse(request.getResource());
     AgNesseFixtureContext.page = AgNesseFixtureContext.context.getRootPage().getPageCrawler().getPage(path);
     AgNesseExpediter expediter = new AgNesseExpediter(new MockSocket(""), AgNesseFixtureContext.context, new SerialExecutorService());
     AgNesseFixtureContext.response = expediter.createGoodResponse(request);

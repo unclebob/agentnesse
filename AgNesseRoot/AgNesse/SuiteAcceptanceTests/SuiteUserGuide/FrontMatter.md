@@ -8,6 +8,8 @@
 
 A page file starts with a JSON object. `type` is `test`, `suite`, or `static`. `tags` is an array of strings. Saving the page writes that object from the page properties.
 
+The Edit page shows that object in a Front Matter section above the editor. The section starts collapsed. Saving parses the JSON into the page's type, tags, help, and prune. Invalid JSON or an invalid type does not save: the edit page opens the section, shows the error, and keeps the text you typed. A new page starts with the front matter for the selected type, and changing the type updates that JSON. The JSON is what is stored. Leaving the section untouched leaves the file's front matter as it was written.
+
 ```json
 {
   "type": "test",

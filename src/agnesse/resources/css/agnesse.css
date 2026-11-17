@@ -71,6 +71,11 @@ form.search { display: inline; }
 form.search input[type="text"], input[type="text"], textarea { font: inherit; }
 textarea, .CodeMirror { width: 100%; min-height: 16rem; font-family: monospace; }
 fieldset { border: 0; margin: 0 0 0.75rem; padding: 0; }
+#front-matter { margin: 0 0 0.75rem; }
+#front-matter summary { cursor: pointer; list-style: none; }
+#front-matter summary::-webkit-details-marker { display: none; }
+#front-matter textarea { min-height: 8rem; }
+p.error { padding: 0.4rem 0.6rem; }
 #error-nav { position: sticky; bottom: 0; background: #fff; border-top: 1px solid #ccc; padding: 0.5rem 1rem; }
 button, .button, input[type="submit"] { font: inherit; padding: 0.2rem 0.6rem; }
 .page-result { margin: 0 0 1.5rem; }

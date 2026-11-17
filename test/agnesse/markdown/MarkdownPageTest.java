@@ -126,6 +126,31 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void anUntouchedFrontMatterStaysByteForByte() throws Exception {
+    String original = "{ \"type\" : \"test\", \"tags\" : [ \"keep\" ] }\nOLD";
+    fileSystem.makeFile(new File("root/Notes.md"), original);
+    WikiPage page = root.getChildPage("Notes");
+    PageData data = page.getData();
+    data.setContent("NEW");
+    data.setPreserveFrontMatter(true);
+    page.commit(data);
+
+    assertEquals("{ \"type\" : \"test\", \"tags\" : [ \"keep\" ] }\nNEW", fileSystem.getContent(new File("root/Notes.md")));
+  }
+
+  @Test
+  public void preservingFrontMatterWithNoContentWritesOnlyThePrefix() throws Exception {
+    fileSystem.makeFile(new File("root/Notes.md"), "{ \"type\": \"test\" }\nbody\n");
+    WikiPage page = root.getChildPage("Notes");
+    PageData data = page.getData();
+    data.setContent(null);
+    data.setPreserveFrontMatter(true);
+    page.commit(data);
+
+    assertEquals("{ \"type\": \"test\" }\n", fileSystem.getContent(new File("root/Notes.md")));
+  }
+
+  @Test
   public void commitWritesTheFrontMatterAndTheBody() throws Exception {
     fileSystem.makeFile(new File("root/Notes.md"), "body\n");
     WikiPage page = root.getChildPage("Notes");

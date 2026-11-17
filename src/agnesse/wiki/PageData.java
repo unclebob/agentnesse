@@ -72,6 +72,8 @@ public class PageData implements ReadOnlyPageData, Serializable {
 
   private String content = "";
   private WikiPageProperty properties = new WikiPageProperty();
+  private String frontMatterPrefix = "";
+  private boolean preserveFrontMatter;
 
   public static final String PATH_SEPARATOR = "PATH_SEPARATOR";
 
@@ -83,6 +85,8 @@ public class PageData implements ReadOnlyPageData, Serializable {
   public PageData(PageData data) {
     this.properties = new WikiPageProperty(data.properties);
     this.content = data.content;
+    this.frontMatterPrefix = data.frontMatterPrefix;
+    this.preserveFrontMatter = data.preserveFrontMatter;
   }
 
   public PageData(String content, WikiPageProperty properties) {
@@ -136,6 +140,22 @@ public class PageData implements ReadOnlyPageData, Serializable {
 
   public void setContent(String content) {
     this.content = StringUtils.remove(content, '\r');
+  }
+
+  public String getFrontMatterPrefix() {
+    return frontMatterPrefix;
+  }
+
+  public void setFrontMatterPrefix(String frontMatterPrefix) {
+    this.frontMatterPrefix = frontMatterPrefix == null ? "" : frontMatterPrefix;
+  }
+
+  public boolean preserveFrontMatter() {
+    return preserveFrontMatter;
+  }
+
+  public void setPreserveFrontMatter(boolean preserveFrontMatter) {
+    this.preserveFrontMatter = preserveFrontMatter;
   }
 
   public boolean isEmpty() {

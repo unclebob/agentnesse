@@ -446,10 +446,13 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private PageData load() {
-    FrontMatter matter = FrontMatter.read(readFile());
+    String file = readFile();
+    FrontMatter matter = FrontMatter.read(file);
     WikiPageProperty properties = propertiesFrom(matter);
     properties.setLastModificationTime(new Date(fileSystem.lastModified(path)));
-    return new PageData(matter.body(), properties);
+    PageData data = new PageData(matter.body(), properties);
+    data.setFrontMatterPrefix(matter.prefix());
+    return data;
   }
 
   private String readFile() {
@@ -518,9 +521,12 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
     @Override
     public InputStream getContent() {
-      String text = FrontMatter.write(FrontMatter.typeFrom(data), FrontMatter.tagsFrom(data), data.getAttribute(WikiPageProperty.HELP),
-        data.hasAttribute(WikiPageProperty.PRUNE), data.getAttribute(WikiPageProperty.LAST_MODIFYING_USER),
-        data.getContent());
+      String body = data.getContent() == null ? "" : data.getContent();
+      String text = data.preserveFrontMatter()
+        ? data.getFrontMatterPrefix() + body
+        : FrontMatter.write(FrontMatter.typeFrom(data), FrontMatter.tagsFrom(data), data.getAttribute(WikiPageProperty.HELP),
+          data.hasAttribute(WikiPageProperty.PRUNE), data.getAttribute(WikiPageProperty.LAST_MODIFYING_USER),
+          data.getContent());
       return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
     }
 

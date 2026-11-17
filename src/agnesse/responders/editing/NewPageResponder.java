@@ -11,6 +11,7 @@ import agnesse.html.template.HtmlPage;
 import agnesse.html.template.PageTitle;
 import agnesse.responders.ErrorResponder;
 import agnesse.responders.NotFoundResponder;
+import agnesse.markdown.FrontMatter;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PageType;
@@ -55,10 +56,32 @@ public class NewPageResponder implements Responder {
     else if (currentPage.getPageCrawler().pageExists(PathParser.parse(childName)))
       return new ErrorResponder("Child page already exists", 409).makeResponse(context, request);
 
+    FrontMatter matter = null;
+    if (request.hasInput(EditResponder.FRONT_MATTER)) {
+      try {
+        matter = FrontMatter.readSubmitted(request.getInput(EditResponder.FRONT_MATTER));
+      } catch (IllegalArgumentException e) {
+        return redisplay(context, request, e.getMessage());
+      }
+    }
+
     WikiPage childPage = WikiPageUtil.addPage(currentPage, childPath, childContent);
-    setAttributes(childPage);
+    if (matter == null) {
+      setAttributes(childPage);
+    } else {
+      PageData data = childPage.getData();
+      data.setContent(childContent);
+      FrontMatter.keepOrApply(data, matter, request.getInput(EditResponder.FRONT_MATTER), childName);
+      childPage.commit(data);
+    }
     SimpleResponse response = new SimpleResponse();
     response.redirect(currentPage.getFullPath().toString());
+    return response;
+  }
+
+  private Response redisplay(AgNesseContext context, Request request, String error) throws Exception {
+    SimpleResponse response = new SimpleResponse(400);
+    response.setContent(form(context, request, error));
     return response;
   }
 
@@ -103,31 +126,42 @@ public class NewPageResponder implements Responder {
   }
 
   private String doMakeHtml(AgNesseContext context, Request request) {
+    return form(context, request, null);
+  }
+
+  private String form(AgNesseContext context, Request request, String error) {
     HtmlPage html = context.pageFactory.newPage();
     html.setTitle("New page");
 
     html.setPageTitle(new PageTitle("New Page", PathParser.parse(request.getResource())));
     html.setMainTemplate("editPage");
-    makeEditForm(html, context, request);
+    makeEditForm(html, context, request, error);
 
     return html.html(request);
   }
 
-  private void makeEditForm(HtmlPage html, AgNesseContext context, Request request) {
+  private void makeEditForm(HtmlPage html, AgNesseContext context, Request request, String error) {
     html.put("resource", request.getResource());
-
     html.put("isNewPage", true);
-    html.put(EditResponder.HELP_TEXT, "");
+
+    if (error != null) {
+      html.put("pageName", request.getInput(EditResponder.PAGE_NAME));
+      html.put(PAGE_TYPES, PAGE_TYPE_ATTRIBUTES);
+      html.put("selectedType", request.getInput(PAGE_TYPE));
+      EditForm.putFields(html, request.getInput(EditResponder.CONTENT_INPUT_NAME),
+        request.getInput(EditResponder.FRONT_MATTER), error);
+      return;
+    }
 
     WikiPage parentWikiPage = getParentWikiPage(context, request);
     if (request.hasInput(PAGE_TYPE)) {
       String requestedType = request.getInput(PAGE_TYPE);
       PageType.fromString(requestedType);
       html.put(EditResponder.PAGE_TYPE, requestedType);
-      html.put(EditResponder.CONTENT_INPUT_NAME, getDefaultContent(parentWikiPage));
+      EditForm.putFields(html, getDefaultContent(parentWikiPage), FrontMatter.defaultJson(requestedType), null);
     } else {
       html.put(PAGE_TYPES, PAGE_TYPE_ATTRIBUTES);
-      html.put(EditResponder.CONTENT_INPUT_NAME, getDefaultContent(parentWikiPage));
+      EditForm.putFields(html, getDefaultContent(parentWikiPage), FrontMatter.defaultJson("Default"), null);
     }
   }
 

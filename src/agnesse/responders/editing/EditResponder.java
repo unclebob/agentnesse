@@ -6,12 +6,12 @@ import agnesse.Responder;
 import java.io.UnsupportedEncodingException;
 
 import agnesse.AgNesseContext;
-import agnesse.html.HtmlUtil;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
 import agnesse.html.template.HtmlPage;
 import agnesse.html.template.PageTitle;
+import agnesse.markdown.FrontMatter;
 import agnesse.wiki.MockingPageCrawler;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PageData;
@@ -25,6 +25,7 @@ public class EditResponder implements Responder {
   public static final String SUITES = "suites";
   public static final String PAGE_TYPE = "pageType";
   public static final String PAGE_NAME = "pageName";
+  public static final String FRONT_MATTER = "frontMatter";
 
   protected String content;
   protected WikiPage page;
@@ -98,9 +99,26 @@ public class EditResponder implements Responder {
       html.put("redirect", redirectUrl);
     }
 
-    html.put(HELP_TEXT, pageData.getAttribute(PageData.PropertyHELP));
     html.put("suites", pageData.getAttribute(PageData.PropertySUITES));
-    html.put(CONTENT_INPUT_NAME, HtmlUtil.escapeHTML(firstTimeForNewPage ? defaultNewPageContent : content));
+    EditForm.putFields(html, firstTimeForNewPage ? defaultNewPageContent : content,
+      FrontMatter.objectText(pageData.getFrontMatterPrefix()), null);
+  }
+
+  public Response makeErrorResponse(AgNesseContext context, Request request, String error) throws UnsupportedEncodingException {
+    HtmlPage html = context.pageFactory.newPage();
+    String resource = request.getResource();
+    html.setTitle("Edit: " + resource);
+    html.setPageTitle(new PageTitle("Edit:  Page:", PathParser.parse(resource)));
+    html.setMainTemplate("editPage");
+    html.put("resource", resource);
+    if (request.hasInput("redirect")) {
+      html.put("redirect", request.getInput("redirect"));
+    }
+    EditForm.putFields(html, request.getInput(CONTENT_INPUT_NAME), request.getInput(FRONT_MATTER), error);
+    SimpleResponse response = new SimpleResponse(400);
+    response.setContent(html.html(request));
+    response.setMaxAge(0);
+    return response;
   }
 
 }

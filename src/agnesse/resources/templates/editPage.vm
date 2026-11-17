@@ -8,25 +8,28 @@
  <input type="hidden" name="responder" value="new"/>
  <fieldset>
   <label for="pagename">Page name:</label>
-  <input type="text" id="pagename" name="pageName" value="" class="wikiword" />
+  <input type="text" id="pagename" name="pageName" value="#escape($!pageName)" class="wikiword" />
  </fieldset>
  #if( $!pageType )
  <input type="hidden" name="pageType" value="#escape($pageType)"/>
  #else
  <fieldset id="pagetypes">
-  #foreach( $pageType in $pageTypes )
-  <label for="pageType_$pageType"><input type="radio" name="pageType" value="$pageType" id="pageType_$pageType"/> $pageType</label>
+  #foreach( $type in $pageTypes )
+  <label for="pageType_$type"><input type="radio" name="pageType" value="$type" id="pageType_$type"#if($type == $selectedType) checked="checked"#end/> $type</label>
   #end
-  <label for="pageType_Default"><input type="radio" name="pageType" value="Default" id="pageType_Default" checked="checked" /> Default</label>
+  <label for="pageType_Default"><input type="radio" name="pageType" value="Default" id="pageType_Default"#if(!$selectedType || $selectedType == "Default") checked="checked"#end /> Default</label>
  </fieldset>
  #end
 #else
  <input type="hidden" name="responder" value="saveData"/>
 #end
- <fieldset>
-  <label for="helptext">Help text:</label>
-  <input type="text" class="mousetrap" id="helptext" name="helpText" value="#escape($!helpText)" />
- </fieldset>
+ #if($error)
+ <p class="error">#escape($error)</p>
+ #end
+ <details id="front-matter"#if($frontMatterOpen) open#end>
+  <summary>Front Matter #if($frontMatterOpen)▾#else▸#end</summary>
+  <textarea class="no_wrap mousetrap" id="frontMatter" name="frontMatter" wrap="off">$!frontMatter</textarea>
+ </details>
  <fieldset id="editor">
   <textarea class="wikitext no_wrap mousetrap" id="pageContent" name="pageContent" wrap="off">$pageContent</textarea>
  </fieldset>
@@ -59,8 +62,25 @@ $(function () {
 
   function fieldValues() {
     if (editor) editor.save();
-    return $.map($('#pageContent,#helptext,#suites', document.f), function(e) { return $(e).val(); });
+    return $.map($('#pageContent,#frontMatter', document.f), function(e) { return $(e).val(); });
   }
+
+  var matterBox = document.getElementById('front-matter');
+  matterBox.addEventListener('toggle', function () {
+    matterBox.querySelector('summary').textContent = matterBox.open ? 'Front Matter ▾' : 'Front Matter ▸';
+    $(window).resize();
+  });
+
+  #if($!isNewPage)
+  $('input[type=radio][name=pageType]').on('change', function () {
+    var literal = {Test: '"test"', Suite: '"suite"', Static: '"static"'}[this.value] || 'null';
+    var area = document.getElementById('frontMatter');
+    var next = area.value.replace(/"type"\s*:\s*(?:"(?:test|suite|static)"|null)/, '"type": ' + literal);
+    area.value = next === area.value
+      ? '{\n  "type": ' + literal + ',\n  "tags": [],\n  "help": null,\n  "prune": false\n}'
+      : next;
+  });
+  #end
 
   var originalFieldValues = fieldValues();
   var performingSubmit = false;

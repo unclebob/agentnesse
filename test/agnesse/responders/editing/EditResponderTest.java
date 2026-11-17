@@ -47,7 +47,10 @@ public class EditResponderTest {
     assertSubString("method=\"post\"", body);
     assertSubString("child content with &lt;html&gt;", body);
     assertSubString("name=\"responder\"", body);
-    assertSubString("name=\"" + EditResponder.HELP_TEXT + "\"", body);
+    assertSubString("name=\"" + EditResponder.FRONT_MATTER + "\"", body);
+    assertSubString("Front Matter ▸", body);
+    assertSubString("id=\"front-matter\">", body);
+    assertNotSubString("name=\"" + EditResponder.HELP_TEXT + "\"", body);
     assertNotSubString("templateMap", body);
     assertNotSubString("TemplateInserter.js", body);
     assertNotSubString("WikiFormatter.js", body);

@@ -7,26 +7,44 @@ import agnesse.AgNesseContext;
 import agnesse.http.Request;
 import agnesse.http.Response;
 import agnesse.http.SimpleResponse;
+import agnesse.markdown.FrontMatter;
 import agnesse.wiki.*;
 
 public class SaveResponder implements Responder {
 
   @Override
   public Response makeResponse(AgNesseContext context, Request request) throws Exception {
-    String resource = request.getResource();
-    WikiPage page = getPage(resource, context);
-    return saveEdits(context, request, page);
+    if (request.hasInput(EditResponder.FRONT_MATTER)) {
+      return saveFrontMatter(context, request);
+    }
+    return saveLegacy(context, request);
   }
 
-  private Response saveEdits(AgNesseContext context, Request request, WikiPage page) {
-    String savedContent = request.getInput(EditResponder.CONTENT_INPUT_NAME);
-    String helpText = request.getInput(EditResponder.HELP_TEXT);
-    String suites = request.getInput(EditResponder.SUITES);
-    String user = request.getAuthorizationUsername();
+  private Response saveLegacy(AgNesseContext context, Request request) {
+    WikiPage page = getPage(request.getResource(), context);
     PageData data = page.getData();
+    setData(data, request.getInput(EditResponder.CONTENT_INPUT_NAME), request.getInput(EditResponder.HELP_TEXT),
+      request.getInput(EditResponder.SUITES), request.getAuthorizationUsername());
+    return commitAndRedirect(request, page, data);
+  }
 
+  private Response saveFrontMatter(AgNesseContext context, Request request) throws Exception {
+    String json = request.getInput(EditResponder.FRONT_MATTER);
+    final FrontMatter matter;
+    try {
+      matter = FrontMatter.readSubmitted(json);
+    } catch (IllegalArgumentException e) {
+      return new EditResponder().makeErrorResponse(context, request, e.getMessage());
+    }
+    WikiPage page = getPage(request.getResource(), context);
+    PageData data = page.getData();
+    data.setContent(request.getInput(EditResponder.CONTENT_INPUT_NAME));
+    FrontMatter.keepOrApply(data, matter, json, page.getName());
+    return commitAndRedirect(request, page, data);
+  }
+
+  private Response commitAndRedirect(Request request, WikiPage page, PageData data) {
     Response response = new SimpleResponse();
-    setData(data, savedContent, helpText, suites, user);
     VersionInfo commitRecord = page.commit(data);
     if (commitRecord != null) {
       response.addHeader("Current-Version", commitRecord.getName());
@@ -35,7 +53,6 @@ public class SaveResponder implements Responder {
       response.redirect(request.getInput("redirect"));
     else
       response.redirect(request.getResource());
-
     return response;
   }
 

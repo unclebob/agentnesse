@@ -203,6 +203,145 @@ public class FrontMatterTest {
     assertEquals("rest\n", matter.body());
   }
 
+  @Test
+  public void prefixIsTheBytesBeforeTheBody() {
+    FrontMatter matter = FrontMatter.read("{ \"type\": \"test\" }\nbody\n");
+
+    assertEquals("{ \"type\": \"test\" }\n", matter.prefix());
+    assertEquals("{ \"type\": \"test\" }", FrontMatter.objectText(matter.prefix()));
+    assertEquals("body\n", matter.body());
+  }
+
+  @Test
+  public void aBodyTightAgainstTheBraceKeepsThatPrefix() {
+    FrontMatter matter = FrontMatter.read("{ \"type\": \"test\" }body");
+
+    assertEquals("{ \"type\": \"test\" }", matter.prefix());
+    assertEquals("{ \"type\": \"test\" }", FrontMatter.objectText(matter.prefix()));
+    assertEquals("body", matter.body());
+  }
+
+  @Test
+  public void objectTextDropsOnlyTheSeparatorNewline() {
+    assertEquals("", FrontMatter.objectText(null));
+    assertEquals("", FrontMatter.objectText(""));
+    assertEquals("{\n}", FrontMatter.objectText("{\n}\n"));
+    assertEquals("{}", FrontMatter.objectText("{}"));
+  }
+
+  @Test
+  public void defaultFrontMatterMatchesTheSelectedType() {
+    assertEquals("{\n  \"type\": \"test\",\n  \"tags\": [],\n  \"help\": null,\n  \"prune\": false\n}",
+      FrontMatter.defaultJson("Test"));
+    assertEquals("{\n  \"type\": \"suite\",\n  \"tags\": [],\n  \"help\": null,\n  \"prune\": false\n}",
+      FrontMatter.defaultJson("Suite"));
+    assertEquals("{\n  \"type\": \"static\",\n  \"tags\": [],\n  \"help\": null,\n  \"prune\": false\n}",
+      FrontMatter.defaultJson("Static"));
+    assertEquals("{\n  \"type\": null,\n  \"tags\": [],\n  \"help\": null,\n  \"prune\": false\n}",
+      FrontMatter.defaultJson("Default"));
+    assertEquals(FrontMatter.defaultJson("Default"), FrontMatter.defaultJson(null));
+  }
+
+  @Test
+  public void submittedBlankClearsAndAnythingElseMustBeAnObject() {
+    assertFalse(FrontMatter.readSubmitted(null).present());
+    assertFalse(FrontMatter.readSubmitted("").present());
+    assertFalse(FrontMatter.readSubmitted("  \n").present());
+    assertEquals("test", FrontMatter.readSubmitted("{ \"type\": \"test\" }").type());
+    assertFrontMatterRejectedSubmitted("hello", "malformed JSON");
+    assertFrontMatterRejectedSubmitted("{ \"type\": \"wiki\" }", "wiki");
+  }
+
+  @Test
+  public void applyStoresTypeTagsHelpPruneAndUser() {
+    PageData data = new PageData("body", new WikiPageProperty());
+    data.setAttribute("Suite");
+    data.setAttribute(WikiPageProperty.SUITES, "old");
+    data.setAttribute(WikiPageProperty.HELP, "old help");
+    data.setAttribute(WikiPageProperty.PRUNE);
+    data.setAttribute(WikiPageProperty.LAST_MODIFYING_USER, "old");
+    data.setAttribute(WikiPageProperty.EDIT);
+    data.setFrontMatterPrefix(null);
+
+    FrontMatter.apply(data, FrontMatter.read("{ \"type\": \"test\", \"tags\": [\"a\", \"b\"], \"help\": \"how\", \"prune\": true, \"user\": \"ada\" }"), "Notes");
+
+    assertEquals("", data.getFrontMatterPrefix());
+    assertTrue(data.hasAttribute("Test"));
+    assertFalse(data.hasAttribute("Suite"));
+    assertEquals("a, b", data.getAttribute(WikiPageProperty.SUITES));
+    assertEquals("how", data.getAttribute(WikiPageProperty.HELP));
+    assertTrue(data.hasAttribute(WikiPageProperty.PRUNE));
+    assertEquals("ada", data.getAttribute(WikiPageProperty.LAST_MODIFYING_USER));
+    assertTrue(data.hasAttribute(WikiPageProperty.EDIT));
+  }
+
+  @Test
+  public void applyClearsFieldsAndInfersAMissingTypeFromTheName() {
+    PageData suite = new PageData("body", new WikiPageProperty());
+    suite.setAttribute("Test");
+    suite.setAttribute(WikiPageProperty.SUITES, "old");
+    suite.setAttribute(WikiPageProperty.HELP, "old");
+    suite.setAttribute(WikiPageProperty.PRUNE);
+    suite.setAttribute(WikiPageProperty.LAST_MODIFYING_USER, "old");
+    FrontMatter.apply(suite, FrontMatter.read("{ \"type\": \"suite\" }"), "TestChild");
+    assertTrue(suite.hasAttribute("Suite"));
+    assertFalse(suite.hasAttribute("Test"));
+    assertFalse(suite.hasAttribute(WikiPageProperty.SUITES));
+    assertFalse(suite.hasAttribute(WikiPageProperty.HELP));
+    assertFalse(suite.hasAttribute(WikiPageProperty.PRUNE));
+    assertFalse(suite.hasAttribute(WikiPageProperty.LAST_MODIFYING_USER));
+
+    PageData inferred = new PageData("body", new WikiPageProperty());
+    FrontMatter.apply(inferred, FrontMatter.read("{ \"type\": null }"), "TestChild");
+    assertTrue(inferred.hasAttribute("Test"));
+
+    PageData namedSuite = new PageData("body", new WikiPageProperty());
+    FrontMatter.apply(namedSuite, FrontMatter.read("{ }"), "SuiteChild");
+    assertTrue(namedSuite.hasAttribute("Suite"));
+
+    PageData notes = new PageData("body", new WikiPageProperty());
+    notes.setAttribute("Test");
+    FrontMatter.apply(notes, FrontMatter.read("{ \"type\": \"static\" }"), "TestChild");
+    assertFalse(notes.hasAttribute("Test"));
+    assertFalse(notes.hasAttribute("Suite"));
+  }
+
+  @Test
+  public void anUnchangedSubmissionKeepsThePrefixAndAChangeReplacesIt() {
+    PageData same = new PageData("old", new WikiPageProperty());
+    same.setFrontMatterPrefix("{ \"type\" : \"test\" }\n");
+    same.setAttribute("Suite");
+    String json = "{ \"type\" : \"test\" }";
+    FrontMatter.keepOrApply(same, FrontMatter.readSubmitted(json), json, "Notes");
+    assertTrue(same.preserveFrontMatter());
+    assertEquals("{ \"type\" : \"test\" }\n", same.getFrontMatterPrefix());
+    assertTrue(same.hasAttribute("Suite"));
+
+    PageData changed = new PageData("old", new WikiPageProperty());
+    changed.setFrontMatterPrefix("{ \"type\": \"static\" }\n");
+    changed.setAttribute(WikiPageProperty.EDIT);
+    FrontMatter.keepOrApply(changed, FrontMatter.readSubmitted("{ \"type\": \"test\", \"help\": \"how\" }"),
+      "{ \"type\": \"test\", \"help\": \"how\" }", "Notes");
+    assertFalse(changed.preserveFrontMatter());
+    assertTrue(changed.hasAttribute("Test"));
+    assertEquals("how", changed.getAttribute(WikiPageProperty.HELP));
+
+    PageData cleared = new PageData("old", new WikiPageProperty());
+    cleared.setFrontMatterPrefix("{ \"type\": \"test\" }\n");
+    FrontMatter.keepOrApply(cleared, FrontMatter.readSubmitted("  "), "  ", "TestChild");
+    assertTrue(cleared.preserveFrontMatter());
+    assertEquals("", cleared.getFrontMatterPrefix());
+  }
+
+  private void assertFrontMatterRejectedSubmitted(String text, String expected) {
+    try {
+      FrontMatter.readSubmitted(text);
+      fail("expected the front matter to be rejected");
+    } catch (IllegalArgumentException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains(expected));
+    }
+  }
+
   private void assertFrontMatterRejected(String text, String expected) {
     try {
       FrontMatter.read(text);
