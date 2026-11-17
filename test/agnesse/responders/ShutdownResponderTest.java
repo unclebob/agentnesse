@@ -2,6 +2,8 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders;
 
+import agnesse.socketservice.PlainServerSocketFactory;
+import java.net.ServerSocket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +23,9 @@ public class ShutdownResponderTest {
 
   @Before
   public void setUp() throws Exception {
-    context = AgNesseUtil.makeTestContext();
-    AgNesseUtil.startAgNesseWithContext(context);
+    ServerSocket socket = new PlainServerSocketFactory().createServerSocket(0);
+    context = AgNesseUtil.makeTestContext(socket.getLocalPort());
+    AgNesseUtil.startAgNesse(context, socket);
   }
 
   @After
@@ -45,7 +48,7 @@ public class ShutdownResponderTest {
       public void run() {
         try {
           RequestBuilder request = new RequestBuilder("/?responder=shutdown");
-          ResponseParser.performHttpRequest("localhost", AgNesseUtil.PORT, request);
+          ResponseParser.performHttpRequest("localhost", context.port, request);
           doneShuttingDown = true;
         }
         catch (Exception e) {

@@ -5,7 +5,6 @@ import agnesse.testrunner.WikiTestPage;
 import agnesse.testsystems.TestSystemListener;
 import agnesse.testsystems.slim.HtmlSlimTestSystem;
 import agnesse.testsystems.slim.InProcessSlimClientBuilder;
-import agnesse.testsystems.slim.MarkdownTable;
 import agnesse.testsystems.slim.SlimClient;
 import agnesse.testsystems.slim.SlimSources;
 import agnesse.testsystems.slim.tables.SlimTableFactory;
@@ -20,12 +19,12 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * An unclosed fence must not hide TearDown. TearDown is what releases port 9123,
- * and the next test in the suite has to be able to bind that port again.
+ * An unclosed fence must not hide TearDown. TearDown is what stops the wiki
+ * server SetUp started, so a broken page must not leave that server running.
  */
 public class UnclosedFenceReleasesPortTest {
 
@@ -88,10 +87,9 @@ public class UnclosedFenceReleasesPortTest {
   }
 
   @Test
-  public void theNextTestInTheSuiteCanBindPort9123() throws Exception {
+  public void tearDownStopsTheServerAfterAnUnclosedFence() throws Exception {
     WikiPage root = wiki();
     WikiPage broken = root.getChildPage("Broken");
-    WikiPage next = root.getChildPage("Next");
     SlimClient client = new InProcessSlimClientBuilder(
       new WikiPageDescriptor(broken, true, false), getClass().getClassLoader()).build();
     HtmlSlimTestSystem system = new HtmlSlimTestSystem("slim", client, new SlimTableFactory());
@@ -110,19 +108,12 @@ public class UnclosedFenceReleasesPortTest {
     system.start();
     try {
       system.runTests(new WikiTestPage(broken));
-      system.runTests(new WikiTestPage(next));
     } finally {
       system.bye();
     }
 
     assertTrue(output.toString(), output.toString().contains("Unclosed code fence"));
-    assertFalse(output.toString(), output.toString().contains("BindException"));
-    assertTrue(sourcesRanTearDown(next));
-  }
-
-  private static boolean sourcesRanTearDown(WikiPage next) {
-    return SlimSources.collect(new WikiTestPage(next)).tables().stream()
-      .anyMatch(MarkdownTable::isTearDown);
+    assertNull(output.toString(), AgNesseFixtureContext.context);
   }
 
   private static WikiPage wiki() {
@@ -148,9 +139,7 @@ public class UnclosedFenceReleasesPortTest {
       | check | echo | hi | hi |
       """;
     WikiPage broken = WikiPageUtil.addPage(root, PathParser.parse("Broken"), test);
-    WikiPage next = WikiPageUtil.addPage(root, PathParser.parse("Next"), "The next test.\n");
     markTest(broken);
-    markTest(next);
     return root;
   }
 

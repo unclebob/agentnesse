@@ -5,7 +5,6 @@ package agnesse.testutil;
 import agnesse.ContextConfigurator;
 import agnesse.AgNesse;
 import agnesse.AgNesseContext;
-import agnesse.socketservice.PlainServerSocketFactory;
 import agnesse.wiki.WikiPageFactory;
 import agnesse.wiki.fs.FileSystem;
 import agnesse.wiki.fs.WikiFiles;
@@ -14,6 +13,7 @@ import util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Properties;
 
 public class AgNesseUtil {
@@ -23,9 +23,9 @@ public class AgNesseUtil {
 
   private static AgNesse instance = null;
 
-  public static void startAgNesseWithContext(AgNesseContext context) throws IOException {
+  public static void startAgNesse(AgNesseContext context, ServerSocket socket) throws IOException {
     instance = context.agNesse;
-    instance.start(new PlainServerSocketFactory().createServerSocket(context.port));
+    instance.start(socket);
   }
 
   public static void stopAgNesse() throws IOException {

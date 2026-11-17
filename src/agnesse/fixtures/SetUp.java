@@ -3,7 +3,10 @@
 package agnesse.fixtures;
 
 import java.io.ByteArrayInputStream;
+import java.net.ServerSocket;
 import java.util.Properties;
+
+import agnesse.socketservice.PlainServerSocketFactory;
 
 import agnesse.testutil.AgNesseUtil;
 import util.FileUtil;
@@ -20,10 +23,11 @@ public class SetUp {
   }
 
   private SetUp(Properties properties) throws Exception {
-    final int port = 9123;
+    ServerSocket socket = new PlainServerSocketFactory().createServerSocket(0);
+    int port = socket.getLocalPort();
     properties.setProperty("AGNESSE_PORT", String.valueOf(port));
     context = AgNesseUtil.makeTestContext(port, properties);
-    AgNesseUtil.startAgNesseWithContext(context);
+    AgNesseUtil.startAgNesse(context, socket);
   }
 
   private static Properties asProperties(String configuration) throws Exception {
