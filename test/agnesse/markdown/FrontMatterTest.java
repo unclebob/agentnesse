@@ -47,6 +47,22 @@ public class FrontMatterTest {
   }
 
   @Test
+  public void emptyTextIsTheWholeBody() {
+    FrontMatter matter = FrontMatter.read("");
+
+    assertFalse(matter.present());
+    assertEquals("", matter.body());
+  }
+
+  @Test
+  public void whitespaceOnlyIsTheWholeBody() {
+    FrontMatter matter = FrontMatter.read("  \n\t");
+
+    assertFalse(matter.present());
+    assertEquals("  \n\t", matter.body());
+  }
+
+  @Test
   public void propertiesStandInWhenTheBodyHasNoFrontMatter() {
     WikiPageProperty properties = new WikiPageProperty();
     properties.set("Test");
@@ -58,6 +74,7 @@ public class FrontMatterTest {
 
     FrontMatter matter = FrontMatter.from(data);
 
+    assertTrue(matter.present());
     assertEquals("test", matter.type());
     assertEquals(List.of("guide", "slow"), matter.tags());
     assertEquals("how", matter.help());
@@ -125,6 +142,45 @@ public class FrontMatterTest {
     assertEquals("a } \"brace\"", matter.help());
     assertEquals("static", matter.type());
     assertEquals("body\n", matter.body());
+  }
+
+  @Test
+  public void anEscapedQuoteDoesNotCloseTheFrontMatterString() {
+    FrontMatter matter = FrontMatter.read("{ \"help\": \"a \\\"} b\", \"type\": \"static\" }\nbody\n");
+
+    assertEquals("a \"} b", matter.help());
+    assertEquals("static", matter.type());
+    assertEquals("body\n", matter.body());
+  }
+
+  @Test
+  public void leadingWhitespaceStillReadsFrontMatter() {
+    FrontMatter matter = FrontMatter.read("\t  \n{ \"type\": \"test\" }\nbody");
+
+    assertTrue(matter.present());
+    assertEquals("test", matter.type());
+    assertEquals("body", matter.body());
+  }
+
+  @Test
+  public void aNullValueIsTheSameAsOmittingTheKey() {
+    FrontMatter matter = FrontMatter.read(
+      "{ \"type\": null, \"tags\": null, \"help\": null, \"prune\": null, \"user\": null }\nbody");
+
+    assertTrue(matter.present());
+    assertNull(matter.type());
+    assertTrue(matter.tags().isEmpty());
+    assertNull(matter.help());
+    assertFalse(matter.prune());
+    assertNull(matter.user());
+    assertEquals("body", matter.body());
+  }
+
+  @Test
+  public void theBodyStartsRightAfterTheClosingBrace() {
+    assertEquals("", FrontMatter.read("{ \"type\": \"test\" }").body());
+    assertEquals("# Hi", FrontMatter.read("{ \"type\": \"test\" }# Hi").body());
+    assertEquals("\nHi", FrontMatter.read("{ \"type\": \"test\" }\n\nHi").body());
   }
 
   @Test
