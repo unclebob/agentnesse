@@ -2,8 +2,8 @@ package agnesse.wiki.refactoring;
 
 import agnesse.markdown.SlimTables;
 import agnesse.wiki.NoPruningStrategy;
-import agnesse.wiki.PageType;
 import agnesse.wiki.WikiPage;
+import agnesse.wiki.WikiPageUtil;
 import agnesse.wiki.WikiWordReference;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public final class ReferenceIndex {
 
   private static void note(WikiPage page, List<String> dangling) {
     String content = page.getData().getContent();
-    if (page.getData().hasAttribute(PageType.TEST.toString())) {
+    if (WikiPageUtil.rendersSlimTables(page)) {
       content = SlimTables.withoutSlimTables(content);
     }
     for (String path : paths(content)) {

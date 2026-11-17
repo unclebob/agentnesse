@@ -1,5 +1,5 @@
 {
-  "type": "static",
+  "type": "test-adjunct",
   "tags": [],
   "help": "Imported before the sample tests",
   "prune": false

@@ -61,4 +61,31 @@ public class NewPageResponderTest {
     assertSubString("input[type=radio][name=pageType]", body);
   }
 
+  @Test
+  public void theNewPageFormOffersTestAdjunctAndTheIncludedNames() throws Exception {
+    request.setResource("root");
+
+    String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
+
+    assertSubString("pageType_test-adjunct", body);
+    assertSubString("value=\"test-adjunct\"", body);
+    assertSubString("'SetUp'", body);
+    assertSubString("'TearDown'", body);
+    assertSubString("'SuiteSetUp'", body);
+    assertSubString("'SuiteTearDown'", body);
+    assertSubString("'ScenarioLibrary'", body);
+    assertNotSubString("'PageHeader'", body);
+    assertNotSubString("'PageFooter'", body);
+  }
+
+  @Test
+  public void aRequestedAdjunctTypePrefillsThatFrontMatter() throws Exception {
+    request.setResource("root");
+    request.addInput("pageType", "test-adjunct");
+
+    String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
+
+    assertSubString("\"type\": \"test-adjunct\"", body);
+  }
+
 }

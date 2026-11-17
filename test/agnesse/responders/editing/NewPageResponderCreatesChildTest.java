@@ -204,6 +204,34 @@ public class NewPageResponderCreatesChildTest {
   }
 
   @Test
+  public void aNullTypeOnAnIncludedNameIsTestAdjunct() throws Exception {
+    request.addInput("pageName", "SetUp");
+    request.addInput("pageType", "Default");
+    request.addInput("frontMatter", FrontMatter.defaultJson("Default"));
+
+    responder.makeResponse(context, request);
+    getChildPage("SetUp");
+
+    assertTrue(childPageData.hasAttribute("test-adjunct"));
+    assertFalse(isTest());
+    assertFalse(isSuite());
+  }
+
+  @Test
+  public void aNullTypeOnPageHeaderStaysStatic() throws Exception {
+    request.addInput("pageName", "PageHeader");
+    request.addInput("pageType", "Default");
+    request.addInput("frontMatter", FrontMatter.defaultJson("Default"));
+
+    responder.makeResponse(context, request);
+    getChildPage("PageHeader");
+
+    assertFalse(childPageData.hasAttribute("test-adjunct"));
+    assertFalse(isTest());
+    assertFalse(isSuite());
+  }
+
+  @Test
   public void aNullTypeFollowsThePageName() throws Exception {
     request.addInput("pageName", "TestChild");
     request.addInput("pageType", "Static");

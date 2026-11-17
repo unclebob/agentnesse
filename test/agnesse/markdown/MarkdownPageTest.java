@@ -66,6 +66,13 @@ public class MarkdownPageTest {
     fileSystem.makeFile(new File("root/FrontPage.md"), "there\n");
     fileSystem.makeFile(new File("root/Notes.md"), "See FrontPage.\n");
     assertTrue(root.getChildPage("Notes").getHtml().contains("<a href=\"FrontPage\">FrontPage</a>"));
+    fileSystem.makeFile(new File("root/SuiteWidgetTests.md"), "# there\n");
+    fileSystem.makeFile(new File("root/StaticTable.md"), """
+      { "type": "static" }
+      | SuiteWidgetTests |
+      | --- |
+      """);
+    assertTrue(root.getChildPage("StaticTable").getHtml().contains(">SuiteWidgetTests</a>"));
     assertNull(page.getVariable("anything"));
     assertTrue(page.getVersions().isEmpty());
     try {
@@ -87,6 +94,32 @@ public class MarkdownPageTest {
     PageData notes = root.getChildPage("Notes").getData();
     assertFalse(notes.hasAttribute("Test"));
     assertFalse(notes.hasAttribute("Suite"));
+  }
+
+  @Test
+  public void aTestAdjunctRendersSlimTablesAndACommentTableKeepsItsLinks() throws Exception {
+    fileSystem.makeFile(new File("root/SuiteWidgetTests.md"), "# there\n");
+    fileSystem.makeFile(new File("root/SetUp.md"), """
+      {
+        "type": "test-adjunct"
+      }
+      | SetUp |
+      | --- |
+
+      | Comment |
+      | --- |
+      | See SuiteWidgetTests |
+      """);
+
+    WikiPage page = root.getChildPage("SetUp");
+    String html = page.getHtml();
+
+    assertFalse(page.getData().hasAttribute("Test"));
+    assertFalse(page.getData().hasAttribute("Suite"));
+    assertTrue(html, html.contains("data-slim=\"SetUp\""));
+    assertFalse(html, html.contains(">SetUp</a>"));
+    assertTrue(html, html.contains(">SuiteWidgetTests</a>"));
+    assertFalse(html, html.contains("data-slim=\"Comment\""));
   }
 
   @Test

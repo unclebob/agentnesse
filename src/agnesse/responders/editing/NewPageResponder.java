@@ -15,6 +15,7 @@ import agnesse.markdown.FrontMatter;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PageType;
+import agnesse.wiki.TestAdjunct;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPagePath;
@@ -111,14 +112,7 @@ public class NewPageResponder implements Responder {
 
   private void setAttributes(WikiPage childPage) {
     PageData childPageData = childPage.getData();
-    if (pageType.equals("Static")) {
-      childPageData.getProperties().remove("Test");
-      childPageData.getProperties().remove("Suite");
-    } else if ("Test".equals(pageType) || "Suite".equals(pageType)) {
-      childPageData.getProperties().remove("Test");
-      childPageData.getProperties().remove("Suite");
-      childPageData.setAttribute(pageType);
-    }
+    PageType.applyTo(childPageData.getProperties(), selectedFrontMatter());
     childPageData.setOrRemoveAttribute(PageData.PropertyHELP, helpText);
     childPageData.setOrRemoveAttribute(PageData.PropertySUITES, suites);
     childPageData.setOrRemoveAttribute(PageData.LAST_MODIFYING_USER, user);
@@ -140,9 +134,19 @@ public class NewPageResponder implements Responder {
     return html.html(request);
   }
 
+  private String selectedFrontMatter() {
+    try {
+      return PageType.fromString(pageType).frontMatter();
+    } catch (IllegalArgumentException e) {
+      return PageType.getPageTypeForPageName(childName).frontMatter();
+    }
+  }
+
   private void makeEditForm(HtmlPage html, AgNesseContext context, Request request, String error) {
     html.put("resource", request.getResource());
     html.put("isNewPage", true);
+    html.put("adjunctNames", TestAdjunct.quotedNames());
+    html.put("adjunctType", TestAdjunct.TYPE);
 
     if (error != null) {
       html.put("pageName", request.getInput(EditResponder.PAGE_NAME));

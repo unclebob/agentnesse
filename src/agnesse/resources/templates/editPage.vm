@@ -72,13 +72,29 @@ $(function () {
   });
 
   #if($!isNewPage)
+  var adjunctNames = [$adjunctNames];
+  var adjunctType = '$adjunctType';
+  function frontMatterFor(value) {
+    var literal = {Test: '"test"', Suite: '"suite"', Static: '"static"'}[value];
+    if (literal) return literal;
+    if (value === adjunctType) return '"' + adjunctType + '"';
+    return 'null';
+  }
   $('input[type=radio][name=pageType]').on('change', function () {
-    var literal = {Test: '"test"', Suite: '"suite"', Static: '"static"'}[this.value] || 'null';
+    var literal = frontMatterFor(this.value);
     var area = document.getElementById('frontMatter');
-    var next = area.value.replace(/"type"\s*:\s*(?:"(?:test|suite|static)"|null)/, '"type": ' + literal);
+    var pattern = new RegExp('"type"\\s*:\\s*(?:"(?:' + adjunctType + '|test|suite|static)"|null)');
+    var next = area.value.replace(pattern, '"type": ' + literal);
     area.value = next === area.value
       ? '{\n  "type": ' + literal + ',\n  "tags": [],\n  "help": null,\n  "prune": false\n}'
       : next;
+  });
+  $('#pagename').on('input', function () {
+    if (adjunctNames.indexOf(this.value) < 0) return;
+    var radio = document.getElementById('pageType_' + adjunctType);
+    if (!radio) return;
+    radio.checked = true;
+    $(radio).trigger('change');
   });
   #end
 

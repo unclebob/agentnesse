@@ -6,7 +6,9 @@
 }
 # Front matter
 
-A page file starts with a JSON object. `type` is `test`, `suite`, or `static`. `tags` is an array of strings. Saving the page writes that object from the page properties.
+A page file starts with a JSON object. `type` is `test`, `suite`, `static`, or `test-adjunct`. `tags` is an array of strings. Saving the page writes that object from the page properties.
+
+A test-adjunct page is included into a test (`SetUp`, `TearDown`, `SuiteSetUp`, `SuiteTearDown`, or `ScenarioLibrary`): its tables are Slim tables, and requesting `?test` on it is an error.
 
 The Edit page shows that object in a Front Matter section above the editor. The section starts collapsed. Saving parses the JSON into the page's type, tags, help, and prune. Invalid JSON or an invalid type does not save: the edit page opens the section, shows the error, and keeps the text you typed. A new page starts with the front matter for the selected type, and changing the type updates that JSON. The JSON is what is stored. Leaving the section untouched leaves the file's front matter as it was written.
 

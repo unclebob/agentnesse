@@ -103,4 +103,8 @@ public class WikiPageUtil {
   public static boolean isTestPage(WikiPage page) {
     return page.getData().hasAttribute("Test");
   }
+
+  public static boolean rendersSlimTables(WikiPage page) {
+    return isTestPage(page) || TestAdjunct.is(page);
+  }
 }

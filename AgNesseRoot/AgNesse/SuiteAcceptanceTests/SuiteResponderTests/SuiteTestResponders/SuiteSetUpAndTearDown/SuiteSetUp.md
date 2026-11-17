@@ -1,5 +1,5 @@
 {
-  "type": "test",
+  "type": "test-adjunct",
   "tags": [],
   "help": null,
   "prune": false

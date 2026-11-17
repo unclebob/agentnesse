@@ -48,7 +48,7 @@ public class PageData implements ReadOnlyPageData, Serializable {
   // "PageType" input is used to make existing queries work
   public static final String LEGACY_PAGE_TYPE_ATTRIBUTE = "PageType";
   public static final String[] PAGE_TYPE_ATTRIBUTES = { STATIC.toString(),
-      TEST.toString(), SUITE.toString() };
+      TEST.toString(), SUITE.toString(), TestAdjunct.TYPE };
 
   public static final String[] ACTION_ATTRIBUTES = { WikiPageProperty.EDIT,
       WikiPageProperty.VERSIONS, WikiPageProperty.PROPERTIES,
@@ -66,9 +66,9 @@ public class PageData implements ReadOnlyPageData, Serializable {
   @Deprecated
   public static final String LAST_MODIFYING_USER = WikiPageProperty.LAST_MODIFYING_USER;
 
-  public static final String SUITE_SETUP_NAME = "SuiteSetUp";
+  public static final String SUITE_SETUP_NAME = TestAdjunct.SUITE_SET_UP;
 
-  public static final String SUITE_TEARDOWN_NAME = "SuiteTearDown";
+  public static final String SUITE_TEARDOWN_NAME = TestAdjunct.SUITE_TEAR_DOWN;
 
   private String content = "";
   private WikiPageProperty properties = new WikiPageProperty();

@@ -184,7 +184,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
 
   private String render(String content) {
     return MarkdownRenderer.render(expand(TableSeparators.supply(escapeWikiPrefixes(content))), this::wikiWordTarget,
-      contentsLinks(), this::includedHtml, WikiPageUtil.isTestPage(this));
+      contentsLinks(), this::includedHtml, WikiPageUtil.rendersSlimTables(this));
   }
 
   private String includedHtml(String name) {
@@ -496,15 +496,11 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     if (matter.type() != null) {
       return matter.type();
     }
-    return PageType.getPageTypeForPageName(getName()).toString().toLowerCase();
+    return PageType.getPageTypeForPageName(getName()).frontMatter();
   }
 
   private void applyType(WikiPageProperty properties, String type) {
-    if ("test".equals(type)) {
-      properties.set(PageType.TEST.toString());
-    } else if ("suite".equals(type)) {
-      properties.set(PageType.SUITE.toString());
-    }
+    PageType.applyTo(properties, type);
   }
 
   private final class MarkdownFile implements FileVersion {

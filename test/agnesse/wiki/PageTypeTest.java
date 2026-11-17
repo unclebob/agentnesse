@@ -81,11 +81,8 @@ public class PageTypeTest {
 
     addTestData(values, STATIC, "NormalPage");
 
-    addTestData(values, STATIC, "SuiteSetUp");
-    addTestData(values, STATIC, "SetUp");
-
-    addTestData(values, STATIC, "SuiteTearDown");
-    addTestData(values, STATIC, "TearDown");
+    addTestData(values, STATIC, "PageHeader");
+    addTestData(values, STATIC, "PageFooter");
 
     addTestData(values, STATIC, "ExamplesNormal");
 
@@ -105,6 +102,13 @@ public class PageTypeTest {
       PageType pageType = (PageType) testItem[0];
       String pageName = (String) testItem[1];
       assertEquals(pageType, getPageTypeForPageName(pageName));
+    }
+  }
+
+  @Test
+  public void anIncludedPageNameDefaultsToTestAdjunct() {
+    for (String name : new String[] {"SetUp", "TearDown", "SuiteSetUp", "SuiteTearDown", "ScenarioLibrary"}) {
+      assertEquals(name, "test-adjunct", getPageTypeForPageName(name).toString());
     }
   }
 

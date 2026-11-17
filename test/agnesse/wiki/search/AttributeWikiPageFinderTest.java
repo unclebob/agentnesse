@@ -20,6 +20,7 @@ import static agnesse.wiki.PageData.PropertySUITES;
 import static agnesse.wiki.PageType.STATIC;
 import static agnesse.wiki.PageType.SUITE;
 import static agnesse.wiki.PageType.TEST;
+import static agnesse.wiki.PageType.TEST_ADJUNCT;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -111,7 +112,7 @@ public class AttributeWikiPageFinderTest {
     Map<String, Boolean> attributes = new HashMap<>();
     attributes.put("SetUp", false);
 
-    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE);
+    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE, TEST_ADJUNCT);
     searcher = generateSearcherByPageTypesAndSearchAttributes(pageTypes, attributes);
     setPageProperty(page, TEST.toString());
     assertTrue(searcher.pageMatches(page));
@@ -134,7 +135,7 @@ public class AttributeWikiPageFinderTest {
     Map<String, Boolean> attributes = new HashMap<>();
     attributes.put("SetUp", true);
 
-    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE);
+    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE, TEST_ADJUNCT);
     searcher = generateSearcherByPageTypesAndSearchAttributes(pageTypes, attributes);
     setPageProperty(page, TEST.toString());
     assertFalse(searcher.pageMatches(page));
@@ -157,7 +158,7 @@ public class AttributeWikiPageFinderTest {
     Map<String, Boolean> attributes = new HashMap<>();
     attributes.put("TearDown", false);
 
-    List<PageType> pageTypes = Arrays.asList(SUITE, TEST, STATIC);
+    List<PageType> pageTypes = Arrays.asList(SUITE, TEST, STATIC, TEST_ADJUNCT);
     searcher = generateSearcherByPageTypesAndSearchAttributes(pageTypes, attributes);
     setPageProperty(page, TEST.toString());
     assertTrue(searcher.pageMatches(page));
@@ -180,7 +181,7 @@ public class AttributeWikiPageFinderTest {
     Map<String, Boolean> attributes = new HashMap<>();
     attributes.put("TearDown", true);
 
-    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE);
+    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE, TEST_ADJUNCT);
     searcher = generateSearcherByPageTypesAndSearchAttributes(pageTypes, attributes);
     setPageProperty(page, TEST.toString());
     assertFalse(searcher.pageMatches(page));
@@ -196,6 +197,31 @@ public class AttributeWikiPageFinderTest {
 
     page = WikiPageUtil.addPage(root, PathParser.parse("SuiteTearDown"));
     assertTrue(searcher.pageMatches(page));
+  }
+
+  @Test
+  public void aBlankSuiteFilterMatchesOnlyPagesWithoutSuites() throws Exception {
+    searcher = new AttributeWikiPageFinder(hits, Arrays.asList(TEST), new HashMap<>(), "  ");
+    setPageProperty(page, TEST.toString());
+    assertTrue(searcher.pageMatches(page));
+
+    setPageProperty(page, PropertySUITES, "SuiteTest");
+    assertFalse(searcher.pageMatches(page));
+  }
+
+  @Test
+  public void anEmptyPageTypeListMatchesEveryPage() throws Exception {
+    searcher = new AttributeWikiPageFinder(hits, new ArrayList<>(), new HashMap<>(), new ArrayList<>());
+    assertTrue(searcher.pageMatches(page));
+  }
+
+  @Test
+  public void aPageMissesWhenAnotherAttributeDoesNotMatch() throws Exception {
+    Map<String, Boolean> attributes = new HashMap<>();
+    attributes.put("Prune", true);
+    searcher = generateSearcherByPageTypesAndSearchAttributes(Arrays.asList(TEST), attributes);
+    setPageProperty(page, TEST.toString());
+    assertFalse(searcher.pageMatches(page));
   }
 
   @Test
@@ -265,7 +291,7 @@ public class AttributeWikiPageFinderTest {
     attributes.put("TearDown", true);
 
     setPageProperty(page, TEST.toString(), "true");
-    searcher = generateSearcherByPageTypesAndSearchAttributes(Arrays.asList(STATIC), attributes);
+    searcher = generateSearcherByPageTypesAndSearchAttributes(Arrays.asList(STATIC, TEST_ADJUNCT), attributes);
     assertFalse(searcher.pageMatches(page));
 
     page = WikiPageUtil.addPage(root, PathParser.parse("SetUp"));
@@ -288,7 +314,7 @@ public class AttributeWikiPageFinderTest {
     attributes.put("SetUp", false);
     attributes.put("TearDown", true);
 
-    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE);
+    List<PageType> pageTypes = Arrays.asList(TEST, STATIC, SUITE, TEST_ADJUNCT);
     searcher = generateSearcherByPageTypesAndSearchAttributes(pageTypes, attributes);
     setPageProperty(page, TEST.toString(), "true");
     assertFalse(searcher.pageMatches(page));
@@ -313,7 +339,7 @@ public class AttributeWikiPageFinderTest {
     attributes.put("SetUp", true);
     attributes.put("TearDown", false);
 
-    List<PageType> pageTypes = Arrays.asList(STATIC);
+    List<PageType> pageTypes = Arrays.asList(STATIC, TEST_ADJUNCT);
     searcher = generateSearcherByPageTypesAndSearchAttributes(pageTypes, attributes);
     setPageProperty(page, TEST.toString(), "true");
     assertFalse(searcher.pageMatches(page));
@@ -337,7 +363,7 @@ public class AttributeWikiPageFinderTest {
     attributes.put("SetUp", false);
     attributes.put("TearDown", false);
 
-    List<PageType> pageTypes = Arrays.asList(TEST, SUITE, STATIC);
+    List<PageType> pageTypes = Arrays.asList(TEST, SUITE, STATIC, TEST_ADJUNCT);
 
     setPageProperty(page, TEST.toString(), "true");
     searcher = generateSearcherByPageTypesAndSearchAttributes(pageTypes, attributes);

@@ -3,6 +3,7 @@
 package agnesse.testrunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import agnesse.wiki.*;
@@ -10,6 +11,7 @@ import agnesse.wiki.fs.InMemoryPage;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SuiteContentsFinderTest {
@@ -67,6 +69,59 @@ public class SuiteContentsFinderTest {
     PageData data = testChildPage.getData();
     data.setAttribute("Test");
     testChildPage.commit(data);
+  }
+
+  @Test
+  public void aPageWhosePathCannotBeReadStaysInPlace() {
+    FixedChildren suitePage = new FixedChildren("SuitePage", root, false);
+    FixedChildren first = new FixedChildren("ATest", suitePage, true);
+    FixedChildren second = new FixedChildren("BTest", suitePage, true);
+    suitePage.children.add(first);
+    suitePage.children.add(second);
+
+    List<WikiPage> pages = new SuiteContentsFinder(suitePage, null, root).getAllPagesToRunForThisSuite();
+
+    assertEquals(List.of(first, second), pages);
+  }
+
+  private static final class FixedChildren extends WikiPageDummy {
+    private final List<WikiPage> children = new ArrayList<>();
+    private final boolean brokenPath;
+
+    private FixedChildren(String name, WikiPage parent, boolean brokenPath) {
+      super(name, "", parent);
+      this.brokenPath = brokenPath;
+      if (brokenPath) {
+        getData().setAttribute("Test");
+      }
+    }
+
+    @Override
+    public List<WikiPage> getChildren() {
+      return children;
+    }
+
+    @Override
+    public WikiPagePath getFullPath() {
+      if (brokenPath) {
+        throw new IllegalStateException("no path");
+      }
+      return super.getFullPath();
+    }
+  }
+
+  @Test
+  public void anIncludedPageIsNotCollectedEvenWhenItIsMarkedTest() {
+    WikiPage setUp = addTestPage(suite, "SetUp", "| SetUp |\n");
+    WikiPage library = addTestPage(suite, "ScenarioLibrary", "library");
+    WikiPage header = addTestPage(suite, "PageHeader", "header");
+
+    List<WikiPage> testPages = new SuiteContentsFinder(suite, null, root).getAllPagesToRunForThisSuite();
+
+    assertFalse(testPages.contains(setUp));
+    assertFalse(testPages.contains(library));
+    assertTrue(testPages.contains(header));
+    assertTrue(testPages.contains(testPage));
   }
 
   @Test

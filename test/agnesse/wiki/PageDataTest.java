@@ -3,6 +3,8 @@
 package agnesse.wiki;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import agnesse.wiki.fs.InMemoryPage;
 import org.junit.Before;
@@ -26,5 +28,12 @@ public class PageDataTest {
     newData.setAttribute("myFriend", "Jane");
 
     assertEquals("Joe", data.getAttribute("myFriend"));
+  }
+
+  @Test
+  public void emptyMeansNoContent() {
+    assertTrue(new PageData(null, new WikiPageProperty()).isEmpty());
+    assertTrue(new PageData("", new WikiPageProperty()).isEmpty());
+    assertFalse(new PageData("body", new WikiPageProperty()).isEmpty());
   }
 }

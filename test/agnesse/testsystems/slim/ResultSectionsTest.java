@@ -47,6 +47,32 @@ public class ResultSectionsTest {
   }
 
   @Test
+  public void aMissingResultDoesNotOpen() {
+    assertFalse(ResultSections.shouldOpen(null));
+    assertFalse(ResultSections.shouldOpen(new JSONArray().put(new JSONObject().put("status", "pass"))));
+    JSONObject row = new JSONObject();
+    JSONObject block = new JSONObject().put("status", "pass").put("rows", new JSONArray().put(row));
+    assertFalse(ResultSections.shouldOpen(new JSONArray().put(block)));
+  }
+
+  @Test
+  public void aPassingBlockOpensWhenACellFailedOrRecordedAnError() {
+    assertTrue(ResultSections.shouldOpen(new JSONArray().put(passBlockWithCell("fail", null))));
+    assertTrue(ResultSections.shouldOpen(new JSONArray().put(passBlockWithCell("error", null))));
+    assertTrue(ResultSections.shouldOpen(new JSONArray().put(passBlockWithCell("pass", "boom"))));
+  }
+
+  private static JSONObject passBlockWithCell(String cellStatus, String error) {
+    JSONObject cell = new JSONObject().put("status", cellStatus);
+    if (error != null) {
+      cell.put("error", error);
+    }
+    return new JSONObject()
+      .put("status", "pass")
+      .put("rows", new JSONArray().put(new JSONObject().put("cells", new JSONArray().put(cell))));
+  }
+
+  @Test
   public void setupAndIncludesAreSectionsAndTheTestPageIsNot() {
     assertEquals("SetUp", ResultSections.section("SetUp", "TestChild", "import"));
     assertEquals("Included", ResultSections.section("Included", "TestChild", "script"));

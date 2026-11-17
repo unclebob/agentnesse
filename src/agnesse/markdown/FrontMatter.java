@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public final class FrontMatter {
   private static final Set<String> KEYS = Set.of("type", "tags", "help", "prune", "user");
-  private static final Set<String> TYPES = Set.of("test", "suite", "static");
+  private static final List<String> TYPES = Arrays.stream(PageType.values()).map(PageType::frontMatter).toList();
 
   private final boolean present;
   private final String type;
@@ -100,15 +100,9 @@ public final class FrontMatter {
 
   public static void apply(PageData data, FrontMatter matter, String pageName) {
     String type = matter.type() == null
-      ? PageType.getPageTypeForPageName(pageName).toString().toLowerCase()
+      ? PageType.getPageTypeForPageName(pageName).frontMatter()
       : matter.type();
-    data.getProperties().remove(PageType.TEST.toString());
-    data.getProperties().remove(PageType.SUITE.toString());
-    if ("test".equals(type)) {
-      data.setAttribute(PageType.TEST.toString());
-    } else if ("suite".equals(type)) {
-      data.setAttribute(PageType.SUITE.toString());
-    }
+    PageType.applyTo(data.getProperties(), type);
     if (matter.tags().isEmpty()) {
       data.removeAttribute(WikiPageProperty.SUITES);
     } else {
@@ -138,16 +132,11 @@ public final class FrontMatter {
   }
 
   private static String jsonType(String pageType) {
-    if ("Test".equals(pageType)) {
-      return "test";
+    try {
+      return PageType.fromString(pageType).frontMatter();
+    } catch (IllegalArgumentException e) {
+      return null;
     }
-    if ("Suite".equals(pageType)) {
-      return "suite";
-    }
-    if ("Static".equals(pageType)) {
-      return "static";
-    }
-    return null;
   }
 
   public static String write(String type, List<String> tags, String help, boolean prune, String body) {
@@ -205,13 +194,7 @@ public final class FrontMatter {
   }
 
   static String typeFrom(PageData data) {
-    if (data.hasAttribute(PageType.SUITE.toString())) {
-      return "suite";
-    }
-    if (data.hasAttribute(PageType.TEST.toString())) {
-      return "test";
-    }
-    return "static";
+    return PageType.storedType(data);
   }
 
   static List<String> tagsFrom(PageData data) {
@@ -307,7 +290,7 @@ public final class FrontMatter {
     }
     Object value = json.get("type");
     if (!(value instanceof String) || !TYPES.contains(value)) {
-      throw new IllegalArgumentException("front matter type \"" + value + "\" is not test, suite, or static");
+      throw new IllegalArgumentException("front matter type \"" + value + "\" is not " + String.join(", ", TYPES));
     }
     return (String) value;
   }

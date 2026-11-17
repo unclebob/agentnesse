@@ -240,6 +240,35 @@ public class FrontMatterTest {
     assertEquals("{\n  \"type\": null,\n  \"tags\": [],\n  \"help\": null,\n  \"prune\": false\n}",
       FrontMatter.defaultJson("Default"));
     assertEquals(FrontMatter.defaultJson("Default"), FrontMatter.defaultJson(null));
+    assertEquals("{\n  \"type\": \"test-adjunct\",\n  \"tags\": [],\n  \"help\": null,\n  \"prune\": false\n}",
+      FrontMatter.defaultJson("test-adjunct"));
+  }
+
+  @Test
+  public void testAdjunctIsAPageTypeAndDoesNotRunAsATest() {
+    FrontMatter matter = FrontMatter.read("{ \"type\": \"test-adjunct\" }\n| SetUp |\n");
+
+    assertEquals("test-adjunct", matter.type());
+    assertEquals("| SetUp |\n", matter.body());
+
+    PageData data = new PageData("body", new WikiPageProperty());
+    data.setAttribute("Test");
+    FrontMatter.apply(data, matter, "Notes");
+
+    assertTrue(data.hasAttribute("test-adjunct"));
+    assertFalse(data.hasAttribute("Test"));
+    assertFalse(data.hasAttribute("Suite"));
+
+    PageData inferred = new PageData("body", new WikiPageProperty());
+    FrontMatter.apply(inferred, FrontMatter.read("{ \"type\": null }"), "SetUp");
+    assertTrue(inferred.hasAttribute("test-adjunct"));
+    assertFalse(inferred.hasAttribute("Test"));
+
+    PageData header = new PageData("body", new WikiPageProperty());
+    FrontMatter.apply(header, FrontMatter.read("{ \"type\": null }"), "PageHeader");
+    assertFalse(header.hasAttribute("test-adjunct"));
+    assertFalse(header.hasAttribute("Test"));
+    assertFalse(header.hasAttribute("Static"));
   }
 
   @Test

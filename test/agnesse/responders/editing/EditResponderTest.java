@@ -106,6 +106,58 @@ public class EditResponderTest {
   }
 
   @Test
+  public void aRefererQueryIsStrippedBeforeTheRedirectAction() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("ChildPage"), "child");
+    request.setResource("ChildPage");
+    request.addInput("redirectToReferer", "true");
+    request.addInput("redirectAction", "boom");
+    request.addHeader("Referer", "http://fitnesse.org:8080/SomePage?edit");
+
+    String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
+
+    assertSubString("name=\"redirect\" value=\"http://fitnesse.org:8080/SomePage?boom\"", body);
+    assertNotSubString("SomePage?edit", body);
+  }
+
+  @Test
+  public void aLeadingQuestionMarkIsNotStripped() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("ChildPage"), "child");
+    request.setResource("ChildPage");
+    request.addInput("redirectToReferer", "true");
+    request.addInput("redirectAction", "boom");
+    request.addHeader("Referer", "?edit");
+
+    String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
+
+    assertSubString("name=\"redirect\" value=\"?edit?boom\"", body);
+  }
+
+  @Test
+  public void aQuestionMarkInTheSecondCharacterIsStripped() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("ChildPage"), "child");
+    request.setResource("ChildPage");
+    request.addInput("redirectToReferer", "true");
+    request.addInput("redirectAction", "boom");
+    request.addHeader("Referer", "h?edit");
+
+    String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
+
+    assertSubString("name=\"redirect\" value=\"h?boom\"", body);
+    assertNotSubString("h?edit", body);
+  }
+
+  @Test
+  public void aRefererWithoutTheRedirectFlagDoesNotRedirect() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("ChildPage"), "child");
+    request.setResource("ChildPage");
+    request.addHeader("Referer", "http://fitnesse.org:8080/SomePage?edit");
+
+    String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
+
+    assertNotSubString("name=\"redirect\"", body);
+  }
+
+  @Test
   public void testMissingPageDoesNotGetCreated() throws Exception {
     request.setResource("MissingPage");
     responder.makeResponse(context, request);

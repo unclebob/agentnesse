@@ -20,6 +20,8 @@ The user guide includes the example pages rather than copying them.
 | ensure | bundled source contains; | AgNesse.UserGuide | include SuiteAcceptanceTests.SuiteUserGuide.CommandLine |
 | ensure | bundled source contains; | AgNesse.UserGuide | include SuiteAcceptanceTests.SuiteUserGuide.JsonErrors |
 | ensure | bundled source contains; | AgNesse.UserGuide | include SuiteAcceptanceTests.SuiteUserGuide.RenameSource |
+| ensure | bundled source contains; | AgNesse.SuiteAcceptanceTests.SuiteUserGuide.FrontMatter | test-adjunct page is included into a test |
+| ensure | bundled source contains; | AgNesse.SuiteAcceptanceTests.SuiteSlimTests.SetUp | "type": "test-adjunct" |
 | ensure | bundled source contains; | AgNesse.SuiteAcceptanceTests.SuiteUserGuide.Define | define GREETING |
 | ensure | bundled source contains; | AgNesse.SuiteAcceptanceTests.SuiteUserGuide.PythonSlim | tiny_slim.py |
 | ensure | bundled source contains; | AgNesse.SuiteAcceptanceTests.SuiteUserGuide.CommandLine | schemaVersion |

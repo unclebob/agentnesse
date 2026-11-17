@@ -1,5 +1,5 @@
 {
-  "type": "static",
+  "type": "test-adjunct",
   "tags": [],
   "help": "Reset DT Getter and Setter variables",
   "prune": false

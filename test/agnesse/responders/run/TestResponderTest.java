@@ -77,6 +77,30 @@ public class TestResponderTest {
   }
 
   @Test
+  public void aTestAdjunctDoesNotRunOnItsOwn() throws Exception {
+    WikiPage adjunct = WikiPageUtil.addPage(root, PathParser.parse("SetUp"), "body");
+    PageData data = adjunct.getData();
+    data.getProperties().remove("Test");
+    data.getProperties().remove("Suite");
+    data.setAttribute("test-adjunct");
+    adjunct.commit(data);
+    request.setResource("SetUp");
+
+    Response rejected = responder.makeResponse(context, request);
+
+    assertEquals(400, rejected.getStatus());
+    assertTrue(((SimpleResponse) rejected).getContent(), ((SimpleResponse) rejected).getContent().contains("does not run"));
+  }
+
+  @Test
+  public void aStaticPageCanStillBeAskedToTest() throws Exception {
+    WikiPageUtil.addPage(root, PathParser.parse("Notes"), "body");
+    request.setResource("Notes");
+
+    assertEquals(200, responder.makeResponse(context, request).getStatus());
+  }
+
+  @Test
   public void xmlAndJunitFormatsAreRejected() throws Exception {
     WikiPageUtil.addPage(root, PathParser.parse("TestPage"), passFixtureTable());
     for (String format : new String[] {"xml", "junit"}) {
