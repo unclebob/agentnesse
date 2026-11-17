@@ -1,11 +1,1 @@
 rootProject.name = 'agnesse'
-
-// The signing plugin on Gradle 8 reuses a signatures configuration when one already
-// exists, and otherwise creates a legacy role that is still declarable. The versions
-// plugin then calls defaultDependencies on every declarable configuration. A consumable
-// bucket is not a place to declare dependencies, so create that role first.
-gradle.beforeProject { project ->
-  if (project.path == ':') {
-    project.configurations.consumable('signatures')
-  }
-}

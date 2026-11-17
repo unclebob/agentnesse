@@ -4,7 +4,7 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
-class LessCompiler extends JavaExec {
+abstract class LessCompiler extends JavaExec {
   @InputDirectory
   def inputDir
 
