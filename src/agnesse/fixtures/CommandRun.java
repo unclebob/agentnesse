@@ -48,6 +48,6 @@ public class CommandRun {
         "--rerun-failures", failures.getPath()};
     Integer exit = AgNesseMain.start(args);
     output = results.isFile() ? Files.readString(results.toPath()) : "";
-    return exit == null ? 0 : exit;
+    return exit;
   }
 }
