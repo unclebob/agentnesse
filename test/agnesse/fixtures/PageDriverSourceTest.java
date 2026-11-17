@@ -10,8 +10,8 @@ public class PageDriverSourceTest {
   public void bundledSourceReadsTheShippedWikiFile() throws Exception {
     PageDriver driver = new PageDriver();
 
-    assertTrue(driver.bundledSourceContains("FrontPage", "I like this"));
+    assertTrue(driver.bundledSourceContains("PageHeader", "page header"));
     assertTrue(driver.bundledSourceContains("AgNesse.UserGuide", "include SuiteAcceptanceTests.SuiteUserGuide.FrontMatter"));
-    assertFalse(driver.bundledSourceContains("FrontPage", "no such sentence"));
+    assertFalse(driver.bundledSourceContains("PageHeader", "no such sentence"));
   }
 }

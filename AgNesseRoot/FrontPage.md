@@ -19,4 +19,3 @@ To add your first "page", click the [Edit](.FrontPage?edit) button and add a wik
 
 *Release ${AGNESSE_VERSION}*
 
-And *I like this*.   
