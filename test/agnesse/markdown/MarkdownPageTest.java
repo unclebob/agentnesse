@@ -243,6 +243,36 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void aRelativeChildLinkResolvesToTheChild() throws Exception {
+    put("SuiteUserGuide.md", """
+      { "type": "suite" }
+      See [Define](>Define) and [FrontMatter](>FrontMatter#section).
+
+      | Page | What it specifies |
+      | --- | --- |
+      | [Define](>Define) | substituted |
+      | [FrontMatter](>FrontMatter) | tags |
+      """);
+    put("SuiteUserGuide/Define.md", "defined\n");
+    put("SuiteUserGuide/FrontMatter.md", "front\n");
+
+    String html = html("SuiteUserGuide");
+
+    assertEquals(html, 2, html.split(java.util.regex.Pattern.quote("<a href=\"SuiteUserGuide.Define\">Define</a>"), -1).length - 1);
+    assertTrue(html, html.contains("<a href=\"SuiteUserGuide.FrontMatter#section\">FrontMatter</a>"));
+    assertTrue(html, html.contains("<a href=\"SuiteUserGuide.FrontMatter\">FrontMatter</a>"));
+    assertFalse(html, html.contains("href=\">"));
+  }
+
+  @Test
+  public void aChildWikiWordOnAPageShowsTheChildName() throws Exception {
+    put("SuiteUserGuide.md", "See >FrontMatter.\n");
+    put("SuiteUserGuide/FrontMatter.md", "front\n");
+
+    assertEquals("<p>See <a href=\"SuiteUserGuide.FrontMatter\">FrontMatter</a>.</p>\n", html("SuiteUserGuide"));
+  }
+
+  @Test
   public void contentsListsLinksToTheChildPages() throws Exception {
     put("SuiteDemo.md", """
       { "type": "suite" }
@@ -474,7 +504,9 @@ public class MarkdownPageTest {
   @Test
   public void aWikiPrefixOutsideAFenceBecomesALink() {
     put("FrontPage.md", "there\n");
-    assertTrue(html("Notes", "<FrontPage\n").contains("href=\"FrontPage\""));
+    String html = html("Notes", "<FrontPage\n");
+    assertTrue(html, html.contains("<a href=\"FrontPage\">FrontPage</a>"));
+    assertFalse(html, html.contains("&lt;FrontPage</a>") || html.contains("<FrontPage</a>"));
   }
 
   @Test
