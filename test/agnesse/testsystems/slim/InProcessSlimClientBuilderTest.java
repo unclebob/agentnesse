@@ -9,7 +9,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
@@ -60,6 +62,28 @@ public class InProcessSlimClientBuilderTest {
 
     assertNotNull(interaction);
     assertEquals(DefaultInteraction.class, interaction.getClass());
+  }
+
+  @Test
+  public void millisecondStatementTimeoutIsPassedToTheSlimServer() {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.getVariable("slim.flags")).thenReturn("-s 500ms");
+    InProcessSlimClientBuilder builder = spy(new InProcessSlimClientBuilder(descriptor, classLoader));
+
+    builder.build();
+
+    verify(builder).createSlimServer(any(FixtureInteraction.class), eq(500L), eq("0.5"), anyBoolean());
+  }
+
+  @Test
+  public void wholeSecondStatementTimeoutIsPassedInMilliseconds() {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.getVariable("slim.flags")).thenReturn("-s 1");
+    InProcessSlimClientBuilder builder = spy(new InProcessSlimClientBuilder(descriptor, classLoader));
+
+    builder.build();
+
+    verify(builder).createSlimServer(any(FixtureInteraction.class), eq(1000L), eq("1"), anyBoolean());
   }
 
   private FixtureInteraction captureInteraction(Descriptor descriptor) {

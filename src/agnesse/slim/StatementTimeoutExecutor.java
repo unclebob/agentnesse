@@ -3,25 +3,31 @@ package agnesse.slim;
 import java.util.concurrent.*;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class StatementTimeoutExecutor implements StatementExecutorInterface {
   private final StatementExecutorInterface inner;
-  private final Integer timeout;
+  private final long timeoutMillis;
+  private final String timeoutLabel;
   private final ExecutorService service;
 
-  private StatementTimeoutExecutor(StatementExecutorInterface inner, Integer timeout, ExecutorService service) {
+  private StatementTimeoutExecutor(StatementExecutorInterface inner, long timeoutMillis, String timeoutLabel, ExecutorService service) {
     this.inner = inner;
-    this.timeout = timeout;
+    this.timeoutMillis = timeoutMillis;
+    this.timeoutLabel = timeoutLabel;
     this.service = service;
   }
 
-  public static StatementExecutorInterface decorate(StatementExecutorInterface inner, Integer timeout) {
-    return decorate(inner, timeout, newSingleThreadExecutor());
+  public static StatementExecutorInterface decorate(StatementExecutorInterface inner, Integer timeoutSeconds) {
+    return decorate(inner, timeoutSeconds, newSingleThreadExecutor());
   }
 
-  public static StatementExecutorInterface decorate(StatementExecutorInterface inner, Integer timeout, ExecutorService service) {
-    return new StatementTimeoutExecutor(inner, timeout, service);
+  public static StatementExecutorInterface decorate(StatementExecutorInterface inner, Integer timeoutSeconds, ExecutorService service) {
+    return decorate(inner, timeoutSeconds * 1000L, timeoutSeconds.toString(), service);
+  }
+
+  public static StatementExecutorInterface decorate(StatementExecutorInterface inner, long timeoutMillis, String timeoutLabel, ExecutorService service) {
+    return new StatementTimeoutExecutor(inner, timeoutMillis, timeoutLabel, service);
   }
 
   @Override
@@ -66,43 +72,38 @@ public class StatementTimeoutExecutor implements StatementExecutorInterface {
 
   @Override
   public void create(final String instanceName, final String className, final Object... constructorArgs) throws SlimException {
-    Future<?> submit = service.submit(new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        inner.create(instanceName, className, constructorArgs);
-        return true;
-      }
+    Future<?> submit = submit(() -> {
+      inner.create(instanceName, className, constructorArgs);
+      return null;
     });
     getWithTimeout(submit);
   }
 
   @Override
   public Object callAndAssign(final String symbolName, final String instanceName, final String methodsName, final Object... arguments) throws SlimException {
-    Future<Object> submit = service.submit(new Callable<Object>() {
-      @Override
-      public Object call() throws Exception {
-        return inner.callAndAssign(symbolName, instanceName, methodsName, arguments);
-      }
-    });
+    Future<Object> submit = submit(() -> inner.callAndAssign(symbolName, instanceName, methodsName, arguments));
     return getWithTimeout(submit);
   }
 
   @Override
   public Object call(final String instanceName, final String methodName, final Object... arguments) throws SlimException {
-    Future<Object> submit = service.submit(new Callable<Object>() {
-      @Override
-      public Object call() throws Exception {
-        return inner.call(instanceName, methodName, arguments);
-      }
-    });
+    Future<Object> submit = submit(() -> inner.call(instanceName, methodName, arguments));
     return getWithTimeout(submit);
+  }
+
+  private <T> Future<T> submit(Callable<T> task) {
+    return service.submit(() -> {
+      Thread.interrupted();
+      return task.call();
+    });
   }
 
   private <T> T getWithTimeout(Future<T> submit) throws SlimException {
     try {
-      return submit.get(timeout, SECONDS);
+      return submit.get(timeoutMillis, MILLISECONDS);
     } catch (TimeoutException e) {
-      throw new SlimException(Integer.toString(timeout), SlimServer.TIMED_OUT, true);
+      submit.cancel(true);
+      throw new SlimException(timeoutLabel, SlimServer.TIMED_OUT, true);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new SlimError("Statement execution was interrupted", e);

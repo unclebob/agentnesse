@@ -3,24 +3,28 @@ package agnesse.slim;
 import agnesse.slim.fixtureInteraction.DefaultInteraction;
 import agnesse.slim.fixtureInteraction.FixtureInteraction;
 
+import java.util.concurrent.Executors;
+
 public class JavaSlimFactory extends SlimFactory {
 
   private final NameTranslator identityTranslator = new NameTranslatorIdentity();
-  private final Integer timeout;
+  private final Long timeoutMillis;
+  private final String timeoutLabel;
   private final boolean verbose;
   private final FixtureInteraction interaction;
 
-  private JavaSlimFactory(FixtureInteraction interaction, Integer timeout, boolean verbose) {
+  private JavaSlimFactory(FixtureInteraction interaction, Long timeoutMillis, String timeoutLabel, boolean verbose) {
     this.interaction = interaction;
-    this.timeout = timeout;
+    this.timeoutMillis = timeoutMillis;
+    this.timeoutLabel = timeoutLabel;
     this.verbose = verbose;
   }
 
   @Override
   public StatementExecutorInterface getStatementExecutor() {
     StatementExecutorInterface statementExecutor = new StatementExecutor(new SlimExecutionContext(interaction));
-    if (timeout != null) {
-      statementExecutor = StatementTimeoutExecutor.decorate(statementExecutor, timeout);
+    if (timeoutMillis != null) {
+      statementExecutor = StatementTimeoutExecutor.decorate(statementExecutor, timeoutMillis, timeoutLabel, Executors.newSingleThreadExecutor());
     }
     return statementExecutor;
   }
@@ -41,11 +45,15 @@ public class JavaSlimFactory extends SlimFactory {
 
   // Called from main
   public static SlimFactory createJavaSlimFactory(SlimService.Options options) {
-    return createJavaSlimFactory(options.interaction, options.statementTimeout, options.verbose);
+    return new JavaSlimFactory(options.interaction, options.statementTimeoutMillis, options.statementTimeoutLabel, options.verbose);
   }
 
   public static SlimFactory createJavaSlimFactory(FixtureInteraction interaction, Integer timeout, boolean verbose) {
-    return new JavaSlimFactory(interaction, timeout, verbose);
+    return new JavaSlimFactory(interaction, SlimService.millisFor(timeout), SlimService.labelFor(timeout), verbose);
+  }
+
+  public static SlimFactory createJavaSlimFactory(FixtureInteraction interaction, long timeoutMillis, String timeoutLabel, boolean verbose) {
+    return new JavaSlimFactory(interaction, timeoutMillis, timeoutLabel, verbose);
   }
 
   public static FixtureInteraction createInteraction(String interactionClassName) {

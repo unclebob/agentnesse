@@ -5,7 +5,7 @@ package agnesse.slim;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.BindException;
+import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
@@ -58,14 +58,26 @@ public class SlimService {
      * daemon mode: keep accepting new connections indefinitely.
      */
     public final boolean daemon;
+    /** Whole seconds from <code>-s 1</code>. Null when the flag is absent or uses the <code>ms</code> form. */
     public final Integer statementTimeout;
+    /** How long a statement may run, in milliseconds. Null when no timeout was requested. */
+    public final Long statementTimeoutMillis;
+    /** The number of seconds reported when the timeout fires, such as <code>1</code> or <code>0.5</code>. */
+    public final String statementTimeoutLabel;
 
     public Options(boolean verbose, int port, FixtureInteraction interaction, boolean daemon, Integer statementTimeout) {
+      this(verbose, port, interaction, daemon, statementTimeout, millisFor(statementTimeout), labelFor(statementTimeout));
+    }
+
+    public Options(boolean verbose, int port, FixtureInteraction interaction, boolean daemon,
+                   Integer statementTimeout, Long statementTimeoutMillis, String statementTimeoutLabel) {
       this.verbose = verbose;
       this.port = port;
       this.interaction = interaction;
       this.daemon = daemon;
       this.statementTimeout = statementTimeout;
+      this.statementTimeoutMillis = statementTimeoutMillis;
+      this.statementTimeoutLabel = statementTimeoutLabel;
     }
   }
 
@@ -119,10 +131,6 @@ public class SlimService {
     } catch (java.lang.OutOfMemoryError e) {
       onOutOfMemory(e);
       throw e;
-    } catch (BindException e) {
-      System.err.println("Can not bind to port " + options.port + ". Aborting.");
-      e.printStackTrace();
-      throw e;
     }
   }
 
@@ -134,12 +142,44 @@ public class SlimService {
       String portString = commandLine.getArgument("port");
       int port = (portString == null) ? 1 : Integer.parseInt(portString);
       String statementTimeoutString = commandLine.getOptionArgument("s", "statementTimeout");
-      Integer statementTimeout = (statementTimeoutString == null) ? null : Integer.parseInt(statementTimeoutString);
+      Integer statementTimeout = statementTimeoutString == null ? null : secondsOf(statementTimeoutString);
+      Long statementTimeoutMillis = statementTimeoutString == null ? null : millisOf(statementTimeoutString);
+      String statementTimeoutLabel = statementTimeoutString == null ? null : labelOf(statementTimeoutString);
       boolean daemon = commandLine.hasOption("d");
       FixtureInteraction interaction = createInteraction(interactionClassName);
-      return new Options(verbose, port, interaction, daemon, statementTimeout);
+      return new Options(verbose, port, interaction, daemon, statementTimeout, statementTimeoutMillis, statementTimeoutLabel);
     }
     return null;
+  }
+
+  static Long millisFor(Integer seconds) {
+    return seconds == null ? null : seconds * 1000L;
+  }
+
+  static String labelFor(Integer seconds) {
+    return seconds == null ? null : seconds.toString();
+  }
+
+  private static Integer secondsOf(String text) {
+    if (text.endsWith("ms"))
+      return null;
+    return Integer.valueOf(text);
+  }
+
+  private static Long millisOf(String text) {
+    if (text.endsWith("ms"))
+      return Long.valueOf(text.substring(0, text.length() - 2));
+    return millisFor(Integer.valueOf(text));
+  }
+
+  private static String labelOf(String text) {
+    if (text.endsWith("ms"))
+      return secondsText(Long.parseLong(text.substring(0, text.length() - 2)));
+    return text;
+  }
+
+  static String secondsText(long millis) {
+    return BigDecimal.valueOf(millis).movePointLeft(3).stripTrailingZeros().toPlainString();
   }
 
   public SlimService(SlimServer slimServer, ServerSocket serverSocket, boolean daemon) throws IOException {
@@ -155,11 +195,7 @@ public class SlimService {
 
   public void accept() throws IOException {
     try {
-      if (daemon) {
-        acceptMany();
-      } else {
-        acceptOne();
-      }
+      acceptConnections();
     } catch (java.lang.OutOfMemoryError e) {
       onOutOfMemory(e);
     } finally {
@@ -167,21 +203,27 @@ public class SlimService {
     }
   }
 
-  private void acceptMany() throws IOException {
-    while (true) {
-      final Socket socket = serverSocket.accept();
-      executor.execute(new Runnable() {
+  private void acceptConnections() throws IOException {
+    do {
+      Socket socket = serverSocket.accept();
+      if (daemon)
+        handOff(socket);
+      else
+        handle(socket);
+    } while (daemon);
+  }
 
-        @Override
-        public void run() {
-          try {
-            handle(socket);
-          } catch (IOException e) {
-            throw new SlimError(e);
-          }
+  private void handOff(final Socket socket) {
+    executor.execute(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          handle(socket);
+        } catch (IOException e) {
+          throw new SlimError(e);
         }
-      });
-    }
+      }
+    });
   }
 
   private void handle(Socket socket) throws IOException {
@@ -190,10 +232,5 @@ public class SlimService {
     } finally {
       socket.close();
     }
-  }
-
-  private void acceptOne() throws IOException {
-    Socket socket = serverSocket.accept();
-    handle(socket);
   }
 }

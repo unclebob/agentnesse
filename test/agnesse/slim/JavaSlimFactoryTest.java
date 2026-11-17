@@ -22,6 +22,13 @@ public class JavaSlimFactoryTest {
     assertTrue(executor instanceof StatementTimeoutExecutor);
   }
 
+  @Test
+  public void wholeSecondTimeoutKeepsTheVerboseFlagAndTheTimeoutExecutor() {
+    SlimFactory factory = createJavaSlimFactory(createInteraction(null), 2, true);
+    assertTrue(factory.isVerbose());
+    assertTrue(factory.getStatementExecutor() instanceof StatementTimeoutExecutor);
+  }
+
   private SlimService.Options optionsWithStatementTimeout() {
     return new SlimService.Options(false, 8099, new DefaultInteraction(), false, 1000);
   }

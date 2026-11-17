@@ -73,6 +73,41 @@ public class SlimServiceTest extends SlimServiceTestBase {
   public void definedStatementTimeout_returnsTimeout() {
     SlimService.Options options = SlimService.parseCommandLine(new String[]{"-s", "1000", "8099"});
     assertEquals(1000, (int) options.statementTimeout);
+    assertEquals(Long.valueOf(1_000_000L), options.statementTimeoutMillis);
+    assertEquals("1000", options.statementTimeoutLabel);
+  }
+
+  @Test
+  public void millisecondStatementTimeoutIsAFractionOfASecond() {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-s", "500ms", "8099"});
+    assertNull(options.statementTimeout);
+    assertEquals(Long.valueOf(500L), options.statementTimeoutMillis);
+    assertEquals("0.5", options.statementTimeoutLabel);
+  }
+
+  @Test
+  public void millisecondStatementTimeoutThatIsWholeSecondsDropsTheFraction() {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-s", "2000ms", "8099"});
+    assertNull(options.statementTimeout);
+    assertEquals(Long.valueOf(2000L), options.statementTimeoutMillis);
+    assertEquals("2", options.statementTimeoutLabel);
+  }
+
+  @Test
+  public void wholeSecondConstructorStoresMillisAndTheSameLabel() {
+    SlimService.Options options = new SlimService.Options(true, 1, new agnesse.slim.fixtureInteraction.DefaultInteraction(), false, 3);
+    assertEquals(Integer.valueOf(3), options.statementTimeout);
+    assertEquals(Long.valueOf(3_000L), options.statementTimeoutMillis);
+    assertEquals("3", options.statementTimeoutLabel);
+    assertTrue(options.verbose);
+  }
+
+  @Test
+  public void absentTimeoutConstructorStoresNoMillis() {
+    SlimService.Options options = new SlimService.Options(false, 1, new agnesse.slim.fixtureInteraction.DefaultInteraction(), false, null);
+    assertNull(options.statementTimeout);
+    assertNull(options.statementTimeoutMillis);
+    assertNull(options.statementTimeoutLabel);
   }
 
   @Test
@@ -165,21 +200,17 @@ public class SlimServiceTest extends SlimServiceTestBase {
       server.setDaemon(true);
       server.start();
 
-      SlimCommandRunningClient client = new SlimCommandRunningClient(
-        new MockCommandRunner(new CompositeExecutionLogListener()),
-        "localhost", port, 20,
-        SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION,
-        new PlainClientSocketFactory());
-      for (int attempt = 0; attempt < 50 && !client.isConnected(); attempt++) {
-        try {
-          client.connect();
-        } catch (Exception ignored) {
-          Thread.sleep(20);
-        }
-      }
+      SlimCommandRunningClient client = newClient(port);
+      connectWithin(client);
       assertTrue(client.isConnected());
+      SlimCommandRunningClient second = newClient(port);
+      connectWithin(second);
+      assertTrue(second.isConnected());
       client.bye();
       client.kill();
+      second.bye();
+      second.kill();
+      assertTrue(server.isAlive());
       socket.close();
       server.join(5000);
       assertFalse(server.isAlive());
@@ -214,6 +245,31 @@ public class SlimServiceTest extends SlimServiceTestBase {
   }
 
   @Test
+  public void pipeModeWithoutDaemonDoesNotWarn() throws Exception {
+    SlimService.Console previous = SlimService.console;
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    SlimService.console = new SlimService.Console() {
+      private PrintStream errStream = new PrintStream(err, true);
+      private PrintStream outStream = new PrintStream(new ByteArrayOutputStream(), true);
+      public InputStream in() { return new ByteArrayInputStream(new byte[0]); }
+      public PrintStream out() { return outStream; }
+      public PrintStream err() { return errStream; }
+      public void setOut(PrintStream out) { outStream = out; }
+      public void setErr(PrintStream err) { errStream = err; }
+      public void exit(int code) { }
+    };
+    try {
+      SlimService.Options options = SlimService.parseCommandLine(new String[]{"1"});
+      try (java.net.ServerSocket socket = SlimService.open(options)) {
+        assertEquals(1, socket.getLocalPort());
+      }
+      assertEquals("", err.toString());
+    } finally {
+      SlimService.console = previous;
+    }
+  }
+
+  @Test
   public void outOfMemoryAbortsThroughTheConsole() {
     SlimService.Console previous = SlimService.console;
     int[] code = {-1};
@@ -234,6 +290,36 @@ public class SlimServiceTest extends SlimServiceTestBase {
     } finally {
       SlimService.console = previous;
     }
+  }
+
+  @Test
+  public void runReturnsZeroAfterOneClient() throws Exception {
+    int port;
+    try (ServerSocket probe = new ServerSocket(0)) {
+      port = probe.getLocalPort();
+    }
+    int[] code = {-1};
+    Thread server = new Thread(() -> {
+      try {
+        code[0] = SlimService.run(new String[]{Integer.toString(port)});
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+    server.setDaemon(true);
+    server.start();
+
+    SlimCommandRunningClient client = new SlimCommandRunningClient(
+      new MockCommandRunner(new CompositeExecutionLogListener()),
+      "localhost", port, 20,
+      SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION,
+      new PlainClientSocketFactory());
+    connectWithin(client);
+    assertTrue("Slim server did not accept a connection", client.isConnected());
+    client.bye();
+    client.kill();
+    server.join(5000);
+    assertEquals(0, code[0]);
   }
 
   @Test
@@ -259,18 +345,31 @@ public class SlimServiceTest extends SlimServiceTestBase {
       "localhost", port, 20,
       SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION,
       new PlainClientSocketFactory());
-    for (int attempt = 0; attempt < 50 && !client.isConnected(); attempt++) {
-      try {
-        client.connect();
-      } catch (Exception ignored) {
-        Thread.sleep(20);
-      }
-    }
+    connectWithin(client);
     assertTrue("Slim server did not accept a connection", client.isConnected());
     client.bye();
     client.kill();
     server.join(5000);
     assertFalse(server.isAlive());
     assertNull(failure.get());
+  }
+
+  private static SlimCommandRunningClient newClient(int port) {
+    return new SlimCommandRunningClient(
+      new MockCommandRunner(new CompositeExecutionLogListener()),
+      "localhost", port, 20,
+      SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION,
+      new PlainClientSocketFactory());
+  }
+
+  private static void connectWithin(SlimCommandRunningClient client) {
+    long deadline = System.nanoTime() + 5_000_000_000L;
+    while (!client.isConnected() && System.nanoTime() < deadline) {
+      try {
+        client.connect();
+      } catch (Exception ignored) {
+        Thread.onSpinWait();
+      }
+    }
   }
 }

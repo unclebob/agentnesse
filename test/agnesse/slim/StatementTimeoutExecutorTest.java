@@ -10,7 +10,10 @@ import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -131,6 +134,30 @@ public class StatementTimeoutExecutorTest {
     assertEquals("4000", actual.getMessage());
   }
 
+  @Test
+  public void aTimedOutCallStopsAndTheNextCallStillRuns() throws Exception {
+    StatementExecutorInterface slow = Mockito.mock(StatementExecutorInterface.class);
+    when(slow.call(eq("slow"), eq("m"))).thenAnswer(invocation -> {
+      Thread.sleep(30_000);
+      return "late";
+    });
+    when(slow.call(eq("fast"), eq("m"))).thenReturn("ok");
+    ExecutorService service = Executors.newSingleThreadExecutor();
+    StatementExecutorInterface timed = StatementTimeoutExecutor.decorate(slow, 100L, "0.1", service);
+    try {
+      try {
+        timed.call("slow", "m");
+        fail("expected a timeout");
+      } catch (SlimException e) {
+        assertEquals("0.1", e.getMessage());
+      }
+      assertEquals("ok", timed.call("fast", "m"));
+    } finally {
+      service.shutdownNow();
+    }
+    assertTrue(service.awaitTermination(2, TimeUnit.SECONDS));
+  }
+
   private Exception createExpectingException() {
     Exception actual = null;
     try {
@@ -184,7 +211,7 @@ public class StatementTimeoutExecutorTest {
   private void givenExceptionThrownOnFutureGet(Exception executionException) throws InterruptedException, ExecutionException, TimeoutException {
     executor = StatementTimeoutExecutor.decorate(inner, TIMEOUT, executorService);
     Future future = Mockito.mock(Future.class);
-    when(future.get(TIMEOUT, TimeUnit.SECONDS)).thenThrow(executionException);
+    when(future.get(TIMEOUT * 1000L, TimeUnit.MILLISECONDS)).thenThrow(executionException);
     when(executorService.submit(any(Callable.class))).thenReturn(future);
   }
 
