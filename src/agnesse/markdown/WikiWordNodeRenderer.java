@@ -62,13 +62,21 @@ final class WikiWordNodeRenderer implements NodeRenderer {
 
   private String link(String word) {
     String target = pageTarget.apply(word);
+    String shown = childName(word);
     if (target != null) {
-      HtmlTag link = new HtmlTag("a", word);
+      HtmlTag link = new HtmlTag("a", shown);
       link.addAttribute("href", target);
       return link.htmlInline();
     }
-    String shown = word.length() > 1 && "<^>".indexOf(word.charAt(0)) >= 0 ? word.substring(1) : word;
     return shown + "<a title=\"create page\" href=\"" + shown + "?edit&nonExistent=true\">[?]</a>";
+  }
+
+  /** A >Child, <Ancestor, or ^SubPage link shows the page name, not the sigil. */
+  private static String childName(String word) {
+    if ("<^>".indexOf(word.charAt(0)) >= 0) {
+      return word.substring(1);
+    }
+    return word;
   }
 
   private static boolean insideLink(Node node) {

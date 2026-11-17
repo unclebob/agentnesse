@@ -62,6 +62,28 @@ public class MarkdownRenderTest {
     assertFalse(explicit.contains("nonExistent"));
   }
 
+  @Test
+  public void aChildWikiWordShowsTheChildName() {
+    String linked = MarkdownRenderer.render("See >FrontMatter.\n",
+      word -> ">FrontMatter".equals(word) ? "SuiteUserGuide.FrontMatter" : null, java.util.List.of(), null);
+    assertEquals("<p>See <a href=\"SuiteUserGuide.FrontMatter\">FrontMatter</a>.</p>\n", linked);
+
+    String missing = MarkdownRenderer.render("See >FrontMatter.\n");
+    assertEquals("<p>See FrontMatter<a title=\"create page\" href=\"FrontMatter?edit&nonExistent=true\">[?]</a>.</p>\n", missing);
+
+    String parent = MarkdownRenderer.render("See <FrontMatter.\n",
+      word -> "<FrontMatter".equals(word) ? "FrontMatter" : null, java.util.List.of(), null);
+    assertEquals("<p>See <a href=\"FrontMatter\">FrontMatter</a>.</p>\n", parent);
+
+    String sub = MarkdownRenderer.render("See ^FrontMatter.\n",
+      word -> "^FrontMatter".equals(word) ? "SuiteUserGuide.FrontMatter" : null, java.util.List.of(), null);
+    assertEquals("<p>See <a href=\"SuiteUserGuide.FrontMatter\">FrontMatter</a>.</p>\n", sub);
+
+    String plain = MarkdownRenderer.render("See FrontMatter.\n",
+      word -> "FrontMatter".equals(word) ? "FrontMatter" : null, java.util.List.of(), null);
+    assertEquals("<p>See <a href=\"FrontMatter\">FrontMatter</a>.</p>\n", plain);
+  }
+
   static void assertGolden(String name) throws Exception {
     assertGolden(name, false);
   }
