@@ -53,7 +53,7 @@ sourceSets {
   main {
     java.srcDir 'src'
     resources.srcDir 'src'
-    output.resourcesDir java.classesDirectory
+    output.resourcesDir = java.classesDirectory
   }
   test {
     java.srcDir 'test'
@@ -220,7 +220,7 @@ task pythonSlimTest(type: Exec) {
 
 test {
   dependsOn copyRuntimeLibs, javascriptTest, pythonSlimTest
-  maxParallelForks 1
+  maxParallelForks = 1
   finalizedBy jacocoTestReport
 }
 
@@ -480,8 +480,8 @@ publishing {
       artifact javadocJar
       artifact standaloneJar
       artifact slimJar
-      groupId 'org.agnesse'
-      artifactId 'agnesse'
+      groupId = 'org.agnesse'
+      artifactId = 'agnesse'
       pom.withXml {
         asNode().get('version') + {
           resolveStrategy = Closure.DELEGATE_FIRST
