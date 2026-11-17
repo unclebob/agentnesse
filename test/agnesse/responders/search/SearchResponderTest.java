@@ -148,6 +148,18 @@ public class SearchResponderTest {
     assertSubString("Unknown search type nope", response.getContent());
   }
 
+  @Test
+  public void searchFromAMissingPageSearchesFromTheRoot() throws Exception {
+    request.setResource("NoSuchPage");
+    request.addInput(Request.NOCHUNK, "");
+    request.addInput("q", "something");
+    Response response = responder.makeResponse(context, request);
+    MockResponseSender sender = new MockResponseSender();
+    sender.doSending(response);
+    assertEquals(200, response.getStatus());
+    assertSubString("SomePage", sender.sentData());
+  }
+
   private String getResponseContentUsingSearchString(String searchString) throws Exception {
     request.addInput("q", searchString);
     request.addInput("type", "text");
