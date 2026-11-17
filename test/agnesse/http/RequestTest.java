@@ -10,6 +10,8 @@ import util.FileUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
@@ -59,6 +61,22 @@ public class RequestTest {
   @Test
   public void isNotParsedUntilItsParsed() {
     assertFalse(request.hasBeenParsed());
+  }
+
+  @Test
+  public void anUnreadableStreamIsAnHttpException() {
+    request = new Request(new InputStream() {
+      @Override
+      public int read() throws IOException {
+        throw new IOException("boom");
+      }
+    });
+    try {
+      request.parse();
+      fail("expected HttpException");
+    } catch (HttpException e) {
+      assertEquals("Unable to process request: boom", e.getMessage());
+    }
   }
 
   @Test
@@ -355,6 +373,28 @@ public class RequestTest {
 
     assertEquals(true, request.hasInput("key4"));
     assertEquals("", request.getInput("key4"));
+  }
+
+  @Test
+  public void aMultipartEpilogueOfTenBytesIsNotAnotherPart() throws Exception {
+    String content = "----bob\r\n" +
+    "Content-Disposition: form-data; name=\"key1\"\r\n" +
+    "\r\n" +
+    "value1\r\n" +
+    "----bob--\r\nABCDEF";
+
+    appendToMessage("GET /request-uri HTTP/1.1\r\n");
+    appendToMessage("Content-Length: " + content.length() + "\r\n");
+    appendToMessage("Content-Type: multipart/form-data; boundary=--bob\r\n");
+    appendToMessage("\r\n");
+    appendToMessage(content);
+    parseMessage();
+
+    if (exception != null) {
+      throw exception;
+    }
+    assertEquals("value1", request.getInput("key1"));
+    assertFalse(request.hasInput("ABCDEF"));
   }
 
   @Test
