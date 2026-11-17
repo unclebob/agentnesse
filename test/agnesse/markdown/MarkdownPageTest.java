@@ -8,6 +8,7 @@ import agnesse.wiki.WikiPageLoadException;
 import agnesse.wiki.PrunedPagePruningStrategy;
 import agnesse.wiki.SystemVariableSource;
 import agnesse.wiki.WikiPage;
+import agnesse.wiki.fs.FileSystem;
 import agnesse.wiki.fs.FileSystemPageFactory;
 import agnesse.wiki.fs.MemoryFileSystem;
 import agnesse.wiki.fs.WikiFiles;
@@ -15,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,7 +160,9 @@ public class MarkdownPageTest {
     childData.setContent("kid\n");
     child.commit(childData);
     assertEquals("kid\n", FrontMatter.read(fileSystem.getContent(new File("root/Notes/Child.md"))).body());
+    page.removeChildPage("NoSuch");
     page.removeChildPage("Child");
+    assertFalse(fileSystem.exists(new File("root/Notes/Child.md")));
     page.remove();
     assertFalse(fileSystem.exists(new File("root/Notes.md")));
   }
@@ -181,16 +186,16 @@ public class MarkdownPageTest {
 
   @Test
   public void contentsListsLinksToTheChildPages() throws Exception {
-    fileSystem.makeFile(new File("root/SuiteDemo.md"), """
+    put("SuiteDemo.md", """
       { "type": "suite" }
       ```agnesse
       contents
       ```
       """);
-    fileSystem.makeFile(new File("root/SuiteDemo/Blocks.md"), "# b\n");
-    fileSystem.makeFile(new File("root/SuiteDemo/SetUp.md"), "# s\n");
+    put("SuiteDemo/Blocks.md", "# b\n");
+    put("SuiteDemo/SetUp.md", "# s\n");
 
-    String html = root.getChildPage("SuiteDemo").getHtml();
+    String html = html("SuiteDemo");
 
     assertTrue(html, html.contains("class=\"agnesse-contents\""));
     assertTrue(html, html.contains("<a href=\"SuiteDemo.Blocks\">Blocks</a>"));
@@ -292,5 +297,292 @@ public class MarkdownPageTest {
 
     assertNull(root.getChildPage("WikiPage"));
     assertEquals(MarkdownPage.class, root.getClass());
+  }
+
+  @Test
+  public void aFailedRemoveNamesThePage() throws Exception {
+    WikiPage page = wiki(filesThatCannot("delete")).getChildPage("Notes");
+    try {
+      page.remove();
+      fail("remove");
+    } catch (WikiPageLoadException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("Could not remove"));
+      assertTrue(e.getMessage(), e.getMessage().contains("Notes"));
+    }
+  }
+
+  @Test
+  public void aFailedWriteNamesTheFile() throws Exception {
+    WikiPage page = wiki(filesThatCannot("write")).getChildPage("Notes");
+    try {
+      page.commit(page.getData());
+      fail("commit");
+    } catch (WikiPageLoadException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("Could not write"));
+      assertTrue(e.getMessage(), e.getMessage().contains("Notes.md"));
+    }
+  }
+
+  @Test
+  public void aFailedReadNamesTheFile() throws Exception {
+    WikiPage page = wiki(filesThatCannot("read")).getChildPage("Notes");
+    try {
+      page.getData();
+      fail("read");
+    } catch (WikiPageLoadException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("Could not read"));
+      assertTrue(e.getMessage(), e.getMessage().contains("Notes.md"));
+    }
+  }
+
+  @Test
+  public void slimSeesTheHostPageNameAndEscapesPipesInValues() {
+    put("Host.md", """
+      ```agnesse
+      define CELL
+      a|b
+      ```
+      ${PAGE_NAME} ${CELL}
+      """);
+    put("Guest.md", "guest\n");
+    MarkdownPage host = (MarkdownPage) page("Host");
+
+    assertTrue(host.expandedForSlim(null).contains("Host a\\|b"));
+    assertTrue(host.expandedForSlim(page("Guest")).contains("Guest a\\|b"));
+    assertTrue(host.getHtmlWithin(page("Guest")).contains("Guest"));
+  }
+
+  @Test
+  public void htmlKeepsPipesInsideAVariable() {
+    String html = html("Notes", """
+      ```agnesse
+      define CELL
+      a|b
+      ```
+      value ${CELL}
+      """);
+    assertTrue(html, html.contains("a|b"));
+    assertFalse(html, html.contains("a\\|b"));
+  }
+
+  @Test
+  public void anIncludeInlinesAnotherPageAndIgnoresAMissingOrSelfTarget() {
+    put("Child.md", "child-body\n");
+    String html = html("Notes", """
+      ```agnesse
+      include Child
+      ```
+      """);
+    assertTrue(html, html.contains("child-body"));
+    assertTrue(html, html.contains("Child"));
+
+    String missing = html("Missing", """
+      ```agnesse
+      include NoSuchPage
+      ```
+      visible
+      """);
+    assertTrue(missing, missing.contains("visible"));
+    assertTrue(missing, missing.contains("NoSuchPage"));
+
+    String self = html("Loop", """
+      ```agnesse
+      include Loop
+      ```
+      visible
+      """);
+    assertTrue(self, self.contains("visible"));
+    assertEquals(1, self.split("agnesse-include", -1).length - 1);
+  }
+
+  @Test
+  public void anIncludeNameStopsAtTheFirstLine() {
+    put("Child.md", "child-body\n");
+    assertTrue(html("Notes", """
+      ```agnesse
+      include Child
+      NotAPage
+      ```
+      """).contains("child-body"));
+    assertFalse(html("Blank", """
+      ```agnesse
+      include
+
+      Child
+      ```
+      """).contains("child-body"));
+  }
+
+  @Test
+  public void aWikiPrefixOutsideAFenceBecomesALink() {
+    put("FrontPage.md", "there\n");
+    assertTrue(html("Notes", "<FrontPage\n").contains("href=\"FrontPage\""));
+  }
+
+  @Test
+  public void aWikiPrefixInsideAFenceOrTableStaysLiteral() {
+    put("FrontPage.md", "there\n");
+    String fenced = html("Fenced", """
+      ```
+      <FrontPage
+      ```
+      """);
+    assertTrue(fenced, fenced.contains("<pre>"));
+    assertTrue(fenced, fenced.contains("&lt;FrontPage"));
+    assertFalse(fenced, fenced.contains("\\&lt;FrontPage"));
+
+    String table = html("Tabular", """
+      | x | <FrontPage |
+      | --- | --- |
+      """);
+    assertTrue(table, table.contains("<table"));
+    assertFalse(table, table.contains("\\&lt;FrontPage") || table.contains("\\<FrontPage"));
+  }
+
+  @Test
+  public void aBangDefineUnwrapsBracesAndParens() {
+    WikiPage notes = notes("""
+      !define BRACED {hello}
+      !define PARENS (world)
+      !define PLAIN keep
+      !define OPEN {hello
+      !define OPENP (hello
+      !define EMPTY
+      !define BRACEPAIR {}
+      """);
+    assertEquals("hello", notes.getVariable("BRACED"));
+    assertEquals("world", notes.getVariable("PARENS"));
+    assertEquals("keep", notes.getVariable("PLAIN"));
+    assertEquals("{hello", notes.getVariable("OPEN"));
+    assertEquals("(hello", notes.getVariable("OPENP"));
+    assertEquals("", notes.getVariable("EMPTY"));
+    assertEquals("", notes.getVariable("BRACEPAIR"));
+  }
+
+  @Test
+  public void anIncludeBringsDefinesFromTheTarget() {
+    put("Helper.md", """
+      ```agnesse
+      define FROM_BLOCK
+      block
+      ```
+      !define FROM_BANG {bang}
+      """);
+    WikiPage notes = notes("""
+      ```agnesse
+      include Helper extra
+      ```
+      !include Helper
+      """);
+    assertEquals("block", notes.getVariable("FROM_BLOCK"));
+    assertEquals("bang", notes.getVariable("FROM_BANG"));
+  }
+
+  @Test
+  public void aDefineWithNoValueIsEmpty() {
+    assertEquals("", notes("""
+      ```agnesse
+      define ONLY_NAME
+      ```
+      """).getVariable("ONLY_NAME"));
+  }
+
+  private void put(String relative, String content) {
+    fileSystem.makeFile(new File("root/" + relative), content);
+  }
+
+  private WikiPage page(String name) {
+    return root.getChildPage(name);
+  }
+
+  private WikiPage notes(String content) {
+    put("Notes.md", content);
+    return page("Notes");
+  }
+
+  private String html(String name) {
+    return page(name).getHtml();
+  }
+
+  private String html(String name, String content) {
+    put(name + ".md", content);
+    return html(name);
+  }
+
+  private WikiPage wiki(FileSystem files) throws IOException {
+    files.makeFile(new File("root/_root.md"), "");
+    files.makeFile(new File("root/Notes.md"), "body\n");
+    return new FileSystemPageFactory(files, new WikiFiles(files))
+      .makePage(new File("root"), "root", null, new SystemVariableSource());
+  }
+
+  private static FileSystem filesThatCannot(String op) {
+    return new FileSystem() {
+      private final MemoryFileSystem inner = new MemoryFileSystem();
+
+      @Override
+      public void makeFile(File file, String content) {
+        inner.makeFile(file, content);
+      }
+
+      @Override
+      public void makeFile(File file, InputStream content) throws IOException {
+        if ("write".equals(op)) {
+          throw new IOException("unwritable");
+        }
+        inner.makeFile(file, content);
+      }
+
+      @Override
+      public void makeDirectory(File path) {
+        inner.makeDirectory(path);
+      }
+
+      @Override
+      public boolean exists(File file) {
+        return inner.exists(file);
+      }
+
+      @Override
+      public String[] list(File path) {
+        return inner.list(path);
+      }
+
+      @Override
+      public String getContent(File file) throws IOException {
+        if ("read".equals(op)) {
+          throw new IOException("unreadable");
+        }
+        return inner.getContent(file);
+      }
+
+      @Override
+      public InputStream getInputStream(File file) throws IOException {
+        return inner.getInputStream(file);
+      }
+
+      @Override
+      public void delete(File path) throws IOException {
+        if ("delete".equals(op)) {
+          throw new IOException("undeletable");
+        }
+        inner.delete(path);
+      }
+
+      @Override
+      public long lastModified(File file) {
+        return inner.lastModified(file);
+      }
+
+      @Override
+      public void rename(File file, File originalFile) {
+        inner.rename(file, originalFile);
+      }
+
+      @Override
+      public boolean isDirectory(File file) {
+        return inner.isDirectory(file);
+      }
+    };
   }
 }
