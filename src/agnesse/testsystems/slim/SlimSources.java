@@ -3,7 +3,6 @@ package agnesse.testsystems.slim;
 import agnesse.markdown.AgNesseBlock;
 import agnesse.markdown.MarkdownFences;
 import agnesse.markdown.MarkdownPage;
-import agnesse.testrunner.TestPageWithSuiteSetUpAndTearDown;
 import agnesse.testrunner.WikiTestPage;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
@@ -63,16 +62,12 @@ public final class SlimSources {
     SlimSources sources = new SlimSources();
     WikiPage context = test.getSourcePage();
     Set<String> seen = new HashSet<>();
-    if (test instanceof TestPageWithSuiteSetUpAndTearDown suite) {
-      sources.addPages(suite.getSuiteSetUps(), context, false, seen);
+    for (WikiPage library : test.getScenarioLibraries()) {
+      sources.addPage(library, context, false, seen);
     }
-    sources.addPages(test.getScenarioLibraries(), context, false, seen);
     sources.addPage(test.getSetUp(), context, false, seen);
     sources.addPage(context, context, false, seen);
     sources.addPage(test.getTearDown(), context, true, seen);
-    if (test instanceof TestPageWithSuiteSetUpAndTearDown suite) {
-      sources.addPages(suite.getSuiteTearDowns(), context, true, seen);
-    }
     return sources;
   }
 
@@ -86,15 +81,6 @@ public final class SlimSources {
 
   public List<String> errors() {
     return items.stream().map(item -> item.error).filter(error -> error != null).toList();
-  }
-
-  private void addPages(List<WikiPage> pages, WikiPage context, boolean tearDown, Set<String> seen) {
-    if (pages == null) {
-      return;
-    }
-    for (WikiPage page : pages) {
-      addPage(page, context, tearDown, seen);
-    }
   }
 
   private void addPage(WikiPage page, WikiPage context, boolean tearDown, Set<String> seen) {
@@ -117,7 +103,7 @@ public final class SlimSources {
     StringBuilder fenceBody = new StringBuilder();
     String info = "";
     MarkdownFences fence = new MarkdownFences();
-    for (String line : page.expandedForSlim(context).split("\n", -1)) {
+    for (String line : page.expandedForSlim(context).split("\n")) {
       boolean wasInside = fence.inside();
       if (fence.boundary(line)) {
         if (!wasInside) {
@@ -126,7 +112,6 @@ public final class SlimSources {
           fenceBody.setLength(0);
         } else {
           includeOrSkip(page, info, fenceBody.toString(), context, tearDown, seen);
-          fenceBody.setLength(0);
         }
         continue;
       }
@@ -157,49 +142,35 @@ public final class SlimSources {
         include(page, block.argument(), context, tearDown, seen);
       }
     } catch (IllegalArgumentException ignored) {
-      // A define or path fence is not a document of tables.
+      // An unknown command is not a document of tables.
     }
   }
 
   private void include(MarkdownPage page, String argument, WikiPage context, boolean tearDown, Set<String> seen) {
-    String name = argument == null ? "" : argument.trim();
-    int split = name.indexOf('\n');
-    if (split >= 0) {
-      name = name.substring(0, split).trim();
-    }
-    int space = name.indexOf(' ');
-    if (space >= 0) {
-      name = name.substring(0, space).trim();
-    }
-    WikiPagePath path = PathParser.parse(name);
+    WikiPagePath path = PathParser.parse(argument.trim().split("\\s+")[0]);
     if (path == null) {
       return;
     }
     WikiPage included = page.getPageCrawler().getSiblingPage(path);
-    if (included instanceof MarkdownPage markdown && included != page) {
+    if (included instanceof MarkdownPage markdown) {
       addPage(markdown, context, tearDown, seen);
     }
   }
 
   private void rememberAlias(String argument) {
-    if (argument == null) {
+    String[] parts = argument.split("\n", 2);
+    if (parts.length < 2) {
       return;
     }
-    int split = argument.indexOf('\n');
-    if (split < 0) {
+    String alias = parts[0].trim();
+    String target = parts[1].trim();
+    if (alias.isEmpty() || target.isEmpty()) {
       return;
     }
-    String alias = argument.substring(0, split).trim();
-    String target = argument.substring(split + 1).trim();
-    if (!alias.isEmpty() && !target.isEmpty()) {
-      items.add(Item.alias(alias, target));
-    }
+    items.add(Item.alias(alias, target));
   }
 
   private void flush(StringBuilder buffer, boolean tearDown, String origin) {
-    if (buffer.length() == 0) {
-      return;
-    }
     for (MarkdownTable table : new MarkdownTableScanner(buffer.toString())) {
       table.setTearDown(tearDown);
       table.setOrigin(origin);
@@ -209,11 +180,6 @@ public final class SlimSources {
   }
 
   private static String fenceInfo(String line) {
-    String trimmed = line.trim();
-    int ticks = 0;
-    while (ticks < trimmed.length() && trimmed.charAt(ticks) == '`') {
-      ticks++;
-    }
-    return trimmed.substring(ticks).trim();
+    return line.trim().replaceFirst("^`+", "").trim();
   }
 }
