@@ -33,36 +33,85 @@ public class JsonBodyTest {
   }
 
   @Test
-  public void htmlIsNotJson() {
-    JsonBody json = JsonBody.parse("HTTP/1.1 200 OK\r\n\r\n<html>Cannot move</html>");
+  public void htmlAndAMissingBodyAreNotJson() {
+    JsonBody html = JsonBody.parse("HTTP/1.1 200 OK\r\n\r\n<html>Cannot move</html>");
+    JsonBody missing = JsonBody.parse(null);
 
-    assertFalse(json.isJson());
-    assertFalse(json.contains("Cannot move"));
-    assertFalse(json.matches("Cannot"));
+    assertFalse(html.isJson());
+    assertFalse(html.contains("Cannot move"));
+    assertFalse(html.matches("Cannot"));
+    assertFalse(missing.isJson());
+    assertFalse(missing.contains(""));
+    assertFalse(missing.matches(""));
   }
 
   @Test
   public void severalEventsStayInOrder() {
     String first = new JSONObject().put("event", "page-done").put("text", "uncle setup").toString();
     String second = new JSONObject().put("event", "page-done").put("text", "hi").toString();
-    JsonBody json = JsonBody.parse(first + "\n" + second + "\n");
 
-    assertTrue(json.matches("uncle setup.*hi"));
+    assertTrue(JsonBody.parse(first + "\n" + second + "\n").matches("uncle setup.*hi"));
+    JsonBody chunkedEvents = JsonBody.parse(chunked(first + "\n", second + "\n"));
+    assertTrue(chunkedEvents.matches("uncle setup.*hi"));
+    assertFalse(chunkedEvents.contains("\r\n"));
   }
 
   @Test
-  public void aMissingBodyIsNotJson() {
-    JsonBody json = JsonBody.parse(null);
+  public void aJsonObjectMayContainTheHeaderSeparatorAsWhitespace() {
+    String json = "{\r\n\r\n\"a\":1}";
 
-    assertFalse(json.isJson());
-    assertFalse(json.contains(""));
-    assertFalse(json.matches(""));
+    assertTrue(JsonBody.parse("\r\n\r\n" + json).contains("\"a\":1"));
+    assertTrue(JsonBody.parse("HTTP/1.1 200 OK\r\n\r\n" + json).contains("\"a\":1"));
   }
 
-  private static String chunked(String event) {
-    byte[] bytes = event.getBytes(StandardCharsets.UTF_8);
-    String size = Integer.toHexString(bytes.length);
-    return "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n"
-      + size + "\r\n" + event + "\r\n0\r\n\r\n";
+  @Test
+  public void trailingWhitespaceAfterAnObjectIsStillThatObject() {
+    JsonBody json = JsonBody.parse("HTTP/1.1 200 OK\r\n\r\n{\"k\":\"v\"}   ");
+
+    assertTrue(json.contains("\"k\":\"v\""));
+    assertFalse(json.contains("\n"));
+  }
+
+  @Test
+  public void chunkedJsonIsReadFromIncompleteFraming() {
+    String event = new JSONObject().put("a", 1).toString();
+    String size = hexSize(event);
+
+    assertContainsA1(chunkedHeaders(size + "\r\n" + event + "\r\n"));
+    assertContainsA1(chunkedHeaders(size + "\r\n" + event));
+    assertContainsA1(chunkedHeaders(size + "\r\n" + event + "\r\n0\r\n"));
+    assertContainsA1(chunkedHeaders("1\r\n{\r\n6\r\n\"a\":1}\r\n0\r\n\r\n"));
+  }
+
+  @Test
+  public void brokenChunkedFramingIsNotJson() {
+    String event = new JSONObject().put("a", 1).toString();
+    String size = hexSize(event);
+
+    assertFalse(JsonBody.parse(chunkedHeaders("\r\n" + event)).isJson());
+    assertFalse(JsonBody.parse(chunkedHeaders("64\r\n" + event)).isJson());
+    assertFalse(JsonBody.parse(chunkedHeaders(size + "\r\n" + event + "\r\nGG\r\n")).isJson());
+    assertFalse(JsonBody.parse(chunkedHeaders(size + "\r\n" + event + "\r\nNOTHEX")).isJson());
+  }
+
+  private static void assertContainsA1(String http) {
+    assertTrue(JsonBody.parse(http).contains("\"a\":1"));
+  }
+
+  private static String hexSize(String event) {
+    return Integer.toHexString(event.getBytes(StandardCharsets.UTF_8).length);
+  }
+
+  private static String chunkedHeaders(String body) {
+    return "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n" + body;
+  }
+
+  private static String chunked(String... events) {
+    StringBuilder body = new StringBuilder();
+    for (String event : events) {
+      body.append(hexSize(event)).append("\r\n").append(event).append("\r\n");
+    }
+    body.append("0\r\n\r\n");
+    return chunkedHeaders(body.toString());
   }
 }

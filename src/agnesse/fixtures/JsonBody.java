@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
@@ -23,7 +24,7 @@ public final class JsonBody {
       return new JsonBody(null);
     }
     String body = new String(payload(http.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-    return new JsonBody(document(body.trim()));
+    return new JsonBody(document(body));
   }
 
   public boolean isJson() {
@@ -42,34 +43,39 @@ public final class JsonBody {
   }
 
   private static byte[] payload(byte[] http) {
-    int split = indexOf(http, "\r\n\r\n".getBytes(StandardCharsets.US_ASCII), 0);
-    if (split < 0) {
+    String text = new String(http, StandardCharsets.UTF_8);
+    String[] parts = text.split("\r\n\r\n", 2);
+    if (parts.length == 1) {
       return http;
     }
-    String headers = new String(http, 0, split, StandardCharsets.UTF_8).toLowerCase();
-    byte[] body = copy(http, split + 4, http.length);
-    if (headers.contains("transfer-encoding: chunked")) {
+    byte[] body = parts[1].getBytes(StandardCharsets.UTF_8);
+    if (parts[0].toLowerCase().contains("transfer-encoding: chunked")) {
       return dechunk(body);
     }
     return body;
   }
 
   private static byte[] dechunk(byte[] body) {
-    java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    String text = new String(body, StandardCharsets.US_ASCII);
     int cursor = 0;
     while (cursor < body.length) {
-      int lineEnd = indexOf(body, new byte[] {'\r', '\n'}, cursor);
-      if (lineEnd < 0) {
-        return body;
+      int lineEnd = text.indexOf("\r\n", cursor);
+      int sizeEnd = lineEnd < 0 ? text.length() : lineEnd;
+      String digits = text.substring(cursor, sizeEnd).trim();
+      if (digits.isEmpty()) {
+        break;
       }
-      int size = hex(body, cursor, lineEnd);
-      if (size < 0) {
+      int size;
+      try {
+        size = Integer.parseInt(digits, 16);
+      } catch (NumberFormatException e) {
         return body;
       }
       if (size == 0) {
         break;
       }
-      int start = lineEnd + 2;
+      int start = sizeEnd + 2;
       if (start + size > body.length) {
         return body;
       }
@@ -80,7 +86,7 @@ public final class JsonBody {
   }
 
   private static String document(String body) {
-    if (body.isEmpty()) {
+    if (body.trim().isEmpty()) {
       return null;
     }
     try {
@@ -97,9 +103,10 @@ public final class JsonBody {
 
   private static boolean onlyWhitespaceRemains(JSONTokener tokener) {
     while (tokener.more()) {
-      if (!Character.isWhitespace(tokener.next())) {
-        return false;
+      if (Character.isWhitespace(tokener.next())) {
+        continue;
       }
+      return false;
     }
     return true;
   }
@@ -117,38 +124,7 @@ public final class JsonBody {
         return null;
       }
     }
-    return text.length() == 0 ? null : text.toString();
-  }
-
-  private static int hex(byte[] body, int start, int end) {
-    try {
-      return Integer.parseInt(new String(body, start, end - start, StandardCharsets.US_ASCII).trim(), 16);
-    } catch (NumberFormatException e) {
-      return -1;
-    }
-  }
-
-  private static int indexOf(byte[] data, byte[] needle, int from) {
-    for (int i = from; i + needle.length <= data.length; i++) {
-      if (matches(data, needle, i)) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  private static boolean matches(byte[] data, byte[] needle, int at) {
-    for (int i = 0; i < needle.length; i++) {
-      if (data[at + i] != needle[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private static byte[] copy(byte[] data, int start, int end) {
-    byte[] slice = new byte[end - start];
-    System.arraycopy(data, start, slice, 0, slice.length);
-    return slice;
+    String document = text.toString();
+    return document.isEmpty() ? null : document;
   }
 }
