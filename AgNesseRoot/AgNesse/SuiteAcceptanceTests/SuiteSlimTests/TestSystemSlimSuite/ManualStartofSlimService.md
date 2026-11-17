@@ -9,6 +9,7 @@ With the manual runner, Slim connects to the given host and port and reports a m
 
 | script | | | |
 | --- | --- | --- | --- |
-| given page | ManualSlim | with content | <br>&#96;&#96;&#96;agnesse<br>define slim.timeout<br>1<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define MANUALLY_START_TEST_RUNNER<br>true<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define slim.pool.size<br>1<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>${AGNESSE_PORT}<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define SLIM_HOST<br>127.0.0.1<br>&#96;&#96;&#96;<br> |
+| $PORT= | agnesse port | | |
+| given page | ManualSlim | with content | <br>&#96;&#96;&#96;agnesse<br>define slim.timeout<br>1<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define MANUALLY_START_TEST_RUNNER<br>true<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define slim.pool.size<br>1<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>$PORT<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>define SLIM_HOST<br>127.0.0.1<br>&#96;&#96;&#96;<br> |
 | make | ManualSlim | a test page | |
 | test results for page | ManualSlim | should contain | Timeout while reading slim header from client. |

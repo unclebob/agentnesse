@@ -36,6 +36,10 @@ public class PageDriver {
     createPageWithContent(pageName, "");
   }
 
+  public int agnessePort() {
+    return AgNesseFixtureContext.context.port;
+  }
+
   public int requestPage(String uri) throws Exception {
     requester.uri = uri;
     requester.execute();

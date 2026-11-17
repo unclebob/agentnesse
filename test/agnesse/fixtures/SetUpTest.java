@@ -35,4 +35,11 @@ public class SetUpTest {
       assertEquals(String.valueOf(second.port), second.getProperty("AGNESSE_PORT"));
     }
   }
+
+  @Test
+  public void pagesCanAskForThePortSetUpBound() throws Exception {
+    new SetUp();
+
+    assertEquals(AgNesseFixtureContext.context.port, new PageDriver().agnessePort());
+  }
 }
