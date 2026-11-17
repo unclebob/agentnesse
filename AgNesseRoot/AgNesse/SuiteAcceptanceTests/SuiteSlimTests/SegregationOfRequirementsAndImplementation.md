@@ -10,11 +10,11 @@ This sample page shows that the same requirement defintion can be implemented on
 
 
 The requirements are defined in a decision table on a sub page. 
-The first implementation used is the Devision class from the eg library.
+The first implementation used is the Division class from the agnesse.slim.test package.
 
 | import |
 | --- |
-| eg |
+| agnesse.slim.test |
 
 ```agnesse
 include >CalculatorRequirements
