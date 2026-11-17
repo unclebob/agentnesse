@@ -10,9 +10,14 @@ import agnesse.util.SerialExecutorService;
 import agnesse.wiki.PageCrawler;
 import agnesse.wiki.PageData;
 import agnesse.wiki.PathParser;
+import agnesse.wiki.SystemVariableSource;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPagePath;
+import agnesse.wiki.fs.DiskFileSystem;
+import agnesse.wiki.fs.FileSystemPageFactory;
+import agnesse.wiki.fs.WikiFiles;
 
+import java.io.File;
 import java.nio.file.Files;
 
 public class PageDriver {
@@ -157,6 +162,17 @@ public class PageDriver {
     String relative = pageName.replace('.', '/') + ".md";
     String source = Files.readString(java.nio.file.Path.of("AgNesseRoot", relative));
     return text != null && source.contains(text);
+  }
+
+  /** Rendered HTML of a shipped page, including the pages it includes. */
+  public boolean bundledHtmlContains(String pageName, String text) {
+    WikiPage page = bundledWiki().getPageCrawler().getPage(PathParser.parse(pageName));
+    return page != null && page.getHtml().contains(text);
+  }
+
+  private static WikiPage bundledWiki() {
+    return new FileSystemPageFactory(new DiskFileSystem(), new WikiFiles())
+      .makePage(new File("AgNesseRoot"), "AgNesseRoot", null, new SystemVariableSource());
   }
 
   public String pageSource(String pageName) {

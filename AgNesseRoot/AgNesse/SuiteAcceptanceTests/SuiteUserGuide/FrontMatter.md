@@ -19,7 +19,7 @@ The Edit page shows that object in a Front Matter section above the editor. The 
 }
 ```
 
-`suiteFilter` runs only the pages that carry the tag. `searchProperties` reads the same fields.
+`suiteFilter` runs only the pages that carry the tag. `searchProperties` reads the same fields. `Tagged` is tagged `guide` and checks `guide-tagged`. `Other` is tagged `later` and checks `guide-other`.
 
 | script | page builder |
 | --- | --- |
@@ -34,7 +34,7 @@ The Edit page shows that object in a Front Matter section above the editor. The 
 | --- | --- |
 | line | \| script \| agnesse.fixtures.EchoFixture \| |
 | line | \| --- \| --- \| --- \| |
-| line | \| check \| echo \| hello \| hello \| |
+| line | \| check \| echo \| guide-tagged \| guide-tagged \| |
 | attributes | Test=true,Suites=guide |
 | markdown page | GuideTags.Tagged |
 
@@ -42,16 +42,21 @@ The Edit page shows that object in a Front Matter section above the editor. The 
 | --- | --- |
 | line | \| script \| agnesse.fixtures.EchoFixture \| |
 | line | \| --- \| --- \| --- \| |
-| line | \| check \| echo \| hello \| hello \| |
+| line | \| check \| echo \| guide-other \| guide-other \| |
 | attributes | Test=true,Suites=later |
 | markdown page | GuideTags.Other |
 
 | script | page driver |
 | --- | --- |
 | check | request page | GuideTags?suite&format=json&suiteFilter=guide | 200 |
-| ensure | content contains | Tagged |
-| reject | content contains | Other |
+| ensure | content contains | GuideTags.Tagged |
+| reject | content contains | GuideTags.Other |
+| ensure | content contains | "actual":"guide-tagged" |
+| reject | content contains | "actual":"guide-other" |
+| ensure | content matches | "pages":1[,}] |
+| ensure | content matches | "right":1[,}] |
+| reject | content contains | "status":"empty" |
 | check | request page | GuideTags?responder=searchProperties&tags=guide&type=test | 200 |
 | ensure | content contains | "tags":["guide"] |
-| ensure | content contains | Tagged |
-| reject | content contains | Other |
+| ensure | content contains | GuideTags.Tagged |
+| reject | content contains | GuideTags.Other |

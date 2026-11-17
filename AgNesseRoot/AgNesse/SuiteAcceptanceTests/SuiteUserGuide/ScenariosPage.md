@@ -6,4 +6,4 @@
 }
 | scenario | greet | name |
 | --- | --- | --- |
-| check | echo | hello @name | hello @name |
+| check | echo | hello @name | hello world |

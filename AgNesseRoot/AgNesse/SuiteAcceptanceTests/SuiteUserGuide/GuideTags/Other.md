@@ -6,4 +6,4 @@
 }
 | script | echo fixture |
 | --- | --- |
-| check | echo | hello | hello |
+| check | echo | guide-other | guide-other |
