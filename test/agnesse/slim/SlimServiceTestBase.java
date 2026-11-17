@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,9 @@ import static org.junit.Assert.*;
 public abstract class SlimServiceTestBase {
   static Thread service;
   static int port;
+  // Bind and connect on one address. An ephemeral port is unique per address,
+  // so "localhost" could resolve to another process listening on [::1]:port.
+  private static final InetAddress LOOPBACK = InetAddress.getLoopbackAddress();
   protected List<Instruction> statements;
   protected SlimCommandRunningClient slimClient;
 
@@ -37,8 +41,7 @@ public abstract class SlimServiceTestBase {
       service.interrupt();
       throw new SlimError("Already an in-process server running: " + service.getName() + " (alive=" + service.isAlive() + ")");
     }
-    ServerSocketFactory serverSocketFactory = new PlainServerSocketFactory();
-    ServerSocket socket = serverSocketFactory.createServerSocket(options.port);
+    ServerSocket socket = new PlainServerSocketFactory().createServerSocket(options.port, LOOPBACK);
     port = socket.getLocalPort();
     final SlimService slimservice = new SlimService(slimFactory.getSlimServer(), socket, options.daemon);
     service = new Thread() {
@@ -76,14 +79,18 @@ public abstract class SlimServiceTestBase {
   @Before
   public void setUp() throws InterruptedException, IOException {
     createSlimService();
-    slimClient = new SlimCommandRunningClient(new MockCommandRunner(new CompositeExecutionLogListener()), "localhost", port, 10, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
+    slimClient = new SlimCommandRunningClient(new MockCommandRunner(new CompositeExecutionLogListener()), LOOPBACK.getHostAddress(), port, 10, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
     statements = new ArrayList<>();
     slimClient.connect();
   }
 
   protected void createSlimService() throws InterruptedException {
-    while (!tryCreateSlimService())
+    for (int attempt = 0; attempt < 1000; attempt++) {
+      if (tryCreateSlimService())
+        return;
       Thread.sleep(10);
+    }
+    throw new IllegalStateException("The previous in-process Slim service never stopped");
   }
 
   private boolean tryCreateSlimService() {
