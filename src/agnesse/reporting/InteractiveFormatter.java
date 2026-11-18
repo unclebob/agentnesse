@@ -35,10 +35,6 @@ public abstract class InteractiveFormatter extends BaseFormatter implements Test
     }
   }
 
-  protected void updateSummaryDiv(String html) {
-    writeData(JavascriptUtil.makeReplaceElementScript("test-summary", html).html());
-  }
-
   protected String getRelativeName() {
 	  return relativeName;
   }

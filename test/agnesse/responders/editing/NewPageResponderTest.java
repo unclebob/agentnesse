@@ -9,6 +9,9 @@ import agnesse.AgNesseContext;
 import agnesse.http.MockRequest;
 import agnesse.http.SimpleResponse;
 import agnesse.testutil.AgNesseUtil;
+import agnesse.wiki.PathParser;
+import agnesse.wiki.WikiPage;
+import agnesse.wiki.WikiPageUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -86,6 +89,47 @@ public class NewPageResponderTest {
     String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
 
     assertSubString("\"type\": \"test-adjunct\"", body);
+  }
+
+  @Test
+  public void theFormUsesThePageDefaultContent() throws Exception {
+    WikiPage parent = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Parent"),
+      "```agnesse\ndefine NewPage.default.content\nUse this starter\n```\n");
+    request.setResource("Parent");
+
+    String body = ((SimpleResponse) responder.makeResponse(context, request)).getContent();
+
+    assertSubString("Use this starter", body);
+    assertEquals("Use this starter", NewPageResponder.getDefaultContent(parent));
+  }
+
+  @Test
+  public void theDeprecatedDefaultIsUsedWhenTheNewNameIsUnset() throws Exception {
+    WikiPage parent = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Legacy"),
+      "```agnesse\ndefine newpage.default.content\nLegacy starter\n```\n");
+    assertEquals("Legacy starter", NewPageResponder.getDefaultContent(parent));
+  }
+
+  @Test
+  public void theNewDefaultWinsOverTheDeprecatedName() throws Exception {
+    WikiPage parent = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Both"),
+      """
+      ```agnesse
+      define NewPage.default.content
+      New starter
+      ```
+      ```agnesse
+      define newpage.default.content
+      Legacy starter
+      ```
+      """);
+    assertEquals("New starter", NewPageResponder.getDefaultContent(parent));
+  }
+
+  @Test
+  public void aPageWithoutADefaultUsesTheBuiltInContentsBlock() throws Exception {
+    WikiPage parent = WikiPageUtil.addPage(context.getRootPage(), PathParser.parse("Blank"), "");
+    assertEquals(NewPageResponder.DEFAULT_PAGE_CONTENT, NewPageResponder.getDefaultContent(parent));
   }
 
 }

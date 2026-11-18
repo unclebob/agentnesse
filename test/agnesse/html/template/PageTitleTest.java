@@ -1,6 +1,7 @@
 package agnesse.html.template;
 
 import agnesse.wiki.PathParser;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
@@ -113,5 +114,29 @@ public class PageTitleTest {
     assertEquals("files/templates", crumb.getLink());
     assertEquals("type", pt.getPageType());    
     assertEquals("page tags", pt.getPageTags());
+  }
+
+  @Test
+  public void aSeparatorOnlyPathHasNoTitle() {
+    PageTitle pt = new PageTitle("type", "/", "/");
+    assertNull(pt.getTitle());
+    assertNull(pt.getLink());
+    assertEquals(0, pt.getBreadCrumbs().size());
+    assertEquals("type", pt.getPageType());
+  }
+
+  @Test
+  public void blankTagsAreIgnoredAndTagsSplitOnCommas() {
+    PageTitle pt = new PageTitle("type", PathParser.parse("SimplePage"), "kept");
+    pt.setPageTags(null);
+    pt.setPageTags("");
+    assertEquals("kept", pt.getPageTags());
+    assertArrayEquals(new String[] {"kept"}, pt.getPageTagsArray());
+
+    pt.setPageTags(" a , b ");
+    assertArrayEquals(new String[] {"a", "b"}, pt.getPageTagsArray());
+
+    PageTitle bare = new PageTitle();
+    assertArrayEquals(new String[] {}, bare.getPageTagsArray());
   }
 }

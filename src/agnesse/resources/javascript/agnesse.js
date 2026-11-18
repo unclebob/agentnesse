@@ -9,10 +9,14 @@ const summaryCount = function (value) {
   return value;
 };
 
+const countSource = function (counts) {
+  return counts || {};
+};
+
 const summaryCounts = function (counts) {
-  var source = counts || {};
   var columns = summaryColumns();
   var values = [];
+  var source = countSource(counts);
   for (var i = 0; i < columns.length; i++) {
     values.push(summaryCount(source[columns[i]]));
   }
@@ -24,21 +28,30 @@ const leafName = function (path) {
   return parts[parts.length - 1];
 };
 
-const relativePageName = function (path, root) {
-  if (!path) {
-    return "";
-  }
-  if (!root) {
-    return path;
-  }
+const namedWhenRooted = function (path, root) {
   if (path === root) {
     return "(" + leafName(path) + ")";
   }
+  return path;
+};
+
+const nameUnderRoot = function (path, root) {
   var prefix = root + ".";
   if (path.indexOf(prefix) === 0) {
     return path.substring(prefix.length);
   }
-  return path;
+  return namedWhenRooted(path, root);
+};
+
+const hasPageAndRoot = function (path, root) {
+  return path && root;
+};
+
+const relativePageName = function (path, root) {
+  if (hasPageAndRoot(path, root)) {
+    return nameUnderRoot(path, root);
+  }
+  return textOrEmpty(path);
 };
 
 const summaryHref = function (path) {
@@ -48,11 +61,15 @@ const summaryHref = function (path) {
   return "/" + path;
 };
 
+const textOrEmpty = function (value) {
+  return value || "";
+};
+
 const summaryPage = function (event) {
   return {
     counts: summaryCounts(event.counts),
-    path: event.path || "",
-    status: event.status || ""
+    path: textOrEmpty(event.path),
+    status: textOrEmpty(event.status)
   };
 };
 

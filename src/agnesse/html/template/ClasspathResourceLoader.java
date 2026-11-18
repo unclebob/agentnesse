@@ -25,24 +25,16 @@ public class ClasspathResourceLoader extends ResourceLoader {
 
   @Override
   public Reader getResourceReader(String name, String encoding) throws ResourceNotFoundException {
-    InputStreamReader result = null;
-
     if (StringUtils.isEmpty(name)) {
       throw new ResourceNotFoundException("No template name provided");
     }
 
     String path = base + name;
     try {
-      result = new InputStreamReader(ClassUtils.getResourceAsStream(getClass(), path), encoding);
+      return new InputStreamReader(ClassUtils.getResourceAsStream(getClass(), path), encoding);
     } catch (Exception fnfe) {
       throw new ResourceNotFoundException("problem with template: " + path, fnfe);
     }
-
-    if (result == null) {
-      throw new ResourceNotFoundException("ClasspathResourceLoader Error: cannot find resource " + path);
-    }
-
-    return result;
   }
 
   @Override
@@ -53,9 +45,6 @@ public class ClasspathResourceLoader extends ResourceLoader {
     }
   }
 
-  @Override
-  public boolean isSourceModified(Resource resource) {
-    return false;
-  }
+  @Override public boolean isSourceModified(Resource resource) { return false; }
 
 }

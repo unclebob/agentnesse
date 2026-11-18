@@ -87,17 +87,6 @@ public abstract class ChunkingResponder implements Responder, ChunkedDataProvide
     response.close();
   }
 
-  protected String getRenderedPath() {
-    if (path != null)
-      return PathParser.render(path);
-    else
-      return request.getResource();
-  }
-
-  public void setRequest(Request request) {
-    this.request = request;
-  }
-
   /**
    * Performs the actual chunk sending in a separate thread.
    *

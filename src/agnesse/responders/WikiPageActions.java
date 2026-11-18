@@ -23,10 +23,6 @@ public class WikiPageActions {
     return hasAction("Suite");
   }
 
-  public boolean isDefaultPage() {
-    return !(isTestPage() || isSuitePage());
-  }
-
   public boolean isWithEdit() {
     return hasAction("Edit");
   }

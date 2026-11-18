@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class UrlPathVariableSourceTest {
@@ -37,6 +38,21 @@ public class UrlPathVariableSourceTest {
     UrlPathVariableSource urlSource = new UrlPathVariableSource(source, urlVariables);
 
     assertThat(urlSource.findVariable("PATH").get(), is(urlVariables.get("PATH")));
+  }
+
+  @Test
+  public void aParameterThatIsAbsentFallsThroughAndANullValueIsEmpty() {
+    Properties properties = new Properties();
+    properties.setProperty("TestProp", "found");
+    SystemVariableSource source = new SystemVariableSource(properties);
+    Map<String, String> urlVariables = new HashMap<>();
+    urlVariables.put("only", "here");
+    urlVariables.put("empty", null);
+    UrlPathVariableSource urlSource = new UrlPathVariableSource(source, urlVariables);
+
+    assertThat(urlSource.findVariable("TestProp").get(), is("found"));
+    assertThat(urlSource.findVariable("only").get(), is("here"));
+    assertFalse(urlSource.findVariable("empty").isPresent());
   }
 
 }

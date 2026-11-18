@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ScopeVariablesResponderTest {
   protected WikiPage root;
@@ -52,6 +53,23 @@ public class ScopeVariablesResponderTest {
     assertEquals("Z", value(variables, "z", "SimplePage.ChildPage"));
     assertEquals("B", value(variables, "a", "SimplePage.ChildPage.GrandChildPage"));
     assertEquals("BB", value(variables, "b", "SimplePage.ChildPage.GrandChildPage"));
+  }
+
+  @Test
+  public void anUnknownParameterIsRejected() throws Exception {
+    request.setResource("SimplePage");
+    request.addInput("extra", "1");
+    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+    assertEquals(400, response.getStatus());
+    assertTrue(response.getContent().contains("Unknown parameter extra"));
+  }
+
+  @Test
+  public void aMissingPageIsNotFound() throws Exception {
+    request.setResource("MissingPage");
+    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+    assertEquals(404, response.getStatus());
+    assertTrue(response.getContent().contains("No page MissingPage"));
   }
 
   private static String value(JSONArray variables, String name, String page) {

@@ -29,12 +29,6 @@ public class BasicResponder implements Responder {
     return response;
   }
 
-  protected WikiPage getPage(AgNesseContext context, Request request) {
-    String resource = request.getResource();
-    WikiPagePath path = PathParser.parse(resource);
-    return context.getRootPage().getPageCrawler().getPage(path);
-  }
-
   protected HtmlPage prepareResponseDocument(AgNesseContext context) {
     HtmlPage responseDocument = context.pageFactory.newPage();
     responseDocument.addTitles("Default Responder");

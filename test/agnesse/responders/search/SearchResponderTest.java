@@ -149,6 +149,56 @@ public class SearchResponderTest {
   }
 
   @Test
+  public void titleSearchFindsPageNames() throws Exception {
+    request.addInput("q", "sometest");
+    request.addInput("type", "title");
+    request.addInput(Request.NOCHUNK, "");
+    Response response = responder.makeResponse(context, request);
+    MockResponseSender sender = new MockResponseSender();
+    sender.doSending(response);
+    String content = sender.sentData();
+    assertSubString("SomeTest", content);
+    assertSubString("\"type\": \"title\"", content);
+    assertDoesntHaveRegexp("SomeSuite", content);
+  }
+
+  @Test
+  public void aBlankTypeSearchesTitles() throws Exception {
+    request.addInput("q", "somesuite");
+    request.addInput("type", "");
+    request.addInput(Request.NOCHUNK, "");
+    Response response = responder.makeResponse(context, request);
+    MockResponseSender sender = new MockResponseSender();
+    sender.doSending(response);
+    assertSubString("SomeSuite", sender.sentData());
+  }
+
+  @Test
+  public void aMissingQueryAndTypeSearchNothing() throws Exception {
+    MockRequest bare = new MockRequest();
+    bare.addInput(Request.NOCHUNK, "");
+    Response response = responder.makeResponse(context, bare);
+    MockResponseSender sender = new MockResponseSender();
+    sender.doSending(response);
+    String content = sender.sentData();
+    assertSubString("\"pages\": []", content);
+    assertSubString("\"type\": \"title\"", content);
+    assertSubString("\"q\": \"\"", content);
+  }
+
+  @Test
+  public void aMethodQueryKeepsBarsItAlreadyHas() throws Exception {
+    WikiPage suite = context.getRootPage().getChildPage("SomePage").getChildPage("SomeSuite");
+    WikiPageUtil.addPage(suite, PathParser.parse("BarTest"), "|Some method|");
+
+    String wrapped = getResponseContentUsingMethodName("|Some method|", "");
+    assertHasRegexp("BarTest", wrapped);
+
+    String partial = getResponseContentUsingMethodName("|no such method", "");
+    assertDoesntHaveRegexp("BarTest", partial);
+  }
+
+  @Test
   public void searchFromAMissingPageSearchesFromTheRoot() throws Exception {
     request.setResource("NoSuchPage");
     request.addInput(Request.NOCHUNK, "");

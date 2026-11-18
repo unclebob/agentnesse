@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class SystemVariableSourceTest {
@@ -40,6 +41,13 @@ public class SystemVariableSourceTest {
     SystemVariableSource source = new SystemVariableSource(properties);
 
     assertThat(source.getProperty("PATH"), is(System.getenv("PATH")));
+  }
+
+  @Test
+  public void aMissingNameWithNoPropertiesIsEmpty() {
+    SystemVariableSource source = new SystemVariableSource();
+    assertFalse(source.findVariable("this-variable-does-not-exist-agnesse").isPresent());
+    assertThat(source.getProperty("this-variable-does-not-exist-agnesse"), org.hamcrest.Matchers.nullValue());
   }
 
 }

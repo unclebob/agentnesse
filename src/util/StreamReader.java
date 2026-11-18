@@ -23,6 +23,15 @@ public class StreamReader implements Closeable {
   // timeout limit in milli seconds
   // 0 = wait forever, never timeout
   private int timeoutLimit = 0;
+  private Pause pause = Thread::sleep;
+
+  void pauseWith(Pause pause) {
+    this.pause = pause;
+  }
+
+  interface Pause {
+    void await(int millis) throws InterruptedException;
+  }
 
   private boolean eof = false;
   private boolean isTimeout = false;
@@ -141,7 +150,7 @@ public class StreamReader implements Closeable {
 
       } else {
         try {
-          Thread.sleep(sleepStep);
+          pause.await(sleepStep);
         } catch (InterruptedException e) {
           throw new InterruptedIOException("Interrupted while awaiting data: " + e.getMessage());
         }

@@ -22,10 +22,6 @@ public abstract class SymbolManagingTableTable implements StatementExecutorConsu
     // IMPORTANT: Don't forget to set this back to null at the end of your fixture code
     context.assign(StatementExecutor.SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS,"tableTable.*\\.doTable");
   }
-  
-  protected StatementExecutorInterface getStatementExecutor() {
-    return context;
-  }
 
   public List<List<String>> doTable(List<List<String>> table) {
     try {

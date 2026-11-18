@@ -2,11 +2,13 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.responders;
 
+import static org.junit.Assert.assertEquals;
 import static util.RegexTestCase.assertSubString;
 
 import agnesse.Responder;
 import agnesse.http.MockResponseSender;
 import agnesse.http.Response;
+import agnesse.http.SimpleResponse;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPageUtil;
 import org.junit.Test;
@@ -21,6 +23,14 @@ public class RawContentResponderTest extends ResponderTestCase {
   public void testSimplePage() throws Exception {
     String result = getResultsUsing("simple content");
     assertSubString("simple content", result);
+  }
+
+  @Test
+  public void aMissingPageIsNotFound() throws Exception {
+    request.setResource("MissingPage");
+    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+    assertEquals(404, response.getStatus());
+    assertSubString("No page MissingPage", response.getContent());
   }
 
   @Test

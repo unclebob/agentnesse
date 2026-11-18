@@ -48,6 +48,27 @@ public class NewPageResponderCreatesChildTest {
   }
 
   @Test
+  public void aMissingParentIsNotFound() throws Exception {
+    request.setResource("NoSuchParent");
+    SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
+    assertEquals(404, response.getStatus());
+    assertSubString("No page NoSuchParent", response.getContent());
+    assertEquals(null, crawler.getPage(path));
+  }
+
+  @Test
+  public void missingContentAndTypeUseTheDefaults() throws Exception {
+    request = new MockRequest();
+    request.setResource("TestPage");
+    request.addInput("pageName", "TestChild");
+    responder.makeResponse(context, request);
+    getChildPage("TestChild");
+    assertTrue(isTest());
+    assertFalse(isSuite());
+    assertSubString("```agnesse\ncontents\n```", childPageData.getContent());
+  }
+
+  @Test
   public void canGetRedirectResponse() throws Exception {
     final SimpleResponse response = (SimpleResponse) responder.makeResponse(context, request);
     final String body = response.getContent();

@@ -3,6 +3,10 @@
 package agnesse.wiki;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
@@ -54,6 +58,34 @@ public class VersionInfoTest {
     assertEquals("1 hour", VersionInfo.howLongAgoString(now, oneHour));
     assertEquals("5 days", VersionInfo.howLongAgoString(now, fiveDays));
     assertEquals("21 years", VersionInfo.howLongAgoString(now, years));
+  }
+
+  @Test
+  public void versionNamesIncludeTheAuthorWhenThereIsOne() {
+    Date when = new GregorianCalendar(2020, 0, 2, 3, 4, 5).getTime();
+    VersionInfo named = VersionInfo.makeVersionInfo("Ada", when);
+    VersionInfo anon = VersionInfo.makeVersionInfo("", when);
+    VersionInfo unnamed = VersionInfo.makeVersionInfo((String) null, when);
+
+    assertTrue(named.getName().startsWith("Ada-"));
+    assertEquals("Ada", named.getAuthor());
+    assertEquals(when, named.getCreationTime());
+    assertEquals(named.getName(), named.toString());
+    assertEquals(anon.getName(), unnamed.getName());
+    assertEquals("", anon.getAuthor());
+    assertNull(unnamed.getAuthor());
+    assertFalse(anon.getName().startsWith("-"));
+    assertEquals(named, new VersionInfo(named.getName(), "other", when));
+    assertNotEquals(named, anon);
+    assertFalse(named.equals(null));
+    assertFalse(named.equals("Ada"));
+    assertEquals(named.getName().hashCode(), named.hashCode());
+    assertTrue(named.getAge().contains("year"));
+
+    PageData data = new PageData("content", new WikiPageProperty());
+    data.setAttribute(PageData.LAST_MODIFYING_USER, "Ada");
+    data.getProperties().setLastModificationTime(when);
+    assertEquals(named.getName(), VersionInfo.makeVersionInfo(data).getName());
   }
 
 }

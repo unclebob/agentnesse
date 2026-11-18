@@ -49,4 +49,17 @@ public class ExitCodeListenerTest {
     assertEquals(1, listener.getFailCount());
   }
 
+  @Test
+  public void aPassingPageAndQuietCallbacksLeaveTheExitCodeAlone() {
+    ExitCodeListener listener = new ExitCodeListener();
+    listener.testSystemStarted(null);
+    listener.testStarted(null);
+    listener.testOutputChunk(null, "chunk");
+    listener.testAssertionVerified(null, null);
+    listener.testExceptionOccurred(null, null);
+    listener.testSystemStopped(null, null);
+    listener.testComplete(new WikiTestPage(new WikiPageDummy("Passes", "", null)), new TestSummary(3, 0, 1, 0));
+    assertEquals(0, listener.getFailCount());
+  }
+
 }

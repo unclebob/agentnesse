@@ -4,8 +4,11 @@ package agnesse.responders;
 
 import java.io.File;
 
+import agnesse.AgNesseContext;
 import agnesse.Responder;
 import agnesse.http.MockRequest;
+import agnesse.http.Request;
+import agnesse.http.Response;
 import agnesse.responders.editing.EditResponder;
 import agnesse.responders.editing.NewPageResponder;
 import agnesse.responders.editing.SaveResponder;
@@ -180,6 +183,75 @@ public class ResponderFactoryTest {
   @Test
   public void testNewPageResponder() throws Exception {
     assertResponderTypeMatchesInput("new", NewPageResponder.class);
+  }
+
+  @Test
+  public void aQueryArgumentIsNotPartOfTheResponderKey() throws Exception {
+    request.setResource("SomePage");
+    request.setQueryString("search&q=1");
+    assertEquals("search", factory.getResponderKey(request));
+    assertResponderType(SearchResponder.class);
+  }
+
+  @Test
+  public void theFilesResourceWithoutASlashUsesTheFileResponder() throws Exception {
+    request.setResource("files");
+    assertResponderType(FileResponder.class);
+  }
+
+  @Test
+  public void anUnknownResponderKeyIsRejected() throws Exception {
+    request.addInput("responder", "missing");
+    try {
+      factory.makeResponder(request);
+      org.junit.Assert.fail("missing responder");
+    } catch (InstantiationException e) {
+      assertEquals("No responder for missing", e.getMessage());
+    }
+  }
+
+  @Test
+  public void aResponderThatCannotBeConstructedIsRejected() throws Exception {
+    factory.addResponder("broken", BrokenResponder.class);
+    request.addInput("responder", "broken");
+    try {
+      factory.makeResponder(request);
+      org.junit.Assert.fail("broken responder");
+    } catch (InstantiationException e) {
+      assertEquals("Unable to instantiate responder broken", e.getMessage());
+    }
+  }
+
+  @Test
+  public void aResponderCanTakeTheRootPath() throws Exception {
+    factory.addResponder("rooted", RootedResponder.class);
+    request.addInput("responder", "rooted");
+    Responder responder = factory.makeResponder(request);
+    assertEquals("testDir", ((RootedResponder) responder).root);
+  }
+
+  public static class BrokenResponder implements Responder {
+    public BrokenResponder() {
+      throw new IllegalStateException("nope");
+    }
+
+    @Override
+    public Response makeResponse(AgNesseContext context, Request request) {
+      return null;
+    }
+  }
+
+  public static class RootedResponder implements Responder {
+    final String root;
+
+    public RootedResponder(String root) {
+      this.root = root;
+    }
+
+    @Override
+    public Response makeResponse(AgNesseContext context, Request request) {
+      return null;
+    }
   }
 
 }

@@ -5,10 +5,12 @@ package util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static util.RegexTestCase.assertHasRegexp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InterruptedIOException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -195,5 +197,34 @@ public class StreamReaderTest {
   @Test
   public void testEarlyClosingStream() throws Exception {
     assertEquals("", openReader().read(10));
+  }
+
+  @Test
+  public void aSilentStreamTimesOutWithoutWaiting() throws Exception {
+    StreamReader quiet = new StreamReader(new ByteArrayInputStream(new byte[0]));
+    quiet.setTimeoutLimit(10);
+    quiet.pauseWith(millis -> { });
+
+    assertEquals("", quiet.read(1));
+    assertTrue(quiet.isTimeout());
+    quiet.close();
+  }
+
+  @Test
+  public void anInterruptedWaitReportsTheInterruption() throws Exception {
+    StreamReader quiet = new StreamReader(new ByteArrayInputStream(new byte[0]));
+    quiet.setTimeoutLimit(10);
+    quiet.pauseWith(millis -> {
+      throw new InterruptedException("stop");
+    });
+
+    try {
+      quiet.read(1);
+      fail("expected the interrupted wait to escape");
+    } catch (InterruptedIOException e) {
+      assertTrue(e.getMessage().contains("stop"));
+    } finally {
+      quiet.close();
+    }
   }
 }

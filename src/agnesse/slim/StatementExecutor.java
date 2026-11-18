@@ -43,20 +43,14 @@ public class StatementExecutor implements StatementExecutorInterface {
     context.addLibrary(new Library(SLIM_HELPER_LIBRARY_INSTANCE_NAME, slimHelperLibrary));
   }
 
-  @Override
-  public Object getInstance(String instanceName) {
-    return context.getInstance(instanceName);
-  }
+  @Override public Object getInstance(String instanceName) { return context.getInstance(instanceName); }
 
   @Override
   public void setInstance(final String actorInstanceName, final Object actor) {
     context.setInstance(actorInstanceName, actor);
   }
 
-  @Override
-  public void addPath(String path) throws SlimException {
-    context.addPath(path);
-  }
+  @Override public void addPath(String path) throws SlimException { context.addPath(path); }
 
   @Override
   public void assign(String name, Object value) {
@@ -91,10 +85,7 @@ public class StatementExecutor implements StatementExecutorInterface {
       if (newInstance instanceof StatementExecutorConsumer) {
         ((StatementExecutorConsumer) newInstance).setStatementExecutor(this);
       }
-    } catch (SlimError e) {
-      throw new SlimException(format("%s[%d]", className, args.length), e, SlimServer.COULD_NOT_INVOKE_CONSTRUCTOR,
-          true);
-    } catch (IllegalArgumentException e) {
+    } catch (SlimError | IllegalArgumentException e) {
       throw new SlimException(format("%s[%d]", className, args.length), e, SlimServer.COULD_NOT_INVOKE_CONSTRUCTOR,
           true);
     } catch (InvocationTargetException e) {
@@ -154,38 +145,19 @@ public class StatementExecutor implements StatementExecutorInterface {
    *
    */
 
-  private Boolean ignoreSymbols(String instanceName, String methodName){
-	  try{
-
-	    if (this.patternOfFixturesHandlingSymbols == null) return false;
-	    return patternOfFixturesHandlingSymbols.matcher(instanceName + "." + methodName).matches();
-
-	  }catch (Exception e){
-		  return false;
-	  }
+  private boolean ignoreSymbols(String instanceName, String methodName) {
+    if (patternOfFixturesHandlingSymbols == null) return false;
+    return patternOfFixturesHandlingSymbols.matcher(instanceName + "." + methodName).matches();
   }
 
-  private void checkForPatternOfFixturesHandlingSymbols(String symbolName){
-    if(!SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS.equals(symbolName)) return;
-    // Special Symbol Name need to update
-    try{
-      MethodExecutionResult mer = context.getVariable(SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS);
-      if (mer == null) return;
-
-      try{
-        if(mer.returnValue() == null){
-          patternOfFixturesHandlingSymbols = null;
-        }else{
-          patternOfFixturesHandlingSymbols = Pattern.compile(mer.returnValue().toString());
-        }
-      }catch (Exception e){
-        patternOfFixturesHandlingSymbols = null;
-      }
-
-    }catch (Exception e){
-      return;
+  private void checkForPatternOfFixturesHandlingSymbols(String symbolName) {
+    if (!SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS.equals(symbolName)) return;
+    try {
+      Object value = context.getVariable(symbolName).returnValue();
+      patternOfFixturesHandlingSymbols = value == null ? null : Pattern.compile(value.toString());
+    } catch (Exception e) {
+      patternOfFixturesHandlingSymbols = null;
     }
-
   }
 
   private void checkExceptionForStop(Throwable exception) {

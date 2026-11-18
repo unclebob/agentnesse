@@ -36,4 +36,22 @@ public class PageDataTest {
     assertTrue(new PageData("", new WikiPageProperty()).isEmpty());
     assertFalse(new PageData("body", new WikiPageProperty()).isEmpty());
   }
+
+  @Test
+  public void contentDropsCarriageReturnsAndBlankAttributesAreRemoved() {
+    PageData data = new PageData("a\rb", new WikiPageProperty());
+    assertEquals("ab", data.getContent());
+    data.setOrRemoveAttribute("Help", null);
+    data.setOrRemoveAttribute("Help", "");
+    assertEquals(null, data.getAttribute("Help"));
+    data.setOrRemoveAttribute("Help", "how");
+    assertEquals("how", data.getAttribute("Help"));
+    data.setFrontMatterPrefix(null);
+    assertEquals("", data.getFrontMatterPrefix());
+    data.setFrontMatterPrefix("{}\n");
+    assertEquals("{}\n", data.getFrontMatterPrefix());
+    assertFalse(data.preserveFrontMatter());
+    data.setPreserveFrontMatter(true);
+    assertTrue(data.preserveFrontMatter());
+  }
 }

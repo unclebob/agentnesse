@@ -56,4 +56,35 @@ public class BaseWikiPageTest {
     assertFalse(linkingPage.isRoot());
   }
 
+  @Test
+  public void pagesCompareByPathAndABrokenPathDoesNotThrow() {
+    assertTrue(root.hasChildPage("LinkingPage"));
+    assertFalse(root.hasChildPage("Missing"));
+    assertTrue(linkingPage.toString().contains("LinkingPage"));
+    assertTrue(linkingPage.compareTo(root) != 0);
+
+    WikiPage broken = new WikiPageDummy("Broken", "", linkingPage) {
+      @Override
+      public WikiPagePath getFullPath() {
+        throw new RuntimeException("path");
+      }
+    };
+    assertEquals(0, broken.compareTo(root));
+    assertFalse(broken.equals(root));
+    assertEquals(0, broken.hashCode());
+    assertFalse(broken.equals(null));
+    assertFalse(broken.equals("Broken"));
+    assertEquals(broken, broken);
+  }
+
+  @Test
+  public void removingAChildDropsItAndRemovingTheRootLeavesTheRoot() throws Exception {
+    WikiPage child = linkingPage.getChildPage("ChildPage");
+    child.remove();
+    assertFalse(linkingPage.hasChildPage("ChildPage"));
+    root.remove();
+    assertTrue(root.isRoot());
+    assertTrue(root.hasChildPage("LinkingPage"));
+  }
+
 }

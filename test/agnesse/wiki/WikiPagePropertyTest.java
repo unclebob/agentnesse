@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -114,5 +116,32 @@ public class WikiPagePropertyTest {
     property.set("child", "value");
 
     assertEquals("value", property.get("child"));
+  }
+
+  @Test
+  public void copyingNothingYieldsAnEmptyProperty() {
+    WikiPageProperty copy = new WikiPageProperty((WikiPageProperty) null);
+    assertFalse(copy.has("child"));
+    assertNull(copy.getProperty("child"));
+    assertTrue(copy.keySet().isEmpty());
+  }
+
+  @Test
+  public void lastModificationTimeRoundTripsAndRejectsGarbage() {
+    Date when = new GregorianCalendar(2020, 0, 2, 3, 4, 5).getTime();
+    property.setLastModificationTime(when);
+    assertEquals(WikiPageProperty.getTimeFormat().format(when),
+      WikiPageProperty.getTimeFormat().format(property.getLastModificationTime()));
+
+    WikiPageProperty blank = new WikiPageProperty();
+    assertNotNull(blank.getLastModificationTime());
+
+    property.set(WikiPageProperty.LAST_MODIFIED, "not-a-date");
+    try {
+      property.getLastModificationTime();
+      org.junit.Assert.fail("bad date");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("not-a-date"));
+    }
   }
 }

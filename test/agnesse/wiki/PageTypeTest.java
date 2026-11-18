@@ -2,6 +2,9 @@ package agnesse.wiki;
 
 import static agnesse.wiki.PageType.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -103,6 +106,39 @@ public class PageTypeTest {
       String pageName = (String) testItem[1];
       assertEquals(pageType, getPageTypeForPageName(pageName));
     }
+  }
+
+  @Test
+  public void frontMatterRoundTripsThroughThePageAttributes() throws Exception {
+    WikiPage page = createDefaultPage();
+    assertNull(PageType.parseFrontMatter(null));
+    assertNull(PageType.parseFrontMatter("nope"));
+    assertEquals(TEST, PageType.parseFrontMatter("test"));
+    assertEquals("static", PageType.storedType(page.getData()));
+    assertEquals("suite", PageType.storedType(createSuitePage().getData()));
+    assertEquals("test", PageType.storedType(createTestPage().getData()));
+
+    PageData data = page.getData();
+    data.setAttribute(TEST.toString());
+    PageType.applyTo(data.getProperties(), null);
+    page.commit(data);
+    assertEquals(STATIC, PageType.fromWikiPage(page));
+
+    data = page.getData();
+    PageType.applyTo(data.getProperties(), "static");
+    page.commit(data);
+    assertEquals(STATIC, PageType.fromWikiPage(page));
+
+    data = page.getData();
+    PageType.applyTo(data.getProperties(), "test-adjunct");
+    page.commit(data);
+    assertEquals(TEST_ADJUNCT, PageType.fromWikiPage(page));
+    assertEquals("test-adjunct", PageType.storedType(page.getData()));
+    assertEquals("test-adjunct", TEST_ADJUNCT.frontMatter());
+    assertTrue(TestAdjunct.is(page));
+    assertTrue(TestAdjunct.named("SetUp"));
+    assertFalse(TestAdjunct.named(null));
+    assertFalse(TestAdjunct.named("Plain"));
   }
 
   @Test

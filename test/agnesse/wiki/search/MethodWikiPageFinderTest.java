@@ -29,6 +29,13 @@ public class MethodWikiPageFinderTest {
   }
 
   @Test
+  public void aMethodLineMustEndWithABar() {
+    pageFinder = pageFinder("|method with no param");
+    pageFinder.search(root);
+    hits.assertPagesFound();
+  }
+
+  @Test
   public void searcherNoMethodMatch() {
     pageFinder = pageFinder("no");
     pageFinder.search(root);

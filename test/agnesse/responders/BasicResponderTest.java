@@ -9,6 +9,7 @@ import agnesse.wiki.WikiPageUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static util.RegexTestCase.assertNotSubString;
 import static util.RegexTestCase.assertSubString;
 
@@ -33,5 +34,13 @@ public class BasicResponderTest {
     assertSubString("The AgNesse project.", body);
     assertNotSubString("objectmentor.com", body);
     assertNotSubString("FitNesse development team", body);
+  }
+
+  @Test
+  public void aMissingPageIsNotFound() throws Exception {
+    request.setResource("MissingPage");
+    SimpleResponse response = (SimpleResponse) new BasicResponder().makeResponse(context, request);
+    assertEquals(404, response.getStatus());
+    assertSubString("No page MissingPage", response.getContent());
   }
 }

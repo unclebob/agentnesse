@@ -98,6 +98,44 @@ public class RerunSuiteFormatterTest {
   }
 
   @Test
+  public void createsAMissingParentDirectory() throws IOException {
+    File dir = new File(System.getProperty("java.io.tmpdir"), "rerun-parent-" + System.nanoTime());
+    File nested = new File(dir, "child");
+    File target = new File(nested, "rerun.md");
+    RerunSuiteFormatter created = new RerunSuiteFormatter(target);
+    try {
+      assertTrue(nested.isDirectory());
+      assertTrue(target.exists());
+      created.close();
+      assertFalse(target.exists());
+    } finally {
+      if (target.exists()) {
+        target.delete();
+      }
+      nested.delete();
+      dir.delete();
+    }
+  }
+
+  @Test
+  public void aNewFileInAnExistingDirectoryIsNotDeletedUpFront() throws IOException {
+    File dir = new File(System.getProperty("java.io.tmpdir"), "rerun-exists-" + System.nanoTime());
+    assertTrue(dir.mkdir());
+    File target = new File(dir, "rerun.md");
+    RerunSuiteFormatter created = new RerunSuiteFormatter(target);
+    try {
+      assertTrue(target.exists());
+      assertEquals(0, created.getErrorCount());
+    } finally {
+      created.close();
+      if (target.exists()) {
+        target.delete();
+      }
+      dir.delete();
+    }
+  }
+
+  @Test
   public void suiteSetUpAndSuiteTearDownAreIgnored() throws IOException {
     sendTestComplete(ExecutionResult.ERROR, "SuiteSetUp");
     sendTestComplete(ExecutionResult.ERROR, "ErrorPage");

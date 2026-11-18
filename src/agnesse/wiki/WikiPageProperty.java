@@ -41,8 +41,9 @@ public class WikiPageProperty implements Serializable {
   }
 
   public WikiPageProperty(WikiPageProperty that) {
-    if (that != null && that.children != null)
+    if (that != null) {
       children = new TreeMap<>(that.children);
+    }
   }
 
   public String getValue() {
@@ -72,10 +73,7 @@ public class WikiPageProperty implements Serializable {
   }
 
   public WikiPageProperty getProperty(String name) {
-    if (children == null)
-      return null;
-    else
-      return children.get(name);
+    return children.get(name);
   }
 
   public String get(String name) {
@@ -84,11 +82,11 @@ public class WikiPageProperty implements Serializable {
   }
 
   public boolean has(String name) {
-    return children != null && children.containsKey(name);
+    return children.containsKey(name);
   }
 
   public Set<String> keySet() {
-    return children == null ? Collections.<String>emptySet() : children.keySet();
+    return children.keySet();
   }
 
   @Override
@@ -112,10 +110,6 @@ public class WikiPageProperty implements Serializable {
         buffer.append(value.toString(childKey, depth + 1));
     }
     return buffer.toString();
-  }
-
-  public boolean hasChildren() {
-    return children != null && !children.isEmpty();
   }
 
   public Date getLastModificationTime() {
