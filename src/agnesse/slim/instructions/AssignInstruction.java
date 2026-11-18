@@ -20,34 +20,12 @@ public class AssignInstruction extends Instruction {
   }
 
   @Override
+  protected Object[] fields() {
+    return new Object[] {symbolName, value};
+  }
+
+  @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("{id='").append(getId()).append('\'');
-    sb.append(", instruction='").append(INSTRUCTION).append('\'');
-    sb.append(", symbolName='").append(symbolName).append('\'');
-    sb.append(", value='").append(value).append('\'');
-    sb.append('}');
-    return sb.toString();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    AssignInstruction that = (AssignInstruction) o;
-
-    if (!value.equals(that.value)) return false;
-    return symbolName.equals(that.symbolName);
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + symbolName.hashCode();
-    result = 31 * result + value.hashCode();
-    return result;
+    return described(INSTRUCTION, ", symbolName='" + symbolName + "', value='" + value + "'");
   }
 }

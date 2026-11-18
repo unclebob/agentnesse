@@ -33,40 +33,20 @@ abstract class CallAndOptionalAssignInstruction extends Instruction {
   }
 
   @Override
+  protected Object[] fields() {
+    return new Object[] {symbolName, instanceName, methodName, args == null ? null : Arrays.asList(args)};
+  }
+
+  @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("{id='").append(getId()).append('\'');
-    sb.append(", instruction='").append(instructionName).append('\'');
-    symbolName.ifPresent(sn -> sb.append(", symbolName='").append(sn).append('\''));
-    sb.append(", instanceName='").append(instanceName).append('\'');
-    sb.append(", methodName='").append(methodName).append('\'');
-    sb.append(", args=").append(Arrays.toString(args));
-    sb.append('}');
-    return sb.toString();
+    return described(instructionName, details());
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    CallAndOptionalAssignInstruction that = (CallAndOptionalAssignInstruction) o;
-
-    if (!Arrays.equals(args, that.args)) return false;
-    if (!instanceName.equals(that.instanceName)) return false;
-    if (!methodName.equals(that.methodName)) return false;
-    return symbolName.equals(that.symbolName);
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + symbolName.hashCode();
-    result = 31 * result + instanceName.hashCode();
-    result = 31 * result + methodName.hashCode();
-    result = 31 * result + Arrays.hashCode(args);
-    return result;
+  private String details() {
+    String symbol = symbolName.map(name -> ", symbolName='" + name + "'").orElse("");
+    return symbol
+      + ", instanceName='" + instanceName + "'"
+      + ", methodName='" + methodName + "'"
+      + ", args=" + Arrays.toString(args);
   }
 }

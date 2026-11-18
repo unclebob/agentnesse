@@ -18,30 +18,12 @@ public class ImportInstruction extends Instruction {
   }
 
   @Override
+  protected Object[] fields() {
+    return new Object[] {path};
+  }
+
+  @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("{id='").append(getId()).append('\'');
-    sb.append(", instruction='").append(INSTRUCTION).append('\'');
-    sb.append(", path='").append(path).append('\'');
-    sb.append('}');
-    return sb.toString();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    ImportInstruction that = (ImportInstruction) o;
-
-    return path.equals(that.path);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + path.hashCode();
-    return result;
+    return described(INSTRUCTION, ", path='" + path + "'");
   }
 }

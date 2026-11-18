@@ -28,37 +28,14 @@ public class MakeInstruction extends Instruction {
   }
 
   @Override
+  protected Object[] fields() {
+    return new Object[] {instanceName, className, args == null ? null : Arrays.asList(args)};
+  }
+
+  @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("{id='").append(getId()).append('\'');
-    sb.append(", instruction='").append(INSTRUCTION).append('\'');
-    sb.append(", instanceName='").append(instanceName).append('\'');
-    sb.append(", className='").append(className).append('\'');
-    sb.append(", args=").append(args == null ? "null" : Arrays.asList(args).toString());
-    sb.append('}');
-    return sb.toString();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    MakeInstruction that = (MakeInstruction) o;
-
-    // Probably incorrect - comparing Object[] arrays with Arrays.equals
-    if (!Arrays.equals(args, that.args)) return false;
-    if (!className.equals(that.className)) return false;
-    return instanceName.equals(that.instanceName);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + instanceName.hashCode();
-    result = 31 * result + className.hashCode();
-    result = 31 * result + Arrays.hashCode(args);
-    return result;
+    String rendered = args == null ? "null" : Arrays.asList(args).toString();
+    return described(INSTRUCTION,
+      ", instanceName='" + instanceName + "', className='" + className + "', args=" + rendered);
   }
 }
