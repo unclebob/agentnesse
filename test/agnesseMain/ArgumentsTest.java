@@ -2,7 +2,10 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesseMain;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
@@ -76,6 +79,31 @@ public class ArgumentsTest {
     assertNull(properties.getProperty("Command"));
     assertEquals("127.0.0.1", properties.getProperty("listen"));
     assertEquals("100", properties.getProperty("MaximumWorkers"));
+  }
+
+  @Test
+  public void mcpIsAFlagAndACommandIsSeparate() {
+    assertTrue(new Arguments("-mcp").isMcp());
+    assertFalse(new Arguments().isMcp());
+    assertTrue(new Arguments("-c", "SomeCommand").hasCommand());
+    assertFalse(new Arguments("-mcp").hasCommand());
+    assertNull(new Arguments().getRerunFailures());
+    assertEquals("last.json", new Arguments("--rerun-failures", "last.json").getRerunFailures());
+  }
+
+  @Test
+  public void usageMentionsMcp() {
+    PrintStream err = System.err;
+    ByteArrayOutputStream captured = new ByteArrayOutputStream();
+    System.setErr(new PrintStream(captured, true, StandardCharsets.UTF_8));
+    try {
+      Arguments.printUsage();
+    } finally {
+      System.setErr(err);
+    }
+    String usage = captured.toString(StandardCharsets.UTF_8);
+    assertTrue(usage, usage.contains("-mcp"));
+    assertTrue(usage, usage.contains("list_pages"));
   }
 
 }

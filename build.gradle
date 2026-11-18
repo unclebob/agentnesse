@@ -250,6 +250,7 @@ def coverageFloors = [
   'agnesse/junit': [line: 0.79, branch: 0.66],
   'agnesse/logging': [line: 1.00, branch: 0.90],
   'agnesse/markdown': [line: 0.90, branch: 0.80],
+  'agnesse/mcp': [line: 1.00, branch: 1.00],
   'agnesse/reporting': [line: 0.95, branch: 0.90],
   'agnesse/responders': [line: 0.94, branch: 0.84],
   'agnesse/responders/editing': [line: 0.95, branch: 0.86],
@@ -279,7 +280,7 @@ def coverageFloors = [
   'agnesse/wiki/fs': [line: 0.83, branch: 0.84],
   'agnesse/wiki/refactoring': [line: 0.96, branch: 0.81],
   'agnesse/wiki/search': [line: 0.97, branch: 0.90],
-  'agnesseMain': [line: 0.68, branch: 0.72],
+  'agnesseMain': [line: 1.00, branch: 1.00],
   'util': [line: 0.91, branch: 0.91],
 ]
 

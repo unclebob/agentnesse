@@ -11,7 +11,7 @@ import static agnesse.ContextConfigurator.*;
 public class Arguments {
 
   private final CommandLine commandLine = new CommandLine(
-          "[-v][-p port][-d dir][-r root][-f config][-c command][-b output][--listen address][-rerun-failures file]");
+          "[-v][-p port][-d dir][-r root][-f config][-c command][-b output][--listen address][-rerun-failures file][-mcp]");
 
   private final String rootPath;
   private final Integer port;
@@ -22,6 +22,7 @@ public class Arguments {
   private final boolean verboseLogging;
   private final String listenAddress;
   private final String rerunFailures;
+  private final boolean mcp;
 
   public Arguments(String... args) {
     if (!commandLine.parse(args)) {
@@ -37,6 +38,15 @@ public class Arguments {
     this.verboseLogging = commandLine.hasOption("v");
     this.listenAddress = commandLine.getOptionArgument("listen", "address");
     this.rerunFailures = commandLine.getOptionArgument("rerun-failures", "file");
+    this.mcp = commandLine.hasOption("mcp");
+  }
+
+  public boolean isMcp() {
+    return mcp;
+  }
+
+  public boolean hasCommand() {
+    return command != null;
   }
 
   public String getRerunFailures() {
@@ -46,7 +56,7 @@ public class Arguments {
   static void printUsage() {
     ContextConfigurator defaults = ContextConfigurator.systemDefaults();
 
-    System.err.println("Usage: java -jar agnesse.jar [-vpdrfcb] [--listen address]");
+    System.err.println("Usage: java -jar agnesse.jar [-vpdrfcb] [--listen address] [-mcp]");
     System.err.println("\t-p <port number> {" + DEFAULT_PORT + "}");
     System.err.println("\t-d <working directory> {" +
       defaults.get(ROOT_PATH) + "}");
@@ -58,6 +68,7 @@ public class Arguments {
     System.err.println("\t-b <filename> redirect command output.");
     System.err.println("\t--rerun-failures <json> rerun only failedPages from that file.");
     System.err.println("\t    A run also writes .agnesse/last-failures.json beside the wiki root.");
+    System.err.println("\t-mcp Serve list_pages, run, and get_results on standard input and output.");
     System.err.println("\t-v {off} Verbose logging");
     System.err.println("\t--listen <address> {" + DEFAULT_LISTEN + "} Bind to this address. 0.0.0.0 listens on all interfaces.");
   }

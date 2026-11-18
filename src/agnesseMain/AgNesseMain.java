@@ -4,7 +4,10 @@ import agnesse.ConfigurationParameter;
 import agnesse.ContextConfigurator;
 import agnesse.AgNesse;
 import agnesse.AgNesseContext;
+import agnesse.mcp.McpServer;
+import agnesse.mcp.WikiTools;
 import agnesse.reporting.ExitCodeListener;
+import agnesse.results.RunQuery;
 import agnesse.socketservice.PlainServerSocketFactory;
 import agnesse.wiki.PathParser;
 
@@ -13,6 +16,7 @@ import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -28,7 +32,10 @@ public class AgNesseMain {
   private final ExitCodeListener exitCodeListener = new ExitCodeListener();
 
   public static void main(String[] args) {
-    Integer exitCode = start(args);
+    finish(start(args));
+  }
+
+  static void finish(Integer exitCode) {
     if (exitCode != null) {
       exit(exitCode);
     }
@@ -55,6 +62,14 @@ public class AgNesseMain {
   }
 
   public Integer launchAgNesse(Arguments arguments) throws Exception {
+    return launchAgNesse(arguments, System.in, System.out);
+  }
+
+  public Integer launchAgNesse(Arguments arguments, InputStream in, OutputStream out) throws Exception {
+    if (arguments.isMcp() && arguments.hasCommand()) {
+      System.err.println("-mcp runs the server on standard input. It does not take -c.");
+      return 1;
+    }
     ContextConfigurator contextConfigurator = ContextConfigurator.systemDefaults();
     File configFile = new File(arguments.getConfigFile(contextConfigurator));
     try {
@@ -65,33 +80,26 @@ public class AgNesseMain {
     }
     contextConfigurator = contextConfigurator.updatedWith(System.getProperties());
     contextConfigurator = arguments.update(contextConfigurator);
-
+    if (arguments.isMcp()) {
+      return serveMcp(contextConfigurator, in, out);
+    }
     return launchAgNesse(contextConfigurator);
   }
 
   public Integer launchAgNesse(ContextConfigurator contextConfigurator) throws Exception {
-    configureLogging("verbose".equalsIgnoreCase(contextConfigurator.get(LOG_LEVEL)));
-
-    ClassLoader classLoader = AgNesseMain.class.getClassLoader();
-    contextConfigurator.withClassLoader(classLoader);
-
     if (contextConfigurator.get(COMMAND) != null) {
       contextConfigurator.withTestSystemListener(exitCodeListener);
     }
 
-    AgNesseContext context = contextConfigurator.makeAgNesseContext();
-
-    if (!establishRequiredDirectories(context.getRootPagePath())) {
-      LOG.severe("AgNesse cannot be started...");
-      LOG.severe("Unable to create AgNesse root directory in " + context.getRootPagePath());
-      LOG.severe("Ensure you have sufficient permissions to create this folder.");
+    AgNesseContext context = contextOrNull(contextConfigurator);
+    if (context == null) {
       return 1;
     }
 
     logStartupInfo(context);
 
     try {
-      return launch(context, classLoader);
+      return launch(context, AgNesseMain.class.getClassLoader());
     } catch (BindException e) {
       LOG.severe("AgNesse cannot be started...");
       LOG.severe("Port " + context.port + " is already in use.");
@@ -99,6 +107,41 @@ public class AgNesseMain {
       return 1;
     }
 
+  }
+
+  private Integer serveMcp(ContextConfigurator configurator, InputStream in, OutputStream out) throws Exception {
+    AgNesseContext context = contextOrNull(configurator);
+    if (context == null) {
+      return 1;
+    }
+    PrintStream previous = null;
+    if (out == System.out) {
+      previous = System.out;
+      System.setOut(new PrintStream(System.err, true, StandardCharsets.UTF_8));
+    }
+    try {
+      new McpServer(new WikiTools(context)).serve(in, out);
+      return 0;
+    } finally {
+      if (previous != null) {
+        System.setOut(previous);
+      } else {
+        out.close();
+      }
+    }
+  }
+
+  private AgNesseContext contextOrNull(ContextConfigurator configurator) throws Exception {
+    configureLogging("verbose".equalsIgnoreCase(configurator.get(LOG_LEVEL)));
+    configurator.withClassLoader(AgNesseMain.class.getClassLoader());
+    AgNesseContext context = configurator.makeAgNesseContext();
+    if (!establishRequiredDirectories(context.getRootPagePath())) {
+      LOG.severe("AgNesse cannot be started...");
+      LOG.severe("Unable to create AgNesse root directory in " + context.getRootPagePath());
+      LOG.severe("Ensure you have sufficient permissions to create this folder.");
+      return null;
+    }
+    return context;
   }
 
   private boolean establishRequiredDirectories(String rootPagePath) {
@@ -148,15 +191,7 @@ public class AgNesseMain {
   }
 
   private String jsonCommand(AgNesseContext context, String command) {
-    String withFormat = command;
-    if (command.contains("?") && !command.contains("format=")) {
-      withFormat = command + "&format=json";
-    }
-    String rerun = context.getProperty(RERUN_FAILURES.getKey());
-    if (rerun == null) {
-      return withFormat;
-    }
-    return withFormat + "&rerunFailures=" + java.net.URLEncoder.encode(rerun, java.nio.charset.StandardCharsets.UTF_8);
+    return RunQuery.json(command, context.getProperty(RERUN_FAILURES.getKey()));
   }
 
   private void executeSingleCommand(AgNesse agNesse, String command, String outputFile) throws Exception {
@@ -188,7 +223,7 @@ public class AgNesseMain {
     System.out.println("Bootstrapping AgNesse, the fully integrated standalone wiki and acceptance testing framework.");
 
     LOG.info("root page: " + context.getRootPage());
-    LOG.info("logger: " + (context.logger == null ? "none" : context.logger.toString()));
+    LOG.info("logger: none");
     LOG.info("page factory: " + context.pageFactory);
   }
 
@@ -197,12 +232,16 @@ public class AgNesseMain {
       return;
     }
 
-    try (InputStream in = AgNesseMain.class.getResourceAsStream((verbose ? "verbose-" : "") + "logging.properties")) {
-      LogManager.getLogManager().readConfiguration(in);
+    readLogging(AgNesseMain.class.getResourceAsStream((verbose ? "verbose-" : "") + "logging.properties"));
+    LOG.finest("Configured verbose logging");
+  }
+
+  static void readLogging(InputStream in) {
+    try (InputStream stream = in) {
+      LogManager.getLogManager().readConfiguration(stream);
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Log configuration failed", e);
     }
-    LOG.finest("Configured verbose logging");
   }
 
   private boolean loggingSystemPropertiesDefined() {
