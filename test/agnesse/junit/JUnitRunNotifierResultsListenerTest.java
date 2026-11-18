@@ -9,7 +9,7 @@ import agnesse.testsystems.slim.results.SlimExceptionResult;
 import agnesse.testsystems.slim.results.SlimTestResult;
 import agnesse.wiki.PageData;
 import agnesse.wiki.WikiPage;
-import agnesse.wiki.fs.WikiPageProperties;
+import agnesse.wiki.WikiPageProperty;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -261,7 +261,7 @@ public class JUnitRunNotifierResultsListenerTest {
     when(test.isRoot()).thenReturn(false);
     when(test.getParent()).thenReturn(root);
     when(test.getName()).thenReturn("WikiPage");
-    when(test.getData()).thenReturn(new PageData("content", new WikiPageProperties()));
+    when(test.getData()).thenReturn(new PageData("content", new WikiPageProperty()));
     when(test.getPageCrawler()).thenCallRealMethod();
     when(test.getFullPath()).thenCallRealMethod();
     return new WikiTestPage(test);

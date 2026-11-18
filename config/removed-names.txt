@@ -127,3 +127,21 @@ content.txt
 properties.xml
 ".wiki"
 fitnesse.wikitext
+
+StringTransform
+TagGroup
+XmlizePageCondition
+FormatterRegistry
+FormatterException
+LoggingInteraction
+EmployeesHiredBefore
+class WaitFixture
+WikiPageProperties
+XmlUtil
+VariableTool
+AttributeWikiPageFinder
+ComponentFactory
+ComponentInstantiationException
+ContentBuffer
+GracefulNamer
+CompositePageFinder

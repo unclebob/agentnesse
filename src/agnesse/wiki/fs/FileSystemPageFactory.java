@@ -1,7 +1,6 @@
 package agnesse.wiki.fs;
 
 import java.io.File;
-import java.util.Properties;
 
 import agnesse.markdown.MarkdownPage;
 import agnesse.markdown.MarkdownPageFactory;
@@ -21,10 +20,6 @@ public class FileSystemPageFactory implements WikiPageFactory {
 
   public FileSystemPageFactory() {
     this(new DiskFileSystem(), new WikiFiles());
-  }
-
-  public FileSystemPageFactory(Properties properties) {
-    this();
   }
 
   public FileSystemPageFactory(FileSystem fileSystem, WikiFiles versionsController) {

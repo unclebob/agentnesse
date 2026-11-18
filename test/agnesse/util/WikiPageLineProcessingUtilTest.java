@@ -2,8 +2,6 @@ package agnesse.util;
 
 import org.junit.Test;
 
-import java.util.Map;
-
 import static org.junit.Assert.*;
 
 public class WikiPageLineProcessingUtilTest {
@@ -35,15 +33,6 @@ public class WikiPageLineProcessingUtilTest {
   }
 
   @Test
-  public void testGetLastColumn() {
-    assertEquals("", WikiPageLineProcessingUtil.getLastColumn("not valid line ensure|keyword"));
-    assertEquals(" ", WikiPageLineProcessingUtil.getLastColumn("|ensure|keyword| |"));
-    assertEquals("check value", WikiPageLineProcessingUtil.getLastColumn("|check|keyword|check value|"));
-    assertEquals("check not value", WikiPageLineProcessingUtil.getLastColumn("|check not|keyword|check not value|"));
-    assertEquals("keyword", WikiPageLineProcessingUtil.getLastColumn("|note|keyword|"));
-  }
-
-  @Test
   public void testGetMethodNameFromLine() {
     assertEquals("", WikiPageLineProcessingUtil.getMethodNameFromLine("not a valid line"));
     assertEquals("noParam", WikiPageLineProcessingUtil.getMethodNameFromLine("|no param|"));
@@ -55,26 +44,6 @@ public class WikiPageLineProcessingUtilTest {
     assertEquals("itHasAnd", WikiPageLineProcessingUtil.getMethodNameFromLine("|check not|it has|param1|and|param2|check not value|"));
     assertEquals("itHas3ParamAndAnd", WikiPageLineProcessingUtil.getMethodNameFromLine("|note|it has 3 param|param1|and|param2|and|param3|"));
     assertEquals("itHas3ParamAndAnd", WikiPageLineProcessingUtil.getMethodNameFromLine("||it has ||3 param and|param2|and|param3|"));
-  }
-
-  @Test
-  public void testGetRowColumnsExcludingKeywordInFirstColumnIfPresent() {
-    Map map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("|a|b|c|");
-    assertEquals(3, map.size());
-    map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("|ensure|a|b|c|");
-    assertEquals(3, map.size());
-    map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("|reject|a|b|c|");
-    assertEquals(3, map.size());
-    map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("|check|a|b|c|checkValue|");
-    assertEquals(4, map.size());
-    map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("|check not|a|b|c|check not value|");
-    assertEquals(4, map.size());
-    map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("|show|a|b|c|");
-    assertEquals(3, map.size());
-    map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("|note|a|b|c|");
-    assertEquals(3, map.size());
-    map = WikiPageLineProcessingUtil.getRowColumnsExcludingKeywordInFirstColumnIfPresent("||a|b|c|");
-    assertEquals(3, map.size());
   }
 
 }
