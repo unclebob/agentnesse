@@ -11,14 +11,17 @@ public final class CollapsibleSection {
   public static String html(String title, String pagePath, String body, boolean open, boolean include) {
     String classes = include ? "agnesse-section agnesse-include" : "agnesse-section";
     return "<details class=\"" + classes + "\"" + (open ? " open" : "") + ">"
-      + summary(title, pagePath)
+      + summary(title, pagePath, open)
       + (body == null ? "" : body)
       + "</details>\n";
   }
 
-  private static String summary(String title, String pagePath) {
-    return "<summary><span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>"
-      + name(title, pagePath) + "</summary>";
+  private static String summary(String title, String pagePath, boolean open) {
+    return "<summary>" + toggle(open) + name(title, pagePath) + "</summary>";
+  }
+
+  private static String toggle(boolean open) {
+    return "<button type=\"button\" class=\"disclosure\" aria-expanded=\"" + open + "\">&gt;</button>";
   }
 
   private static String name(String title, String pagePath) {

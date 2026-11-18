@@ -49,7 +49,7 @@ public class AgNesseBlockTest {
     AgNesseBlock block = AgNesseBlock.parse("include SetUp");
     assertEquals(""
       + "<details class=\"agnesse-section agnesse-include\">"
-      + "<summary><span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>"
+      + "<summary><button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button>"
       + "<a href=\"Parent.SetUp\">SetUp</a></summary>from-include</details>\n",
       block.includeWith("from-include", "Parent.SetUp"));
   }
@@ -58,13 +58,13 @@ public class AgNesseBlockTest {
   public void anUnresolvedIncludeEscapesTheLinesUnderTheName() {
     assertEquals(""
       + "<details class=\"agnesse-section agnesse-include\">"
-      + "<summary><span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>SetUp</summary>"
+      + "<summary><button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button>SetUp</summary>"
       + "hello &lt;there&gt;</details>\n",
       AgNesseBlock.parse("include SetUp\nhello <there>").html());
 
     assertEquals(""
       + "<details class=\"agnesse-section agnesse-include\">"
-      + "<summary><span class=\"disclosure\" aria-hidden=\"true\">&gt;</span></summary>"
+      + "<summary><button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button></summary>"
       + "hello</details>\n",
       AgNesseBlock.parse("include\n\nhello").html());
   }

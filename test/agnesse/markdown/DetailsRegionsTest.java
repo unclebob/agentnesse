@@ -53,7 +53,7 @@ public class DetailsRegionsTest {
     String html = DetailsRegions.render("<details><summary>T</summary>\nBODY\n</details>", chunk -> keep(chunks, chunk));
 
     assertEquals(List.of("", "BODY\n"), chunks);
-    assertTrue(html, html.contains("&gt;</span>T</summary>"));
+    assertTrue(html, html.contains("&gt;</button>T</summary>"));
   }
 
   @Test
@@ -85,7 +85,7 @@ public class DetailsRegionsTest {
     List<String> chunks = new ArrayList<>();
     String html = DetailsRegions.render("<details></summary><summary>T</summary>x</details>", chunk -> keep(chunks, chunk));
 
-    assertTrue(html, html.contains("&gt;</span></summary>"));
+    assertTrue(html, html.contains("&gt;</button></summary>"));
     assertEquals(List.of("", "<summary>T</summary>x"), chunks);
   }
 
@@ -94,7 +94,7 @@ public class DetailsRegionsTest {
     List<String> chunks = new ArrayList<>();
     String html = DetailsRegions.render("<details></summary>\nBODY\n</details>", chunk -> keep(chunks, chunk));
 
-    assertTrue(html, html.contains("&gt;</span></summary>"));
+    assertTrue(html, html.contains("&gt;</button></summary>"));
     assertEquals(List.of("", "BODY\n"), chunks);
   }
 
@@ -102,7 +102,7 @@ public class DetailsRegionsTest {
   public void anUnclosedSummaryHasABlankTitle() {
     String html = DetailsRegions.render("<details><summary>T\nBODY\n</details>", chunk -> chunk);
 
-    assertTrue(html, html.contains("&gt;</span></summary>"));
+    assertTrue(html, html.contains("&gt;</button></summary>"));
     assertFalse(html, html.contains("T"));
   }
 
@@ -120,7 +120,7 @@ public class DetailsRegionsTest {
     String html = DetailsRegions.render("<details><summary>T</summary>", chunk -> keep(chunks, chunk));
 
     assertEquals(List.of(""), chunks);
-    assertTrue(html, html.contains("&gt;</span>T</summary>"));
+    assertTrue(html, html.contains("&gt;</button>T</summary>"));
   }
 
   @Test

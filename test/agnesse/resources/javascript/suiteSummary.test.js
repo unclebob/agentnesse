@@ -127,8 +127,11 @@ function createElement(tag) {
     el._listeners[type] = el._listeners[type] || [];
     el._listeners[type].push(fn);
   };
-  el.dispatchEvent = (type) => {
-    (el._listeners[type] || []).forEach((fn) => fn.call(el));
+  el.dispatchEvent = (eventOrType) => {
+    const event = typeof eventOrType === "string"
+      ? { type: eventOrType, preventDefault() {}, stopPropagation() {} }
+      : eventOrType;
+    (el._listeners[event.type] || []).forEach((fn) => fn.call(el, event));
   };
   el.querySelector = (selector) => queryAll(el, selector)[0] || null;
   el.querySelectorAll = (selector) => queryAll(el, selector);
@@ -499,6 +502,68 @@ function passedBlock(name) {
   };
 }
 
+// Chrome turns Enter and Space on a button into a click unless the keydown is canceled.
+function pressKey(el, key) {
+  let canceled = false;
+  el.dispatchEvent({
+    type: "keydown",
+    key,
+    preventDefault() { canceled = true; },
+    stopPropagation() {},
+  });
+  if (!canceled && el.tagName === "BUTTON" && (key === "Enter" || key === " ")) {
+    el.dispatchEvent({ type: "click", preventDefault() {}, stopPropagation() {} });
+  }
+}
+
+test("enter and space on a focused disclosure toggle the section", () => {
+  const view = render([
+    { event: "page-started", path: "Suite.Child" },
+    {
+      event: "table-done",
+      path: "Suite.Child",
+      origin: "SetUp",
+      originPath: "Suite.SetUp",
+      block: passedBlock("import"),
+    },
+  ]);
+  const details = view.results.querySelector("details");
+  const marker = details.querySelector(".disclosure");
+  assert.equal(details.open || false, false);
+
+  pressKey(marker, "Enter");
+  assert.equal(details.open, true);
+  assert.equal(marker.attributes["aria-expanded"], "true");
+
+  pressKey(marker, " ");
+  assert.equal(details.open, false);
+  assert.equal(marker.attributes["aria-expanded"], "false");
+
+  pressKey(marker, "a");
+  assert.equal(details.open, false);
+});
+
+test("enter toggles a disclosure that was already on the page", () => {
+  const view = render([], (next) => {
+    const details = createElement("details");
+    details.className = "agnesse-section";
+    const summary = createElement("summary");
+    const button = createElement("button");
+    button.className = "disclosure";
+    button.textContent = ">";
+    button.setAttribute("aria-expanded", "false");
+    summary.appendChild(button);
+    details.appendChild(summary);
+    next.document.body.appendChild(details);
+  });
+  const button = view.document.querySelectorAll("button.disclosure")[0];
+  pressKey(button, "Enter");
+  assert.equal(button.closest("details").open, true);
+  assert.equal(button.attributes["aria-expanded"], "true");
+  pressKey(button, " ");
+  assert.equal(button.closest("details").open, false);
+});
+
 test("an included result section links its name and leaves the marker as the toggle", () => {
   const view = render([
     { event: "page-started", path: "Suite.Child" },
@@ -512,7 +577,7 @@ test("an included result section links its name and leaves the marker as the tog
   ]);
   const details = view.results.querySelector("details.agnesse-section");
   assert.ok(details, "section is a collapsible agnesse-section");
-  assert.equal(details.querySelector("span.disclosure").textContent, ">");
+  assert.equal(details.querySelector("button.disclosure").textContent, ">");
   const link = details.querySelector("a");
   assert.equal(link.textContent, "SetUp");
   assert.equal(link.href, "Suite.SetUp");
@@ -537,7 +602,7 @@ test("a result section with no page keeps a plain title", () => {
   ]);
   const details = view.results.querySelector("details");
   assert.ok(details);
-  const marker = details.querySelector("span.disclosure");
+  const marker = details.querySelector("button.disclosure");
   assert.ok(marker, "the disclosure marker is its own control");
   assert.equal(marker.textContent, ">");
   assert.equal(details.querySelector("a"), null);

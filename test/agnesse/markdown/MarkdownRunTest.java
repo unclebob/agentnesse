@@ -98,7 +98,7 @@ public class MarkdownRunTest {
 
     String html = root.getChildPage("TestHost").getHtml();
 
-    assertTrue(html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span><a href=\"Included\">Included</a>"));
+    assertTrue(html.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button><a href=\"Included\">Included</a>"));
     assertEquals("query:Employees", HtmlCells.cell(html, 0, 0, 0));
   }
 }

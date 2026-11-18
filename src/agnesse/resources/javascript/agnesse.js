@@ -126,6 +126,25 @@ const appendSummaryRow = function (doc, table, event, root) {
   return row;
 };
 
+const setOpen = function (details, open) {
+  details.open = open;
+  details.querySelector(".disclosure").setAttribute("aria-expanded", open ? "true" : "false");
+};
+
+const wireDisclosure = function (marker) {
+  marker.addEventListener("click", function () {
+    var details = this.closest("details");
+    setOpen(details, !details.open);
+  });
+};
+
+const wireDisclosures = function (scope) {
+  var markers = scope.querySelectorAll(".disclosure");
+  for (var i = 0; i < markers.length; i++) {
+    wireDisclosure(markers[i]);
+  }
+};
+
 (function () {
   var SECTIONS = { SetUp: 1, TearDown: 1, SuiteSetUp: 1, SuiteTearDown: 1, ScenarioLibrary: 1 };
   var pageRoot = null;
@@ -204,8 +223,10 @@ const appendSummaryRow = function (doc, table, event, root) {
 
   function sectionSummary(event, title) {
     var summary = el("summary");
-    var marker = el("span", "disclosure", ">");
-    marker.setAttribute("aria-hidden", "true");
+    var marker = el("button", "disclosure", ">");
+    marker.setAttribute("type", "button");
+    marker.setAttribute("aria-expanded", "false");
+    wireDisclosure(marker);
     summary.appendChild(marker);
     var href = sectionHref(event, title);
     if (href) {
@@ -322,7 +343,7 @@ const appendSummaryRow = function (doc, table, event, root) {
       var block = event.block || {};
       blocks.push(block);
       (details || pageRoot).appendChild(renderBlock(block));
-      if (details && shouldOpen(blocks)) details.open = true;
+      if (details && shouldOpen(blocks)) setOpen(details, true);
     } else if (event.event === "output") {
       var note = el("p", "error", event.text || "");
       if (pageRoot) pageRoot.appendChild(note);
@@ -369,7 +390,7 @@ const appendSummaryRow = function (doc, table, event, root) {
       var cell = errors[index];
       cell.classList.add("selected-error");
       var opened = cell.closest("details");
-      if (opened) opened.open = true;
+      if (opened) setOpen(opened, true);
       field.value = String(index + 1);
       cell.scrollIntoView({ block: "center" });
     }
@@ -395,6 +416,7 @@ const appendSummaryRow = function (doc, table, event, root) {
   };
 
   document.addEventListener("DOMContentLoaded", function () {
+    wireDisclosures(document);
     var source = document.getElementById("agnesse-events");
     if (source && source.textContent.trim()) {
       source.textContent.split("\n").forEach(function (line) {

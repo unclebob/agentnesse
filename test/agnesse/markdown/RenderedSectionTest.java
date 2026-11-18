@@ -31,7 +31,7 @@ public class RenderedSectionTest {
 
     assertTrue(html, html.contains(
       "<details class=\"agnesse-section\" open><summary>"
-        + "<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>Scenarios</summary>"));
+        + "<button type=\"button\" class=\"disclosure\" aria-expanded=\"true\">&gt;</button>Scenarios</summary>"));
     assertFalse(html, html.contains(">Scenarios</a>"));
   }
 
@@ -49,7 +49,7 @@ public class RenderedSectionTest {
   }
 
   private static String marker(String path, String name) {
-    return "<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span><a href=\"" + path + "\">" + name + "</a>";
+    return "<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button><a href=\"" + path + "\">" + name + "</a>";
   }
 
   private static String testHtml(String path) throws Exception {

@@ -209,7 +209,7 @@ task copyRuntimeLibs(type: Copy) {
 task javascriptTest(type: Exec) {
   group = 'verification'
   description = 'Run the suite summary renderer tests.'
-  commandLine 'node', '--test', '--test-concurrency=1', 'test/agnesse/resources/javascript/suiteSummary.test.js'
+  commandLine 'node', '--test', '--test-concurrency=1', 'test/agnesse/resources/javascript/suiteSummary.test.js', 'test/agnesse/resources/javascript/disclosure.test.js'
 }
 
 task pythonSlimTest(type: Exec) {

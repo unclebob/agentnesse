@@ -537,7 +537,7 @@ public class MarkdownPageTest {
       ```
       """);
 
-    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span><a href=\"Guide.Included\">Guide.Included</a>"));
+    assertTrue(html, html.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button><a href=\"Guide.Included\">Guide.Included</a>"));
     assertTrue(html, html.contains("from-include"));
 
     String missing = html("HostMissing", """
@@ -545,7 +545,7 @@ public class MarkdownPageTest {
       include MissingGuide
       ```
       """);
-    assertTrue(missing, missing.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>MissingGuide"));
+    assertTrue(missing, missing.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button>MissingGuide"));
     assertFalse(missing, missing.contains("<a "));
   }
 

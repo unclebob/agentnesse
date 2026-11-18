@@ -56,7 +56,7 @@ public class WikiTestPageTest {
 
     String html = new WikiTestPage(child).getHtml();
 
-    assertSubString("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span><a href=\"SetUp\">SetUp</a>", html);
+    assertSubString("<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button><a href=\"SetUp\">SetUp</a>", html);
     assertSubString("<a href=\"TearDown\">TearDown</a>", html);
     assertSubString("<a href=\"TestPage.ScenarioLibrary\">ScenarioLibrary</a>", html);
     assertNotSubString("<summary>SetUp</summary>", html);

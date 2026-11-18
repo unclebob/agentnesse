@@ -40,7 +40,7 @@ public class SlimTableBridgeTest {
       </details>
       """);
     assertTrue(html.contains("<details class=\"agnesse-section\" open>"));
-    assertTrue(html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>Dependencies"));
+    assertTrue(html.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"true\">&gt;</button>Dependencies"));
     assertEquals("import", HtmlCells.cell(html, 0, 0, 0));
   }
 
@@ -70,7 +70,7 @@ public class SlimTableBridgeTest {
       ```
       """);
 
-    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>SetUp"));
+    assertTrue(html, html.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button>SetUp"));
     assertFalse(html, html.contains("<a "));
     assertTrue(html, html.contains("hello &lt;there&gt;"));
   }
@@ -84,7 +84,7 @@ public class SlimTableBridgeTest {
       </details>
       """);
 
-    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>Notes"));
+    assertTrue(html, html.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button>Notes"));
     assertTrue(html, html.contains("plain words"));
     assertFalse(html, html.contains("<a "));
     assertFalse(html, html.contains("<details open>"));
@@ -99,7 +99,7 @@ public class SlimTableBridgeTest {
       </details>
       """);
 
-    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>A&lt;B &amp; C"));
+    assertTrue(html, html.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"true\">&gt;</button>A&lt;B &amp; C"));
     assertTrue(html, html.contains("<details class=\"agnesse-section\" open>"));
     assertFalse(html, html.contains("<a "));
     assertTrue(html, html.contains("kept"));
@@ -113,7 +113,7 @@ public class SlimTableBridgeTest {
       plain words
       </details>
       """);
-    assertTrue(html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>Notes"));
+    assertTrue(html.contains("<button type=\"button\" class=\"disclosure\" aria-expanded=\"false\">&gt;</button>Notes"));
     assertTrue(html.contains("plain words"));
     assertFalse(html.contains("<details open>"));
   }
