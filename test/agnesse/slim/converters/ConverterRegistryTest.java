@@ -112,6 +112,19 @@ public class ConverterRegistryTest {
     assertEquals(MapConverter.class, converter.getClass());
   }
 
+  private interface GrandparentMap extends Map<String, String> {}
+
+  private interface ParentMap extends GrandparentMap {}
+
+  private abstract static class ChildOfParentMap implements ParentMap {}
+
+  @Test
+  public void getConverterForClass_should_return_a_MapConverter_when_only_a_parent_interface_is_map() {
+    Converter<?> converter = ConverterRegistry.getConverterForClass(ChildOfParentMap.class);
+
+    assertEquals(MapConverter.class, converter.getClass());
+  }
+
   @Test
   public void getConverterForClass_should_return_a_MapConverter_when_type_implements_map_indirectly() throws SecurityException, NoSuchMethodException {
     Class<?> typedClass = MyFixture.class.getMethod("getTreeMap").getReturnType();

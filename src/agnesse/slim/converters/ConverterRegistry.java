@@ -44,11 +44,7 @@ public class ConverterRegistry {
     addConverter(Boolean.class, new BooleanConverter());
     addConverter(boolean.class, new PrimitiveBooleanConverter());
 
-    try {
-      addConverter(Map.class, new MapConverter());
-    } catch (NoClassDefFoundError e) {
-      System.err.println("Slim  Map converter not loaded: could not find class " + e.getMessage());
-    }
+    addConverter(Map.class, new MapConverter());
   }
 
   public static <T> Converter<T> getConverterForClass(Class<T> clazz) {
@@ -57,87 +53,85 @@ public class ConverterRegistry {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static <T> Converter<T> getConverterForClass(Class<? extends T> clazz, ParameterizedType typedClazz) {
+    Converter<T> registered = converterForRegisteredClass(clazz);
+    if (registered != null) return registered;
+    Converter<T> fromInterface = getConverterForInterface(clazz);
+    if (fromInterface != null) return fromInterface;
+    Converter<T> beans = JavaBeansConverterGateway.getConverter(clazz);
+    if (beans != null) return beans;
+    return converterForShape(clazz, typedClazz);
+  }
 
-    //use converter set in registry
-    if (converters.containsKey(clazz)) {
-      return (Converter<T>) converters.get(clazz);
-    }
-    // use converter for superclass set in registry
+  @SuppressWarnings("unchecked")
+  private static <T> Converter<T> converterForRegisteredClass(Class<?> clazz) {
+    if (converters.containsKey(clazz)) return (Converter<T>) converters.get(clazz);
+    return converterForSuperclass(clazz);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> Converter<T> converterForSuperclass(Class<?> clazz) {
     Class<?> superclass = clazz.getSuperclass();
     while (superclass != null && !Object.class.equals(superclass)) {
-      if (converters.containsKey(superclass)) {
-        return (Converter<T>) converters.get(superclass);
-      }
+      if (converters.containsKey(superclass)) return (Converter<T>) converters.get(superclass);
       superclass = superclass.getSuperclass();
     }
-    // use converter for implemented interface set in registry
-    Converter<T> converterForInterface = getConverterForInterface(clazz);
-    if (converterForInterface != null) {
-      return converterForInterface;
-    }
+    return null;
+  }
 
-    //use java beans property editor (does not work on Android)
-    Converter<T> javaBeansConverter = JavaBeansConverterGateway.getConverter(clazz);
-    if (javaBeansConverter != null) {
-      return javaBeansConverter;
-    }
-
-    //for enum, use generic enum converter
-    if (clazz.isEnum()) {
-      return new GenericEnumConverter(clazz);
-    }
-
-    //for array, use generic array converter
-    if (clazz.isArray()) {
-      Class<?> componentType = clazz.getComponentType();
-      Converter<?> converterForClass = getConverterForClassOrDefaultConverter(componentType);
-      return new GenericArrayConverter(componentType, converterForClass);
-    }
-
-    //for collection, use generic collection converter
-    if (Collection.class.isAssignableFrom(clazz)) {
-      Class<?> componentType = typedClazz != null ? (Class<?>) typedClazz.getActualTypeArguments()[0] : String.class;
-      Converter<?> converterForClass = getConverterForClassOrDefaultConverter(componentType);
-      return new GenericCollectionConverter(clazz, converterForClass);
-    }
-
-    // last resort, see if there is a converter for Object
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private static <T> Converter<T> converterForShape(Class<?> clazz, ParameterizedType typedClazz) {
+    if (clazz.isEnum()) return new GenericEnumConverter(clazz);
+    if (clazz.isArray()) return arrayConverter(clazz);
+    if (Collection.class.isAssignableFrom(clazz)) return collectionConverter(clazz, typedClazz);
     return (Converter<T>) converters.get(Object.class);
   }
 
+  @SuppressWarnings("unchecked")
+  private static <T> Converter<T> arrayConverter(Class<?> clazz) {
+    Class<?> componentType = clazz.getComponentType();
+    return new GenericArrayConverter(componentType, getConverterForClassOrDefaultConverter(componentType));
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private static <T> Converter<T> collectionConverter(Class<?> clazz, ParameterizedType typedClazz) {
+    Class<?> componentType = typedClazz != null ? (Class<?>) typedClazz.getActualTypeArguments()[0] : String.class;
+    return new GenericCollectionConverter(clazz, getConverterForClassOrDefaultConverter(componentType));
+  }
+
   protected static <T> Converter<T> getConverterForInterface(Class<?> clazz) {
-    List<Class<?>> superInterfaces = new ArrayList<>();
-    Converter<T> converterForInterface = null;
-    Class<?>[] interfaces = clazz.getInterfaces();
+    List<Class<?>> parents = new ArrayList<>();
+    Converter<T> direct = registeredInterface(clazz.getInterfaces(), parents);
+    if (direct != null) return direct;
+    Converter<T> parent = parentInterface(parents);
+    if (parent != null) return parent;
+    return interfaceOnSuperclass(clazz);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> Converter<T> registeredInterface(Class<?>[] interfaces, List<Class<?>> parents) {
     for (Class<?> interf : interfaces) {
-      Class<?>[] s = interf.getInterfaces();
-      superInterfaces.addAll(Arrays.asList(s));
-      if (converters.containsKey(interf)) {
-        converterForInterface = (Converter<T>) converters.get(interf);
-        break;
-      }
+      parents.addAll(Arrays.asList(interf.getInterfaces()));
+      if (converters.containsKey(interf)) return (Converter<T>) converters.get(interf);
     }
-    if (converterForInterface == null) {
-      for (Class<?> supInterf : superInterfaces) {
-        converterForInterface = getConverterForInterface(supInterf);
-        if (converterForInterface != null) {
-          break;
-        }
-      }
+    return null;
+  }
 
-      if (converterForInterface == null) {
-        Class<?> superclass = clazz.getSuperclass();
-        while (superclass != null && !Object.class.equals(superclass)) {
-          converterForInterface = getConverterForInterface(superclass);
-          if (converterForInterface != null) {
-            break;
-          }
-          superclass = superclass.getSuperclass();
-        }
-
-      }
+  private static <T> Converter<T> parentInterface(List<Class<?>> parents) {
+    for (Class<?> parent : parents) {
+      Converter<T> converter = getConverterForInterface(parent);
+      if (converter != null) return converter;
     }
-    return converterForInterface;
+    return null;
+  }
+
+  private static <T> Converter<T> interfaceOnSuperclass(Class<?> clazz) {
+    Class<?> superclass = clazz.getSuperclass();
+    while (superclass != null && !Object.class.equals(superclass)) {
+      Converter<T> converter = getConverterForInterface(superclass);
+      if (converter != null) return converter;
+      superclass = superclass.getSuperclass();
+    }
+    return null;
   }
 
   public static <T> void addConverter(Class<? extends T> clazz, Converter<T> converter) {

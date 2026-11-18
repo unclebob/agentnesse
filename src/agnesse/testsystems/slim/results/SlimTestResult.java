@@ -97,30 +97,40 @@ public class SlimTestResult implements TestResult {
 
   public String toString(String originalContent) {
     StringBuilder builder = new StringBuilder();
-    if (executionResult != null) {
-      builder.append(executionResult.toString()).append('(');
-    }
-    if (hasActual()) {
-      builder.append("a=").append(getActual());
-      if (hasExpected() || hasMessage()) {
-        builder.append(";");
-      }
-    }
-    if (hasExpected()) {
-      builder.append("e=").append(getExpected());
-      if (hasMessage()) {
-        builder.append(";");
-      }
-    }
+    openResult(builder);
+    appendActual(builder);
+    appendExpected(builder);
+    appendMessageOrOriginal(builder, originalContent);
+    closeResult(builder);
+    return builder.toString();
+  }
+
+  private void openResult(StringBuilder builder) {
+    if (executionResult != null) builder.append(executionResult.toString()).append('(');
+  }
+
+  private void closeResult(StringBuilder builder) {
+    if (executionResult != null) builder.append(')');
+  }
+
+  private void appendActual(StringBuilder builder) {
+    if (!hasActual()) return;
+    builder.append("a=").append(getActual());
+    if (hasExpected() || hasMessage()) builder.append(';');
+  }
+
+  private void appendExpected(StringBuilder builder) {
+    if (!hasExpected()) return;
+    builder.append("e=").append(getExpected());
+    if (hasMessage()) builder.append(';');
+  }
+
+  private void appendMessageOrOriginal(StringBuilder builder, String originalContent) {
     if (hasMessage()) {
       builder.append(getMessage());
-    } else if (!hasActual() && !hasExpected()) {
-      builder.append(originalContent);
+      return;
     }
-    if (executionResult != null) {
-      builder.append(')');
-    }
-    return builder.toString();
+    if (!hasActual() && !hasExpected()) builder.append(originalContent);
   }
 
   @Override
