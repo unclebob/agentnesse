@@ -61,13 +61,19 @@ function freePort() {
   });
 }
 
-function waitJson(url) {
+function waitJson(url, chrome) {
+  const stderr = [];
+  chrome.stderr.on("data", (chunk) => {
+    stderr.push(chunk);
+    if (stderr.length > 40) stderr.shift();
+  });
   return new Promise((resolve, reject) => {
     const started = Date.now();
     function attempt() {
       fetch(url).then((res) => res.json()).then(resolve).catch(() => {
-        if (Date.now() - started > 8000) {
-          reject(new Error("Chrome did not open a debugger"));
+        if (chrome.exitCode != null || Date.now() - started > 20000) {
+          const detail = Buffer.concat(stderr).toString().trim();
+          reject(new Error("Chrome did not open a debugger" + (detail ? `\n${detail}` : "")));
           return;
         }
         setTimeout(attempt, 20);
@@ -156,11 +162,13 @@ test("enter and space on the disclosure toggle a section in Chrome", async () =>
     `--remote-debugging-port=${port}`,
     "--no-sandbox",
     "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--no-first-run",
     `--user-data-dir=${path.join(dir, "profile")}`,
     "about:blank",
-  ], { stdio: "ignore" });
+  ], { stdio: ["ignore", "ignore", "pipe"] });
   try {
-    const targets = await waitJson(`http://127.0.0.1:${port}/json`);
+    const targets = await waitJson(`http://127.0.0.1:${port}/json`, chrome);
     const page = targets.find((item) => item.type === "page");
     const { ws, send, until } = await connect(page.webSocketDebuggerUrl);
     await send("Page.enable");
