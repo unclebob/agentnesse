@@ -72,47 +72,54 @@ public class SlimException extends Exception {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
+    if (ignored(sb)) return sb.toString();
+    appendTag(sb);
+    appendDetail(sb);
+    appendTrace(sb);
+    return sb.toString();
+  }
 
-    if (isStopTestException(getCause())) {
-        sb.append(SlimServer.EXCEPTION_STOP_TEST_TAG);
-    } else if (isStopSuiteException(getCause())) {
-        sb.append(SlimServer.EXCEPTION_STOP_SUITE_TAG);
-    } else if (isIgnoreScriptTestException(getCause())) {
+  private boolean ignored(StringBuilder sb) {
+    Throwable cause = getCause();
+    if (isIgnoreScriptTestException(cause)) {
       sb.append(SlimServer.EXCEPTION_IGNORE_SCRIPT_TEST_TAG);
-      return sb.toString();
-    } else if (isIgnoreAllTestsException(getCause())) {
+      return true;
+    }
+    if (isIgnoreAllTestsException(cause)) {
       sb.append(SlimServer.EXCEPTION_IGNORE_ALL_TESTS_TAG);
-      return sb.toString();
+      return true;
+    }
+    return false;
+  }
+
+  private void appendTag(StringBuilder sb) {
+    Throwable cause = getCause();
+    if (isStopTestException(cause)) {
+      sb.append(SlimServer.EXCEPTION_STOP_TEST_TAG);
+    } else if (isStopSuiteException(cause)) {
+      sb.append(SlimServer.EXCEPTION_STOP_SUITE_TAG);
     } else {
       sb.append(SlimServer.EXCEPTION_TAG);
     }
-    if (this.prettyPrint) {
-      sb.append(SlimVersion.PRETTY_PRINT_TAG_START);
-    }
+  }
 
-    if (tag != null && !tag.isEmpty()) {
-      sb.append(tag).append(" ");
-    }
+  private void appendDetail(StringBuilder sb) {
+    if (prettyPrint) sb.append(SlimVersion.PRETTY_PRINT_TAG_START);
+    appendText(sb, tag, " ");
+    appendText(sb, getMessage(), "");
+    if (prettyPrint) sb.append(SlimVersion.PRETTY_PRINT_TAG_END);
+  }
 
-    String msg = getMessage();
-    if (msg != null && !msg.isEmpty()) {
-      sb.append(msg);
+  private void appendText(StringBuilder sb, String text, String suffix) {
+    if (text != null && !text.isEmpty()) {
+      sb.append(text).append(suffix);
     }
-    if (this.prettyPrint) {
-      sb.append(SlimVersion.PRETTY_PRINT_TAG_END);
-    }
+  }
 
-    StackTraceEnricher enricher = new StackTraceEnricher();
-    if (getCause() != null) {
-      sb.append(enricher.getStackTraceAsString(getCause()));
-    } else {
-      if (this.getStackTrace() == null || this.getStackTrace().length == 0) {
-        this.fillInStackTrace();
-      }
-      sb.append(enricher.getStackTraceAsString(this));
-    }
-
-    return sb.toString();
+  private void appendTrace(StringBuilder sb) {
+    Throwable cause = getCause();
+    Throwable traced = cause == null ? this : cause;
+    sb.append(new StackTraceEnricher().getStackTraceAsString(traced));
   }
 
   public static boolean isStopTestException(Throwable t) {
