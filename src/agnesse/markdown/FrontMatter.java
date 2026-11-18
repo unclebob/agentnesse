@@ -197,12 +197,15 @@ public final class FrontMatter {
     return PageType.storedType(data);
   }
 
-  static List<String> tagsFrom(PageData data) {
-    String suites = data.getAttribute(WikiPageProperty.SUITES);
-    if (suites == null || suites.isBlank()) {
+  public static List<String> tagList(String tags) {
+    if (tags == null || tags.isBlank()) {
       return List.of();
     }
-    return Arrays.stream(suites.split("\\s*,\\s*")).filter(tag -> !tag.isEmpty()).toList();
+    return Arrays.stream(tags.split("\\s*,\\s*")).filter(tag -> !tag.isEmpty()).toList();
+  }
+
+  static List<String> tagsFrom(PageData data) {
+    return tagList(data.getAttribute(WikiPageProperty.SUITES));
   }
 
   private static FrontMatter absent(String text) {
