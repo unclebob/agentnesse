@@ -41,7 +41,8 @@ public class ArgumentsTest {
   @Test
   public void argumentsCanBeRepresentedByProperties() throws IOException {
     Arguments args = new Arguments("-v", "-p", "81", "-d", "directory", "-r", "root", "-b", "someFile.txt",
-              "-f", "agnesse.properties", "-c", "SomeCommand", "--listen", "0.0.0.0");
+              "-f", "agnesse.properties", "-c", "SomeCommand", "--listen", "0.0.0.0",
+              "--rerun-failures", "last.json");
     Properties properties = args.update(ContextConfigurator.systemDefaults()).makeAgNesseContext().getProperties();
 
     assertEquals("verbose", properties.getProperty("LogLevel"));
@@ -52,6 +53,7 @@ public class ArgumentsTest {
     assertEquals("agnesse.properties", properties.getProperty("ConfigFile"));
     assertEquals("SomeCommand", properties.getProperty("Command"));
     assertEquals("0.0.0.0", properties.getProperty("listen"));
+    assertEquals("last.json", properties.getProperty("RerunFailures"));
   }
 
   @Test

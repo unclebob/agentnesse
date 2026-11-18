@@ -36,6 +36,33 @@ public class AgNesseConfigTest {
   }
 
   @Test
+  public void aNullKnownKeyLeavesTheDefault() throws Exception {
+    File file = write("{\"port\": null, \"listen\": null, \"rootPath\": null, \"pageRoot\": null, " +
+      "\"maximumWorkers\": null, \"refactorStartPath\": null}");
+
+    ContextConfigurator configurator = ContextConfigurator.systemDefaults();
+    AgNesseConfig.apply(configurator, file, true);
+
+    assertThat(configurator.makeAgNesseContext().port, is(80));
+    assertThat(configurator.get(ConfigurationParameter.ROOT_PATH), is("."));
+    assertThat(configurator.get(ConfigurationParameter.ROOT_DIRECTORY), is("AgNesseRoot"));
+    assertThat(configurator.get(ConfigurationParameter.MAXIMUM_WORKERS), is("100"));
+    assertThat(configurator.get(ConfigurationParameter.LISTEN), is("127.0.0.1"));
+    assertThat(configurator.get(ConfigurationParameter.REFACTOR_START_PATH), is((String) null));
+  }
+
+  @Test
+  public void aNumberIsNotAStringKey() throws Exception {
+    File file = write("{\"listen\": 1, \"rootPath\": 2, \"pageRoot\": 3, \"refactorStartPath\": 4}");
+    try {
+      AgNesseConfig.apply(ContextConfigurator.empty(), file, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString("string"));
+    }
+  }
+
+  @Test
   public void commandLineOverridesTheFile() throws Exception {
     File file = write("{\"port\": 8123, \"listen\": \"0.0.0.0\"}");
     ContextConfigurator configurator = ContextConfigurator.systemDefaults();
