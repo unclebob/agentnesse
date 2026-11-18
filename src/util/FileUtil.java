@@ -112,22 +112,18 @@ public class FileUtil {
   }
 
   public static File[] getDirectoryListing(File dir) {
-    File[] files = listFiles(dir);
-    if (files.length > 0) {
-      SortedSet<File> dirSet = new TreeSet<>();
-      SortedSet<File> fileSet = new TreeSet<>();
-      for (File file : files) {
-        if (file.isDirectory())
-          dirSet.add(file);
-        else
-          fileSet.add(file);
-      }
-      List<File> fileList = new ArrayList<>(files.length);
-      fileList.addAll(dirSet);
-      fileList.addAll(fileSet);
-      files = fileList.toArray(new File[0]);
+    SortedSet<File> dirSet = new TreeSet<>();
+    SortedSet<File> fileSet = new TreeSet<>();
+    for (File file : listFiles(dir)) {
+      if (file.isDirectory())
+        dirSet.add(file);
+      else
+        fileSet.add(file);
     }
-    return files;
+    List<File> fileList = new ArrayList<>();
+    fileList.addAll(dirSet);
+    fileList.addAll(fileSet);
+    return fileList.toArray(new File[0]);
   }
 
   public static File[] listFiles(File dir) {
