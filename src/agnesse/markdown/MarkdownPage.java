@@ -187,16 +187,16 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
       contentsLinks(), this::includedHtml, WikiPageUtil.rendersSlimTables(this));
   }
 
-  private String includedHtml(String name) {
-    WikiPagePath includedPath = PathParser.parse(name.split("\n", 2)[0].trim());
+  private IncludedPage includedHtml(String name) {
+    WikiPagePath includedPath = PathParser.parse(AgNesseBlock.firstLine(name));
     if (includedPath == null) {
-      return "";
+      return IncludedPage.missing();
     }
     WikiPage included = getPageCrawler().getSiblingPage(includedPath);
     if (included == null || samePage(included)) {
-      return "";
+      return IncludedPage.missing();
     }
-    return included.getHtml();
+    return new IncludedPage(PathParser.render(included.getFullPath()), included.getHtml());
   }
 
   private boolean samePage(WikiPage included) {

@@ -1,6 +1,5 @@
 package agnesse.testsystems.slim;
 
-import agnesse.html.HtmlUtil;
 import agnesse.wiki.TestAdjunct;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,8 +10,7 @@ public final class ResultSections {
   }
 
   public static String details(String title, String body, boolean open) {
-    return "<details class=\"agnesse-include\"" + (open ? " open" : "") + "><summary>"
-      + HtmlUtil.escapeHTML(title) + "</summary>" + body + "</details>\n";
+    return agnesse.html.CollapsibleSection.html(title, null, body, open, true);
   }
 
   /** True when a block or cell failed, errored, or recorded an exception. */

@@ -21,7 +21,8 @@ public class PageDriverSourceTest {
 
     assertTrue(driver.bundledHtmlContains("AgNesse.UserGuide", "starts with a JSON object"));
     assertFalse(driver.bundledSourceContains("AgNesse.UserGuide", "starts with a JSON object"));
-    assertTrue(driver.bundledHtmlContains("AgNesse.UserGuide", "<summary>SuiteAcceptanceTests.SuiteUserGuide.FrontMatter</summary>"));
+    assertTrue(driver.bundledHtmlContains("AgNesse.UserGuide",
+      "<a href=\"AgNesse.SuiteAcceptanceTests.SuiteUserGuide.FrontMatter\">SuiteAcceptanceTests.SuiteUserGuide.FrontMatter</a>"));
     assertFalse(driver.bundledHtmlContains("AgNesse.UserGuide", "include SuiteAcceptanceTests.SuiteUserGuide.FrontMatter"));
     assertFalse(driver.bundledHtmlContains("AgNesse.NoSuchGuidePage", "starts with a JSON object"));
   }

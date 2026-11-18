@@ -38,29 +38,29 @@ public final class MarkdownRenderer {
   }
 
   public static String render(String markdown, Function<String, String> pageTarget, List<ContentsLink> children,
-                              Function<String, String> includedHtml) {
+                              Function<String, IncludedPage> includedHtml) {
     return render(markdown, pageTarget, children, includedHtml, false);
   }
 
   public static String render(String markdown, Function<String, String> pageTarget, List<ContentsLink> children,
-                              Function<String, String> includedHtml, boolean testPage) {
-    return render(markdown, word -> pageTarget.apply(word) != null, children, includedHtml, pageTarget, testPage);
+                              Function<String, IncludedPage> includedHtml, boolean testPage) {
+    return render(markdown, null, children, includedHtml, pageTarget, testPage);
   }
 
   private static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
-                              Function<String, String> includedHtml, Function<String, String> pageTarget) {
+                              Function<String, IncludedPage> includedHtml, Function<String, String> pageTarget) {
     return render(markdown, pageExists, children, includedHtml, pageTarget, false);
   }
 
   private static String render(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
-                              Function<String, String> includedHtml, Function<String, String> pageTarget,
+                              Function<String, IncludedPage> includedHtml, Function<String, String> pageTarget,
                               boolean testPage) {
     return DetailsRegions.render(markdown == null ? "" : markdown,
       chunk -> renderChunk(chunk, pageExists, children, includedHtml, pageTarget, testPage));
   }
 
   private static String renderChunk(String markdown, Predicate<String> pageExists, List<ContentsLink> children,
-                                    Function<String, String> includedHtml, Function<String, String> pageTarget,
+                                    Function<String, IncludedPage> includedHtml, Function<String, String> pageTarget,
                                     boolean testPage) {
     Parser parser = Parser.builder().extensions(EXTENSIONS).build();
     Set<String> headingIds = new HashSet<>();

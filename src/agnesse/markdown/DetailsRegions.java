@@ -12,9 +12,6 @@ final class DetailsRegions {
   }
 
   static String render(String markdown, Function<String, String> chunk) {
-    if (markdown == null || markdown.isEmpty()) {
-      return chunk.apply(markdown == null ? "" : markdown);
-    }
     StringBuilder html = new StringBuilder();
     int cursor = 0;
     while (cursor < markdown.length()) {
@@ -33,11 +30,8 @@ final class DetailsRegions {
 
   private static int nextDetails(String markdown, int from) {
     int at = from;
-    while (at < markdown.length()) {
-      int found = markdown.indexOf("<details", at);
-      if (found < 0) {
-        return -1;
-      }
+    int found;
+    while ((found = markdown.indexOf("<details", at)) >= 0) {
       if (atLineStart(markdown, found)) {
         return found;
       }
@@ -53,13 +47,13 @@ final class DetailsRegions {
   private static int endOfDetails(String markdown, int start) {
     int depth = 0;
     int at = start;
-    while (at < markdown.length()) {
+    while (at != markdown.length()) {
       int open = markdown.indexOf("<details", at);
       int close = markdown.indexOf("</details>", at);
-      if (close < 0) {
+      if (close == -1) {
         return markdown.length();
       }
-      if (open >= 0 && open < close && atLineStart(markdown, open)) {
+      if (open != -1 && Math.min(open, close) == open && atLineStart(markdown, open)) {
         depth++;
         at = open + "<details".length();
       } else {
@@ -85,13 +79,12 @@ final class DetailsRegions {
     String title = summary(block);
     String body = body(block);
     String inner = render(body, chunk);
-    return "<details" + (open ? " open" : "") + "><summary>" + escape(title) + "</summary>\n"
-      + inner + "</details>\n";
+    return agnesse.html.CollapsibleSection.html(title, null, inner, open, false);
   }
 
   private static boolean headerIsOpen(String block) {
     int end = block.indexOf('>');
-    if (end < 0) {
+    if (end == -1) {
       return false;
     }
     return block.substring(0, end).matches("(?i)<details\\b[^>]*\\bopen\\b[^>]*");
@@ -99,22 +92,29 @@ final class DetailsRegions {
 
   private static String summary(String block) {
     int start = indexOfIgnoreCase(block, "<summary>");
-    int end = indexOfIgnoreCase(block, "</summary>");
-    if (start < 0 || end < start) {
+    if (start == -1) {
       return "";
     }
-    return block.substring(start + "<summary>".length(), end).trim();
+    int end = indexOfIgnoreCase(block, "</summary>");
+    try {
+      return block.substring(start + "<summary>".length(), end).trim();
+    } catch (StringIndexOutOfBoundsException ignored) {
+      return "";
+    }
   }
 
   private static String body(String block) {
     int summary = indexOfIgnoreCase(block, "</summary>");
-    int from = summary < 0 ? afterHeader(block) : afterSummary(block, summary);
+    int from = summary == -1 ? afterHeader(block) : afterSummary(block, summary);
     return block.substring(from, closeAt(block));
   }
 
   private static int afterHeader(String block) {
     int header = block.indexOf('\n');
-    return header < 0 ? block.length() : header + 1;
+    if (header == -1) {
+      return block.length();
+    }
+    return header + 1;
   }
 
   private static int afterSummary(String block, int summary) {
@@ -127,7 +127,7 @@ final class DetailsRegions {
 
   private static int closeAt(String block) {
     int close = lastIndexOfIgnoreCase(block, "</details>");
-    return close < 0 ? block.length() : close;
+    return close == -1 ? block.length() : close;
   }
 
   private static int indexOfIgnoreCase(String text, String token) {
@@ -136,9 +136,5 @@ final class DetailsRegions {
 
   private static int lastIndexOfIgnoreCase(String text, String token) {
     return text.toLowerCase().lastIndexOf(token.toLowerCase());
-  }
-
-  private static String escape(String text) {
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
   }
 }

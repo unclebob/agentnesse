@@ -18,7 +18,7 @@ include IncludeTarget
 | given page | GuideInclude | with content | &#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>1<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>include GuideIncluded<br>&#96;&#96;&#96; |
 | make | GuideInclude | a test page |
 | check | request page | GuideInclude | 200 |
-| ensure | content contains | <summary>GuideIncluded</summary> |
+| ensure | content contains | <span class="disclosure" aria-hidden="true">&gt;</span><a href="GuideIncluded">GuideIncluded</a> |
 | ensure | content contains | from-include |
 | check | request page | GuideInclude?test&format=json | 200 |
 | ensure | content contains | "origin":"GuideIncluded" |
@@ -27,7 +27,8 @@ include IncludeTarget
 | given page | GuideMissing | with content | &#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>1<br>&#96;&#96;&#96;<br>&#96;&#96;&#96;agnesse<br>include MissingGuide<br>&#96;&#96;&#96; |
 | make | GuideMissing | a test page |
 | check | request page | GuideMissing | 200 |
-| ensure | content contains | <summary>MissingGuide</summary> |
+| ensure | content contains | <span class="disclosure" aria-hidden="true">&gt;</span>MissingGuide |
+| reject | content contains | <a href="MissingGuide"> |
 | reject | content contains | from-include |
 | check | request page | GuideMissing?test&format=json | 200 |
 | ensure | content contains | "status":"empty" |

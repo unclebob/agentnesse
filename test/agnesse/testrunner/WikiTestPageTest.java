@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static util.RegexTestCase.assertNotSubString;
 import static util.RegexTestCase.assertSubString;
@@ -46,6 +47,21 @@ public class WikiTestPageTest {
 
   private WikiPage addPage(String pageName, String content) throws Exception {
     return WikiPageUtil.addPage(root, PathParser.parse(pageName), content);
+  }
+
+  @Test
+  public void anIncludedSectionLinksItsNameToTheFullPath() throws Exception {
+    addPage("TestPage.ScenarioLibrary", "child library");
+    WikiPage child = addPage("TestPage.Child", "child");
+
+    String html = new WikiTestPage(child).getHtml();
+
+    assertSubString("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span><a href=\"SetUp\">SetUp</a>", html);
+    assertSubString("<a href=\"TearDown\">TearDown</a>", html);
+    assertSubString("<a href=\"TestPage.ScenarioLibrary\">ScenarioLibrary</a>", html);
+    assertNotSubString("<summary>SetUp</summary>", html);
+    assertNotSubString("<summary>ScenarioLibrary</summary>", html);
+    assertFalse(html.contains("<details class=\"agnesse-section agnesse-include\" open>"));
   }
 
   @Test

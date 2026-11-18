@@ -96,11 +96,8 @@ public class WikiTestPage implements TestPage {
     if (tearDown) {
       html.append("<div class=\"teardown\">");
     }
-    html.append("<details class=\"agnesse-include\"><summary>")
-      .append(page.getName())
-      .append("</summary>")
-      .append(includedHtml(page))
-      .append("</details>");
+    html.append(agnesse.html.CollapsibleSection.html(
+      page.getName(), getPathNameForPage(page), includedHtml(page), false, true));
     if (tearDown) {
       html.append("</div>");
     }

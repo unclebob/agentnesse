@@ -8,6 +8,7 @@ import agnesse.wiki.WikiPageLoadException;
 import agnesse.wiki.PrunedPagePruningStrategy;
 import agnesse.wiki.SystemVariableSource;
 import agnesse.wiki.WikiPage;
+import agnesse.wiki.WikiPageProperty;
 import agnesse.wiki.fs.FileSystem;
 import agnesse.wiki.fs.FileSystemPageFactory;
 import agnesse.wiki.fs.MemoryFileSystem;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -441,6 +443,79 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void htmlKeepsAPipeInsideACodeSpan() {
+    String html = html("Notes", """
+      ```agnesse
+      define CELL
+      a|b
+      ```
+      `${CELL}`
+      """);
+    assertTrue(html, html.contains("<code>a|b</code>"));
+    assertFalse(html, html.contains("\\|"));
+  }
+
+  @Test
+  public void aDefineExpandsALocalNameAndANameFromTheVariableSource() throws Exception {
+    Properties properties = new Properties();
+    properties.setProperty("FROM_SOURCE", "sourced");
+    MemoryFileSystem files = new MemoryFileSystem();
+    files.makeFile(new File("root/_root.md"), "");
+    files.makeFile(new File("root/Notes.md"), """
+      ```agnesse
+      define NAME
+      world
+      ```
+      ```agnesse
+      define LOCAL
+      hello ${NAME}
+      ```
+      ```agnesse
+      define REMOTE
+      hello ${FROM_SOURCE}
+      ```
+      """);
+    WikiPage notes = new FileSystemPageFactory(files, new WikiFiles(files))
+      .makePage(new File("root"), "root", null, new SystemVariableSource(properties))
+      .getChildPage("Notes");
+
+    assertEquals("hello world", notes.getVariable("LOCAL"));
+    assertEquals("hello sourced", notes.getVariable("REMOTE"));
+  }
+
+  @Test
+  public void theModifyingUserIsAPageProperty() throws Exception {
+    fileSystem.makeFile(new File("root/Notes.md"), """
+      { "user": "ada" }
+      body
+      """);
+
+    assertEquals("ada", page("Notes").getData().getAttribute(WikiPageProperty.LAST_MODIFYING_USER));
+  }
+
+  @Test
+  public void aWikiPrefixWithAClosingAngleBecomesALink() {
+    put("FrontPage.md", "there\n");
+    String html = html("Notes", "<FrontPage>\n");
+    assertTrue(html, html.contains("<a href=\"FrontPage\">FrontPage</a>"));
+  }
+
+  @Test
+  public void anIncludeBlockNamesTheIncludedPage() throws Exception {
+    put("Helper.md", """
+      ```agnesse
+      define FROM_BLOCK
+      block
+      ```
+      """);
+    assertEquals("block", notes("""
+      ```agnesse
+      include Helper extra
+      ```
+      """).getVariable("FROM_BLOCK"));
+  }
+
+  @Test
   public void htmlKeepsPipesInsideAVariable() {
     String html = html("Notes", """
       ```agnesse
@@ -451,6 +526,27 @@ public class MarkdownPageTest {
       """);
     assertTrue(html, html.contains("a|b"));
     assertFalse(html, html.contains("a\\|b"));
+  }
+
+  @Test
+  public void anIncludedPageNameLinksToItsFullPath() {
+    put("Guide/Included.md", "from-include\n");
+    String html = html("Host", """
+      ```agnesse
+      include Guide.Included
+      ```
+      """);
+
+    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span><a href=\"Guide.Included\">Guide.Included</a>"));
+    assertTrue(html, html.contains("from-include"));
+
+    String missing = html("HostMissing", """
+      ```agnesse
+      include MissingGuide
+      ```
+      """);
+    assertTrue(missing, missing.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>MissingGuide"));
+    assertFalse(missing, missing.contains("<a "));
   }
 
   @Test

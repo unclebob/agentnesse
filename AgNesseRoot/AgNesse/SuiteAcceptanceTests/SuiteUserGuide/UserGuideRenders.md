@@ -8,7 +8,7 @@ The user guide includes the example pages. Rendering [UserGuide](.AgNesse.UserGu
 
 | script | page driver |
 | --- | --- |
-| ensure | bundled html contains; | AgNesse.UserGuide | <summary>SuiteAcceptanceTests.SuiteUserGuide.FrontMatter</summary> |
+| ensure | bundled html contains; | AgNesse.UserGuide | <a href="AgNesse.SuiteAcceptanceTests.SuiteUserGuide.FrontMatter">SuiteAcceptanceTests.SuiteUserGuide.FrontMatter</a> |
 | ensure | bundled html contains; | AgNesse.UserGuide | starts with a JSON object |
 | ensure | bundled html contains; | AgNesse.UserGuide | left as it was written |
 | ensure | bundled html contains; | AgNesse.UserGuide | named where the table would have been |

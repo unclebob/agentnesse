@@ -26,14 +26,21 @@ public final class AgNesseBlock {
   public static AgNesseBlock parse(String body) {
     String text = body == null ? "" : body.replaceFirst("\\n\\z", "");
     int newline = text.indexOf('\n');
-    String first = (newline < 0 ? text : text.substring(0, newline)).trim();
-    String rest = newline < 0 ? "" : text.substring(newline + 1);
+    String first;
+    String rest;
+    if (newline == -1) {
+      first = text.trim();
+      rest = "";
+    } else {
+      first = text.substring(0, newline).trim();
+      rest = text.substring(newline + 1);
+    }
     if (first.isEmpty()) {
       throw new IllegalArgumentException("agnesse block needs a command");
     }
-    int space = first.indexOf(' ');
-    String command = (space < 0 ? first : first.substring(0, space)).toLowerCase(Locale.ROOT);
-    String inline = space < 0 ? "" : first.substring(space + 1).trim();
+    String[] words = first.split(" ", 2);
+    String command = words[0].toLowerCase(Locale.ROOT);
+    String inline = words.length == 2 ? words[1].trim() : "";
     if (!COMMANDS.contains(command)) {
       throw new IllegalArgumentException("unknown agnesse command \"" + command + "\"");
     }
@@ -76,34 +83,25 @@ public final class AgNesseBlock {
     return div.htmlInline() + "\n";
   }
 
-  public String includeWith(String body) {
-    HtmlTag summary = new HtmlTag("summary");
-    summary.add(new HtmlText(includeName()));
-    return "<details class=\"agnesse-include\">" + summary.htmlInline() + body + "</details>\n";
+  public String includeWith(String body, String pagePath) {
+    return agnesse.html.CollapsibleSection.html(includeName(), pagePath, body, false, true);
+  }
+
+  static String firstLine(String argument) {
+    String text = argument == null ? "" : argument;
+    int newline = text.indexOf('\n');
+    return (newline < 0 ? text : text.substring(0, newline)).trim();
   }
 
   private String includeName() {
-    int newline = argument.indexOf('\n');
-    return (newline < 0 ? argument : argument.substring(0, newline)).trim();
+    return firstLine(argument);
   }
 
   private String includeHtml() {
-    String name = argument;
-    String more = "";
     int newline = argument.indexOf('\n');
-    if (newline >= 0) {
-      name = argument.substring(0, newline);
-      more = argument.substring(newline + 1);
-    }
-    HtmlTag summary = new HtmlTag("summary");
-    summary.add(new HtmlText(name));
-    HtmlTag details = new HtmlTag("details");
-    details.addAttribute("class", "agnesse-include");
-    details.add(summary);
-    if (!more.isEmpty()) {
-      details.add(new HtmlText(more));
-    }
-    return details.htmlInline() + "\n";
+    String more = newline == -1 ? "" : argument.substring(newline + 1);
+    return agnesse.html.CollapsibleSection.html(
+      includeName(), null, agnesse.html.HtmlUtil.escapeHTML(more), false, true);
   }
 
   private static String join(String inline, String rest) {

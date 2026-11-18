@@ -12,6 +12,19 @@ import static org.junit.Assert.assertTrue;
 public class MarkdownRenderTest {
 
   @Test
+  public void aStaticCallRendersATableAsATable() {
+    String table = "| a |\n| --- |\n| b |\n";
+    assertPlainTable(MarkdownRenderer.render(table));
+    assertPlainTable(MarkdownRenderer.render(table, word -> null, java.util.List.of(), null));
+    assertPlainTable(MarkdownRenderer.render(table, word -> false, java.util.List.of()));
+  }
+
+  private static void assertPlainTable(String html) {
+    assertTrue(html, html.contains("<table>"));
+    assertFalse(html, html.contains("agnesse-table"));
+  }
+
+  @Test
   public void aHeadingRendersAsHtml() throws Exception {
     assertGolden("heading");
     assertGolden("headings");

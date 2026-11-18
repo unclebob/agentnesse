@@ -13,10 +13,10 @@ import java.util.function.Function;
 final class AgNesseBlockRenderer implements NodeRenderer {
   private final HtmlWriter writer;
   private final List<ContentsLink> children;
-  private final Function<String, String> includedHtml;
+  private final Function<String, IncludedPage> includedHtml;
 
   AgNesseBlockRenderer(HtmlNodeRendererContext context, List<ContentsLink> children,
-                          Function<String, String> includedHtml) {
+                          Function<String, IncludedPage> includedHtml) {
     this.writer = context.getWriter();
     this.children = children;
     this.includedHtml = includedHtml;
@@ -47,7 +47,8 @@ final class AgNesseBlockRenderer implements NodeRenderer {
       return AgNesseBlock.contentsHtml(children);
     }
     if ("include".equals(block.command()) && includedHtml != null) {
-      return block.includeWith(includedHtml.apply(block.argument()));
+      IncludedPage page = includedHtml.apply(block.argument());
+      return block.includeWith(page.html(), page.path());
     }
     return block.html();
   }

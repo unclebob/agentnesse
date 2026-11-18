@@ -39,9 +39,70 @@ public class SlimTableBridgeTest {
 
       </details>
       """);
-    assertTrue(html.contains("<details open>"));
-    assertTrue(html.contains("<summary>Dependencies</summary>"));
+    assertTrue(html.contains("<details class=\"agnesse-section\" open>"));
+    assertTrue(html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>Dependencies"));
     assertEquals("import", HtmlCells.cell(html, 0, 0, 0));
+  }
+
+  @Test
+  public void aDetailsTagInsideALineIsLeftAlone() {
+    String html = MarkdownRenderer.render("see <details> later\n");
+
+    assertFalse(html, html.contains("agnesse-section"));
+    assertTrue(html, html.contains("<details>"));
+  }
+
+  @Test
+  public void aDetailsTagWithoutAClosingAngleStaysClosed() {
+    String html = MarkdownRenderer.render("<details\nplain words\n");
+
+    assertTrue(html, html.contains("<details class=\"agnesse-section\">"));
+    assertFalse(html, html.contains(" open"));
+    assertTrue(html, html.contains("plain words"));
+  }
+
+  @Test
+  public void anUnresolvedIncludeKeepsEscapedTextUnderTheName() {
+    String html = MarkdownRenderer.render("""
+      ```agnesse
+      include SetUp
+      hello <there>
+      ```
+      """);
+
+    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>SetUp"));
+    assertFalse(html, html.contains("<a "));
+    assertTrue(html, html.contains("hello &lt;there&gt;"));
+  }
+
+  @Test
+  public void aDetailsTitleStaysPlainTextBesideTheDisclosureMarker() {
+    String html = MarkdownRenderer.render("""
+      <details>
+      <summary>Notes</summary>
+      plain words
+      </details>
+      """);
+
+    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>Notes"));
+    assertTrue(html, html.contains("plain words"));
+    assertFalse(html, html.contains("<a "));
+    assertFalse(html, html.contains("<details open>"));
+  }
+
+  @Test
+  public void aDetailsTitleIsEscapedAndIsNotALink() {
+    String html = MarkdownRenderer.render("""
+      <details open>
+      <summary>A<B & C</summary>
+      kept
+      </details>
+      """);
+
+    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>A&lt;B &amp; C"));
+    assertTrue(html, html.contains("<details class=\"agnesse-section\" open>"));
+    assertFalse(html, html.contains("<a "));
+    assertTrue(html, html.contains("kept"));
   }
 
   @Test
@@ -52,7 +113,7 @@ public class SlimTableBridgeTest {
       plain words
       </details>
       """);
-    assertTrue(html.contains("<details><summary>Notes</summary>"));
+    assertTrue(html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>Notes"));
     assertTrue(html.contains("plain words"));
     assertFalse(html.contains("<details open>"));
   }
@@ -64,7 +125,7 @@ public class SlimTableBridgeTest {
       just the body
       </details>
       """);
-    assertTrue(html.contains("<details open>"));
+    assertTrue(html.contains("<details class=\"agnesse-section\" open>"));
     assertTrue(html.contains("just the body"));
   }
 

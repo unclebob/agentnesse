@@ -10,18 +10,27 @@ import static org.junit.Assert.assertTrue;
 
 public class ResultSectionsTest {
   @Test
+  public void theDisclosureMarkerSitsBesideAPlainTitle() {
+    String html = ResultSections.details("import", "<table></table>", false);
+    assertTrue(html, html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>import"));
+    assertTrue(html, html.contains("class=\"agnesse-section agnesse-include\""));
+    assertFalse(html, html.contains("<a "));
+    assertFalse(html, html.contains("<summary>import</summary>"));
+  }
+
+  @Test
   public void aPassingSectionStaysCollapsed() {
     String html = ResultSections.details("SetUp", "<table></table>", false);
-    assertTrue(html.contains("<details class=\"agnesse-include\">"));
+    assertTrue(html.contains("<details class=\"agnesse-section agnesse-include\">"));
     assertFalse(html.contains(" open"));
-    assertTrue(html.contains("<summary>SetUp</summary>"));
+    assertTrue(html.contains("<span class=\"disclosure\" aria-hidden=\"true\">&gt;</span>SetUp"));
   }
 
   @Test
   public void aFailingSectionOpens() {
     assertTrue(ResultSections.shouldOpen(new JSONArray().put(block("fail", "no"))));
     String html = ResultSections.details("TearDown", "<td class=\"fail\">no</td>", true);
-    assertTrue(html.contains("<details class=\"agnesse-include\" open>"));
+    assertTrue(html.contains("<details class=\"agnesse-section agnesse-include\" open>"));
   }
 
   @Test
@@ -53,6 +62,13 @@ public class ResultSectionsTest {
     JSONObject row = new JSONObject();
     JSONObject block = new JSONObject().put("status", "pass").put("rows", new JSONArray().put(row));
     assertFalse(ResultSections.shouldOpen(new JSONArray().put(block)));
+  }
+
+  @Test
+  public void aBlockStatusOpensEvenWhenItsCellsAreQuiet() {
+    assertTrue(ResultSections.shouldOpen(new JSONArray().put(new JSONObject().put("status", "fail"))));
+    assertTrue(ResultSections.shouldOpen(new JSONArray().put(new JSONObject().put("status", "error"))));
+    assertTrue(ResultSections.shouldOpen(new JSONArray().put(new JSONObject().put("status", "table-failure"))));
   }
 
   @Test
