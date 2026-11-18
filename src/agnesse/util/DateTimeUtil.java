@@ -22,8 +22,4 @@ public class DateTimeUtil {
   public static String formatDate(Date date) {
     return DateFormatUtils.format(date, ISO_DATE_FORMAT, Clock.currentTimeZone(), Locale.US);
   }
-
-  public static boolean datesNullOrEqual(Date d1, Date d2) {
-    return (d1 == null && d2 == null) || (d1 != null && d2 != null && d1.equals(d2));
-  }
 }

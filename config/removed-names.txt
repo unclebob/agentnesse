@@ -145,3 +145,5 @@ ComponentInstantiationException
 ContentBuffer
 GracefulNamer
 CompositePageFinder
+datesNullOrEqual
+getRevisionData

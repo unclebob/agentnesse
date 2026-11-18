@@ -2,7 +2,6 @@ package agnesse.wiki.fs;
 
 import agnesse.wiki.VersionInfo;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,17 +22,6 @@ public class WikiFiles {
 
   public WikiFiles() {
     this(new DiskFileSystem());
-  }
-
-  public FileVersion[] getRevisionData(String label, File... files) {
-    FileVersion[] versions = new FileVersion[files.length];
-    int counter = 0;
-    for (File file : files) {
-      if (fileSystem.exists(file)) {
-        versions[counter++] = new CurrentFile(file);
-      }
-    }
-    return versions;
   }
 
   public Collection<VersionInfo> history(File... files) {
@@ -69,34 +57,6 @@ public class WikiFiles {
   private void ensureDirectory(File filePath) throws IOException {
     if (!fileSystem.exists(filePath)) {
       fileSystem.makeDirectory(filePath);
-    }
-  }
-
-  private class CurrentFile implements FileVersion {
-    private final File file;
-
-    private CurrentFile(File file) {
-      this.file = file;
-    }
-
-    @Override
-    public File getFile() {
-      return file;
-    }
-
-    @Override
-    public InputStream getContent() throws IOException {
-      return new BufferedInputStream(fileSystem.getInputStream(file));
-    }
-
-    @Override
-    public String getAuthor() {
-      return "";
-    }
-
-    @Override
-    public Date getLastModificationTime() {
-      return new Date(fileSystem.lastModified(file));
     }
   }
 }

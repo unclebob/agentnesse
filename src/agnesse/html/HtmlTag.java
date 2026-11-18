@@ -79,14 +79,6 @@ public class HtmlTag extends HtmlElement implements Iterable<HtmlElement> {
     add(element);
   }
 
-  public String getAttribute(String key) {
-    for (Attribute attribute : attributes) {
-      if (key != null && key.equals(attribute.name))
-        return attribute.value;
-    }
-    return null;
-  }
-
   protected String makeIndent(int depth) {
     StringBuilder indent = new StringBuilder();
     for (int i = 0; i < depth; i++)
