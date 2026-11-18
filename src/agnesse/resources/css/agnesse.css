@@ -43,7 +43,24 @@ td, th { border: 1px solid #ccc; padding: 0.25rem 0.5rem; vertical-align: top; }
 }
 .agnesse-contents ul { margin: 0.25rem 0; }
 details.agnesse-include { margin: 0.5rem 0; border: 1px solid #ddd; padding: 0.25rem 0.5rem; }
-details.agnesse-include > summary { cursor: pointer; font-weight: bold; }
+details.agnesse-include > summary { font-weight: bold; }
+details.agnesse-section > summary {
+  pointer-events: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  list-style: none;
+}
+details.agnesse-section > summary::-webkit-details-marker { display: none; }
+details.agnesse-section > summary::marker { content: ""; }
+details.agnesse-section > summary .disclosure {
+  pointer-events: auto;
+  cursor: pointer;
+  display: inline-block;
+}
+details.agnesse-section[open] > summary .disclosure { transform: rotate(90deg); }
+details.agnesse-section > summary a { pointer-events: auto; }
+details.agnesse-section > summary:focus { outline: 2px solid #36a; outline-offset: 2px; }
 #progressBar { height: 1.2rem; line-height: 1.2rem; margin: 0; padding: 0 0.4rem; white-space: nowrap; overflow: visible; box-sizing: border-box; }
 #progressBar.pass { background: #afa; }
 #progressBar.fail { background: #f88; }
