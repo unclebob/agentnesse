@@ -49,6 +49,10 @@ include SuiteAcceptanceTests.SuiteUserGuide.CommandLine
 ```
 
 ```agnesse
+include SuiteAcceptanceTests.SuiteUserGuide.Mcp
+```
+
+```agnesse
 include SuiteAcceptanceTests.SuiteUserGuide.JsonErrors
 ```
 

@@ -20,6 +20,7 @@ Each page in this suite is an example, and the suite runs it. The same pages are
 | [JavaSlim](>JavaSlim) | A Java fixture answers a Slim table |
 | [PythonSlim](>PythonSlim) | A command that is not Java can speak Slim |
 | [CommandLine](>CommandLine) | `-c` writes JSON and exits with the failure count. `--rerun-failures` skips pages that passed |
+| [Mcp](>Mcp) | `-mcp` serves list_pages, run, and get_results on standard input and output |
 | [JsonErrors](>JsonErrors) | Missing pages, unknown parameters, and refused moves are JSON |
 | [RenameSource](>RenameSource) | A rename rewrites a reference and leaves a `path` block alone |
 | [UserGuideRenders](>UserGuideRenders) | The shipped guide includes these pages |

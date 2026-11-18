@@ -10,7 +10,7 @@ This tree is early and under active rework, phase by phase. What you find here i
 
 Slim only. Fit is gone.
 
-No test history. A run returns its results. Nothing is kept afterward.
+No test history. A run returns its results. Nothing is written afterward. The MCP server keeps that JSON in memory until the process exits.
 
 No page versions inside the tool. Pages are written in place. Git is the history.
 
@@ -24,7 +24,18 @@ Run results are JSON. A JUnit XML file is written from that JSON, for CI. (Plann
 
 A command line runs a page or a suite and exits with the failure count. (The current entry point does this. A thinner agent CLI is planned.)
 
-A thin MCP server lists pages, runs a page or suite (with tags, and a rerun of failures), and returns the JSON results. (Planned.)
+`-mcp` speaks MCP on standard input and output. It does not open a port. The tools are `list_pages`, `run` (a page or a suite, with tag filters and a rerun-failures file), and `get_results` (schema version 1 JSON for a run id). Pages are read and written as files, not through MCP. An agent starts it like this:
+
+```json
+{
+  "mcpServers": {
+    "agnesse": {
+      "command": "java",
+      "args": ["-jar", "agnesse.jar", "-mcp"]
+    }
+  }
+}
+```
 
 No plugins. No authentication. One author. (Planned. Plugins and authentication are still in this tree.)
 

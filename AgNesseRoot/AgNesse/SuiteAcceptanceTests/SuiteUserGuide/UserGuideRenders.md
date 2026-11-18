@@ -19,6 +19,7 @@ The user guide includes the example pages. Rendering [UserGuide](.AgNesse.UserGu
 | ensure | bundled html contains; | AgNesse.UserGuide | which a command that is not Java cannot do |
 | ensure | bundled html contains; | AgNesse.UserGuide | The first token must not contain |
 | ensure | bundled html contains; | AgNesse.UserGuide | exits with the number of failing pages |
+| ensure | bundled html contains; | AgNesse.UserGuide | does not open a port |
 | ensure | bundled html contains; | AgNesse.UserGuide | Removed parameters include |
 | ensure | bundled html contains; | AgNesse.UserGuide | refactorReferences=on |
 | reject | bundled html contains; | AgNesse.UserGuide | include SuiteAcceptanceTests.SuiteUserGuide.FrontMatter |
