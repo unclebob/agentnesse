@@ -25,10 +25,24 @@ public class SlimSourcesTest {
 
     assertFalse(table(sources, "set up").isTearDown());
     assertEquals("SetUp", table(sources, "set up").origin());
+    assertEquals("SetUp", table(sources, "set up").originPath());
     assertFalse(table(sources, "script").isTearDown());
     assertEquals("Sample", table(sources, "script").origin());
     assertTrue(table(sources, "tear down").isTearDown());
     assertEquals("TearDown", table(sources, "tear down").origin());
+  }
+
+  @Test
+  public void anIncludedTableRecordsThePagePath() {
+    WikiPage root = wiki(
+      "Parent.SetUp", table("set up"),
+      "Parent.Child", table("script")
+    );
+
+    MarkdownTable setup = table(collect(root.getPageCrawler().getPage(PathParser.parse("Parent.Child"))), "set up");
+
+    assertEquals("SetUp", setup.origin());
+    assertEquals("Parent.SetUp", setup.originPath());
   }
 
   @Test
@@ -170,6 +184,16 @@ public class SlimSourcesTest {
 
     assertTrue(sources.items().stream().noneMatch(item -> item.alias() != null));
     assertEquals(List.of("script"), heads(sources));
+  }
+
+  @Test
+  public void anUnclosedFenceIsAnErrorAndAFinishedPageIsNot() {
+    assertEquals(List.of(), collect(wiki("Sample", table("script")).getChildPage("Sample")).errors());
+
+    List<String> errors = collect(wiki("Sample", "```\ncode\n").getChildPage("Sample")).errors();
+    assertEquals(1, errors.size());
+    assertTrue(errors.get(0), errors.get(0).contains("Unclosed code fence"));
+    assertTrue(errors.get(0), errors.get(0).contains("Sample"));
   }
 
   @Test

@@ -72,6 +72,7 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
       .put("event", "table-done")
       .put("path", path(page))
       .put("origin", table.origin())
+      .put("originPath", table.originPath())
       .put("block", BlockJson.from(table)));
   }
 

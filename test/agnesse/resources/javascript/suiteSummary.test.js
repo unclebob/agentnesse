@@ -85,6 +85,10 @@ function createElement(tag) {
       return on;
     },
   };
+  el.setAttribute = (name, value) => {
+    el.attributes = el.attributes || {};
+    el.attributes[name] = value;
+  };
   el.appendChild = (child) => {
     child.parentNode = el;
     el.children.push(child);
@@ -142,6 +146,11 @@ function page() {
   body.appendChild(results);
   body.appendChild(hide);
   document.createElement = createElement;
+  document.createTextNode = (text) => {
+    const node = createElement("#text");
+    node.textContent = text;
+    return node;
+  };
   document.getElementById = (id) => walk(document).find((el) => el.id === id) || null;
   document.querySelectorAll = (selector) => queryAll(document, selector);
   document.addEventListener = body.addEventListener;
@@ -457,4 +466,59 @@ test("hide passed still hides result rows when the page has no summary table", (
 test("the page heading in the output stays the full path", () => {
   const view = render([{ event: "page-started", path: EDIT }]);
   assert.equal(view.results.querySelector("h2").textContent, EDIT);
+});
+
+function passedBlock(name) {
+  return {
+    name,
+    status: "pass",
+    rows: [{ cells: [{ status: "pass", expected: "agnesse.fixtures" }] }],
+  };
+}
+
+test("an included result section links its name and leaves the marker as the toggle", () => {
+  const view = render([
+    { event: "page-started", path: "Suite.Child" },
+    {
+      event: "table-done",
+      path: "Suite.Child",
+      origin: "SetUp",
+      originPath: "Suite.SetUp",
+      block: passedBlock("import"),
+    },
+  ]);
+  const details = view.results.querySelector("details.agnesse-section");
+  assert.ok(details, "section is a collapsible agnesse-section");
+  assert.equal(details.querySelector("span.disclosure").textContent, ">");
+  const link = details.querySelector("a");
+  assert.equal(link.textContent, "SetUp");
+  assert.equal(link.href, "Suite.SetUp");
+  assert.equal(link.parentNode.tagName, "SUMMARY");
+
+  const css = fs.readFileSync(cssPath, "utf8");
+  assert.match(css, /details\.agnesse-section > summary\s*\{[^}]*pointer-events:\s*none/);
+  assert.match(css, /details\.agnesse-section > summary \.disclosure\s*\{[^}]*pointer-events:\s*auto/);
+  assert.match(css, /details\.agnesse-section > summary a\s*\{[^}]*pointer-events:\s*auto/);
+});
+
+test("a result section with no page keeps a plain title", () => {
+  const view = render([
+    { event: "page-started", path: "Suite.Child" },
+    {
+      event: "table-done",
+      path: "Suite.Child",
+      origin: "Child",
+      originPath: "Suite.Child",
+      block: passedBlock("import"),
+    },
+  ]);
+  const details = view.results.querySelector("details");
+  assert.ok(details);
+  const marker = details.querySelector("span.disclosure");
+  assert.ok(marker, "the disclosure marker is its own control");
+  assert.equal(marker.textContent, ">");
+  assert.equal(details.querySelector("a"), null);
+  const summary = details.querySelector("summary");
+  const title = [summary.textContent].concat((summary.children || []).map((child) => child.textContent)).join("");
+  assert.match(title, /import/);
 });

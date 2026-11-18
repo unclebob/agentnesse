@@ -26,6 +26,7 @@ public final class MarkdownTable implements Table {
   private String pageName = "";
   private String blockName = "";
   private String origin = "";
+  private String originPath = "";
   private boolean tearDown;
 
   public static MarkdownTable parse(String markdown) {
@@ -56,6 +57,14 @@ public final class MarkdownTable implements Table {
 
   public String origin() {
     return origin;
+  }
+
+  public void setOriginPath(String originPath) {
+    this.originPath = originPath == null ? "" : originPath;
+  }
+
+  public String originPath() {
+    return originPath;
   }
 
   public void locate(String page, String block) {
@@ -298,16 +307,14 @@ public final class MarkdownTable implements Table {
     private String exceptionHtml() {
       String message = exception.getMessage() != null ? exception.getMessage() : exception.getException();
       String rendered = HtmlUtil.isValidTableCellContent(message) ? message : escape(message);
-      String cls = exception.getExecutionResult() == null ? "error" : exception.getExecutionResult().toString();
-      return escape(content) + " <span class=\"" + cls + "\">" + rendered + "</span>";
+      return escape(content) + " <span class=\"" + exception.getExecutionResult().toString() + "\">" + rendered + "</span>";
     }
 
     private String resultHtml() {
       if (result.getExecutionResult() == null) {
         return result.hasMessage() ? escape(result.getMessage()) : escape(content);
       }
-      String rendered = CellMarkup.format(content, result);
-      return rendered == null ? escape(content) : rendered;
+      return CellMarkup.format(content, result);
     }
 
     private String span(String status, String body) {

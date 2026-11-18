@@ -107,9 +107,9 @@ public final class SlimSources {
       boolean wasInside = fence.inside();
       if (fence.boundary(line)) {
         if (!wasInside) {
-          flush(buffer, tearDown, page.getName());
+          flush(buffer, tearDown, page.getName(), PathParser.render(page.getFullPath()));
           info = fenceInfo(line);
-          fenceBody.setLength(0);
+          fenceBody = new StringBuilder();
         } else {
           includeOrSkip(page, info, fenceBody.toString(), context, tearDown, seen);
         }
@@ -121,7 +121,7 @@ public final class SlimSources {
         buffer.append(line).append('\n');
       }
     }
-    flush(buffer, tearDown, page.getName());
+    flush(buffer, tearDown, page.getName(), PathParser.render(page.getFullPath()));
     if (fence.inside()) {
       items.add(Item.error("Unclosed code fence on " + page.getName()));
     }
@@ -170,10 +170,11 @@ public final class SlimSources {
     items.add(Item.alias(alias, target));
   }
 
-  private void flush(StringBuilder buffer, boolean tearDown, String origin) {
+  private void flush(StringBuilder buffer, boolean tearDown, String origin, String originPath) {
     for (MarkdownTable table : new MarkdownTableScanner(buffer.toString())) {
       table.setTearDown(tearDown);
       table.setOrigin(origin);
+      table.setOriginPath(originPath);
       items.add(Item.table(table));
     }
     buffer.setLength(0);

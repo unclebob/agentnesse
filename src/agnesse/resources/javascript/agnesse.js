@@ -180,6 +180,27 @@ const appendSummaryRow = function (doc, table, event, root) {
     return table;
   }
 
+  function sectionHref(event, title) {
+    if (title !== event.origin) return "";
+    return event.originPath;
+  }
+
+  function sectionSummary(event, title) {
+    var summary = el("summary");
+    var marker = el("span", "disclosure", ">");
+    marker.setAttribute("aria-hidden", "true");
+    summary.appendChild(marker);
+    var href = sectionHref(event, title);
+    if (href) {
+      var link = el("a", "", title);
+      link.href = href;
+      summary.appendChild(link);
+    } else {
+      summary.appendChild(document.createTextNode(title));
+    }
+    return summary;
+  }
+
   function sectionTitle(event) {
     var origin = event.origin || "";
     var name = (event.block && event.block.name) || "";
@@ -276,8 +297,8 @@ const appendSummaryRow = function (doc, table, event, root) {
         closeSection();
         title = next;
         if (title) {
-          details = el("details", "agnesse-include");
-          details.appendChild(el("summary", "", title));
+          details = el("details", "agnesse-section agnesse-include");
+          details.appendChild(sectionSummary(event, title));
           pageRoot.appendChild(details);
         }
       }

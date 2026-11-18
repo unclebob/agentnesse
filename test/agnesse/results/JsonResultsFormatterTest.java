@@ -263,7 +263,11 @@ public class JsonResultsFormatterTest {
     agnesse.testsystems.slim.MarkdownTable table = passTable();
     formatter.tableFinished(page, table);
     assertTrue(formatter.events().get(0).toString(), formatter.events().get(0).toString().contains("\"origin\":\"\""));
+    assertTrue(formatter.events().get(0).toString(), formatter.events().get(0).toString().contains("\"originPath\":\"\""));
     table.setOrigin("Included");
+    table.setOriginPath("Suite.Included");
+    formatter.tableFinished(page, table);
+    assertTrue(formatter.events().get(1).toString(), formatter.events().get(1).toString().contains("\"originPath\":\"Suite.Included\""));
     formatter.testStarted(page);
     assertEquals("slim:A", formatter.events().get(formatter.events().size() - 1).getString("system"));
   }
