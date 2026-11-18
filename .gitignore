@@ -35,3 +35,5 @@ AgNesseRoot/updateDoNotCopyOverList
 AgNesseRoot/updateList
 fitMutation/
 passwords.txt
+coverage/
+last-failures.json
