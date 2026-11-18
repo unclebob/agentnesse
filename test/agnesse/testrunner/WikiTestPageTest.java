@@ -65,6 +65,26 @@ public class WikiTestPageTest {
   }
 
   @Test
+  public void anInheritedSectionHasTheSameNewlinesAsADirectInclude() throws Exception {
+    WikiPage directSetUp = addPage("DirectSetUp", "```agnesse\ninclude SetUp\n```\n");
+    WikiPage directTearDown = addPage("DirectTearDown", "```agnesse\ninclude TearDown\n```\n");
+    String inherited = new WikiTestPage(wikiPage).getHtml();
+
+    assertEquals(sectionNamed(directSetUp.getHtml(), "SetUp"), sectionNamed(inherited, "SetUp"));
+    assertEquals(sectionNamed(directTearDown.getHtml(), "TearDown"), sectionNamed(inherited, "TearDown"));
+  }
+
+  private static String sectionNamed(String html, String name) {
+    int link = html.indexOf(">" + name + "</a>");
+    int start = html.lastIndexOf("<details", link);
+    int end = html.indexOf("</details>", link) + "</details>".length();
+    while (end < html.length() && html.charAt(end) == '\n') {
+      end++;
+    }
+    return html.substring(start, end);
+  }
+
+  @Test
   public void testIncludeSetupTearDownOutsideOfSuite()
     throws Exception {
     TestPage testPage = new WikiTestPage(wikiPage);

@@ -101,7 +101,6 @@ public class WikiTestPage implements TestPage {
     if (tearDown) {
       html.append("</div>");
     }
-    html.append('\n');
   }
 
   @Override
