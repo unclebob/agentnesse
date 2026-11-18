@@ -5,15 +5,78 @@ package util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class FileUtilTest {
   @Test
   public void closeIgnoresANullStream() {
     FileUtil.close(null);
+  }
+
+  @Test
+  public void closeSwallowsAnIoFailureAndReportsTheStream() {
+    Logger log = Logger.getLogger(FileUtil.class.getName());
+    List<String> messages = new ArrayList<>();
+    Handler handler = new Handler() {
+      @Override
+      public void publish(LogRecord record) {
+        messages.add(record.getMessage());
+      }
+
+      @Override
+      public void flush() {
+      }
+
+      @Override
+      public void close() {
+      }
+    };
+    Level previous = log.getLevel();
+    log.setLevel(Level.INFO);
+    log.addHandler(handler);
+    Closeable broken = new Closeable() {
+      @Override
+      public void close() throws IOException {
+        throw new IOException("nope");
+      }
+
+      @Override
+      public String toString() {
+        return "broken-stream";
+      }
+    };
+    try {
+      FileUtil.close(broken);
+    } finally {
+      log.removeHandler(handler);
+      log.setLevel(previous);
+    }
+    assertEquals(List.of("Unable to close broken-stream"), messages);
+  }
+
+  @Test
+  public void deleteFileReportsADirectoryThatStillHasChildren() throws Exception {
+    File dir = FileUtil.createDir("temp-delete-fails");
+    FileUtil.createFile(new File(dir, "child.txt"), "x");
+    try {
+      FileUtil.deleteFile(dir);
+      fail("expected delete to fail");
+    } catch (IOException e) {
+      assertEquals("Could not delete '" + dir.getAbsolutePath() + "'", e.getMessage());
+    } finally {
+      FileUtil.deleteFileSystemDirectory(dir);
+    }
   }
 
   @Test

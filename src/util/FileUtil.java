@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -105,13 +104,6 @@ public class FileUtil {
     StreamReader reader = new StreamReader(input);
     while (!reader.isEof())
       output.write(reader.readBytes(1000));
-  }
-
-  public static String toString(InputStream input) {
-    try (Scanner s = new Scanner(input, CHARENCODING)) {
-      s.useDelimiter("\\A");
-      return s.hasNext() ? s.next() : "";
-    }
   }
 
   public static File createDir(String path) {
