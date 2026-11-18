@@ -252,6 +252,11 @@ public class MovePageResponderTest extends ResponderTestCase {
   }
 
   @Test
+  public void aMissingDestinationIsNotANewParent() throws Exception {
+    assertFalse(moveResponder.getAndValidateNewParentPage(context, request));
+  }
+
+  @Test
   public void testBadMoveLocationName() throws Exception {
     assertTrue(crawler.pageExists(PathParser.parse("PageOne.PageA")));
     SimpleResponse response = movePage("PageOne.PageA", "NoSuchPage", true);

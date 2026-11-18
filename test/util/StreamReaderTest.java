@@ -195,6 +195,23 @@ public class StreamReaderTest {
   }
 
   @Test
+  public void aSlimLengthReadTimesOutWithoutSleeping() throws Exception {
+    agnesse.slim.SlimStreamReader slim = new agnesse.slim.SlimStreamReader(new ByteArrayInputStream(new byte[0]));
+    StreamReader reader = slim;
+    reader.setTimeoutLimit(10);
+    reader.pauseWith(millis -> { });
+
+    try {
+      slim.getSlimMessage();
+      fail("expected a timeout");
+    } catch (java.io.IOException e) {
+      assertTrue(e.getMessage().contains("Timeout reached"));
+    } finally {
+      reader.close();
+    }
+  }
+
+  @Test
   public void testEarlyClosingStream() throws Exception {
     assertEquals("", openReader().read(10));
   }

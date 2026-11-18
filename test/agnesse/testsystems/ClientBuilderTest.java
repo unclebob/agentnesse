@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static agnesse.testsystems.ClientBuilder.replace;
 import static org.junit.Assert.assertEquals;
@@ -211,6 +212,25 @@ public class ClientBuilderTest {
     MockClientBuilder clientBuilder = new MockClientBuilder(descriptor);
     assertTrue(Arrays.asList(clientBuilder.getCommandPattern()).contains("c:\\program files\\suite.config"));
 
+  }
+
+  @Test
+  public void aSpacedPathIsQuotedOnlyWhenThatQuotingIsOn() throws Exception {
+    MockClientBuilder builder = new MockClientBuilder(descriptor());
+    String[] pattern = {"echo", "Program Files"};
+    ClassPath classPath = new ClassPath(Collections.singletonList("lib"), ":");
+
+    builder.quoteSpacedPaths(true);
+    assertEquals("\"Program Files\"", builder.buildCommand(pattern, "runner", classPath)[1]);
+
+    assertEquals("ProgramFiles", builder.buildCommand(new String[] {"echo", "ProgramFiles"}, "runner", classPath)[1]);
+
+    builder.quoteSpacedPaths(false);
+    assertEquals("Program Files", builder.buildCommand(pattern, "runner", classPath)[1]);
+  }
+
+  private WikiPageDescriptor descriptor() throws Exception {
+    return new WikiPageDescriptor(makeTestPage(""), false, false, "");
   }
 
   private WikiPage makeTestPage(String pageText) {

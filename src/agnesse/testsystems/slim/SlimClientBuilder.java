@@ -141,10 +141,16 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
     this.slimPort = slimPort;
   }
 
+  private ServerSocketFactory serverSockets = new PlainServerSocketFactory();
+
+  void serverSockets(ServerSocketFactory serverSockets) {
+    this.serverSockets = serverSockets;
+  }
+
   private int findFreePort() {
     int port;
     try {
-      ServerSocket socket = new PlainServerSocketFactory().createServerSocket(0);
+      ServerSocket socket = serverSockets.createServerSocket(0);
       port = socket.getLocalPort();
       socket.close();
     } catch (Exception e) {

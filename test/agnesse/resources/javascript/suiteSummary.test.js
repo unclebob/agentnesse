@@ -35,19 +35,27 @@ function matches(el, selector) {
 }
 
 function queryAll(start, selector) {
-  let nodes = [start];
-  selector.trim().split(/\s+/).forEach((part) => {
-    const next = [];
-    nodes.forEach((node) => {
-      walk(node).forEach((el) => {
-        if (matches(el, part)) {
-          next.push(el);
-        }
+  const found = [];
+  selector.split(",").forEach((group) => {
+    let nodes = [start];
+    group.trim().split(/\s+/).filter(Boolean).forEach((part) => {
+      const next = [];
+      nodes.forEach((node) => {
+        walk(node).forEach((el) => {
+          if (matches(el, part)) {
+            next.push(el);
+          }
+        });
       });
+      nodes = next;
     });
-    nodes = next;
+    nodes.forEach((node) => {
+      if (!found.includes(node)) {
+        found.push(node);
+      }
+    });
   });
-  return nodes;
+  return found;
 }
 
 function createElement(tag) {
@@ -124,6 +132,19 @@ function createElement(tag) {
   };
   el.querySelector = (selector) => queryAll(el, selector)[0] || null;
   el.querySelectorAll = (selector) => queryAll(el, selector);
+  el.closest = (selector) => {
+    let node = el;
+    while (node) {
+      if (node.tagName && matches(node, selector)) {
+        return node;
+      }
+      node = node.parentNode;
+    }
+    return null;
+  };
+  el.scrollIntoView = (options) => {
+    el.scrolled = options;
+  };
   return el;
 }
 
@@ -170,6 +191,8 @@ function render(events, prepare) {
   view.document.dispatchEvent("DOMContentLoaded");
   events.forEach((event) => context.AgNesseResults.apply(event));
   view.apply = (event) => context.AgNesseResults.apply(event);
+  view.resultsApi = context.AgNesseResults;
+  view.onbeforeunload = context.onbeforeunload;
   return view;
 }
 
@@ -521,4 +544,198 @@ test("a result section with no page keeps a plain title", () => {
   const summary = details.querySelector("summary");
   const title = [summary.textContent].concat((summary.children || []).map((child) => child.textContent)).join("");
   assert.match(title, /import/);
+});
+
+test("a page name is kept whole when the run has no suite root", () => {
+  const view = render([
+    { event: "run-started", pages: 1 },
+    {
+      event: "page-done",
+      path: ".Hidden",
+      status: "pass",
+      counts: { right: 1, wrong: 0, ignored: 0, exceptions: 0 },
+      index: 1,
+      pages: 1,
+    },
+  ]);
+  assert.equal(view.summaries.querySelector("a").textContent, ".Hidden");
+  assert.equal(view.summaries.querySelector("a").href, "/.Hidden");
+});
+
+test("a symbol cell masks a secret and shows an ordinary value", () => {
+  const view = render([
+    { event: "page-started", path: "Suite.Child" },
+    {
+      event: "table-done",
+      path: "Suite.Child",
+      origin: "Library",
+      originPath: "Suite.Library",
+      block: {
+        name: "script",
+        rows: [{ cells: [
+          { symbol: "SECRET_token", value: "hidden" },
+          { symbol: "count", value: "4" },
+          { symbol: "plain" },
+        ] }],
+      },
+    },
+  ]);
+  const cells = view.results.querySelectorAll("td");
+  assert.equal(cells[0].textContent, "$SECRET_token->[*****]");
+  assert.equal(cells[1].textContent, "$count<-[4]");
+  assert.equal(cells[2].textContent, "$plain<-[]");
+  assert.equal(view.results.querySelector("a").textContent, "Library");
+});
+
+test("output lands on the open page, on the results root, or nowhere", () => {
+  const onPage = render([
+    { event: "page-started", path: "Suite.Page" },
+    { event: "output", text: "boom" },
+  ]);
+  const pageNote = onPage.results.querySelector("p.error");
+  assert.equal(pageNote.textContent, "boom");
+  assert.equal(pageNote.parentNode.tagName, "SECTION");
+
+  const onRoot = render([{ event: "output" }]);
+  const rootNote = onRoot.results.querySelector("p.error");
+  assert.equal(rootNote.textContent, "");
+  assert.equal(rootNote.parentNode.id, "test-results");
+
+  const dropped = render([{ event: "output", text: "gone" }], (next) => {
+    next.results.remove();
+  });
+  assert.equal(dropped.document.querySelector("p.error"), null);
+});
+
+test("a finished run replaces the summary and shows the menu", () => {
+  const view = render([
+    { event: "page-started", path: "Suite.Page" },
+    { event: "run-done", summary: "1 right", status: "pass" },
+  ], (next) => {
+    const menu = createElement("div");
+    menu.id = "test-menu";
+    menu.className = "hidden";
+    next.document.body.appendChild(menu);
+  });
+  assert.equal(view.summary.textContent, "1 right");
+  assert.equal(view.summary.className, "pass");
+  assert.ok(!classes(view.document.getElementById("test-menu")).includes("hidden"));
+  assert.equal(view.onbeforeunload(), undefined);
+});
+
+test("a finished run can have a summary with no status and no summary element", () => {
+  const missing = render(
+    [{ event: "run-done", summary: "done" }],
+    (next) => next.summary.remove(),
+  );
+  assert.equal(missing.document.getElementById("test-summary"), null);
+
+  const unstyled = render([{ event: "run-done", summary: "done" }]);
+  assert.equal(unstyled.summary.textContent, "done");
+  assert.equal(unstyled.summary.className, "");
+});
+
+test("leaving during a run warns, and leaving after it does not", () => {
+  const running = render([{ event: "page-started", path: "Suite.Page" }]);
+  assert.match(running.onbeforeunload(), /currently running/);
+});
+
+test("stored events are applied when the page loads", () => {
+  const view = render([], (next) => {
+    const source = createElement("script");
+    source.id = "agnesse-events";
+    source.textContent = `\n${JSON.stringify({ event: "page-started", path: "Suite.Page" })}\n   \n`;
+    next.document.body.appendChild(source);
+  });
+  assert.equal(view.results.querySelector("h2").textContent, "Suite.Page");
+});
+
+test("render events retargets a node and applies each event", () => {
+  const view = render([]);
+  const target = createElement("div");
+  target.id = "elsewhere";
+  view.results.remove();
+  view.document.body.appendChild(target);
+  view.resultsApi.renderEvents([{ event: "page-started", path: "Suite.Page" }], target);
+  assert.equal(target.id, "test-results");
+  assert.equal(target.querySelector("h2").textContent, "Suite.Page");
+
+  const same = createElement("div");
+  same.id = "test-results";
+  view.resultsApi.renderEvents([], same);
+  assert.equal(same.id, "test-results");
+  view.resultsApi.renderEvents([], null);
+});
+
+function navControl(id, className) {
+  const el = createElement(id === "error-nav-text" ? "input" : "button");
+  el.id = id;
+  if (className) {
+    el.className = className;
+  }
+  return el;
+}
+
+test("error navigation walks failing cells and opens their section", () => {
+  const view = render([
+    { event: "page-started", path: "Suite.Child" },
+    {
+      event: "table-done",
+      path: "Suite.Child",
+      block: { name: "script", rows: [{ cells: [{ status: "fail", expected: "no" }] }] },
+    },
+    {
+      event: "table-done",
+      path: "Suite.Child",
+      origin: "Library",
+      originPath: "Suite.Library",
+      block: { name: "script", rows: [{ cells: [{ status: "error", expected: "bad" }] }] },
+    },
+    { event: "run-done" },
+  ], (next) => {
+    next.document.body.appendChild(navControl("error-nav-text"));
+    next.document.body.appendChild(navControl("error-nav-max"));
+    next.document.body.appendChild(navControl("error-nav", "hidden"));
+    next.document.body.appendChild(navControl("error-nav-prev"));
+    next.document.body.appendChild(navControl("error-nav-next"));
+  });
+  const cells = view.results.querySelectorAll("td.fail, td.error");
+  const field = view.document.getElementById("error-nav-text");
+  const prev = view.document.getElementById("error-nav-prev");
+  const next = view.document.getElementById("error-nav-next");
+  assert.equal(view.document.getElementById("error-nav-max").textContent, "2");
+  assert.ok(!classes(view.document.getElementById("error-nav")).includes("hidden"));
+  assert.equal(field.value, "1");
+  assert.equal(cells[0].scrolled.block, "center");
+  assert.ok(classes(cells[0]).includes("selected-error"));
+  assert.equal(cells[0].closest("details"), null);
+
+  next.onclick();
+  assert.equal(field.value, "2");
+  assert.ok(!classes(cells[0]).includes("selected-error"));
+  assert.ok(classes(cells[1]).includes("selected-error"));
+  assert.equal(cells[1].closest("details").open, true);
+
+  next.onclick();
+  assert.equal(field.value, "1");
+  prev.onclick();
+  assert.equal(field.value, "2");
+});
+
+test("error navigation stops when there is no field or no failure", () => {
+  const noField = render([
+    { event: "page-started", path: "Suite.Child" },
+    {
+      event: "table-done",
+      path: "Suite.Child",
+      block: { name: "script", rows: [{ cells: [{ status: "fail", expected: "no" }] }] },
+    },
+    { event: "run-done" },
+  ]);
+  assert.equal(noField.document.getElementById("error-nav-text"), null);
+
+  const noErrors = render([{ event: "run-done" }], (next) => {
+    next.document.body.appendChild(navControl("error-nav-text"));
+  });
+  assert.equal(noErrors.document.getElementById("error-nav-text").value, undefined);
 });

@@ -41,6 +41,15 @@ public class SlimCommandRunningClient implements SlimClient {
   private double slimServerVersion;
   private String hostName;
   private int port;
+  private Pause pause = Thread::sleep;
+
+  void pauseWith(Pause pause) {
+    this.pause = pause;
+  }
+
+  interface Pause {
+    void await(int millis) throws InterruptedException;
+  }
 
   public SlimCommandRunningClient(CommandRunner slimRunner, String hostName, int port, int connectionTimeout, double requiredSlimVersion, ClientSocketFactory clientSocketFactory) {
     this.slimRunner = slimRunner;
@@ -100,7 +109,7 @@ public class SlimCommandRunningClient implements SlimClient {
           throw new SlimError("Error connecting to SLiM server on " + hostName + ":" + port, e);
         } else {
           try {
-            Thread.sleep(sleepStep);
+            pause.await(sleepStep);
           } catch (InterruptedException e1) {
             Thread.currentThread().interrupt();
           }

@@ -1,46 +1,44 @@
 package agnesse.slim;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SlimStreamReaderTest {
-
   @Test
-  public void encodeMessageToSend() throws IOException {
-    ByteArrayOutputStream writer = new ByteArrayOutputStream();
-    SlimStreamReader.sendSlimMessage(writer, "foo bar baz");
-    assertEquals("000011:foo bar baz", writer.toString());
+  public void anEmptyStreamHasNoMessageLength() {
+    assertReadFails(new byte[0], "EOF reached");
   }
 
   @Test
-  public void encodeHeaderToSend() throws IOException {
-    ByteArrayOutputStream writer = new ByteArrayOutputStream();
-    SlimStreamReader.sendSlimHeader(writer, "foo bar baz");
-    assertEquals("foo bar baz", writer.toString());
+  public void aLengthMissingItsColonEndsAtEof() {
+    assertReadFails("000000x".getBytes(), "EOF reached");
   }
 
   @Test
-  public void readSlimMessage() throws IOException {
-    InputStream input = new ByteArrayInputStream("000011:foo bar baz".getBytes());
-    SlimStreamReader reader = new SlimStreamReader(input);
-
-    String message = reader.getSlimMessage();
-
-    assertEquals("foo bar baz", message);
+  public void aLengthThatIsNotANumberIsRejected() {
+    assertReadFails("xxxxxx:".getBytes(), "not a number");
   }
 
-  @Test( expected = IOException.class )
-  public void readIncompleteSlimMessage() throws IOException {
-    InputStream input = new ByteArrayInputStream("00".getBytes());
-    SlimStreamReader reader = new SlimStreamReader(input);
+  @Test
+  public void aCountedMessageIsReturned() throws Exception {
+    SlimStreamReader reader = new SlimStreamReader(new ByteArrayInputStream("000005:hello".getBytes()));
 
-    reader.getSlimMessage();
+    assertEquals("hello", reader.getSlimMessage());
   }
 
+  private static void assertReadFails(byte[] bytes, String expected) {
+    SlimStreamReader reader = new SlimStreamReader(new ByteArrayInputStream(bytes));
+    try {
+      reader.getSlimMessage();
+      fail("expected the read to fail");
+    } catch (IOException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains(expected));
+    }
+  }
 }

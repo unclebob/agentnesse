@@ -219,4 +219,24 @@ public class SuiteFilterTest {
     notGoodTest.commit(data2);
     assertFalse(filter.isMatchingTest(notGoodTest));
   }
+
+  @Test
+  public void aPageThatCannotBeReadDoesNotMatchATagFilter() throws Exception {
+    WikiPage broken = new WikiPageDummy("Broken", "", root) {
+      private int reads;
+
+      @Override
+      public PageData getData() {
+        if (reads++ == 0) {
+          PageData data = new PageData("", new WikiPageProperty());
+          data.setAttribute("Test");
+          return data;
+        }
+        throw new RuntimeException("unreadable");
+      }
+    };
+    SuiteFilter filter = new SuiteFilter("tag", null, null, null);
+
+    assertFalse(filter.isMatchingTest(broken));
+  }
 }

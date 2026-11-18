@@ -1,11 +1,13 @@
 package agnesse.testsystems.slim;
 
+import agnesse.socketservice.ServerSocketFactory;
 import agnesse.testsystems.ClassPath;
 import agnesse.testsystems.CommandRunner;
 import agnesse.testsystems.Descriptor;
 import agnesse.testsystems.ExecutionLogListener;
 import agnesse.testsystems.MockCommandRunner;
 
+import java.io.IOException;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
@@ -188,6 +190,37 @@ public class SlimClientBuilderTest {
     when(descriptor.isDebug()).thenReturn(true);
     when(descriptor.getVariable("slim.debug.timeout")).thenReturn("30");
     assertEquals(30, new SlimClientBuilder(descriptor).determineTimeout());
+  }
+
+  @Test
+  public void aFreePortIsChosenWhenTheBaseIsZero() throws Exception {
+    SlimClientBuilder builder = new SlimClientBuilder(portZero());
+
+    assertTrue(builder.getNextSlimPort() > 0);
+  }
+
+  @Test
+  public void aPortIsUnavailableWhenNoSocketCanBeOpened() throws Exception {
+    SlimClientBuilder builder = new SlimClientBuilder(portZero());
+    builder.serverSockets(new ServerSocketFactory() {
+      @Override
+      public java.net.ServerSocket createServerSocket(int port) throws IOException {
+        throw new IOException("none");
+      }
+
+      @Override
+      public java.net.ServerSocket createLocalOnlyServerSocket(int port) {
+        return null;
+      }
+    });
+
+    assertEquals(-1, builder.getNextSlimPort());
+  }
+
+  private static Descriptor portZero() {
+    Descriptor descriptor = mock(Descriptor.class);
+    when(descriptor.getVariable("slim.port")).thenReturn("0");
+    return descriptor;
   }
 
 }

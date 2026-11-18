@@ -30,6 +30,10 @@ public class InProcessSlimClient implements SlimClient {
   private SlimStreamReader reader;
   private double slimServerVersion;
 
+  void readFrom(SlimStreamReader reader) {
+    this.reader = reader;
+  }
+
   public InProcessSlimClient(String testSystemName, SlimServer slimServer, ExecutionLogListener executionLogListener, ClassLoader classLoader) {
     this.testSystemName = testSystemName;
     this.slimServer = slimServer;

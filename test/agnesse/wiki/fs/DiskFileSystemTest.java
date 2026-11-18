@@ -32,4 +32,33 @@ public class DiskFileSystemTest {
     assertTrue("no DirName found", listing.contains("DirName"));
     assertTrue("no filename found", listing.contains("filename"));
   }
+
+  @Test
+  public void aDirectoryInsideAFileCannotBeMade() throws IOException {
+    File file = new File(rootDir, "not-a-dir");
+    assertTrue(file.createNewFile());
+
+    try {
+      new DiskFileSystem().makeDirectory(new File(file, "child"));
+      fail("expected the directory to be refused");
+    } catch (IOException e) {
+      assertTrue(e.getMessage().contains("make directory failed"));
+      assertTrue(e.getMessage().contains("not-a-dir"));
+    }
+  }
+
+  @Test
+  public void aRenameIntoAMissingDirectoryIsRefused() throws IOException {
+    File source = new File(rootDir, "filename");
+    assertTrue(source.createNewFile());
+    File destination = new File(new File(rootDir, "missing"), "renamed");
+
+    try {
+      new DiskFileSystem().rename(destination, source);
+      fail("expected the rename to be refused");
+    } catch (IOException e) {
+      assertTrue(e.getMessage().contains("file rename failed"));
+      assertTrue(e.getMessage().contains("filename"));
+    }
+  }
 }

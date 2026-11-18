@@ -33,9 +33,14 @@ public abstract class ClientBuilder<T> {
   static final String CLASSPATH_PROPERTY = "CLASSPATH_PROPERTY";
 
   private final Descriptor descriptor;
+  private boolean quoteSpacedPaths = SystemUtils.IS_OS_WINDOWS;
 
   public ClientBuilder(Descriptor descriptor) {
     this.descriptor = descriptor;
+  }
+
+  void quoteSpacedPaths(boolean quote) {
+    this.quoteSpacedPaths = quote;
   }
 
   protected String[] buildCommand(String[] commandPattern, String testRunner, ClassPath classPath) {
@@ -51,7 +56,7 @@ public abstract class ClientBuilder<T> {
     for (int i = 0; i < commandPattern.length; i++) {
       command[i] = replace(commandPattern[i], "%p", completeClassPath.toString());
       command[i] = replace(command[i], "%m", testRunner);
-      if (SystemUtils.IS_OS_WINDOWS && command[i].contains(" ")) {
+      if (quoteSpacedPaths && command[i].contains(" ")) {
         command[i] = "\"" + command[i] + "\"";
       }
     }

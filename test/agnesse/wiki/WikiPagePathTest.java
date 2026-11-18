@@ -154,6 +154,7 @@ public class WikiPagePathTest {
     assertTrue(b.compareTo(a) == 1);    // b > a
     assertTrue(ab.compareTo(aa) == 1);  // ab > aa
     assertTrue(bb.compareTo(ba) == 1);  // bb > ba
+    assertEquals(1, a.compareTo("PageA"));
   }
 
   @Test
@@ -272,5 +273,13 @@ public class WikiPagePathTest {
     assertEquals(new WikiPagePath(new String[]{"TwO"}), path12.subtractFromFront(path1));
     assertEquals(path123, path123.subtractFromFront(blah));
     assertEquals(new WikiPagePath(), path123.subtractFromFront(path123));
+  }
+
+  @Test
+  public void aFreshPathIsRelativeUntilItsModeChanges() {
+    WikiPagePath relative = new WikiPagePath();
+    assertTrue(relative.isRelativePath());
+    relative.setPathMode(WikiPagePath.Mode.ABSOLUTE);
+    assertFalse(relative.isRelativePath());
   }
 }

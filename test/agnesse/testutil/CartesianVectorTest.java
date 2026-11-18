@@ -18,6 +18,16 @@ public class CartesianVectorTest {
   }
 
   @Test
+  public void hashCodeIsNotDefined() {
+    try {
+      new CartesianVector(1, 2).hashCode();
+      assertTrue(false);
+    } catch (AssertionError e) {
+      assertEquals("hashCode not designed", e.getMessage());
+    }
+  }
+
+  @Test
   public void testVectorEquals() throws Exception {
     CartesianVector v1 = new CartesianVector(3.1, -5.2);
     CartesianVector v2 = new CartesianVector(3.1, -5.2);
