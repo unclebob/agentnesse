@@ -1,30 +1,51 @@
+![AgNesse](src/agnesse/resources/images/agnesse-logo.png)
+
 # AgNesse
 
-AgNesse is a fork of [FitNesse](https://github.com/unclebob/fitnesse). It is for AI agents that write and run acceptance tests. The mission is a minimal, agent-friendly acceptance-testing system.
+AgNesse is a Slim acceptance-test wiki for an agent that writes pages and reads results. It is a fork of [FitNesse](https://github.com/unclebob/fitnesse), cut down to that job.
 
-FitNesse accumulated a wiki, two test systems, page history, its own version store, plugins, and authentication. An agent does not need that. It needs pages it can read and write, Slim tables it can fill in, and a run whose result it can read. AgNesse is that, and nothing else.
+Pages are Markdown files with JSON front matter. Slim tables are GitHub-flavored Markdown tables. The table type is the first header cell, for example `decision:Division`. A name with no prefix is a decision table. Commands that are not tables go in fenced `agnesse` blocks.
 
-This tree is early and under active rework, phase by phase. What you find here is not the finished tool. Features below marked planned are not built yet.
+There is one test system, Slim. There is no plugin loader and no authentication. Pages are written in place. Git is the history of the pages. A run returns JSON and does not keep a test history.
 
-## Direction
+## Build and run
 
-Slim only. Fit is gone.
+AgNesse requires Java 21. The Gradle wrapper builds it.
 
-No test history. A run returns its results. Nothing is written afterward. The MCP server keeps that JSON in memory until the process exits.
+```
+./gradlew test
+./gradlew acceptanceTest
+./gradlew build
+```
 
-No page versions inside the tool. Pages are written in place. Git is the history.
+`test` is the unit suite. `acceptanceTest` runs `AgNesse.SuiteAcceptanceTests` and writes `build/reports/acceptance-results.json`. `build` runs both, checks that JSON against the results schema, and enforces the coverage floors and the removed-name check. On Windows, use `gradlew.bat`.
 
-Pages can be Markdown files with JSON front matter. The pages already in this tree are still FitNesse wiki text. Samples of the new syntax are under `AgNesseSamples`.
+Start the wiki on port 8001. It listens on 127.0.0.1.
 
-Slim tables are bare GitHub-flavored Markdown tables. The table type is the name in the first header cell, for example `decision:Division`. A name with no prefix is a decision table.
+```
+./gradlew run
+java -jar build/libs/agnesse-*-standalone.jar -p 8001
+```
 
-Commands that are not tables go in fenced `agnesse` blocks.
+The standalone jar's main class is `agnesseMain.AgNesseMain`. `--listen 0.0.0.0` listens on every interface. Any other `--listen` address binds that address.
 
-Run results are JSON. A JUnit XML file is written from that JSON, for CI. (Planned. HTTP `format=xml` and `format=junit` are already gone. The `agnesse.junit` runner still writes JUnit XML on its own, and it does not read test history.)
+## JSON results
 
-A command line runs a page or a suite and exits with the failure count. (The current entry point does this. A thinner agent CLI is planned.)
+`-c` runs one page or suite and prints JSON. The process exits with the number of failing pages. `-b` names the output file instead of standard output.
 
-`-mcp` speaks MCP on standard input and output. It does not open a port. The tools are `list_pages`, `run` (a page or a suite, with tag filters and a rerun-failures file), and `get_results` (schema version 1 JSON for a run id). Pages are read and written as files, not through MCP. An agent starts it like this:
+```
+java -jar build/libs/agnesse-*-standalone.jar -c AgNesse.SuiteAcceptanceTests?suite -b results.json
+```
+
+The document has `"schemaVersion": 1`. A page that passed has `"status": "pass"`. The same run writes `.agnesse/last-failures.json` beside the wiki root. `--rerun-failures` points at that file, or at a full results document, and runs only the failed pages.
+
+When `-c` is used and the port is left unset, the run uses port 9123. The wiki's port default is 80.
+
+The `agnesse.junit` runner writes JUnit XML for its own runs. `-c` does not. HTTP `format=xml` and `format=junit` are gone.
+
+## MCP
+
+`-mcp` speaks MCP on standard input and output. It does not open a port. The tools are `list_pages`, `run`, and `get_results`. `get_results` returns schema version 1 for a run id, kept until that process exits. Pages are files. `-mcp` and `-c` together exit 1.
 
 ```json
 {
@@ -37,40 +58,28 @@ A command line runs a page or a suite and exits with the failure count. (The cur
 }
 ```
 
-No plugins. No authentication. One author. (Planned. Plugins and authentication are still in this tree.)
+## Configuration
 
-## Build and run
-
-AgNesse requires Java 21. That is the version the project compiles for, and the version the wiki and the Slim server run on.
-
-Build and test:
-
-```
-./gradlew build
-```
-
-Start the wiki on port 8001. It listens on 127.0.0.1. `--listen 0.0.0.0` listens on every interface. Any other `--listen` address binds that address.
-
-```
-./gradlew run
-java -jar build/libs/agnesse-*-standalone.jar -p 8001 --listen 127.0.0.1
-```
-
-Configuration is `agnesse.json` in the working directory. If that file is missing, the built-in defaults are used. A null value leaves that default too. `-f` names a different file, and that file must exist. A command-line flag overrides the file. The port default is 80. A `-c` command uses port 9123 when port is left unset.
+`agnesse.json` in the working directory supplies the defaults. If that file is missing, the built-in defaults are used. `-f` names a different file, and that file must exist. A null value leaves the default. A command-line flag overrides the file. Unknown keys are an error.
 
 ```json
 {
   "port": null,
   "rootPath": ".",
   "pageRoot": "AgNesseRoot",
-  "logDirectory": null,
   "maximumWorkers": 100,
   "refactorStartPath": null,
   "listen": "127.0.0.1"
 }
 ```
 
-On Windows, use `gradlew.bat` instead of `./gradlew`.
+`port` and `maximumWorkers` are integers. `listen`, `rootPath`, `pageRoot`, and `refactorStartPath` are strings.
+
+Other flags: `-v` turns on verbose logging, `-d` is the working directory, `-r` is the page root.
+
+## User guide
+
+The guide is `AgNesseRoot/AgNesse/UserGuide.md`, wiki path `AgNesse.UserGuide`. It includes the pages under `AgNesse.SuiteAcceptanceTests.SuiteUserGuide`, so the guide and the suite stay the same text: front matter, define, include, scenarios, path, contents, alias, Java Slim, Python Slim, the command line, MCP, JSON errors, and rename.
 
 ## Credit and license
 
