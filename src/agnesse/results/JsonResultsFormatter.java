@@ -117,20 +117,11 @@ public class JsonResultsFormatter extends BaseFormatter implements TableFinished
     servers.commandStarted(context.getTestSystemName(), context.getCommand());
   }
 
-  @Override
-  public synchronized void stdOut(String output) {
-    servers.stdOut(output);
-  }
+  @Override public synchronized void stdOut(String output) { servers.stdOut(output); }
 
-  @Override
-  public synchronized void stdErr(String output) {
-    servers.stdErr(output);
-  }
+  @Override public synchronized void stdErr(String output) { servers.stdErr(output); }
 
-  @Override
-  public synchronized void exitCode(int exitCode) {
-    servers.exitCode(exitCode);
-  }
+  @Override public synchronized void exitCode(int exitCode) { servers.exitCode(exitCode); }
 
   @Override
   public void announceNumberTestsToRun(int testsToRun) {

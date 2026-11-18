@@ -17,5 +17,12 @@ public interface ExecutionLogListener {
     String getCommand();
 
     String getTestSystemName();
+
+    static ExecutionContext of(String command, String testSystemName) {
+      return new ExecutionContext() {
+        public String getCommand() { return command; }
+        public String getTestSystemName() { return testSystemName; }
+      };
+    }
   }
 }

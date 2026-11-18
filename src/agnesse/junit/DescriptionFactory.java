@@ -26,11 +26,7 @@ public class DescriptionFactory {
    * @param page  page to be executed.
    * @return description.
    */
-  public Description createDescription(Class<?> clazz, WikiPage page) {
-    String name = page.getFullPath().toString();
-    AgNessePageAnnotation wikiPageAnnotation = new AgNessePageAnnotation(page);
-    return createDescription(clazz, name, wikiPageAnnotation);
-  }
+  public Description createDescription(Class<?> clazz, WikiPage page) { return createDescription(clazz, page.getFullPath().toString(), new AgNessePageAnnotation(page)); }
 
   /**
    * Creates description for a wiki page being run from a jUnit class.
@@ -39,11 +35,7 @@ public class DescriptionFactory {
    * @param page  page to be executed.
    * @return description.
    */
-  public Description createDescription(Class<?> clazz, TestPage page) {
-    String name = page.getFullPath();
-    AgNessePageAnnotation wikiPageAnnotation = new AgNessePageAnnotation(page);
-    return createDescription(clazz, name, wikiPageAnnotation);
-  }
+  public Description createDescription(Class<?> clazz, TestPage page) { return createDescription(clazz, page.getFullPath(), new AgNessePageAnnotation(page)); }
 
   private Description createDescription(Class<?> clazz, String name, Annotation... annotations) {
     return Description.createTestDescription(clazz, name, annotations);

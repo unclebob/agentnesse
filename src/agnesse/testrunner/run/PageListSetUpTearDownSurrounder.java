@@ -71,14 +71,15 @@ public class PageListSetUpTearDownSurrounder implements PageListSetUpTearDownPro
   }
 
   private List<WikiPage> setUpForThisGroup(String setUpAndTearDown) {
-    String setUpPath = setUpAndTearDown.split(",")[0];
-    WikiPage setUpPage = setUpsAndTearDowns.get(setUpPath);
-    return setUpPage != null ? Collections.singletonList(setUpPage) : Collections.emptyList();
+    return pageAt(setUpAndTearDown, 0);
   }
 
-  private List<WikiPage>  tearDownForThisGroup(String setUpAndTearDownGroupKey) {
-    String tearDownPath = setUpAndTearDownGroupKey.split(",")[1];
-    WikiPage tearDownPage = setUpsAndTearDowns.get(tearDownPath);
-    return tearDownPage != null ? Collections.singletonList(tearDownPage) : Collections.emptyList();
+  private List<WikiPage> tearDownForThisGroup(String setUpAndTearDownGroupKey) {
+    return pageAt(setUpAndTearDownGroupKey, 1);
+  }
+
+  private List<WikiPage> pageAt(String key, int index) {
+    WikiPage page = setUpsAndTearDowns.get(key.split(",")[index]);
+    return page != null ? Collections.singletonList(page) : Collections.emptyList();
   }
 }

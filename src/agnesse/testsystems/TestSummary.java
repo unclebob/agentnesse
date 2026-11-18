@@ -43,11 +43,7 @@ public class TestSummary {
     && getExceptions() == other.getExceptions() && getRunTimeInMillis() == other.getRunTimeInMillis();
   }
 
-  @Override
-  public int hashCode() {
-    assert false : "hashCode not designed";
-    return 42;
-  }
+  @Override public int hashCode() { assert false : "hashCode not designed"; return 42; }
 
   public void add(TestSummary testSummary) {
     right = getRight() + testSummary.getRight();

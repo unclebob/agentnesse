@@ -320,10 +320,7 @@ public class ScenarioTable extends SlimTable {
       return ScenarioTable.this;
     }
 
-    @Override
-    public String getSymbol(String symbolName) {
-      return testContext.getSymbol(symbolName);
-    }
+    @Override public String getSymbol(String symbolName) { return testContext.getSymbol(symbolName); }
 
     @Override
     public Map<String, String> getSymbols() {
@@ -355,37 +352,17 @@ public class ScenarioTable extends SlimTable {
       return testContext.getScenarios();
     }
 
-    @Override
-    public void incrementPassedTestsCount() {
-      increment(ExecutionResult.PASS);
-    }
+    @Override public void incrementPassedTestsCount() { increment(ExecutionResult.PASS); }
 
-    @Override
-    public void incrementFailedTestsCount() {
-      increment(ExecutionResult.FAIL);
-    }
+    @Override public void incrementFailedTestsCount() { increment(ExecutionResult.FAIL); }
 
-    @Override
-    public void incrementErroredTestsCount() {
-      increment(ExecutionResult.ERROR);
-    }
+    @Override public void incrementErroredTestsCount() { increment(ExecutionResult.ERROR); }
 
-    @Override
-    public void incrementIgnoredTestsCount() {
-      increment(ExecutionResult.IGNORE);
-    }
+    @Override public void incrementIgnoredTestsCount() { increment(ExecutionResult.IGNORE); }
 
-    @Override
-    public void increment(ExecutionResult result) {
-      testContext.increment(result);
-      testSummary.add(result);
-    }
+    @Override public void increment(ExecutionResult result) { testContext.increment(result); testSummary.add(result); }
 
-    @Override
-    public void increment(TestSummary summary) {
-      testContext.increment(summary);
-      testSummary.add(summary);
-    }
+    @Override public void increment(TestSummary summary) { testContext.increment(summary); testSummary.add(summary); }
 
     ExecutionResult getExecutionResult() {
       return ExecutionResult.getExecutionResult(testSummary);

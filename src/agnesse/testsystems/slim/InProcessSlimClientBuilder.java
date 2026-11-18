@@ -7,8 +7,6 @@ import agnesse.slim.fixtureInteraction.FixtureInteraction;
 import agnesse.testsystems.ClientBuilder;
 import agnesse.testsystems.Descriptor;
 
-import static agnesse.testsystems.slim.SlimClientBuilder.SLIM_FLAGS;
-
 /**
  * In-process version, mainly for testing AgNesse itself.
  */
@@ -45,12 +43,6 @@ public class InProcessSlimClientBuilder extends ClientBuilder<SlimClient> {
     return JavaSlimFactory.createJavaSlimFactory(interaction, timeoutMillis, label, verbose).getSlimServer();
   }
 
-  protected String[] getSlimFlags() {
-    String slimFlags = getVariable("slim.flags");
-    if (slimFlags == null) {
-      slimFlags = getVariable(SLIM_FLAGS);
-    }
-    return slimFlags == null ? new String[] {} : parseCommandLine(slimFlags);
-  }
+  protected String[] getSlimFlags() { return slimFlags(); }
 
 }

@@ -99,10 +99,7 @@ public class PageData implements ReadOnlyPageData, Serializable {
     return properties;
   }
 
-  @Override
-  public String getAttribute(String key) {
-    return properties.get(key);
-  }
+  @Override public String getAttribute(String key) { return properties.get(key); }
 
   public void removeAttribute(String key) {
     properties.remove(key);

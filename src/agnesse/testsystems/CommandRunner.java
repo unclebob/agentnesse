@@ -84,18 +84,7 @@ public class CommandRunner {
   }
 
   protected void sendCommandStartedEvent() {
-    executionLogListener.commandStarted(new ExecutionLogListener.ExecutionContext() {
-      @Override
-      public String getCommand() {
-        return StringUtils.join(asList(command), " ");
-      }
-
-      @Override
-      public String getTestSystemName() {
-        // What to do with this? Need an identifier?
-        return "command";
-      }
-    });
+    executionLogListener.commandStarted(ExecutionLogListener.ExecutionContext.of(StringUtils.join(asList(command), " "), "command"));
   }
 
   private Map<String, String> determineEnvironment() {

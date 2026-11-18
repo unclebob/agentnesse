@@ -72,15 +72,11 @@ public class MockSocket extends Socket {
     this.host = host;
   }
 
-  @Override
-  public SocketAddress getRemoteSocketAddress() {
-    // Mock a socket address, to keep the logging happy.
-    return new InetSocketAddress(host != null ? host : "internal", 123);
-  }
+  @Override public SocketAddress getRemoteSocketAddress() { return mockAddress(); }
 
-  @Override
-  public SocketAddress getLocalSocketAddress() {
-    // Mock a socket address, to keep the logging happy.
+  @Override public SocketAddress getLocalSocketAddress() { return mockAddress(); }
+
+  private SocketAddress mockAddress() {
     return new InetSocketAddress(host != null ? host : "internal", 123);
   }
 }

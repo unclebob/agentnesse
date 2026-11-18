@@ -8,13 +8,7 @@ public class VoidConverter implements Converter<Void> {
 
   public static final String VOID_TAG = "/__VOID__/";
 
-  @Override
-  public String toString(Void v) {
-    return VOID_TAG;
-  }
+  @Override public String toString(Void v) { return VOID_TAG; }
 
-  @Override
-  public Void fromString(String arg) {
-    return null;
-  }
+  @Override public Void fromString(String arg) { return null; }
 }

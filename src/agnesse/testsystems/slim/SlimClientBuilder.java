@@ -205,13 +205,7 @@ public class SlimClientBuilder extends ClientBuilder<SlimCommandRunningClient> {
     return slimHost == null ? "localhost" : slimHost;
   }
 
-  protected String[] getSlimFlags() {
-    String slimFlags = getVariable("slim.flags");
-    if (slimFlags == null) {
-      slimFlags = getVariable(SLIM_FLAGS);
-    }
-    return slimFlags == null ? new String[] {} : parseCommandLine(slimFlags);
-  }
+  protected String[] getSlimFlags() { return slimFlags(); }
 
   protected int determineTimeout() {
     if (isDebug()) {

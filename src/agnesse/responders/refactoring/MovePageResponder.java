@@ -64,14 +64,8 @@ public class MovePageResponder extends PageMovementResponder {
     movePage(oldRefactoredPage, newParentPage, getNewPageName());
   }
 
-  @Override
-  protected String getNewPageName() {
-    return oldRefactoredPage.getName();
-  }
+  @Override protected String getNewPageName() { return oldRefactoredPage.getName(); }
 
-  @Override
-  protected String getErrorMessageHeader() {
-    return "Cannot move " + makeLink(oldNameOfPageToBeMoved) + " below " + newParentName + ".";
-  }
+  @Override protected String getErrorMessageHeader() { return "Cannot move " + makeLink(oldNameOfPageToBeMoved) + " below " + newParentName + "."; }
 
 }

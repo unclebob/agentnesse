@@ -134,10 +134,7 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     return new PageData(pageData);
   }
 
-  @Override
-  public Collection<VersionInfo> getVersions() {
-    return Collections.emptyList();
-  }
+  @Override public Collection<VersionInfo> getVersions() { return Collections.emptyList(); }
 
   @Override
   public WikiPage getVersion(String versionName) {

@@ -24,10 +24,7 @@ final class PageLinkRenderer implements NodeRenderer {
     this.pageTarget = pageTarget;
   }
 
-  @Override
-  public Set<Class<? extends Node>> getNodeTypes() {
-    return Set.of(Link.class);
-  }
+  @Override public Set<Class<? extends Node>> getNodeTypes() { return Set.of(Link.class); }
 
   @Override
   public void render(Node node) {

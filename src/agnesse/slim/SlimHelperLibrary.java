@@ -11,10 +11,7 @@ public class SlimHelperLibrary implements StatementExecutorConsumer {
     return statementExecutor.getInstance(ACTOR_INSTANCE_NAME);
   }
 
-  @Override
-  public void setStatementExecutor(StatementExecutorInterface statementExecutor) {
-    this.statementExecutor = statementExecutor;
-  }
+  @Override public void setStatementExecutor(StatementExecutorInterface statementExecutor) { this.statementExecutor = statementExecutor; }
 
   public StatementExecutorInterface getStatementExecutor() {
     return statementExecutor;

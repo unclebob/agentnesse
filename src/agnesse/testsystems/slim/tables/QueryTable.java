@@ -80,12 +80,7 @@ public class QueryTable extends SlimTable {
       return testResult;
     }
 
-    @Override
-    public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) {
-      table.updateContent(0, 0, exceptionResult);
-      getTestContext().incrementErroredTestsCount();
-      return exceptionResult;
-    }
+    @Override public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) { table.updateContent(0, 0, exceptionResult); getTestContext().incrementErroredTestsCount(); return exceptionResult; }
   }
 
   private ExecutionResult scanRowsForMatches(List<List<List<Object>>> queryResultList) {

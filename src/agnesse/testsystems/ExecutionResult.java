@@ -32,10 +32,7 @@ public enum ExecutionResult {
     return PASS;
   }
 
-  public static boolean executedNoAssertions(TestSummary testSummary) {
-    return testSummary.getRight() == 0 && testSummary.getWrong() == 0
-      && testSummary.getIgnores() == 0 && testSummary.getExceptions() == 0;
-  }
+  public static boolean executedNoAssertions(TestSummary testSummary) { return testSummary.getRight() == 0 && testSummary.getWrong() == 0 && testSummary.getIgnores() == 0 && testSummary.getExceptions() == 0; }
   
   public static ExecutionResult getExecutionResult(TestSummary testSummary) {
     if (testSummary.getWrong() > 0) {

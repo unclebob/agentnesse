@@ -86,10 +86,7 @@ public class HtmlTag extends HtmlElement implements Iterable<HtmlElement> {
     return indent.toString();
   }
 
-  @Override
-  public Iterator<HtmlElement> iterator() {
-    return childTags.iterator();
-  }
+  @Override public Iterator<HtmlElement> iterator() { return childTags.iterator(); }
 
   public static class Attribute {
     public String name;

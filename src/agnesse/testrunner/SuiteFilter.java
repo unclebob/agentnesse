@@ -23,10 +23,7 @@ public class SuiteFilter {
   private final String startWithTest;
 
   public static final SuiteFilter NO_MATCHING = new SuiteFilter(null, null, null, null) {
-    @Override
-    public boolean isMatchingTest(WikiPage testPage) {
-      return false;
-    }
+    @Override public boolean isMatchingTest(WikiPage testPage) { return false; }
   };
 
   public static final SuiteFilter MATCH_ALL = new SuiteFilter(null, null, null, null);

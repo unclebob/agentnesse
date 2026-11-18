@@ -22,10 +22,7 @@ final class HeadingRenderer implements NodeRenderer {
     this.usedIds = usedIds;
   }
 
-  @Override
-  public Set<Class<? extends Node>> getNodeTypes() {
-    return Set.of(Heading.class);
-  }
+  @Override public Set<Class<? extends Node>> getNodeTypes() { return Set.of(Heading.class); }
 
   @Override
   public void render(Node node) {

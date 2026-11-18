@@ -56,10 +56,7 @@ public class WikiPagePath implements Comparable<Object> {
     return isEmpty() ? null : names.get(0);
   }
 
-  public WikiPagePath addNameToEnd(String name) {
-    names.add(name);
-    return this;
-  }
+  public WikiPagePath addNameToEnd(String name) { names.add(name); return this; }
 
   public WikiPagePath addNameToFront(String name) {
     names.addFirst(name);

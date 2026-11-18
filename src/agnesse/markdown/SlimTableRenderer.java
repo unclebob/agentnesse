@@ -27,10 +27,7 @@ final class SlimTableRenderer implements NodeRenderer {
     this.state = state;
   }
 
-  @Override
-  public Set<Class<? extends Node>> getNodeTypes() {
-    return Set.of(TableBlock.class);
-  }
+  @Override public Set<Class<? extends Node>> getNodeTypes() { return Set.of(TableBlock.class); }
 
   @Override
   public void render(Node node) {

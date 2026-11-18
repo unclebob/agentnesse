@@ -66,33 +66,12 @@ public class InProcessSlimClient implements SlimClient {
   }
 
   private void commandStarted() {
-    executionLogListener.commandStarted(new ExecutionLogListener.ExecutionContext() {
-      @Override
-      public String getCommand() {
-        return "";
-      }
-
-      @Override
-      public String getTestSystemName() {
-        return testSystemName;
-      }
-    });
+    executionLogListener.commandStarted(ExecutionLogListener.ExecutionContext.of("", testSystemName));
   }
 
   @Override
   public Map<String, Object> invokeAndGetResponse(List<Instruction> statements) throws SlimCommunicationException {
-    if (statements.isEmpty())
-      return Collections.emptyMap();
-    String instructions = SlimSerializer.serialize(new SlimListBuilder(slimServerVersion).toList(statements));
-    String results;
-    try {
-      SlimStreamReader.sendSlimMessage(clientOutput, instructions);
-      results = reader.getSlimMessage();
-    } catch (IOException e) {
-      throw new SlimCommunicationException("Could not send/receive data with SUT", e);
-    }
-    List<Object> resultList = SlimDeserializer.deserialize(results);
-    return resultToMap(resultList);
+    return SlimCommandRunningClient.exchange(clientOutput, reader, slimServerVersion, statements);
   }
 
   @Override

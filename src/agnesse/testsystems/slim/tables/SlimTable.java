@@ -342,10 +342,7 @@ public abstract class SlimTable {
       this.row = row;
     }
 
-    @Override
-    public TestResult evaluateExpectation(Object returnValue) {
-      return null;
-    }
+    @Override public TestResult evaluateExpectation(Object returnValue) { return null; }
 
     @Override
     public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) {

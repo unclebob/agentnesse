@@ -12,16 +12,10 @@ import java.util.Calendar;
 public class Logger {
   private File directory;
 
-  public static SimpleDateFormat makeLogFormat() {
-    //SimpleDateFormat is not thread safe,
-    // so we need to create each instance independently.
-    return new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
-  }
+  // SimpleDateFormat is not thread safe, so each caller gets its own.
+  public static SimpleDateFormat makeLogFormat() { return new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z"); }
 
-  public static SimpleDateFormat makeFileNameFormat() {
-    //SimpleDateFormat is not thread safe, so we need to create each instance independently.
-    return new SimpleDateFormat("yyyyMMddHHmmss");
-  }
+  public static SimpleDateFormat makeFileNameFormat() { return new SimpleDateFormat("yyyyMMddHHmmss"); }
 
   private PrintWriter writer;
   private Calendar currentFileCreationDate;

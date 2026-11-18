@@ -42,19 +42,13 @@ public class DateAlteringClock extends Clock {
     return timeZone;
   }
 
-  public DateAlteringClock freeze() {
-    frozen = true;
-    return this;
-  }
+  public DateAlteringClock freeze() { frozen = true; return this; }
 
   public DateAlteringClock elapse(long ms) {
     rebaseToTime += ms;
     return this;
   }
 
-  public DateAlteringClock advanceMillisOnEachQuery() {
-    advanceOnEachQuery = true;
-    return this;
-  }
+  public DateAlteringClock advanceMillisOnEachQuery() { advanceOnEachQuery = true; return this; }
 
 }

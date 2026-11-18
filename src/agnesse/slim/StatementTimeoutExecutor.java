@@ -35,20 +35,14 @@ public class StatementTimeoutExecutor implements StatementExecutorInterface {
     inner.assign(name, value);
   }
 
-  @Override
-  public Object getSymbol(String symbolName) {
-    return inner.getSymbol(symbolName);
-  }
+  @Override public Object getSymbol(String symbolName) { return inner.getSymbol(symbolName); }
 
   @Override
   public Object getSymbolObject(String symbolName) {
     return inner.getSymbolObject(symbolName);
   }
 
-  @Override
-  public Object getInstance(String instanceName) {
-    return inner.getInstance(instanceName);
-  }
+  @Override public Object getInstance(String instanceName) { return inner.getInstance(instanceName); }
 
   @Override
   public boolean stopHasBeenRequested() {
@@ -65,10 +59,7 @@ public class StatementTimeoutExecutor implements StatementExecutorInterface {
     inner.setInstance(actorInstanceName, actor);
   }
 
-  @Override
-  public void addPath(String path) throws SlimException {
-    inner.addPath(path);
-  }
+  @Override public void addPath(String path) throws SlimException { inner.addPath(path); }
 
   @Override
   public void create(final String instanceName, final String className, final Object... constructorArgs) throws SlimException {

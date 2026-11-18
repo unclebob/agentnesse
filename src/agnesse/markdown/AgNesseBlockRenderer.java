@@ -22,10 +22,7 @@ final class AgNesseBlockRenderer implements NodeRenderer {
     this.includedHtml = includedHtml;
   }
 
-  @Override
-  public Set<Class<? extends Node>> getNodeTypes() {
-    return Set.of(FencedCodeBlock.class);
-  }
+  @Override public Set<Class<? extends Node>> getNodeTypes() { return Set.of(FencedCodeBlock.class); }
 
   @Override
   public void render(Node node) {

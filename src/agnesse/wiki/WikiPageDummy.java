@@ -59,19 +59,10 @@ public class WikiPageDummy extends BaseWikiPage {
   public void removeChildPage(String name) {
   }
 
-  @Override
-  public String getVariable(String name) {
-    return null;
-  }
+  @Override public String getVariable(String name) { return null; }
 
-  @Override
-  public WikiPage addChildPage(String name) {
-    return null;
-  }
+  @Override public WikiPage addChildPage(String name) { return null; }
 
-  @Override
-  public WikiPage getChildPage(String name) {
-    return null;
-  }
+  @Override public WikiPage getChildPage(String name) { return null; }
 
 }

@@ -79,9 +79,6 @@ public class JUnitXMLPerPageTestListener implements TestListener {
     case SKIPPED:
       testSkipped(testDescriptor, testResult);
       break;
-    default:
-      throw new UnsupportedOperationException(
-        "ResultType " + testResult.getResultType() + " received. Only SUCCESS, SKIPPED and FAILURE are supported!");
     }
   }
 
@@ -91,18 +88,7 @@ public class JUnitXMLPerPageTestListener implements TestListener {
    * @param result the result of the test
    */
   protected void testFailure(TestDescriptor testDescriptor, TestResult result) {
-    String testName = testDescriptor.getName();
-    Throwable throwable = result.getException();
-    long executionTime = calculateExecutionTimeInSeconds(result);
-    try {
-      if (throwable instanceof AssertionError) {
-        testResultRecorder.recordTestResult(testName, 0, 1, 0, throwable, executionTime);
-      } else {
-        testResultRecorder.recordTestResult(testName, 0, 0, 1, throwable, executionTime);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    record(testDescriptor, result, true);
   }
 
   /**
@@ -111,15 +97,18 @@ public class JUnitXMLPerPageTestListener implements TestListener {
    * @param result the result of the test
    */
   protected void testSkipped(TestDescriptor testDescriptor, TestResult result) {
+    record(testDescriptor, result, false);
+  }
+
+  private void record(TestDescriptor testDescriptor, TestResult result, boolean failure) {
     String testName = testDescriptor.getName();
     Throwable throwable = result.getException();
     long executionTime = calculateExecutionTimeInSeconds(result);
+    int right = !failure && throwable instanceof AssertionError ? 1 : 0;
+    int wrong = failure && throwable instanceof AssertionError ? 1 : 0;
+    int exceptions = throwable instanceof AssertionError ? 0 : 1;
     try {
-      if (throwable instanceof AssertionError) {
-        testResultRecorder.recordTestResult(testName, 1, 0, 0, throwable, executionTime);
-      } else {
-        testResultRecorder.recordTestResult(testName, 0, 0, 1, throwable, executionTime);
-      }
+      testResultRecorder.recordTestResult(testName, right, wrong, exceptions, throwable, executionTime);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

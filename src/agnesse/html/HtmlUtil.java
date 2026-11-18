@@ -31,23 +31,13 @@ public class HtmlUtil {
     return bold;
   }
 
-  public static HtmlTag makeSpanTag(String spanClass, String content) {
-    HtmlTag span = new HtmlTag("span");
-    span.addAttribute("class", spanClass);
-    span.add(content);
-    return span;
-  }
+  public static HtmlTag makeSpanTag(String spanClass, String content) { HtmlTag span = new HtmlTag("span"); span.addAttribute("class", spanClass); span.add(content); return span; }
 
   public static HtmlTag makeLink(String href, String text) {
     return makeLink(href, new RawHtml(text));
   }
 
-  public static HtmlTag makeLink(String href, HtmlElement content) {
-    HtmlTag link = new HtmlTag("a");
-    link.addAttribute("href", href);
-    link.add(content);
-    return link;
-  }
+  public static HtmlTag makeLink(String href, HtmlElement content) { HtmlTag link = new HtmlTag("a"); link.addAttribute("href", href); link.add(content); return link; }
 
   public static boolean isValidTableCellContent(String text) {
     // performance improvement: First check 1st character.

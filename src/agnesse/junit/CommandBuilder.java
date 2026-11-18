@@ -16,15 +16,9 @@ public class CommandBuilder {
 
   }
 
-  public CommandBuilder withSuiteFilter(String suiteFilter) {
-    this.suiteFilter = suiteFilter;
-    return this;
-  }
+  public CommandBuilder withSuiteFilter(String suiteFilter) { this.suiteFilter = suiteFilter; return this; }
 
-  public CommandBuilder withExcludeSuiteFilter(String excludeSuiteFilter) {
-    this.excludeSuiteFilter = excludeSuiteFilter;
-    return this;
-  }
+  public CommandBuilder withExcludeSuiteFilter(String excludeSuiteFilter) { this.excludeSuiteFilter = excludeSuiteFilter; return this; }
 
   public CommandBuilder withDebug(boolean enabled) {
     debug = enabled;

@@ -101,10 +101,7 @@ public class MultipleTestsRunner implements Stoppable {
       return testsInProgressCount.getAndIncrement();
     }
 
-    @Override
-    public void reportException(Exception e) {
-      executionLogListener.exceptionOccurred(e);
-    }
+    @Override public void reportException(Exception e) { executionLogListener.exceptionOccurred(e); }
 
     @Override
     public TestSystem startTestSystem(final WikiPageIdentity identity, final List<TestPage> testPages) {

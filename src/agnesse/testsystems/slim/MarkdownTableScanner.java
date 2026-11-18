@@ -67,20 +67,14 @@ public final class MarkdownTableScanner implements TableScanner<MarkdownTable> {
     current.setLength(0);
   }
 
-  @Override
-  public int getTableCount() {
-    return tables.size();
-  }
+  @Override public int getTableCount() { return tables.size(); }
 
   @Override
   public MarkdownTable getTable(int index) {
     return tables.get(index);
   }
 
-  @Override
-  public Iterator<MarkdownTable> iterator() {
-    return tables.iterator();
-  }
+  @Override public Iterator<MarkdownTable> iterator() { return tables.iterator(); }
 
   public String toHtml() {
     StringBuilder html = new StringBuilder();

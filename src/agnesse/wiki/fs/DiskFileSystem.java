@@ -18,15 +18,9 @@ import java.util.Set;
 public class DiskFileSystem implements FileSystem {
   private static final Set<String> SKIPPED_FILE_NAMES = new HashSet<>(Arrays.asList("CVS", "RCS"));
 
-  @Override
-  public void makeFile(File file, String content) throws IOException {
-    FileUtil.createFile(file, content);
-  }
+  @Override public void makeFile(File file, String content) throws IOException { FileUtil.createFile(file, content); }
 
-  @Override
-  public void makeFile(File file, InputStream content) throws IOException {
-    FileUtil.createFile(file, content);
-  }
+  @Override public void makeFile(File file, InputStream content) throws IOException { FileUtil.createFile(file, content); }
 
   @Override
   public void makeDirectory(File path) throws IOException {

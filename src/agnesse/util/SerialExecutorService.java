@@ -41,10 +41,7 @@ public class SerialExecutorService implements ExecutorService {
   public void shutdown() {
   }
 
-  @Override
-  public List<Runnable> shutdownNow() {
-    return Collections.emptyList();
-  }
+  @Override public List<Runnable> shutdownNow() { return Collections.emptyList(); }
 
   @Override
   public boolean isShutdown() {
@@ -61,25 +58,13 @@ public class SerialExecutorService implements ExecutorService {
     return true;
   }
 
-  @Override
-  public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-    throw new UnsupportedOperationException();
-  }
+  @Override public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException { throw new UnsupportedOperationException(); }
 
-  @Override
-  public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
-    throw new UnsupportedOperationException();
-  }
+  @Override public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException { throw new UnsupportedOperationException(); }
 
-  @Override
-  public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-    throw new UnsupportedOperationException();
-  }
+  @Override public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException { throw new UnsupportedOperationException(); }
 
-  @Override
-  public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-    throw new UnsupportedOperationException();
-  }
+  @Override public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException { throw new UnsupportedOperationException(); }
 
 }
 

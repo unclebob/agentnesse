@@ -29,10 +29,7 @@ public class Disgracer {
     }
   }
 
-  private String disgraceMethodName() {
-    capitalizeNextWord = false;
-    return disgraceName();
-  }
+  private String disgraceMethodName() { capitalizeNextWord = false; return disgraceName(); }
 
   private String disgraceClassNameIfNecessary() {
     if (nameHasDotsBeforeEnd() || nameHasDollars())
@@ -48,10 +45,7 @@ public class Disgracer {
     return name.contains("$");
   }
 
-  private String disgraceClassName() {
-    capitalizeNextWord = true;
-    return disgraceName();
-  }
+  private String disgraceClassName() { capitalizeNextWord = true; return disgraceName(); }
 
   private boolean nameHasDotsBeforeEnd() {
     int dotIndex = name.indexOf(".");

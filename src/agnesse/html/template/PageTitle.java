@@ -80,10 +80,7 @@ public class PageTitle {
     this.setPageTags(pageTags);
   }
 
-  public PageTitle notLinked() {
-    link = null;
-    return this;
-  }
+  public PageTitle notLinked() { link = null; return this; }
 
   public String getTitle() {
     return title;

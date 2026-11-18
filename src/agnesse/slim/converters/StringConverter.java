@@ -6,13 +6,7 @@ public class StringConverter extends ConverterBase<String> {
 
   public static final String IGNORE = "ignore";
 
-  @Override
-  public String fromString(String arg) {
-    return arg;
-  }
+  @Override public String fromString(String arg) { return arg; }
 
-  @Override
-  protected String getObject(String arg) {
-    return arg;
-  }
+  @Override protected String getObject(String arg) { return arg; }
 }

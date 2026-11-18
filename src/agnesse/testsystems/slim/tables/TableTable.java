@@ -56,18 +56,10 @@ public class TableTable extends SlimTable {
       return testResult;
     }
 
-    @Override
-    public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) {
-      table.updateContent(0, 0, exceptionResult);
-      getTestContext().incrementErroredTestsCount();
-      return exceptionResult;
-    }
+    @Override public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) { table.updateContent(0, 0, exceptionResult); getTestContext().incrementErroredTestsCount(); return exceptionResult; }
   }
 
-  private static boolean noCellResults(TestSummary summary) {
-    return summary.getRight() == 0 && summary.getWrong() == 0
-      && summary.getIgnores() == 0 && summary.getExceptions() == 0;
-  }
+  private static boolean noCellResults(TestSummary summary) { return summary.getRight() == 0 && summary.getWrong() == 0 && summary.getIgnores() == 0 && summary.getExceptions() == 0; }
 
   @SuppressWarnings("unchecked")
   private TestSummary resizeTableAndEvaluateRows(Object returnValue) {

@@ -144,10 +144,7 @@ public class WikiTestPage implements TestPage {
     return getPathNameForPage(sourcePage);
   }
 
-  @Override
-  public String getName() {
-    return sourcePage.getName();
-  }
+  @Override public String getName() { return sourcePage.getName(); }
 
   public boolean shouldIncludeScenarioLibraries() {
     WikiPageIdentity.rejectTestSystem(sourcePage);

@@ -25,15 +25,9 @@ public class HtmlDiffUtil {
           stringToCharacterList(expected));
     }
 
-    public Builder setOpeningTag(final String openingTag) {
-      this.openingTag = openingTag;
-      return this;
-    }
+    public Builder setOpeningTag(final String openingTag) { this.openingTag = openingTag; return this; }
 
-    public Builder setClosingTag(final String closingTag) {
-      this.closingTag = closingTag;
-      return this;
-    }
+    public Builder setClosingTag(final String closingTag) { this.closingTag = closingTag; return this; }
 
     public String build() {
       for (int i = 0; i < getText().size(); i++) {
@@ -81,10 +75,7 @@ public class HtmlDiffUtil {
       }
     }
 
-    private void addClosingTag() {
-      isInDiffArea = false;
-      stringBuilder.append(closingTag);
-    }
+    private void addClosingTag() { isInDiffArea = false; stringBuilder.append(closingTag); }
 
     private void addOpeningTagIfDeltaAtFirstElement(final int i,
         final Delta<Character> delta) {
@@ -93,10 +84,7 @@ public class HtmlDiffUtil {
       }
     }
 
-    private void addOpeningTag() {
-      isInDiffArea = true;
-      stringBuilder.append(openingTag);
-    }
+    private void addOpeningTag() { isInDiffArea = true; stringBuilder.append(openingTag); }
 
     private Delta<Character> getDeltaByIndex(final int i,
         final Patch<Character> patch) {

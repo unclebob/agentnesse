@@ -2,16 +2,7 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package agnesse.slim.converters;
 
-import agnesse.slim.SlimError;
-
 public class IntConverter extends ConverterBase<Integer> {
 
-  @Override
-  protected Integer getObject(String arg) {
-    try {
-      return Integer.valueOf(arg);
-    } catch (NumberFormatException e) {
-      throw new SlimError(String.format("message:<<Can't convert %s to integer.>>", arg), e);
-    }
-  }
+  @Override protected Integer getObject(String arg) { return parsed(arg, "integer", Integer::valueOf); }
 }

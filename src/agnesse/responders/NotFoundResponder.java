@@ -8,8 +8,5 @@ import agnesse.http.Request;
 import agnesse.http.Response;
 
 public class NotFoundResponder implements Responder {
-  @Override
-  public Response makeResponse(AgNesseContext context, Request request) throws Exception {
-    return JsonResponses.afterRemoved(request, 404, "notFound", "No page " + request.getResource());
-  }
+  @Override public Response makeResponse(AgNesseContext context, Request request) throws Exception { return JsonResponses.afterRemoved(request, 404, "notFound", "No page " + request.getResource()); }
 }

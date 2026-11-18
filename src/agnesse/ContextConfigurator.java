@@ -67,10 +67,7 @@ public class ContextConfigurator {
     return this;
   }
 
-  public ContextConfigurator withTestSystemListener(TestSystemListener testSystemListener) {
-    this.testSystemListener = testSystemListener;
-    return this;
-  }
+  public ContextConfigurator withTestSystemListener(TestSystemListener testSystemListener) { this.testSystemListener = testSystemListener; return this; }
 
   public AgNesseContext makeAgNesseContext() throws IOException {
 
@@ -147,10 +144,7 @@ public class ContextConfigurator {
     }
   }
 
-  public ContextConfigurator withRootPath(String rootPath) {
-    this.rootPath = rootPath;
-    return this;
-  }
+  public ContextConfigurator withRootPath(String rootPath) { this.rootPath = rootPath; return this; }
 
   public ContextConfigurator withParameter(String key, String value) {
     ConfigurationParameter parameter = ConfigurationParameter.byKey(key);
@@ -186,30 +180,18 @@ public class ContextConfigurator {
     return this;
   }
 
-  public ContextConfigurator withRootDirectoryName(String rootDirectoryName) {
-    this.rootDirectoryName = rootDirectoryName;
-    return this;
-  }
+  public ContextConfigurator withRootDirectoryName(String rootDirectoryName) { this.rootDirectoryName = rootDirectoryName; return this; }
 
-  public ContextConfigurator withWikiPageFactory(WikiPageFactory wikiPageFactory) {
-    this.wikiPageFactory = wikiPageFactory;
-    return this;
-  }
+  public ContextConfigurator withWikiPageFactory(WikiPageFactory wikiPageFactory) { this.wikiPageFactory = wikiPageFactory; return this; }
 
   public ContextConfigurator withPort(int port) {
     this.port = port;
     return this;
   }
 
-  public ContextConfigurator withVersionsController(WikiFiles versionsController) {
-    this.versionsController = versionsController;
-    return this;
-  }
+  public ContextConfigurator withVersionsController(WikiFiles versionsController) { this.versionsController = versionsController; return this; }
 
-  public ContextConfigurator withClassLoader(ClassLoader classLoader) {
-    this.classLoader = classLoader;
-    return this;
-  }
+  public ContextConfigurator withClassLoader(ClassLoader classLoader) { this.classLoader = classLoader; return this; }
 
   public String get(ConfigurationParameter parameter) {
     switch(parameter) {

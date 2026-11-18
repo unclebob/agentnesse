@@ -26,10 +26,7 @@ public class MockResponseSender implements ResponseSender {
     output.write(bytes);
   }
 
-  @Override
-  public void close() {
-    closed = true;
-  }
+  @Override public void close() { closed = true; }
 
   public String sentData() throws UnsupportedEncodingException {
     return ((ByteArrayOutputStream) output).toString(FileUtil.CHARENCODING);

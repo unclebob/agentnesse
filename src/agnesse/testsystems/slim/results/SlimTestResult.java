@@ -39,30 +39,21 @@ public class SlimTestResult implements TestResult {
   public boolean doesCount() {
     return counts;
   }
-  @Override
-  public boolean hasActual() {
-    return actual != null;
-  }
+  @Override public boolean hasActual() { return actual != null; }
 
   @Override
   public String getActual() {
     return actual;
   }
 
-  @Override
-  public boolean hasExpected() {
-    return expected != null;
-  }
+  @Override public boolean hasExpected() { return expected != null; }
 
   @Override
   public String getExpected() {
     return expected;
   }
 
-  @Override
-  public boolean hasMessage() {
-    return message != null;
-  }
+  @Override public boolean hasMessage() { return message != null; }
 
   @Override
   public String getMessage() {

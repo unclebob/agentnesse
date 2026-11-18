@@ -119,6 +119,12 @@ public abstract class ClientBuilder<T> {
     return DEFAULT_COMMAND_PATTERN;
   }
 
+  protected String[] slimFlags() {
+    String slimFlags = getVariable("slim.flags");
+    if (slimFlags == null) slimFlags = getVariable("SLIM_FLAGS");
+    return slimFlags == null ? new String[] {} : parseCommandLine(slimFlags);
+  }
+
   protected String[] parseCommandLine(String commandLine) {
 		Collection<String> result = new ArrayList<>();
 		Pattern p = Pattern.compile("\"([^\"]*)\"|[\\S]+");
@@ -199,25 +205,13 @@ public abstract class ClientBuilder<T> {
       });
     }
 
-    @Override
-    public void stdOut(String output) {
-      executionLogListener.stdOut(output);
-    }
+    @Override public void stdOut(String output) { executionLogListener.stdOut(output); }
 
-    @Override
-    public void stdErr(String output) {
-      executionLogListener.stdErr(output);
-    }
+    @Override public void stdErr(String output) { executionLogListener.stdErr(output); }
 
-    @Override
-    public void exitCode(int exitCode) {
-      executionLogListener.exitCode(exitCode);
-    }
+    @Override public void exitCode(int exitCode) { executionLogListener.exitCode(exitCode); }
 
-    @Override
-    public void exceptionOccurred(Throwable e) {
-      executionLogListener.exceptionOccurred(e);
-    }
+    @Override public void exceptionOccurred(Throwable e) { executionLogListener.exceptionOccurred(e); }
   }
 
 }

@@ -53,10 +53,7 @@ public class InstructionTestSystem implements TestSystem {
     return true;
   }
 
-  @Override
-  public void addTestSystemListener(TestSystemListener listener) {
-    this.listener = listener;
-  }
+  @Override public void addTestSystemListener(TestSystemListener listener) { this.listener = listener; }
 
   private String encode(String input) {
     return input

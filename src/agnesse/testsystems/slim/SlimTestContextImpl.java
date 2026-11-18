@@ -59,10 +59,7 @@ public class SlimTestContextImpl implements SlimTestContext {
     }
   }
 
-  @Override
-  public ScenarioTable getScenario(String scenarioName) {
-    return scenarios.get(scenarioName);
-  }
+  @Override public ScenarioTable getScenario(String scenarioName) { return scenarios.get(scenarioName); }
 
   @Override
   public ScenarioTable getScenarioByPattern(String invokingString) {
@@ -124,35 +121,17 @@ public class SlimTestContextImpl implements SlimTestContext {
     return scenarios.values();
   }
 
-  @Override
-  public void incrementPassedTestsCount() {
-    increment(ExecutionResult.PASS);
-  }
+  @Override public void incrementPassedTestsCount() { increment(ExecutionResult.PASS); }
 
-  @Override
-  public void incrementFailedTestsCount() {
-    increment(ExecutionResult.FAIL);
-  }
+  @Override public void incrementFailedTestsCount() { increment(ExecutionResult.FAIL); }
 
-  @Override
-  public void incrementErroredTestsCount() {
-    increment(ExecutionResult.ERROR);
-  }
+  @Override public void incrementErroredTestsCount() { increment(ExecutionResult.ERROR); }
 
-  @Override
-  public void incrementIgnoredTestsCount() {
-    increment(ExecutionResult.IGNORE);
-  }
+  @Override public void incrementIgnoredTestsCount() { increment(ExecutionResult.IGNORE); }
 
-  @Override
-  public void increment(ExecutionResult result) {
-    this.testSummary.add(result);
-  }
+  @Override public void increment(ExecutionResult result) { this.testSummary.add(result); }
 
-  @Override
-  public void increment(TestSummary testSummary) {
-    this.testSummary.add(testSummary);
-  }
+  @Override public void increment(TestSummary testSummary) { this.testSummary.add(testSummary); }
 
   public TestSummary getTestSummary() {
     testSummary.setRunTimeInMillis(timeMeasurement.elapsed());
@@ -174,10 +153,7 @@ public class SlimTestContextImpl implements SlimTestContext {
     return currentScriptClass;
   }
 
-  @Override
-  public void setCurrentScriptActor(String currentScriptActor) {
-    this.currentScriptActor = currentScriptActor;
-  }
+  @Override public void setCurrentScriptActor(String currentScriptActor) { this.currentScriptActor = currentScriptActor; }
 
   @Override
   public String getCurrentScriptActor() {

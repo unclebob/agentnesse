@@ -18,17 +18,18 @@ public class SlimStreamReader extends StreamReader {
 
   public static void sendSlimMessage(OutputStream writer, String message) throws IOException {
     byte[] msgChars = message.getBytes(FileUtil.CHARENCODING);
-    byte[] msgLength = String.format(SlimVersion.LENGTH_FORMAT, msgChars.length).getBytes(FileUtil.CHARENCODING);
-    writer.write(msgLength, 0, msgLength.length);
-    writer.write(msgChars, 0, msgChars.length);
+    writeBytes(writer, String.format(SlimVersion.LENGTH_FORMAT, msgChars.length).getBytes(FileUtil.CHARENCODING));
+    writeBytes(writer, msgChars);
     writer.flush();
   }
 
   public static void sendSlimHeader(OutputStream writer, String header) throws IOException {
-    // The Header has no length information as prefix
-    byte[] msgChars = header.getBytes(FileUtil.CHARENCODING);
-    writer.write(msgChars, 0, msgChars.length);
+    writeBytes(writer, header.getBytes(FileUtil.CHARENCODING));
     writer.flush();
+  }
+
+  private static void writeBytes(OutputStream writer, byte[] bytes) throws IOException {
+    writer.write(bytes, 0, bytes.length);
   }
 
   private int getLengthToRead() throws IOException {
