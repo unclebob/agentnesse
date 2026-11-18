@@ -94,7 +94,11 @@ public final class AgNesseBlock {
   }
 
   private String includeName() {
-    return firstLine(argument);
+    String text = firstLine(argument);
+    if (text.startsWith(">")) {
+      return text.substring(1).trim();
+    }
+    return text;
   }
 
   private String includeHtml() {

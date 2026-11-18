@@ -529,6 +529,20 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void aCollapsedIncludeNamesThePageAndStillResolvesIt() {
+    put("Host/Page.md", "from-collapsed\n");
+    String html = html("Host", """
+      ```agnesse
+      include >Page
+      ```
+      """);
+
+    assertTrue(html, html.contains("<a href=\"Host.Page\">Page</a>"));
+    assertTrue(html, html.contains("from-collapsed"));
+    assertFalse(html, html.contains("&gt;Page</a>"));
+  }
+
+  @Test
   public void anIncludedPageNameLinksToItsFullPath() {
     put("Guide/Included.md", "from-include\n");
     String html = html("Host", """
