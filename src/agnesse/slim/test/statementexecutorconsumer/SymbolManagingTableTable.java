@@ -42,7 +42,8 @@ public abstract class SymbolManagingTableTable implements StatementExecutorConsu
 
   protected String replaceSymbolsInString(String arg) {
     int startingPosition = 0;
-    while (true) {
+    boolean more = true;
+    while (more) {
       if ("".equals(arg) || null == arg) {
         break;
       }
