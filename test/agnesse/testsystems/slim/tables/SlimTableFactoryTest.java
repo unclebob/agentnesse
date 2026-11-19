@@ -12,9 +12,14 @@ import agnesse.wiki.WikiPageDummy;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -104,6 +109,62 @@ public class SlimTableFactoryTest {
       Class<? extends SlimTable> tableClass) {
     addTableTypeImport(importName, importTypedescription);
     assertThatTableTypeCreateSlimTableType(tableName, tableClass);
+  }
+
+  @Test
+  public void anUnknownTypeIsAnErrorAndAnAliasKeepsOrReplacesTheName() {
+    when(table.getCellContents(0, 0)).thenReturn("nope:Widget");
+    SlimTable error = slimTableFactory.makeSlimTable(table, "0", context());
+    assertThat(error, instanceOf(SlimErrorTable.class));
+
+    slimTableFactory.addAlias("Division", "decision:Renamed");
+    when(table.getCellContents(0, 0)).thenReturn("Division");
+    SlimTable renamed = slimTableFactory.makeSlimTable(table, "0", context());
+    assertThat(renamed, instanceOf(DecisionTable.class));
+    assertEquals("Renamed", renamed.getFixtureName());
+
+    slimTableFactory.addAlias("My query table", "query:");
+    when(table.getCellContents(0, 0)).thenReturn("My query table");
+    SlimTable kept = slimTableFactory.makeSlimTable(table, "0", context());
+    assertThat(kept, instanceOf(QueryTable.class));
+    assertEquals("MyQueryTable", kept.getFixtureName());
+
+    slimTableFactory.addAlias("Division", "decision::Kept");
+    when(table.getCellContents(0, 0)).thenReturn("Division");
+    SlimTable blank = slimTableFactory.makeSlimTable(table, "0", context());
+    assertEquals("Division", blank.getFixtureName());
+  }
+
+  private SlimTestContextImpl context() {
+    return new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy()));
+  }
+
+  @Test
+  public void aRepeatedTableTypeIsRejectedAndAMissingConstructorFails() {
+    IllegalStateException duplicate = assertThrows(IllegalStateException.class,
+      () -> slimTableFactory.addTableType("property", PropertyTable.class));
+    assertTrue(duplicate.getMessage().contains("property"));
+
+    SlimTestContextImpl context = new SlimTestContextImpl(new WikiTestPage(new WikiPageDummy()));
+    TableCreationException missing = assertThrows(TableCreationException.class,
+      () -> SlimTableFactory.createTable(NoMatchingConstructor.class, table, "id", context));
+    assertTrue(missing.getMessage().contains("NoMatchingConstructor"));
+  }
+
+  private static final class NoMatchingConstructor extends SlimTable {
+    private NoMatchingConstructor(Table table, String id) {
+      super(table, id, null);
+    }
+
+    @Override
+    protected String getTableType() {
+      return "none";
+    }
+
+    @Override
+    public List<SlimAssertion> getAssertions() {
+      return List.of();
+    }
   }
 
   private void addTableTypeImport(String tablename, String type) {

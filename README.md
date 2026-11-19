@@ -77,9 +77,13 @@ The `agnesse.junit` runner writes JUnit XML for its own runs. `-c` does not. HTT
 
 Other flags: `-v` turns on verbose logging, `-d` is the working directory, `-r` is the page root.
 
+## Property tables
+
+A property table checks one claim against generated inputs and counts as one assertion. The cell language, the seed, and shrinking are in the user guide at `AgNesse.UserGuide`.
+
 ## User guide
 
-The guide is `AgNesseRoot/AgNesse/UserGuide.md`, wiki path `AgNesse.UserGuide`. It includes the pages under `AgNesse.SuiteAcceptanceTests.SuiteUserGuide`, so the guide and the suite stay the same text: front matter, define, include, scenarios, path, contents, alias, Java Slim, Python Slim, the command line, MCP, JSON errors, and rename.
+The guide is `AgNesseRoot/AgNesse/UserGuide.md`, wiki path `AgNesse.UserGuide`. It includes the pages under `AgNesse.SuiteAcceptanceTests.SuiteUserGuide`, so the guide and the suite stay the same text: front matter, define, include, scenarios, path, contents, alias, Java Slim, property tables, Python Slim, the command line, MCP, JSON errors, and rename.
 
 ## Credit and license
 

@@ -6,7 +6,7 @@
 }
 # Reversal holds for every list
 
-The generator row replaces the examples. Twenty trials, one assertion. Leave `seed` blank and the result shows the seed that was used. A failing property appends one shrunk counterexample and notes the original draw in the trials cell. This page passes, so it shows no counterexample.
+A property checks one claim against generated inputs. This one says that reversing a list twice returns the list. Twenty trials, one assertion. Leave `seed` blank and the result shows the seed that was used. Copy that number back into the cell to draw the same lists again. A failure would append one shrunk row and name the original draw in the trials cell. This page passes, so it shows no counterexample.
 
 | property:agnesse.slim.test.ListReversal |
 | --- |
