@@ -183,7 +183,7 @@ python3 AgNesseRoot/files/agnesse/tiny_slim.py
 
 ### How a page picks its server
 
-`agnesse.json` does not choose the Slim server. The keys there are wiki-server settings (`port`, `listen`, `rootPath`, `pageRoot`, `maximumWorkers`, `refactorStartPath`).
+`agnesse.json` does not choose the Slim server. The keys there are wiki-server settings (`port`, `listen`, `rootPath`, `pageRoot`, `maximumWorkers`, `refactorStartPath`, `zone`).
 
 The Slim process is chosen on the page, or on an ancestor:
 
@@ -610,11 +610,12 @@ Other flags: `-v` turns on verbose logging, `-d` is the working directory, `-r` 
   "pageRoot": "AgNesseRoot",
   "maximumWorkers": 100,
   "refactorStartPath": null,
-  "listen": "127.0.0.1"
+  "listen": "127.0.0.1",
+  "zone": "UTC"
 }
 ```
 
-`port` and `maximumWorkers` are integers. `listen`, `rootPath`, `pageRoot`, and `refactorStartPath` are strings.
+`port` and `maximumWorkers` are integers. `listen`, `rootPath`, `pageRoot`, `refactorStartPath`, and `zone` are strings. `zone` is the default zone for property time generators, a `java.time` zone id such as `UTC` or `America/New_York`. It is not hard-coded. A time generator that omits `zone:` needs this key. A null value leaves it unset.
 
 This file does not choose the Slim server. See [How a page picks its server](#how-a-page-picks-its-server).
 

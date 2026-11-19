@@ -22,7 +22,7 @@ public class AgNesseConfigTest {
   public void appliesEveryKey() throws Exception {
     File file = write("{\"port\": 8123, \"rootPath\": \"work\", \"pageRoot\": \"Pages\", " +
       "\"maximumWorkers\": 12, " +
-      "\"refactorStartPath\": \"FrontPage\", \"listen\": \"0.0.0.0\"}");
+      "\"refactorStartPath\": \"FrontPage\", \"listen\": \"0.0.0.0\", \"zone\": \"America/New_York\"}");
 
     ContextConfigurator configurator = ContextConfigurator.empty();
     AgNesseConfig.apply(configurator, file, true);
@@ -33,12 +33,13 @@ public class AgNesseConfigTest {
     assertThat(configurator.get(ConfigurationParameter.MAXIMUM_WORKERS), is("12"));
     assertThat(configurator.get(ConfigurationParameter.REFACTOR_START_PATH), is("FrontPage"));
     assertThat(configurator.get(ConfigurationParameter.LISTEN), is("0.0.0.0"));
+    assertThat(configurator.get(ConfigurationParameter.ZONE), is("America/New_York"));
   }
 
   @Test
   public void aNullKnownKeyLeavesTheDefault() throws Exception {
     File file = write("{\"port\": null, \"listen\": null, \"rootPath\": null, \"pageRoot\": null, " +
-      "\"maximumWorkers\": null, \"refactorStartPath\": null}");
+      "\"maximumWorkers\": null, \"refactorStartPath\": null, \"zone\": null}");
 
     ContextConfigurator configurator = ContextConfigurator.systemDefaults();
     AgNesseConfig.apply(configurator, file, true);
@@ -49,6 +50,26 @@ public class AgNesseConfigTest {
     assertThat(configurator.get(ConfigurationParameter.MAXIMUM_WORKERS), is("100"));
     assertThat(configurator.get(ConfigurationParameter.LISTEN), is("127.0.0.1"));
     assertThat(configurator.get(ConfigurationParameter.REFACTOR_START_PATH), is((String) null));
+    assertThat(configurator.get(ConfigurationParameter.ZONE), is((String) null));
+  }
+
+  @Test
+  public void zoneMustBeAZoneId() throws Exception {
+    File file = write("{\"zone\": \"Not/AZone\"}");
+    try {
+      AgNesseConfig.apply(ContextConfigurator.empty(), file, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString("zone"));
+    }
+    File number = folder.newFile("zone-number.json");
+    Files.writeString(number.toPath(), "{\"zone\": 1}", StandardCharsets.UTF_8);
+    try {
+      AgNesseConfig.apply(ContextConfigurator.empty(), number, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString("string"));
+    }
   }
 
   @Test

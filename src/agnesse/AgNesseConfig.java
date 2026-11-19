@@ -9,11 +9,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.Set;
 
 import static agnesse.ConfigurationParameter.LISTEN;
 import static agnesse.ConfigurationParameter.MAXIMUM_WORKERS;
 import static agnesse.ConfigurationParameter.REFACTOR_START_PATH;
+import static agnesse.ConfigurationParameter.ZONE;
 
 /**
  * Reads agnesse.json. Command-line flags are applied after this, so they win.
@@ -21,7 +24,7 @@ import static agnesse.ConfigurationParameter.REFACTOR_START_PATH;
 public final class AgNesseConfig {
   private static final Set<String> KEYS = Set.of(
     "port", "listen", "rootPath", "pageRoot",
-    "maximumWorkers", "refactorStartPath");
+    "maximumWorkers", "refactorStartPath", "zone");
 
   private AgNesseConfig() {
   }
@@ -41,7 +44,9 @@ public final class AgNesseConfig {
         }
         continue;
       }
-      if (!applyAddress(configurator, file, json, key) && !applyServer(configurator, file, json, key)) {
+      if (!applyAddress(configurator, file, json, key)
+        && !applyServer(configurator, file, json, key)
+        && !applyZone(configurator, file, json, key)) {
         throw unknown(file, key);
       }
     }
@@ -95,6 +100,24 @@ public final class AgNesseConfig {
       default:
         return false;
     }
+  }
+
+  private static boolean applyZone(ContextConfigurator configurator, File file, JSONObject json, String key) {
+    if (!key.equals("zone")) {
+      return false;
+    }
+    configurator.withParameter(ZONE, requireZone(file, json));
+    return true;
+  }
+
+  private static String requireZone(File file, JSONObject json) {
+    String zone = requireString(file, "zone", json);
+    try {
+      ZoneId.of(zone);
+    } catch (DateTimeException e) {
+      throw new IllegalArgumentException(file.getPath() + ": key \"zone\" must be a zone id");
+    }
+    return zone;
   }
 
   private static IllegalArgumentException unknown(File file, String key) {

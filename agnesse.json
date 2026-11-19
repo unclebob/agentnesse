@@ -4,5 +4,6 @@
   "pageRoot": "AgNesseRoot",
   "maximumWorkers": 100,
   "refactorStartPath": null,
-  "listen": "127.0.0.1"
+  "listen": "127.0.0.1",
+  "zone": "UTC"
 }

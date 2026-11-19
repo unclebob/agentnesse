@@ -17,7 +17,8 @@ public enum ConfigurationParameter {
   RERUN_FAILURES("RerunFailures"),
   LISTEN("listen"),
   MAXIMUM_WORKERS("MaximumWorkers"),
-  REFACTOR_START_PATH("refactorStartPath");
+  REFACTOR_START_PATH("refactorStartPath"),
+  ZONE("zone");
 
   private final String name;
 
