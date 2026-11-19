@@ -11,10 +11,6 @@ final class StringGen extends Generator {
   private final Span length;
   private final boolean adversarial;
 
-  StringGen(Span length) {
-    this(length, false);
-  }
-
   StringGen(Span length, boolean adversarial) {
     this.length = length;
     this.adversarial = adversarial;
@@ -65,7 +61,7 @@ final class StringGen extends Generator {
   }
 
   private static boolean cutsSurrogate(String text, int size) {
-    return size > 0 && size < text.length() && Character.isHighSurrogate(text.charAt(size - 1));
+    return size > 0 && Character.isHighSurrogate(text.charAt(size - 1));
   }
 
   private static String ascii() {

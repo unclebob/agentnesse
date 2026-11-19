@@ -15,9 +15,6 @@ final class AllOfGen extends Generator {
   private final List<Value> domain;
 
   AllOfGen(List<List<String>> groups) {
-    if (groups.isEmpty()) {
-      throw new IllegalArgumentException("empty choice");
-    }
     this.groups = new ArrayList<>();
     long size = 1;
     for (List<String> group : groups) {
@@ -57,7 +54,7 @@ final class AllOfGen extends Generator {
   }
 
   private int[] indexes(String cell) {
-    String[] parts = groups.size() == 1 ? new String[] {cell} : cell.split(" ", -1);
+    String[] parts = cell.split(" ");
     if (parts.length != groups.size()) {
       throw new IllegalArgumentException("not a case: " + cell);
     }
@@ -110,9 +107,6 @@ final class AllOfGen extends Generator {
   }
 
   private static String join(String[] parts) {
-    if (parts.length == 1) {
-      return parts[0];
-    }
     return String.join(" ", parts);
   }
 
@@ -126,9 +120,6 @@ final class AllOfGen extends Generator {
   }
 
   private static List<String> unique(List<String> group) {
-    if (group.isEmpty()) {
-      throw new IllegalArgumentException("empty choice");
-    }
     Set<String> seen = new HashSet<>();
     List<String> copy = new ArrayList<>();
     for (String choice : group) {

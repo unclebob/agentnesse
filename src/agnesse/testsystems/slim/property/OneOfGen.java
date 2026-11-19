@@ -49,16 +49,13 @@ final class OneOfGen extends Generator {
 
   private int weightedIndex(Random random) {
     long roll = random.nextLong(total);
-    long cursor = 0;
-    int chosen = weights.length - 1;
-    for (int i = 0; i < weights.length - 1; i++) {
-      cursor += weights[i];
-      if (roll < cursor) {
-        chosen = i;
-        break;
-      }
+    long cursor = weights[0];
+    int index = 0;
+    while (roll >= cursor) {
+      index++;
+      cursor += weights[index];
     }
-    return chosen;
+    return index;
   }
 
   private static int[] copy(List<Integer> weights) {

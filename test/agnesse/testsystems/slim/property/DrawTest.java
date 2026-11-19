@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class DrawTest {
@@ -103,8 +104,9 @@ public class DrawTest {
     assertEquals("red", draw("one of:red,green,blue", 0L));
     assertEquals("green", draw("one of:red,green,blue", 2L));
     assertEquals("blue", draw("one of:red,green,blue", 3L));
-    assertEquals(sequence("one of:a 70, b 20, c 10", 5L, 6),
-        sequence("one of:a 70, b 20, c 10", 5L, 6));
+    assertEquals("c", draw("one of:a 70, b 20, c 10", 1L));
+    assertEquals("a", draw("one of:a 70, b 20, c 10", 4L));
+    assertEquals("b", draw("one of:a 70, b 20, c 10", 76L));
     assertEquals("only", draw("one of:only 4", 9L));
   }
 
@@ -160,6 +162,9 @@ public class DrawTest {
     String part = draw("pattern:PN-[A-Z]{2}[0-9]{2}", 4L);
     assertTrue(part, part.matches("PN-[A-Z]{2}[0-9]{2}"));
     assertEquals("AB", draw("pattern:AB", 6L));
+    assertEquals("AB", draw("pattern:AB ", 6L));
+    assertEquals("ABsizex", draw("pattern:AB size x", 6L));
+    assertNotNull(CellLanguage.parse("list of pattern:AB size"));
     assertTrue(draw("pattern:[a-z]{1}", 7L).matches("[a-z]"));
     assertEquals("[AB]", draw("list of pattern:AB size 1..1", 8L));
     assertEquals("[size]", draw("list of pattern:size size 1..1", 9L));
@@ -206,6 +211,15 @@ public class DrawTest {
     assertTrue(catalog.contains("e\u0301"));
     assertTrue(catalog.contains("\u202Ertl"));
     assertTrue(catalog.contains("a\u200Bb"));
+    assertTrue(Adversarial.fitting(new Span(1, 1)).contains("A"));
+    assertTrue(Adversarial.fitting(new Span(0, 0)).isEmpty());
+    List<String> exact = Adversarial.fitting(new Span(25, 25));
+    assertTrue(exact.contains("<script>alert(1)</script>"));
+    assertTrue(exact.contains("A".repeat(25)));
+    assertFalse(exact.contains("'"));
+    for (long seed = 0; seed < 8; seed++) {
+      assertEquals(25, draw("string:adversarial length 25..25", seed).length());
+    }
   }
 
   private static void assertIn(String spec, int low, int high, Integer banned) {

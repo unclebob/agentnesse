@@ -496,6 +496,11 @@ public class PropertyTableTest {
       | 7 |
       """);
     assertMessage("a property needs a name", "| property |\n");
+    assertMessage("a property needs an input", """
+      | property:agnesse.slim.test.TestSlim |
+      | return int? |
+      | 7 |
+      """);
     assertMessage("generator spec is missing", """
       | property:agnesse.slim.test.TestSlim |
       | string | return int? |
@@ -669,7 +674,7 @@ public class PropertyTableTest {
   }
 
   @Test
-  public void allOfRefusesATrialCountThatIsNotTheDomain() {
+  public void allOfRefusesATrialCountThatIsNotTheDomain() throws Exception {
     assertMessage("cases, not", """
       | script | agnesse.slim.test.TestSlim |
 
@@ -695,6 +700,13 @@ public class PropertyTableTest {
       | a | b | return int? |
       | all of:%s | all of:%s | 7 |
       """.formatted(choices(20), choices(20)));
+    String domain = choices(16);
+    Opened full = open("""
+      | property:agnesse.slim.test.TestSlim |
+      | a | b | return int? |
+      | all of:%s | all of:%s | 7 |
+      """.formatted(domain, domain));
+    assertEquals(256, count(full.assertions, "returnInt"));
   }
 
   @Test

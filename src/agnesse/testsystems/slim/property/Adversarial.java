@@ -36,10 +36,7 @@ final class Adversarial {
       }
     }
     if (length.max >= 1) {
-      String longText = "A".repeat(length.max);
-      if (longText.length() >= length.min && !out.contains(longText)) {
-        out.add(longText);
-      }
+      out.add("A".repeat(length.max));
     }
     return List.copyOf(out);
   }

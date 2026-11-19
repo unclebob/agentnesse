@@ -70,7 +70,7 @@ final class PropertySheet {
         return column.generator.domain() != null;
       }
     }
-    return false;
+    throw new IllegalStateException("a property needs an input");
   }
 
   private List<Drawn> enumeratedRows() {
@@ -223,7 +223,17 @@ final class PropertySheet {
     for (int index = 0; index < width; index++) {
       columns.add(column(table, header, spec, index));
     }
+    requireInput(columns);
     return columns;
+  }
+
+  private static void requireInput(List<Column> columns) throws SyntaxError {
+    for (Column column : columns) {
+      if (column.kind == Kind.INPUT) {
+        return;
+      }
+    }
+    throw new SyntaxError("a property needs an input");
   }
 
   private static Column column(Table table, int header, int spec, int index) throws SyntaxError {

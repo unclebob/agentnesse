@@ -35,6 +35,10 @@ final class SpecParser {
     if (take("one")) {
       return oneOf();
     }
+    return scalar();
+  }
+
+  private Generator scalar() {
     if (take("boolean")) {
       return new BoolGen();
     }
@@ -89,13 +93,9 @@ final class SpecParser {
       throw error("expected :");
     }
     List<PatternGen.Piece> pieces = new ArrayList<>();
-    skip();
-    if (at >= text.length()) {
-      throw error("expected a pattern");
-    }
-    while (at < text.length() && !sizeAhead()) {
+    while (!sizeAhead()) {
       skip();
-      if (at >= text.length() || sizeAhead()) {
+      if (at >= text.length()) {
         break;
       }
       pieces.add(patternPiece());
@@ -142,7 +142,7 @@ final class SpecParser {
 
   private PatternGen.Piece characterClass() {
     int close = text.indexOf(']', at);
-    if (close < 0) {
+    if (close == -1) {
       throw error("expected ]");
     }
     String name = text.substring(at, close + 1);
@@ -191,11 +191,7 @@ final class SpecParser {
       throw error("expected a decimal");
     }
     fraction();
-    try {
-      return new BigDecimal(text.substring(start, at));
-    } catch (NumberFormatException bad) {
-      throw error("expected a decimal");
-    }
+    return new BigDecimal(text.substring(start, at));
   }
 
   private void fraction() {
@@ -327,11 +323,7 @@ final class SpecParser {
   }
 
   private int weight() {
-    int value = integer();
-    if (value < 1) {
-      throw error("weight must be at least 1");
-    }
-    return value;
+    return integer();
   }
 
   private String choice() {

@@ -43,8 +43,10 @@ final class DecimalGen extends Generator {
     long current = unscaled(value.cell());
     List<Value> out = new ArrayList<>();
     offer(out, current, 0L);
-    for (int places = 0; places < scale; places++) {
-      offer(out, current, rounder(current, scale - places));
+    int drop = scale;
+    while (drop != 0) {
+      offer(out, current, rounder(current, drop));
+      drop -= 1;
     }
     offer(out, current, current / 2);
     offer(out, current, step(current));
@@ -52,20 +54,10 @@ final class DecimalGen extends Generator {
   }
 
   private void offer(List<Value> out, long current, long candidate) {
-    if (!nearerZero(candidate, current) || candidate < low || candidate > high || listed(out, candidate)) {
+    if (!nearerZero(candidate, current) || candidate < low || candidate > high) {
       return;
     }
     out.add(text(candidate));
-  }
-
-  private boolean listed(List<Value> out, long candidate) {
-    String rendered = format(candidate);
-    for (Value value : out) {
-      if (value.cell().equals(rendered)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private TextValue text(long unscaled) {
@@ -122,11 +114,11 @@ final class DecimalGen extends Generator {
     return current - Long.signum(current);
   }
 
-  private static boolean nearerZero(long candidate, long current) {
+  static boolean nearerZero(long candidate, long current) {
     if (current < 0) {
-      return candidate > current && candidate <= 0;
+      return candidate > current;
     }
-    return candidate < current && candidate >= 0;
+    return candidate < current;
   }
 
   private static IllegalArgumentException bad(String cell) {

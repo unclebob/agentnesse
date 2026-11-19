@@ -131,7 +131,7 @@ final class PatternGen extends Generator {
         return;
       }
       for (int i = 0; i < count; i++) {
-        slots.add(new Slot((char) 0, alphabet));
+        slots.add(new Slot(alphabet.charAt(0), alphabet));
       }
     }
 
@@ -166,7 +166,7 @@ final class PatternGen extends Generator {
     }
 
     private char base() {
-      return alphabet == null ? fixed : alphabet.charAt(0);
+      return fixed;
     }
 
     private boolean accepts(char c) {

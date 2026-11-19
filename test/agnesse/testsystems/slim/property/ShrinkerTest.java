@@ -9,6 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class ShrinkerTest {
   private final Shrinker shrinker = new Shrinker();
@@ -84,6 +85,7 @@ public class ShrinkerTest {
     List<Value> pieces = shrinker.candidates(
         CellLanguage.parse("string:adversarial length 0..8"), text("a\uD83D\uDE00"));
     assertEquals(List.of("", "a"), cells(pieces));
+    assertEquals(List.of(""), cells(simpler("string length 0..2", "\uD83D\uDE00")));
     for (Value piece : pieces) {
       assertFalse(unpaired(piece.cell()));
     }
@@ -128,6 +130,12 @@ public class ShrinkerTest {
     assertEquals(List.of("-10.00", "-5.25", "-10.49"),
         cells(simpler("decimal:-20..-5 scale 2", "-10.50")));
     assertEquals(List.of(), cells(simpler("money:0..10", "0.00")));
+    assertFalse(DecimalGen.nearerZero(1, 0));
+    assertTrue(cells(simpler("decimal:-5..0 scale 2", "-1.00")).contains("0.00"));
+    String edge = "-9223372036854775808";
+    assertEquals(List.of(), cells(simpler("decimal:" + edge + ".." + edge + " scale 0", edge)));
+    String next = "-9223372036854775807";
+    assertEquals(List.of(next), cells(simpler("decimal:" + edge + ".." + next + " scale 0", edge)));
     assertEquals("0.00", shrink("money:-5..5", text("1.23"), v -> true, 4));
     assertEquals("1.00", shrink("decimal:0..5 scale 2", text("3.47"),
         v -> new java.math.BigDecimal(v.cell()).compareTo(new java.math.BigDecimal("1.00")) >= 0, 8));
@@ -139,6 +147,8 @@ public class ShrinkerTest {
   public void patternsShrinkTowardTheFirstCharacterOfEachClass() {
     assertEquals(List.of("00", "07", "27", "37", "40", "43", "46"),
         cells(simpler("pattern:[0-9]{2}", "47")));
+    assertEquals(List.of("00", "20", "30"), cells(simpler("pattern:[0-9]{2}", "40")));
+    assertThrows(IllegalArgumentException.class, () -> simpler("pattern:[0-9]{2}", "B7"));
     assertEquals("01", shrink("pattern:[0-9]{2}", text("47"), v -> !"00".equals(v.cell()), 8));
     assertEquals("ID-00", shrink("pattern:ID-[0-9]{2}", text("ID-47"), v -> true, 4));
     calls = 0;

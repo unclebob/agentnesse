@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -167,6 +168,9 @@ public class CellLanguageTest {
     assertRejects("int:1..x", "integer");
     assertRejects("int:99999999999999999999..1", "integer");
     assertRejects("decimal", ":");
+    assertRejects("decimal:", "decimal");
+    assertRejects("decimal:1.", "decimal");
+    assertRejects("decimal:1 scale 0", "..");
     assertRejects("decimal:1..2", "scale");
     assertRejects("decimal:1..2 scale -1", "scale must be");
     assertRejects("decimal:1..2 scale 9", "scale must be");
@@ -181,10 +185,15 @@ public class CellLanguageTest {
     assertRejects("decimal:0..10000000000000000000 scale 0", "too wide");
     assertRejects("pattern", ":");
     assertRejects("pattern:", "pattern");
+    assertRejects("pattern:\nAB", "pattern");
+    assertRejects("pattern:size 1..1", "pattern");
+    assertRejects("pattern:[0-9]{4", "}");
+    assertRejects("list of pattern:AB size -1..-5", "inverted");
     assertRejects("pattern:[0-9]", "{");
     assertRejects("pattern:[0-9]{0}", "1 through");
     assertRejects("pattern:[0-9]{33}", "1 through");
     assertRejects("pattern:[A-z]{1}", "unknown");
+    assertNotNull(CellLanguage.parse("pattern:[0-9]{32}[0-9]{32}"));
     assertRejects("pattern:[0-9]{32}[0-9]{32}X", "longer");
     assertRejects("pattern:[", "]");
     assertRejects("pattern:AB size 1..1", "trailing");
