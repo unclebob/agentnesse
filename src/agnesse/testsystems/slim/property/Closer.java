@@ -88,7 +88,7 @@ final class Closer {
   }
 
   /** Floor division never lands past {@code current}, so equality is the boundary case. */
-  private static long unitToward(long current, long target, long unit) {
+  static long unitToward(long current, long target, long unit) {
     long truncated = Math.floorDiv(current, unit) * unit;
     if (target < current && truncated == current) {
       return truncated - unit;
@@ -99,7 +99,7 @@ final class Closer {
     return truncated;
   }
 
-  private static long align(long current, long target, ZoneId zone, ChronoUnit unit) {
+  static long align(long current, long target, ZoneId zone, ChronoUnit unit) {
     ZonedDateTime truncated = Instant.ofEpochSecond(current).atZone(zone).truncatedTo(unit);
     long at = truncated.toEpochSecond();
     if (target < current && at == current) {

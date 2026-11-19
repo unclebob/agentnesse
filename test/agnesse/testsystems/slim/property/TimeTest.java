@@ -2,10 +2,12 @@ package agnesse.testsystems.slim.property;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -171,6 +173,25 @@ public class TimeTest {
     Set<String> gap = bias("time zone:America/New_York :02:10:00..02:20:00", clock);
     assertFalse(gap.contains("01:59:59"));
     assertFalse(gap.contains("03:00:01"));
+  }
+
+  @Test
+  public void aUnitStepStaysPutWhenTheTargetIsTheCurrentValue() {
+    assertEquals(3600, Closer.unitToward(3600, 3600, 3600));
+    assertEquals(3720, Closer.unitToward(3700, 4000, 60));
+    assertEquals(3540, Closer.unitToward(3600, 1000, 60));
+    long noon = Instant.parse("2024-06-02T12:00:00Z").getEpochSecond();
+    assertEquals(noon, Closer.align(noon, noon, UTC, ChronoUnit.HOURS));
+    assertEquals(noon + 3600, Closer.align(noon, noon + 10, UTC, ChronoUnit.HOURS));
+    assertEquals(noon - 3600, Closer.align(noon, noon - 10, UTC, ChronoUnit.HOURS));
+  }
+
+  @Test
+  public void aZeroSignIsNotADuration() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Moments.shift(Instant.EPOCH, 0, Duration.ofSeconds(1)));
+    assertEquals(Instant.EPOCH.plusSeconds(1), Moments.shift(Instant.EPOCH, 1, Duration.ofSeconds(1)));
+    assertEquals(Instant.EPOCH.minusSeconds(1), Moments.shift(Instant.EPOCH, -1, Duration.ofSeconds(1)));
   }
 
   @Test

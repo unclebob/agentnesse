@@ -92,11 +92,20 @@ final class Moments {
 
   private static Instant move(Instant at, int sign, Piece piece) {
     try {
-      Duration duration = piece.duration();
-      return sign == 1 ? at.plus(duration) : at.minus(duration);
+      return shift(at, sign, piece.duration());
     } catch (DateTimeException | ArithmeticException e) {
       throw new IllegalArgumentException("duration is too large");
     }
+  }
+
+  static Instant shift(Instant at, int sign, Duration duration) {
+    if (sign == 1) {
+      return at.plus(duration);
+    }
+    if (sign == -1) {
+      return at.minus(duration);
+    }
+    throw new IllegalArgumentException("expected a duration");
   }
 
   private static int signAt(String tail, int index) {
