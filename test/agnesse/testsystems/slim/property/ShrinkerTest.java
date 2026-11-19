@@ -184,6 +184,27 @@ public class ShrinkerTest {
   }
 
   @Test
+  public void allOfShrinksTowardTheFirstCase() {
+    assertEquals("red", shrink("all of:red,green,blue", text("blue"), v -> true, 4));
+    assertEquals(List.of("admin view", "admin edit", "user view"),
+        cells(simpler("all of:admin,user x view,edit", "user edit")));
+    assertEquals("user view", shrink("all of:admin,user x view,edit", text("user edit"),
+        v -> v.cell().startsWith("user"), 4));
+    calls = 0;
+    assertEquals("red", shrink("all of:red,blue", text("red"), count(v -> true), 3));
+    assertEquals(0, calls);
+  }
+
+  @Test
+  public void allOfRejectsAValueThatIsNotACase() {
+    Generator roles = CellLanguage.parse("all of:admin,user x view,edit");
+    assertThrows(IllegalArgumentException.class,
+        () -> shrinker.shrink(roles, text("guest view"), v -> true, 2));
+    assertThrows(IllegalArgumentException.class,
+        () -> shrinker.shrink(roles, text("admin"), v -> true, 2));
+  }
+
+  @Test
   public void shrinkingAValueThatIsNotAChoiceFails() {
     Generator colors = CellLanguage.parse("one of:red,green");
     assertThrows(IllegalArgumentException.class,

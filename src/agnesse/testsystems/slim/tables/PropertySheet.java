@@ -30,9 +30,9 @@ final class PropertySheet {
   final List<Column> columns;
   final ScenarioTable scenario;
 
-  private PropertySheet(String name, Config config, List<Column> columns, ScenarioTable scenario) {
+  private PropertySheet(String name, Config config, List<Column> columns, ScenarioTable scenario) throws SyntaxError {
     this.name = name;
-    this.trials = config.trials;
+    this.trials = resolved(config, columns);
     this.seed = config.explicit == null ? new Seed(new Random().nextLong()) : new Seed(config.explicit);
     this.trialsRow = config.trialsRow;
     this.seedRow = config.seedRow;
@@ -53,12 +53,101 @@ final class PropertySheet {
   }
 
   List<Drawn> draw() {
+    if (enumerated()) {
+      return enumeratedRows();
+    }
     Random random = seed.random();
     List<Drawn> rows = new ArrayList<>();
     for (int trial = 0; trial < trials; trial++) {
       rows.add(drawRow(random));
     }
     return rows;
+  }
+
+  private boolean enumerated() {
+    for (Column column : columns) {
+      if (column.kind == Kind.INPUT) {
+        return column.generator.domain() != null;
+      }
+    }
+    return false;
+  }
+
+  private List<Drawn> enumeratedRows() {
+    List<Column> inputs = new ArrayList<>();
+    for (Column column : columns) {
+      if (column.kind == Kind.INPUT) {
+        inputs.add(column);
+      }
+    }
+    List<Drawn> rows = new ArrayList<>();
+    for (int ordinal = 0; ordinal < trials; ordinal++) {
+      rows.add(enumeratedRow(inputs, ordinal));
+    }
+    return rows;
+  }
+
+  private Drawn enumeratedRow(List<Column> inputs, int ordinal) {
+    Value[] picks = new Value[inputs.size()];
+    int rest = ordinal;
+    for (int i = inputs.size() - 1; i >= 0; i--) {
+      List<Value> domain = inputs.get(i).generator.domain();
+      picks[i] = domain.get(rest % domain.size());
+      rest /= domain.size();
+    }
+    List<String> cells = new ArrayList<>();
+    List<Value> values = new ArrayList<>();
+    int input = 0;
+    for (Column column : columns) {
+      if (column.kind == Kind.INPUT) {
+        cells.add(picks[input].cell());
+        values.add(picks[input]);
+        input++;
+      } else {
+        values.add(null);
+        cells.add(column.literal);
+      }
+    }
+    return new Drawn(cells, values);
+  }
+
+  private static int resolved(Config config, List<Column> columns) throws SyntaxError {
+    long cases = cases(columns);
+    if (cases == 0) {
+      return config.trials;
+    }
+    if (cases > Generator.ENUMERATION_LIMIT) {
+      throw new SyntaxError("all of has " + cases + " cases; the limit is " + Generator.ENUMERATION_LIMIT);
+    }
+    if (config.trialsNumber && config.trials != cases) {
+      throw new SyntaxError("all of has " + cases + " cases, not " + config.trials);
+    }
+    return (int) cases;
+  }
+
+  private static long cases(List<Column> columns) throws SyntaxError {
+    long product = 1;
+    boolean enumerated = false;
+    boolean sampled = false;
+    for (Column column : columns) {
+      if (column.kind != Kind.INPUT) {
+        continue;
+      }
+      List<Value> domain = column.generator.domain();
+      if (domain == null) {
+        sampled = true;
+      } else {
+        enumerated = true;
+        product *= domain.size();
+      }
+    }
+    if (!enumerated) {
+      return 0;
+    }
+    if (sampled) {
+      throw new SyntaxError("all of replaces sampling");
+    }
+    return product;
   }
 
   private Drawn drawRow(Random random) {
@@ -249,6 +338,7 @@ final class PropertySheet {
     private int trials = DEFAULT_TRIALS;
     private int trialsRow = -1;
     private boolean trialsSeen;
+    private boolean trialsNumber;
     private Long explicit;
     private int seedRow = -1;
     private boolean seedSeen;
@@ -268,6 +358,7 @@ final class PropertySheet {
         throw new SyntaxError("trials is already set");
       }
       trialsSeen = true;
+      trialsNumber = !value.isBlank();
       trials = parseTrials(value);
       trialsRow = row;
     }

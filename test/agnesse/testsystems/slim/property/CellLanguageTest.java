@@ -188,6 +188,46 @@ public class CellLanguageTest {
     assertRejects("pattern:[0-9]{32}[0-9]{32}X", "longer");
     assertRejects("pattern:[", "]");
     assertRejects("pattern:AB size 1..1", "trailing");
+    assertRejects("all of", ":");
+    assertRejects("all red", "of");
+    assertRejects("all of:", "empty");
+    assertRejects("all of:a,", "empty");
+    assertRejects("all of:a,a", "duplicate");
+    assertRejects("all of:a x", "empty");
+    assertRejects("list of all of:a,b", "enumerated");
+    assertRejects("all of:" + choices(257), "limit");
+    assertRejects("all of:" + choices(16) + " x " + choices(17), "limit");
+  }
+
+  @Test
+  public void allOfEnumeratesADomainOrACrossProduct() {
+    assertEquals(List.of("red", "green", "blue"), cells(CellLanguage.parse("all of:red,green,blue")));
+    assertEquals(List.of("admin view", "admin edit", "user view", "user edit"),
+        cells(CellLanguage.parse("all of:admin,user x view,edit")));
+    assertEquals(List.of("x", "y"), cells(CellLanguage.parse("all of:x,y")));
+    assertEquals(List.of("a b c"), cells(CellLanguage.parse("all of:a x b x c")));
+    assertEquals(256, CellLanguage.parse("all of:" + choices(16) + " x " + choices(16)).domain().size());
+    assertThrows(IllegalStateException.class,
+        () -> CellLanguage.parse("all of:a,b").draw(new java.util.Random()));
+  }
+
+  private static String choices(int count) {
+    StringBuilder out = new StringBuilder();
+    for (int i = 0; i < count; i++) {
+      if (i > 0) {
+        out.append(',');
+      }
+      out.append('c').append(i);
+    }
+    return out.toString();
+  }
+
+  private static List<String> cells(Generator generator) {
+    List<String> out = new java.util.ArrayList<>();
+    for (Value value : generator.domain()) {
+      out.add(value.cell());
+    }
+    return out;
   }
 
   @Test

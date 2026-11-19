@@ -642,6 +642,165 @@ public class PropertyTableTest {
     assertTrue(opened.property().cellRecord(1, 1).actual().matches("-?\\d+"));
   }
 
+  @Test
+  public void allOfReplacesSamplingWithTheDomain() throws Exception {
+    Ran omitted = roundTrip("all of:red,blue", "");
+    assertEquals(1, omitted.summary.getRight());
+    assertEquals("2 trials", trialCell(omitted));
+    Ran blank = roundTrip("all of:red,blue", "| trials | |\n");
+    assertEquals("2 trials", trialCell(blank));
+    Ran numbered = roundTrip("all of:red,blue", "| trials | 2 |\n");
+    assertEquals("2 trials", trialCell(numbered));
+    Ran product = roundTrip("all of:a,b x 1,2", "");
+    assertEquals("4 trials", trialCell(product));
+    Ran columns = slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | pair | left | and | right |
+      | check | echo string | @left | @left |
+
+      | property | pair and |
+      | seed | 4 |
+      | left | all of:a,b |
+      | right | all of:1,2 |
+      """);
+    assertEquals(1, columns.summary.getRight());
+    assertEquals("4 trials", trialCell(columns));
+  }
+
+  @Test
+  public void allOfRefusesATrialCountThatIsNotTheDomain() {
+    assertMessage("cases, not", """
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | round trip | value |
+      | check | echo string | @value | @value |
+
+      | property | round trip |
+      | trials | 3 |
+      | value | all of:red,blue |
+      """);
+    assertMessage("replaces sampling", """
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | pair | left | and | right |
+      | check | echo string | @left | @left |
+
+      | property | pair and |
+      | left | all of:a,b |
+      | right | int:0..1 |
+      """);
+    assertMessage("limit", """
+      | property:agnesse.slim.test.TestSlim |
+      | a | b | return int? |
+      | all of:%s | all of:%s | 7 |
+      """.formatted(choices(20), choices(20)));
+  }
+
+  @Test
+  public void theFirstFailingCaseDoesNotDependOnTheSeed() throws Exception {
+    assertEquals("red", firstFailure(1));
+    assertEquals("red", firstFailure(9));
+    assertFalse(firstLabel(1).contains("shrunk"));
+  }
+
+  @Test
+  public void aHostileValueIsEscapedOnTheResultPage() throws Exception {
+    String html = failedChoice("one of:<b>bold</b>", 0).table.toHtml();
+    assertTrue(html, html.contains("&lt;b&gt;bold&lt;/b&gt;"));
+    assertFalse(html, html.contains("<b>"));
+    String amp = failedChoice("one of:a&b", 0).table.toHtml();
+    assertTrue(amp, amp.contains("a&amp;b"));
+    assertFalse(amp, amp.contains("a&b"));
+    long seed = scriptSeed();
+    String script = failedChoice("one of:ok,<script>alert(1)</script>", seed).table.toHtml();
+    assertTrue(script, script.contains("&lt;script&gt;"));
+    assertFalse(script, script.contains("<script>"));
+  }
+
+  private static Ran failedChoice(String spec, long seed) throws Exception {
+    return slim("""
+      | property:agnesse.slim.test.TestSlim |
+      | trials | 1 |
+      | seed | %d |
+      | string | return int? |
+      | %s | 8 |
+      """.formatted(seed, spec));
+  }
+
+  private static Ran roundTrip(String spec, String trials) throws Exception {
+    return slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | round trip | value |
+      | check | echo string | @value | @value |
+
+      | property | round trip |
+      %s| seed | 1 |
+      | value | %s |
+      """.formatted(trials, spec));
+  }
+
+  private static String firstFailure(long seed) throws Exception {
+    Ran ran = slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | echo back | word |
+      | check | echo string | @word | nope |
+
+      | property | echo back |
+      | trials | 2 |
+      | seed | %d |
+      | word | all of:red,blue |
+      """.formatted(seed));
+    return ran.table.originalCell(0, ran.table.getRowCount() - 1);
+  }
+
+  private static String firstLabel(long seed) throws Exception {
+    Ran ran = slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | echo back | word |
+      | check | echo string | @word | nope |
+
+      | property | echo back |
+      | trials | 2 |
+      | seed | %d |
+      | word | all of:red,blue |
+      """.formatted(seed));
+    return trialCell(ran);
+  }
+
+  private static long scriptSeed() {
+    String spec = "one of:ok,<script>alert(1)</script>";
+    for (long seed = 0; seed < 20; seed++) {
+      if (CellLanguage.parse(spec).draw(new Seed(seed).random()).cell().contains("script")) {
+        return seed;
+      }
+    }
+    return 0;
+  }
+
+  private static String choices(int count) {
+    StringBuilder out = new StringBuilder();
+    for (int i = 0; i < count; i++) {
+      if (i > 0) {
+        out.append(',');
+      }
+      out.append('c').append(i);
+    }
+    return out.toString();
+  }
+
+  private static String trialCell(Ran ran) {
+    for (int row = 0; row < ran.table.getRowCount(); row++) {
+      if ("trials".equals(ran.table.originalCell(0, row))) {
+        return ran.table.cellRecord(row, 1).actual();
+      }
+    }
+    return "";
+  }
+
   private static void assertMessage(String message, String markdown) {
     SyntaxError error = assertThrows(SyntaxError.class, () -> open(markdown));
     assertTrue(error.getMessage(), error.getMessage().contains(message));

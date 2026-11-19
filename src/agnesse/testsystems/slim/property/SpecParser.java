@@ -29,6 +29,9 @@ final class SpecParser {
     if (take("list")) {
       return list();
     }
+    if (take("all")) {
+      return allOf();
+    }
     if (take("one")) {
       return oneOf();
     }
@@ -50,7 +53,35 @@ final class SpecParser {
     if (take("int")) {
       return integerSpec();
     }
-    throw error("expected int, boolean, string, list of, one of, decimal, money, or pattern");
+    throw error("expected int, boolean, string, list of, one of, decimal, money, pattern, or all of");
+  }
+
+  private Generator allOf() {
+    if (!take("of")) {
+      throw error("expected of");
+    }
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    List<List<String>> groups = new ArrayList<>();
+    groups.add(group());
+    while (take("x")) {
+      groups.add(group());
+    }
+    try {
+      return new AllOfGen(groups);
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private List<String> group() {
+    List<String> choices = new ArrayList<>();
+    choices.add(choice());
+    while (takeSymbol(",")) {
+      choices.add(choice());
+    }
+    return choices;
   }
 
   private Generator pattern() {
@@ -256,6 +287,9 @@ final class SpecParser {
       throw error("expected of");
     }
     Generator element = spec();
+    if (element.domain() != null) {
+      throw error("all of is enumerated, not sampled");
+    }
     Span size = take("size") ? readSpan() : Span.LISTS;
     return new ListGen(element, size);
   }
