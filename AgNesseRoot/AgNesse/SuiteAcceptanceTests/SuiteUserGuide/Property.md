@@ -6,7 +6,7 @@
 }
 # Property
 
-A property table draws the inputs. It checks one claim against many generated values, instead of a list of examples you type by hand. Name a fixture the way a decision table does. Optional `trials` and `seed` rows come next, then a column header and one generator row. An output column ends in `?` or `!` and its generator cell is the expected value.
+A property table draws the inputs. It checks one claim against many generated values, instead of a list of examples you type by hand. Name a fixture the way a decision table does. Optional `trials`, `seed`, and `now` rows come next, then a column header and one generator row. An output column ends in `?` or `!` and its generator cell is the expected value.
 
 Reversing a list twice returns the same list. Five trials, one assertion.
 
@@ -19,7 +19,7 @@ Reversing a list twice returns the same list. Five trials, one assertion.
 
 One property is one assertion, however many trials run. A pass colors the trials cell (`5 trials`). The default is 100 trials when that row is omitted or left blank.
 
-The seed is shown on the result and is not written back onto the page. Leave the cell blank and the result fills it in. Copy that number into the cell to draw the same inputs again.
+The seed is shown on the result and is not written back onto the page. Leave the cell blank and the result fills it in. Copy that number into the cell to draw the same inputs again. A property that draws a time also shows `now`, on the next row, the same way.
 
 | script | page driver |
 | --- | --- |
@@ -53,6 +53,18 @@ Generator cells are lowercase. Whitespace may separate the tokens. Ranges are in
 `pattern:REG-[0-9]{4}` is literal text plus runs of `[0-9]`, `[A-Z]`, or `[a-z]`. A run is `{n}` with n from 1 through 32, and the identifier is at most 64 characters. It is not a regular expression. Spaces separate the tokens. `size` after a pattern still belongs to the surrounding list.
 
 `all of:red,blue` runs every choice, in that order, instead of sampling. `all of:admin,user x view,edit` is the cross product, and the rightmost group varies fastest: `admin view`, `admin edit`, `user view`, `user edit`. The word `x` is the separator, so `all of:x,y` is two choices and not a product. Several `all of` columns do the same, and the rightmost column varies fastest. The trial count becomes the number of cases. Leave `trials` out, or leave the cell blank, and that count is used. A number you write has to be that count. More than 256 cases is refused. `all of` cannot share the table with a sampled generator, and it cannot sit inside `list of`. The seed is still shown, and it does not change the cases.
+
+`date`, `time`, and `datetime` draw ISO-8601 text. `date:2020-01-15..2020-01-15` is that day. `time:08:00:00..08:00:00` is that second. `datetime:2024-06-01T00:00:00Z..2024-06-01T00:00:00Z` is that instant, and the cell carries the offset. A missing range is `2000-01-01` through `2099-12-31` for a date, `00:00:00` through `23:59:59` for a time, and that window at second resolution for a datetime. A time range does not cross midnight.
+
+`zone:America/New_York` overrides the default for that generator. The default is the `zone` key in `agnesse.json`, a `java.time` zone id, and it is not hard-coded. A space sits before the range, as in `datetime zone:America/New_York :2024-06-01T12:00:00Z..2024-06-01T12:00:00Z`, which is `2024-06-01T08:00:00-04:00`. A generator that needs a zone and has neither is refused. The tables below set `zone` to `UTC`.
+
+A bound can be `now` plus a duration. `now+35h59m` is 35 hours and 59 minutes after the clock. `now-1d+2h` stacks pieces, and a space may sit before a sign. On a date the only unit is `d`, a calendar day. On a time or a datetime, `d` is 24 hours.
+
+`now` draws that clock, the same text on every trial. A `now` row sets it. `2024-06-01T00:00:00Z` is an offset datetime. `2024-06-01T00:00:00` is local, and it is read in the configured zone. Leave the cell blank and the clock is `2000-01-01T00:00:00Z` plus the seed, wrapping with an unsigned remainder through the seconds until `2100-01-01T00:00:00Z`. The result shows that instant. It is not written back onto the page. The row has one or two cells. A column named `now` needs a wider header, so `| now | at | past? |` is the header and not a second setting. A scenario reads `$now`. A two-cell input named `now` would set the clock, so a scenario input uses another name.
+
+`period:day`, `period:week`, and `period:month` draw a datetime one second before, at, or one second after a boundary in the default date window. A week starts on Monday.
+
+When the range contains a boundary, half the draws are one of those points and half are ordinary. A date uses the first day and the last day of each month in the range, so a leap day and a year end are in that set. A time uses the local clock time of a DST transition in the zone from 2000 through 2099, the second before it, and the second after it. A datetime uses a DST instant, midnight on the first of a month, the last second of a month, and midnight on a leap day. A range with no such point is uniform. `UTC` has no DST, so a time there is uniform.
 
 `below?` is true for every int under 50, so this filtered range passes.
 
@@ -160,6 +172,83 @@ A scenario can be the claim. `@value` is the drawn cell, and the check expects t
 
 `all of` replaces sampling, so the two red/blue tables run 2 trials and the two products run 4. A blank trial cell means the same thing.
 
+```agnesse
+define zone
+UTC
+```
+
+The same round trip carries a date, a time, a datetime, a zoned datetime, a duration from the clock, a period boundary, and the clock itself.
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 20 |
+| value | date:2020-01-15..2020-01-15 |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 21 |
+| value | time:08:00:00..08:00:00 |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 22 |
+| value | datetime:2024-06-01T00:00:00Z..2024-06-01T00:00:00Z |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 23 |
+| value | datetime zone:America/New_York :2024-06-01T12:00:00Z..2024-06-01T12:00:00Z |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 24 |
+| now | 2024-06-01T00:00:00Z |
+| value | datetime:now+35h59m..now+35h59m |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 0 |
+| value | period:day |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 0 |
+| value | period:week |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 0 |
+| value | period:month |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 25 |
+| now | 2024-06-01T00:00:00Z |
+| value | now |
+
+`read the clock` sees the same instant the table fixed. `$now` is the clock. `@instant` is the drawn cell.
+
+| scenario | read the clock | instant |
+| --- | --- | --- |
+| check | echo string | $now | 2024-06-01T00:00:00Z |
+| check | echo string | @instant | 2024-06-02T12:00:00Z |
+
+| property | read the clock |
+| --- |
+| trials | 1 |
+| seed | 1 |
+| now | 2024-06-01T00:00:00Z |
+| instant | datetime:2024-06-02T12:00:00Z..2024-06-02T12:00:00Z |
+
 | script | page driver |
 | --- |
 | given page | PropertyGuideAll | with content | &#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>1<br>&#96;&#96;&#96;<br><br>\| script \| agnesse.slim.test.TestSlim \|<br><br>\| scenario \| round trip \| value \|<br>\| check \| echo string \| @value \| @value \|<br><br>\| property \| round trip \|<br>\| seed \| 1 \|<br>\| value \| all of:red,blue \|<br><br>\| property \| round trip \|<br>\| trials \| \|<br>\| seed \| 2 \|<br>\| value \| all of:admin,user x view,edit \|<br><br>\| scenario \| pair \| left \| and \| right \|<br>\| check \| echo string \| @left \| @left \|<br><br>\| property \| pair and \|<br>\| seed \| 3 \|<br>\| left \| all of:a,b \|<br>\| right \| all of:1,2 \| |
@@ -199,6 +288,8 @@ The same Python server returns the string it was given from `echo`. The check ex
 After the first failing trial, shrinking sends simpler candidates. Each round is one Slim batch: every simpler value of one input, most aggressive first. The first candidate in that batch that still fails is kept. The page shows one row, the shrunk one, and the trials cell names the original draw, as in `drew [6, 5, 0, 9, 2]; shrunk`. The same seed shrinks to the same row.
 
 A decimal shrinks toward fewer places and toward zero, and it stays inside the range. `1.23` at scale 2 in `-10..10` offers `0.00`, then `1.00`, `1.20`, `0.61`, and `1.22`. A range that does not contain zero shrinks toward the end nearer zero. A weighted `one of` still shrinks toward the first choice. A pattern shrinks toward the first character of each class (`0`, `A`, or `a`). An adversarial string shortens the way any string does, and a cut that would split a surrogate pair is skipped. `all of` shrinks toward the first case. That case is also the first one enumerated, so the first failure is already there and the trials cell does not say `shrunk`.
+
+A date, a time, or a datetime shrinks toward the clock when the clock sits in the range, and toward the start of the range otherwise. Whole units come first: a year, a month, or a day; an hour or a minute; or a local day, hour, or minute. The candidate stays inside the range. A period that is one second off its boundary shrinks onto the boundary. `datetime:now+35h59m..now+36h01m`, with the clock at `2024-06-01T00:00:00Z` and seed 1, draws `2024-06-02T12:00:41Z` and shrinks to `2024-06-02T12:00:00Z`.
 
 The walk stops after 32 accepted steps. The trials cell then says `shrink cap`, and the row is the value reached then, which may not be the smallest failure.
 
