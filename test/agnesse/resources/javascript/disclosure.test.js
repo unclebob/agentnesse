@@ -1,11 +1,21 @@
 const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
+const { EventEmitter } = require("node:events");
 const fs = require("fs");
 const http = require("http");
 const net = require("net");
 const os = require("os");
 const path = require("path");
 const test = require("node:test");
+
+const CHROME_CANDIDATES = [
+  "google-chrome",
+  "google-chrome-stable",
+  "chromium",
+  "chromium-browser",
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "/Applications/Chromium.app/Contents/MacOS/Chromium",
+];
 
 const root = path.resolve(__dirname, "../../../..");
 const scriptPath = path.join(root, "src/agnesse/resources/javascript/agnesse.js");
@@ -61,6 +71,62 @@ function freePort() {
   });
 }
 
+function executable(file) {
+  try {
+    fs.accessSync(file, fs.constants.X_OK);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function chromeOnPath(name) {
+  const dirs = (process.env.PATH || "").split(path.delimiter).filter(Boolean);
+  for (const dir of dirs) {
+    const full = path.join(dir, name);
+    if (executable(full)) return full;
+  }
+  return "";
+}
+
+function findChrome(candidates = CHROME_CANDIDATES) {
+  for (const candidate of candidates) {
+    if (path.isAbsolute(candidate)) {
+      if (executable(candidate)) return candidate;
+    } else {
+      const found = chromeOnPath(candidate);
+      if (found) return found;
+    }
+  }
+  return "";
+}
+
+function missingChromeMessage(candidates = CHROME_CANDIDATES) {
+  return `No Chrome binary found. Looked for ${candidates.join(", ")}.`;
+}
+
+// A binary that cannot be spawned emits error and never exit. Do not wait on that event.
+function stopChild(child, timeoutMs = 2000) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finished = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve();
+    };
+    const timer = setTimeout(finished, timeoutMs);
+    child.once("exit", finished);
+    try {
+      child.kill("SIGKILL");
+    } catch (error) {
+      finished();
+      return;
+    }
+    if (child.exitCode != null || child.signalCode != null) finished();
+  });
+}
+
 function waitJson(url, chrome) {
   const stderr = [];
   chrome.stderr.on("data", (chunk) => {
@@ -71,8 +137,8 @@ function waitJson(url, chrome) {
     const started = Date.now();
     function attempt() {
       fetch(url).then((res) => res.json()).then(resolve).catch(() => {
-        if (chrome.exitCode != null || Date.now() - started > 20000) {
-          const detail = Buffer.concat(stderr).toString().trim();
+        if (chrome.spawnFailure || chrome.exitCode != null || Date.now() - started > 20000) {
+          const detail = [chrome.spawnFailure, Buffer.concat(stderr).toString().trim()].filter(Boolean).join("\n");
           reject(new Error("Chrome did not open a debugger" + (detail ? `\n${detail}` : "")));
           return;
         }
@@ -150,14 +216,36 @@ async function focusAndPress(send, selector, key) {
   return toggleState(send, selector);
 }
 
-test("enter and space on the disclosure toggle a section in Chrome", async () => {
+test("chrome lookup does not invent a binary", () => {
+  const candidates = ["no-such-chrome-agnesse", "/no/such/Google Chrome"];
+  assert.equal(findChrome(candidates), "");
+  assert.match(missingChromeMessage(candidates), /No Chrome binary found/);
+  assert.match(missingChromeMessage(candidates), /no-such-chrome-agnesse/);
+});
+
+test("a child that failed to spawn is not awaited", async () => {
+  const child = new EventEmitter();
+  child.exitCode = -2;
+  child.signalCode = null;
+  child.kill = () => {};
+  const started = Date.now();
+  await stopChild(child, 5000);
+  assert.ok(Date.now() - started < 200);
+});
+
+test("enter and space on the disclosure toggle a section in Chrome", async (t) => {
+  const chromePath = findChrome();
+  if (!chromePath) {
+    t.skip(missingChromeMessage());
+    return;
+  }
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "agnesse-disclosure-"));
   fs.writeFileSync(path.join(dir, "index.html"), pageHtml());
   fs.copyFileSync(scriptPath, path.join(dir, "agnesse.js"));
   fs.copyFileSync(cssPath, path.join(dir, "agnesse.css"));
   const web = await startServer(dir);
   const port = await freePort();
-  const chrome = spawn("google-chrome", [
+  const chrome = spawn(chromePath, [
     "--headless=new",
     `--remote-debugging-port=${port}`,
     "--no-sandbox",
@@ -167,6 +255,9 @@ test("enter and space on the disclosure toggle a section in Chrome", async () =>
     `--user-data-dir=${path.join(dir, "profile")}`,
     "about:blank",
   ], { stdio: ["ignore", "ignore", "pipe"] });
+  chrome.on("error", (error) => {
+    chrome.spawnFailure = error.message;
+  });
   try {
     const targets = await waitJson(`http://127.0.0.1:${port}/json`, chrome);
     const page = targets.find((item) => item.type === "page");
@@ -191,9 +282,7 @@ test("enter and space on the disclosure toggle a section in Chrome", async () =>
     assert.equal(renderedClosed.expanded, "false");
     ws.close();
   } finally {
-    const exited = new Promise((resolve) => chrome.once("exit", resolve));
-    chrome.kill("SIGKILL");
-    await exited;
+    await stopChild(chrome);
     web.server.close();
     try {
       fs.rmSync(dir, { recursive: true, force: true });
