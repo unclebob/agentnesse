@@ -1,5 +1,6 @@
 package agnesse.testsystems.slim.property;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,10 +38,79 @@ final class SpecParser {
     if (take("string")) {
       return string();
     }
+    if (take("decimal")) {
+      return decimal(false);
+    }
+    if (take("money")) {
+      return decimal(true);
+    }
     if (take("int")) {
       return integerSpec();
     }
-    throw error("expected int, boolean, string, list of, or one of");
+    throw error("expected int, boolean, string, list of, one of, decimal, or money");
+  }
+
+  private Generator decimal(boolean money) {
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    BigDecimal low = fixed();
+    if (!takeSymbol("..")) {
+      throw error("expected ..");
+    }
+    BigDecimal high = fixed();
+    int scale = money ? 2 : scale();
+    try {
+      return new DecimalGen(low, high, scale);
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private int scale() {
+    if (!take("scale")) {
+      throw error("expected scale");
+    }
+    return integer();
+  }
+
+  private BigDecimal fixed() {
+    skip();
+    int start = at;
+    if (at < text.length() && text.charAt(at) == '-') {
+      at++;
+    }
+    if (readDigits() == 0) {
+      throw error("expected a decimal");
+    }
+    fraction();
+    try {
+      return new BigDecimal(text.substring(start, at));
+    } catch (NumberFormatException bad) {
+      throw error("expected a decimal");
+    }
+  }
+
+  private void fraction() {
+    if (at >= text.length() || text.charAt(at) != '.') {
+      return;
+    }
+    if (at + 1 < text.length() && text.charAt(at + 1) == '.') {
+      return;
+    }
+    at++;
+    if (readDigits() == 0) {
+      throw error("expected a decimal");
+    }
+  }
+
+  private int readDigits() {
+    int count = 0;
+    while (at < text.length() && Character.isDigit(text.charAt(at))) {
+      at++;
+      count++;
+    }
+    return count;
   }
 
   private Generator integerSpec() {

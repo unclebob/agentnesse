@@ -105,6 +105,29 @@ public class DrawTest {
     assertEquals("blue", draw("one of:red,green,blue", 3L));
   }
 
+  @Test
+  public void decimalsAreFixedPointAndReplayFromTheSeed() {
+    assertEquals("1.50", draw("decimal:1.50..1.50 scale 2", 1L));
+    assertEquals("0.00", draw("money:0..0", 2L));
+    assertEquals("7", draw("decimal:7..7 scale 0", 3L));
+    assertEquals("-1.25", draw("decimal:-1.25..-1.25 scale 2", 4L));
+    List<String> money = sequence("money:0..2", 11L, 4);
+    assertEquals(money, sequence("decimal:0..2 scale 2", 11L, 4));
+    for (String cell : money) {
+      assertTrue(cell.matches("-?\\d+\\.\\d{2}"));
+      assertTrue(new java.math.BigDecimal(cell).compareTo(new java.math.BigDecimal("2.00")) <= 0);
+    }
+    for (long seed = 0; seed < 30; seed++) {
+      String cell = draw("decimal:-1.5..1.5 scale 1", seed);
+      assertTrue(cell, cell.endsWith(".0") || cell.endsWith(".5") || cell.contains("."));
+      java.math.BigDecimal value = new java.math.BigDecimal(cell);
+      assertTrue(value.compareTo(new java.math.BigDecimal("-1.5")) >= 0);
+      assertTrue(value.compareTo(new java.math.BigDecimal("1.5")) <= 0);
+      assertEquals(1, value.scale());
+    }
+    assertEquals("[0.25]", draw("list of decimal:0.25..0.25 scale 2 size 1..1", 5L));
+  }
+
   private static void assertIn(String spec, int low, int high, Integer banned) {
     for (long seed = 0; seed < 40; seed++) {
       int n = Integer.parseInt(draw(spec, seed));

@@ -1,5 +1,6 @@
 package agnesse.testsystems.slim.property;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -109,6 +110,33 @@ public class ShrinkerTest {
   }
 
   @Test
+  public void decimalsShrinkTowardRoundValuesAndZero() {
+    assertEquals(List.of("0.00", "1.00", "1.20", "0.61", "1.22"),
+        cells(simpler("decimal:-10..10 scale 2", "1.23")));
+    assertEquals(List.of("0.00", "-1.00", "-1.20", "-0.61", "-1.22"),
+        cells(simpler("decimal:-10..10 scale 2", "-1.23")));
+    assertEquals(List.of("10.00", "10.49"),
+        cells(simpler("decimal:10..20 scale 2", "10.50")));
+    assertEquals(List.of("-10.00", "-5.25", "-10.49"),
+        cells(simpler("decimal:-20..-5 scale 2", "-10.50")));
+    assertEquals(List.of(), cells(simpler("money:0..10", "0.00")));
+    assertEquals("0.00", shrink("money:-5..5", text("1.23"), v -> true, 4));
+    assertEquals("1.00", shrink("decimal:0..5 scale 2", text("3.47"),
+        v -> new java.math.BigDecimal(v.cell()).compareTo(new java.math.BigDecimal("1.00")) >= 0, 8));
+    assertEquals("1.00", shrink("money:0..5", text("1.00"),
+        v -> new java.math.BigDecimal(v.cell()).compareTo(new java.math.BigDecimal("1.00")) >= 0, 4));
+  }
+
+  @Test
+  public void aDecimalThatIsNotInScaleFailsToShrink() {
+    Generator money = CellLanguage.parse("money:0..1");
+    assertThrows(IllegalArgumentException.class,
+        () -> shrinker.shrink(money, text("1.234"), v -> true, 2));
+    assertThrows(IllegalArgumentException.class,
+        () -> shrinker.shrink(money, text("nope"), v -> true, 2));
+  }
+
+  @Test
   public void oneOfShrinksTowardTheFirstChoice() {
     Generator colors = CellLanguage.parse("one of:red,green,blue");
     assertEquals("red", shrinker.shrink(colors, new TextValue("blue"), v -> true, 3).cell());
@@ -175,6 +203,18 @@ public class ShrinkerTest {
       items.add(n(value));
     }
     return new ListValue(items);
+  }
+
+  private static List<String> cells(List<Value> values) {
+    List<String> out = new ArrayList<>();
+    for (Value value : values) {
+      out.add(value.cell());
+    }
+    return out;
+  }
+
+  private List<Value> simpler(String spec, String cell) {
+    return shrinker.candidates(CellLanguage.parse(spec), text(cell));
   }
 
   private static int at(Value value) {

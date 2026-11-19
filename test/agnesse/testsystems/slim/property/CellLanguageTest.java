@@ -21,6 +21,8 @@ public class CellLanguageTest {
     assertEquals(20, text("string:ascii length 0..20").longest());
     assertTrue(CellLanguage.parse("boolean") instanceof BoolGen);
     assertEquals(List.of("red", "green", "blue"), one("one of:red,green,blue").choices());
+    assertEquals(2, dec("decimal:-1.50..2 scale 2").scale());
+    assertEquals(2, dec("money:-1.50..2").scale());
   }
 
   @Test
@@ -151,6 +153,19 @@ public class CellLanguageTest {
     assertRejects("int:1", "..");
     assertRejects("int:1..x", "integer");
     assertRejects("int:99999999999999999999..1", "integer");
+    assertRejects("decimal", ":");
+    assertRejects("decimal:1..2", "scale");
+    assertRejects("decimal:1..2 scale -1", "scale must be");
+    assertRejects("decimal:1..2 scale 9", "scale must be");
+    assertRejects("decimal:1.234..2 scale 2", "decimal places");
+    assertRejects("decimal:2..1 scale 0", "inverted");
+    assertRejects("decimal:..1 scale 0", "decimal");
+    assertRejects("decimal:1. scale 0", "decimal");
+    assertRejects("decimal:1.. scale 0", "decimal");
+    assertRejects("money", ":");
+    assertRejects("money:1..2 scale 2", "trailing");
+    assertRejects("decimal:-9223372036854775808..9223372036854775807 scale 0", "too wide");
+    assertRejects("decimal:0..10000000000000000000 scale 0", "too wide");
   }
 
   @Test
@@ -232,5 +247,9 @@ public class CellLanguageTest {
 
   private static OneOfGen one(String spec) {
     return (OneOfGen) CellLanguage.parse(spec);
+  }
+
+  private static DecimalGen dec(String spec) {
+    return (DecimalGen) CellLanguage.parse(spec);
   }
 }
