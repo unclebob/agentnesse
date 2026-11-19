@@ -2,6 +2,7 @@ package agnesse.testsystems;
 
 import org.junit.Test;
 
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +12,8 @@ public class CommandRunnerStartTest {
   @Test
   public void aFinishedCommandIsJoinedWithoutWaiting() throws Exception {
     Logger.getLogger(CommandRunner.class.getName()).setLevel(Level.FINE);
-    CommandRunner runner = new CommandRunner(new String[] {"/bin/true"}, null, new CompositeExecutionLogListener());
+    String java = Path.of(System.getProperty("java.home"), "bin", "java").toString();
+    CommandRunner runner = new CommandRunner(new String[] {java, "-version"}, null, new CompositeExecutionLogListener());
 
     runner.asynchronousStart();
     runner.join();
