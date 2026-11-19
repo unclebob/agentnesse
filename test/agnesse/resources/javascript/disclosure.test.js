@@ -245,6 +245,7 @@ test("enter and space on the disclosure toggle a section in Chrome", async (t) =
   fs.copyFileSync(cssPath, path.join(dir, "agnesse.css"));
   const web = await startServer(dir);
   const port = await freePort();
+  let socket;
   const chrome = spawn(chromePath, [
     "--headless=new",
     `--remote-debugging-port=${port}`,
@@ -261,7 +262,9 @@ test("enter and space on the disclosure toggle a section in Chrome", async (t) =
   try {
     const targets = await waitJson(`http://127.0.0.1:${port}/json`, chrome);
     const page = targets.find((item) => item.type === "page");
-    const { ws, send, until } = await connect(page.webSocketDebuggerUrl);
+    const connected = await connect(page.webSocketDebuggerUrl);
+    socket = connected.ws;
+    const { send, until } = connected;
     await send("Page.enable");
     const loaded = until("Page.loadEventFired");
     await send("Page.navigate", { url: `http://127.0.0.1:${web.port}/` });
@@ -280,9 +283,13 @@ test("enter and space on the disclosure toggle a section in Chrome", async (t) =
     const renderedClosed = await focusAndPress(send, "#test-results .disclosure", " ");
     assert.equal(renderedClosed.open, false);
     assert.equal(renderedClosed.expanded, "false");
-    ws.close();
+    socket.close();
   } finally {
+    if (socket) socket.close();
     await stopChild(chrome);
+    chrome.stderr.destroy();
+    chrome.unref();
+    web.server.closeAllConnections();
     web.server.close();
     try {
       fs.rmSync(dir, { recursive: true, force: true });
