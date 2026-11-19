@@ -5,6 +5,7 @@ import agnesse.testsystems.slim.Table;
 import agnesse.testsystems.slim.property.CellLanguage;
 import agnesse.testsystems.slim.property.Generator;
 import agnesse.testsystems.slim.property.Seed;
+import agnesse.testsystems.slim.property.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,21 +52,39 @@ final class PropertySheet {
     return fixture(name, config, table);
   }
 
-  List<List<String>> draw() {
+  List<Drawn> draw() {
     Random random = seed.random();
-    List<List<String>> rows = new ArrayList<>();
+    List<Drawn> rows = new ArrayList<>();
     for (int trial = 0; trial < trials; trial++) {
       rows.add(drawRow(random));
     }
     return rows;
   }
 
-  private List<String> drawRow(Random random) {
+  private Drawn drawRow(Random random) {
     List<String> cells = new ArrayList<>();
+    List<Value> values = new ArrayList<>();
     for (Column column : columns) {
-      cells.add(column.cell(random));
+      if (column.kind == Kind.INPUT) {
+        Value value = column.generator.draw(random);
+        values.add(value);
+        cells.add(value.cell());
+      } else {
+        values.add(null);
+        cells.add(column.literal);
+      }
     }
-    return cells;
+    return new Drawn(cells, values);
+  }
+
+  static final class Drawn {
+    final List<String> cells;
+    final List<Value> values;
+
+    private Drawn(List<String> cells, List<Value> values) {
+      this.cells = cells;
+      this.values = values;
+    }
   }
 
   private static String named(Table table, String fixtureName) throws SyntaxError {
@@ -224,12 +243,6 @@ final class PropertySheet {
       return new Column("", index, null, text, Kind.NOTE);
     }
 
-    String cell(Random random) {
-      if (kind == Kind.INPUT) {
-        return generator.draw(random).cell();
-      }
-      return literal;
-    }
   }
 
   private static final class Config {

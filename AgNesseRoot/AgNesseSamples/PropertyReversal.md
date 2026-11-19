@@ -6,7 +6,7 @@
 }
 # Reversal holds for every list
 
-The generator row replaces the examples. Twenty trials, one assertion. Leave `seed` blank and the result shows the seed that was used.
+The generator row replaces the examples. Twenty trials, one assertion. Leave `seed` blank and the result shows the seed that was used. A failing property appends one shrunk counterexample and notes the original draw in the trials cell. This page passes, so it shows no counterexample.
 
 | property:agnesse.slim.test.ListReversal |
 | --- |

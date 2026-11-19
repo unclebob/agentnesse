@@ -11,6 +11,8 @@ import agnesse.testsystems.slim.InProcessSlimClientBuilder;
 import agnesse.testsystems.slim.MarkdownTable;
 import agnesse.testsystems.slim.MarkdownTableScanner;
 import agnesse.testsystems.slim.SlimClient;
+import agnesse.testsystems.slim.SlimCommunicationException;
+import agnesse.testsystems.slim.SlimVersionMismatch;
 import agnesse.testsystems.slim.SlimTestContextImpl;
 import agnesse.testsystems.slim.TableFinished;
 import agnesse.testsystems.slim.property.CellLanguage;
@@ -74,13 +76,14 @@ public class PropertyTableTest {
     assertEquals(0, ran.summary.getRight());
     assertEquals(1, BlockJson.from(ran.table).getJSONObject("counts").getInt("wrong"));
     assertEquals(6, ran.table.getRowCount());
-    assertEquals(drawn, ran.table.originalCell(0, 5));
-    assertEquals(drawn, ran.table.cellRecord(5, 0).actual());
+    assertEquals("red", ran.table.originalCell(0, 5));
+    assertEquals("red", ran.table.cellRecord(5, 0).actual());
+    assertEquals("blue", drawn);
     CellRecord failed = ran.table.cellRecord(5, 1);
     assertEquals("fail", failed.status());
     assertEquals("7", failed.actual());
     assertEquals("8", failed.expected());
-    assertTrue(ran.table.cellRecord(1, 1).actual().startsWith("failed trial 1 of 3"));
+    assertTrue(ran.table.cellRecord(1, 1).actual().contains("shrunk"));
     assertNull(ran.table.cellRecord(1, 1).status());
   }
 
@@ -98,10 +101,12 @@ public class PropertyTableTest {
       | %s | 0 |
       """.formatted(spec));
     assertEquals(1, ran.summary.getWrong());
-    assertEquals(second, ran.table.originalCell(0, ran.table.getRowCount() - 1));
+    assertEquals("1", ran.table.originalCell(0, ran.table.getRowCount() - 1));
     assertEquals("0", first);
+    assertEquals("3", second);
     assertEquals("0", ran.table.cellRecord(ran.table.getRowCount() - 1, 1).expected());
-    assertEquals(second, ran.table.cellRecord(ran.table.getRowCount() - 1, 1).actual());
+    assertEquals("1", ran.table.cellRecord(ran.table.getRowCount() - 1, 1).actual());
+    assertTrue(ran.table.cellRecord(1, 1).actual().contains("shrunk"));
   }
 
   @Test
@@ -201,6 +206,7 @@ public class PropertyTableTest {
       | one of:a | 7 |
       """);
     SlimAssertion.evaluateExpectations(opened.assertions, Map.of());
+    finish(opened);
     assertEquals(1, opened.context.getTestSummary().getExceptions());
     assertEquals(0, opened.context.getTestSummary().getRight());
   }
@@ -217,6 +223,8 @@ public class PropertyTableTest {
     assertEquals(1, thrown.summary.getExceptions());
     assertEquals(0, thrown.summary.getWrong());
     assertEquals("a", thrown.table.originalCell(0, thrown.table.getRowCount() - 1));
+    assertFalse(thrown.table.cellRecord(1, 1).actual().contains("shrunk"));
+    assertEquals(1, thrown.calls);
 
     Ran stopped = slim("""
       | property:agnesse.slim.test.TestSlim |
@@ -227,6 +235,9 @@ public class PropertyTableTest {
       """);
     assertEquals(1, stopped.summary.getWrong());
     assertEquals(0, stopped.summary.getExceptions());
+    assertEquals(1, stopped.calls);
+    assertEquals(0, stopped.shrinkRounds);
+    settled(stopped);
   }
 
   @Test
@@ -250,7 +261,7 @@ public class PropertyTableTest {
       """);
     assertEquals(1, exploded.summary.getExceptions());
     assertEquals(0, exploded.summary.getWrong());
-    assertTrue(exploded.table.cellRecord(1, 1).actual().contains("failed trial 1 of 1"));
+    assertTrue(exploded.table.cellRecord(1, 1).actual().contains("trial 1 of 1"));
   }
 
   @Test
@@ -278,6 +289,7 @@ public class PropertyTableTest {
       """);
     assertEquals(1, good.summary.getRight());
     assertEquals(0, good.summary.getWrong());
+    settled(good);
 
     String drawn = CellLanguage.parse("list of int:0..4 size 2..3").draw(new Seed(11).random()).cell();
     Ran bad = slim("""
@@ -288,9 +300,27 @@ public class PropertyTableTest {
       | list of int:0..4 size 2..3 | true |
       """);
     assertEquals(1, bad.summary.getWrong());
-    assertEquals(drawn, bad.table.originalCell(0, bad.table.getRowCount() - 1));
-    assertTrue(drawn.startsWith("[") && drawn.contains(","));
+    assertEquals("[0, 0]", bad.table.originalCell(0, bad.table.getRowCount() - 1));
+    assertEquals("[4, 0]", drawn);
+    assertTrue(bad.table.cellRecord(1, 1).actual().contains("drew " + drawn));
+    assertTrue(bad.table.cellRecord(1, 1).actual().contains("shrunk"));
     assertEquals("false", bad.table.cellRecord(bad.table.getRowCount() - 1, 1).actual());
+  }
+
+  @Test
+  public void aLongListShrinksToAShortListOfSmallElements() throws Exception {
+    Ran ran = slim("""
+      | property:agnesse.slim.test.ListReversal |
+      | trials | 1 |
+      | seed | 4 |
+      | items | still empty? |
+      | list of int:0..9 size 1..6 | true |
+      """);
+    assertEquals("[0]", ran.table.originalCell(0, ran.table.getRowCount() - 1));
+    assertTrue(ran.table.cellRecord(1, 1).actual().contains("drew [6, 5, 0, 9, 2]"));
+    assertTrue(ran.table.cellRecord(1, 1).actual().contains("shrunk"));
+    assertEquals(1, ran.summary.getWrong());
+    assertEquals(ran.shrinkRounds + 1, ran.calls);
   }
 
   @Test
@@ -323,8 +353,44 @@ public class PropertyTableTest {
       """);
     assertEquals(1, bad.summary.getWrong());
     assertEquals(0, bad.summary.getRight());
-    assertEquals(drawn, bad.table.originalCell(0, bad.table.getRowCount() - 1));
-    assertEquals("fail", bad.table.cellRecord(1, 1).status());
+    assertEquals("red", bad.table.originalCell(0, bad.table.getRowCount() - 1));
+    assertEquals("blue", drawn);
+    assertEquals(1, bad.table.childTables().size());
+    assertNull(bad.table.cellRecord(1, 1).status());
+    assertEquals("fail", bad.table.childTables().get(0).cellRecord(1, 3).status());
+    settled(bad);
+  }
+
+  @Test
+  public void theSeedRowIsWrittenOnceAndAShortFirstInputKeepsItsComma() throws Exception {
+    Ran once = slim("""
+      | property:agnesse.slim.test.TestSlim |
+      | trials | 1 |
+      | string | return int? |
+      | one of:a | 7 |
+      """);
+    int seeds = 0;
+    for (int row = 0; row < once.table.getRowCount(); row++) {
+      if ("seed".equals(once.table.originalCell(0, row))) {
+        seeds++;
+      }
+    }
+    assertEquals(1, seeds);
+    settled(once);
+
+    Ran pair = slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | pair | left | right |
+      | check | echo string | @left | nope |
+
+      | property | pair |
+      | trials | 1 |
+      | seed | 3 |
+      | left | right |
+      | one of:aa,a | one of:z,zz |
+      """);
+    assertTrue(pair.table.cellRecord(1, 1).actual(), pair.table.cellRecord(1, 1).actual().contains("a, zz"));
   }
 
   @Test
@@ -340,9 +406,9 @@ public class PropertyTableTest {
       | seed | 1 |
       | word | one of:a |
       """);
-    assertEquals(1, ran.summary.getWrong());
+    assertEquals(0, ran.summary.getWrong());
     assertEquals(0, ran.summary.getRight());
-    assertEquals(0, ran.summary.getExceptions());
+    assertEquals(1, ran.summary.getExceptions());
   }
 
   @Test
@@ -460,6 +526,86 @@ public class PropertyTableTest {
   }
 
   @Test
+  public void anIntShrinksToTheSmallestFailure() throws Exception {
+    Ran ran = slim("""
+      | property:agnesse.slim.test.Bound |
+      | trials | 30 |
+      | seed | 4 |
+      | n | below? |
+      | int:0..200 | true |
+      """);
+    assertEquals(1, ran.summary.getWrong());
+    assertEquals(0, ran.summary.getRight());
+    assertEquals("50", ran.table.originalCell(0, ran.table.getRowCount() - 1));
+    assertTrue(ran.table.cellRecord(1, 1).actual().contains("shrunk"));
+    assertTrue(ran.shrinkRounds > 0);
+    assertEquals(ran.shrinkRounds + 1, ran.calls);
+    settled(ran);
+  }
+
+  @Test
+  public void theSameSeedShrinksToTheSameRow() throws Exception {
+    String page = """
+      | property:agnesse.slim.test.ListReversal |
+      | trials | 1 |
+      | seed | 11 |
+      | items | still empty? |
+      | list of int:0..4 size 2..3 | true |
+      """;
+    assertEquals(slim(page).table.originalCell(0, 5), slim(page).table.originalCell(0, 5));
+    assertEquals("[0, 0]", slim(page).table.originalCell(0, 5));
+  }
+
+  @Test
+  public void anExceptionDuringShrinkingIsAFailingCandidate() throws Exception {
+    Ran ran = slim("""
+      | property:agnesse.slim.test.Bound |
+      | trials | 1 |
+      | seed | 1 |
+      | n | below cap? |
+      | int:0..120 | true |
+      """);
+    assertEquals("40", ran.table.originalCell(0, ran.table.getRowCount() - 1));
+    assertEquals(1, ran.summary.getWrong());
+    assertEquals(0, ran.summary.getExceptions());
+    assertTrue(ran.shrinkRounds > 0);
+    assertEquals(ran.shrinkRounds + 1, ran.calls);
+  }
+
+  @Test
+  public void aStopTestInsideAShrinkRoundSendsNoFurtherRound() throws Exception {
+    Ran ran = slim("""
+      | property:agnesse.slim.test.Bound |
+      | trials | 1 |
+      | seed | 5 |
+      | n | halt at sixty? |
+      | int:58..70 | true |
+      """);
+    assertEquals("60", ran.table.originalCell(0, ran.table.getRowCount() - 1));
+    assertEquals(2, ran.calls);
+    assertEquals(1, ran.shrinkRounds);
+    assertEquals(1, ran.summary.getWrong());
+    assertEquals(0, ran.summary.getExceptions());
+  }
+
+  @Test
+  public void theShrinkCapIsReported() throws Exception {
+    Ran ran = slim("""
+      | property:agnesse.slim.test.Bound |
+      | trials | 1 |
+      | seed | 1 |
+      | n | below? |
+      | int:200..399 | true |
+      """);
+    String caption = ran.table.cellRecord(1, 1).actual();
+    assertTrue(caption, caption.contains("drew 396; shrink cap"));
+    assertEquals("364", ran.table.originalCell(0, ran.table.getRowCount() - 1));
+    assertEquals(ShrinkLoop.CAP, ran.shrinkRounds);
+    assertEquals(ran.shrinkRounds + 1, ran.calls);
+    assertEquals(1, ran.summary.getWrong());
+  }
+
+  @Test
   public void aBlankTrialsCellUsesTheDefaultAndANegativeSeedIsKept() throws Exception {
     Opened trials = open("""
       | property:agnesse.slim.test.TestSlim |
@@ -476,6 +622,7 @@ public class PropertyTableTest {
       | int:1..1 | 7 |
       """);
     SlimAssertion.evaluateExpectations(seed.assertions, answered(seed.assertions, Map.of("returnInt", "7")));
+    finish(seed);
     assertEquals("-3", seed.property().cellRecord(1, 1).actual());
     assertEquals(1, seed.context.getTestSummary().getRight());
   }
@@ -489,6 +636,7 @@ public class PropertyTableTest {
       | int:1..1 |
       """);
     SlimAssertion.evaluateExpectations(opened.assertions, Map.of());
+    finish(opened);
     assertEquals(1, opened.context.getTestSummary().getRight());
     assertEquals(0, opened.context.getTestSummary().getWrong());
     assertTrue(opened.property().cellRecord(1, 1).actual().matches("-?\\d+"));
@@ -575,12 +723,26 @@ public class PropertyTableTest {
     return new Opened(context, tables, assertions);
   }
 
+  private static void settled(Ran ran) throws Exception {
+    int rows = ran.table.getRowCount();
+    int children = ran.table.childTables().size();
+    int wrong = ran.summary.getWrong();
+    int right = ran.summary.getRight();
+    int exceptions = ran.summary.getExceptions();
+    assertTrue(PropertyTable.latest.furtherAssertions().isEmpty());
+    assertEquals(rows, ran.table.getRowCount());
+    assertEquals(children, ran.table.childTables().size());
+    assertEquals(wrong, ran.summary.getWrong());
+    assertEquals(right, ran.summary.getRight());
+    assertEquals(exceptions, ran.summary.getExceptions());
+  }
+
   private static Ran slim(String markdown) throws Exception {
     WikiPage root = InMemoryPage.makeRoot("RooT");
     WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("Example"), markdown);
-    SlimClient client = new InProcessSlimClientBuilder(
-      new WikiPageDescriptor(page, true, false), PropertyTableTest.class.getClassLoader()).build();
-    HtmlSlimTestSystem system = new HtmlSlimTestSystem("slim", client, new SlimTableFactory());
+    Calls calls = new Calls(new InProcessSlimClientBuilder(
+      new WikiPageDescriptor(page, true, false), PropertyTableTest.class.getClassLoader()).build());
+    HtmlSlimTestSystem system = new HtmlSlimTestSystem("slim", calls, new SlimTableFactory());
     Grab grab = new Grab();
     system.addTestSystemListener(grab);
     system.start();
@@ -589,7 +751,34 @@ public class PropertyTableTest {
     } finally {
       system.bye();
     }
-    return new Ran(page, grab.summary, grab.last);
+    return new Ran(page, grab.summary, grab.property(), PropertyTable.lastRounds, calls.n);
+  }
+
+  private static final class Calls implements SlimClient {
+    private final SlimClient inner;
+    private int n;
+
+    private Calls(SlimClient inner) {
+      this.inner = inner;
+    }
+
+    @Override public void start() throws java.io.IOException, SlimVersionMismatch { inner.start(); }
+    @Override public void connect() throws java.io.IOException, SlimVersionMismatch { inner.connect(); }
+    @Override public void bye() throws java.io.IOException { inner.bye(); }
+    @Override public void kill() { inner.kill(); }
+    @Override public Map<String, Object> invokeAndGetResponse(List<agnesse.slim.instructions.Instruction> statements) throws SlimCommunicationException {
+      n++;
+      return inner.invokeAndGetResponse(statements);
+    }
+  }
+
+  private static void finish(Opened opened) throws Exception {
+    PropertyTable property = (PropertyTable) opened.tables.get(opened.tables.size() - 1);
+    List<SlimAssertion> more = property.furtherAssertions();
+    while (!more.isEmpty()) {
+      SlimAssertion.evaluateExpectations(more, Map.of());
+      more = property.furtherAssertions();
+    }
   }
 
   private static final class Opened {
@@ -610,7 +799,7 @@ public class PropertyTableTest {
 
   private static final class Grab implements TestSystemListener, TableFinished {
     private TestSummary summary;
-    private MarkdownTable last;
+    private final List<MarkdownTable> seen = new ArrayList<>();
 
     @Override
     public void testOutputChunk(TestPage testPage, String output) {
@@ -618,7 +807,17 @@ public class PropertyTableTest {
 
     @Override
     public void tableFinished(TestPage page, MarkdownTable table) {
-      last = table;
+      seen.add(table);
+    }
+
+    private MarkdownTable property() {
+      for (int i = seen.size() - 1; i >= 0; i--) {
+        MarkdownTable table = seen.get(i);
+        if (table.getRowCount() > 0 && table.originalCell(0, 0).startsWith("property")) {
+          return table;
+        }
+      }
+      return seen.get(seen.size() - 1);
     }
 
     @Override
@@ -631,11 +830,15 @@ public class PropertyTableTest {
     private final WikiPage page;
     private final TestSummary summary;
     private final MarkdownTable table;
+    private final int shrinkRounds;
+    private final int calls;
 
-    private Ran(WikiPage page, TestSummary summary, MarkdownTable table) {
+    private Ran(WikiPage page, TestSummary summary, MarkdownTable table, int shrinkRounds, int calls) {
       this.page = page;
       this.summary = summary;
       this.table = table;
+      this.shrinkRounds = shrinkRounds;
+      this.calls = calls;
     }
 
     private MarkdownTableScanner systemTables(Ran ran) {

@@ -123,7 +123,16 @@ public abstract class SlimTestSystem implements TestSystem {
 
   protected void processTable(SlimTable table, boolean isSuiteTearDownPage) throws TestExecutionException {
     List<SlimAssertion> assertions = table.getAssertions();
-    evaluateTables(assertions, resultsFor(table, isSuiteTearDownPage, assertions));
+    boolean more = true;
+    while (more) {
+      evaluateTables(assertions, resultsFor(table, isSuiteTearDownPage, assertions));
+      if (skipBecauseStopped(table)) {
+        table.finishNow();
+        return;
+      }
+      assertions = table.furtherAssertions();
+      more = !assertions.isEmpty();
+    }
   }
 
   private Map<String, Object> resultsFor(SlimTable table, boolean isSuiteTearDownPage, List<SlimAssertion> assertions) throws SlimCommunicationException {

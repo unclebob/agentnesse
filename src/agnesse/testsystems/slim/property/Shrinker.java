@@ -9,6 +9,11 @@ import java.util.function.Predicate;
  * or when every simpler candidate passes.
  */
 public final class Shrinker {
+  /** The simpler values of {@code current}, most aggressive first. One shrink round. */
+  public List<Value> candidates(Generator generator, Value current) {
+    return List.copyOf(generator.simpler(current));
+  }
+
   public Value shrink(Generator generator, Value start, Predicate<Value> stillFails, int stepCap) {
     if (stepCap < 0) {
       throw new IllegalArgumentException("step cap must be zero or more");

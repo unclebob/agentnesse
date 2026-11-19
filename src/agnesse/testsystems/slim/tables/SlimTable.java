@@ -89,6 +89,15 @@ public abstract class SlimTable {
 
   public abstract List<SlimAssertion> getAssertions() throws TestExecutionException;
 
+  /** Another Slim batch after {@link #getAssertions}, or none. Other tables are done. */
+  public List<SlimAssertion> furtherAssertions() throws TestExecutionException {
+    return List.of();
+  }
+
+  /** The run stopped. Paint what is known and send nothing more. */
+  public void finishNow() {
+  }
+
   protected String makeInstructionTag() {
     return String.format("%s_%d", tableName, instructionNumber++);
   }
