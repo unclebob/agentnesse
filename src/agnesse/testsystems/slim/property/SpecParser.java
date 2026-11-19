@@ -1,6 +1,8 @@
 package agnesse.testsystems.slim.property;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,10 +11,12 @@ import java.util.Set;
 /** Recursive descent for the v1 cell language. One spec, no trailing text. */
 final class SpecParser {
   private final String text;
+  private final Clock clock;
   private int at;
 
-  SpecParser(String text) {
+  SpecParser(String text, Clock clock) {
     this.text = text;
+    this.clock = clock;
   }
 
   Generator parse() {
@@ -39,6 +43,33 @@ final class SpecParser {
   }
 
   private Generator scalar() {
+    Generator timed = timed();
+    if (timed != null) {
+      return timed;
+    }
+    return numbered();
+  }
+
+  private Generator timed() {
+    if (take("date")) {
+      return moment(MomentGen.Kind.DATE);
+    }
+    if (take("time")) {
+      return moment(MomentGen.Kind.TIME);
+    }
+    if (take("datetime")) {
+      return moment(MomentGen.Kind.DATETIME);
+    }
+    if (take("period")) {
+      return period();
+    }
+    if (take("now")) {
+      return nowSpec();
+    }
+    return null;
+  }
+
+  private Generator numbered() {
     if (take("boolean")) {
       return new BoolGen();
     }
@@ -57,7 +88,146 @@ final class SpecParser {
     if (take("int")) {
       return integerSpec();
     }
-    throw error("expected int, boolean, string, list of, one of, decimal, money, pattern, or all of");
+    throw error("expected int, boolean, string, list of, one of, decimal, money, pattern, all of, date, time, datetime, period, or now");
+  }
+
+  private Generator moment(MomentGen.Kind kind) {
+    ZoneId zone = resolve(optionalZone());
+    if (!takeSymbol(":")) {
+      return MomentGen.open(kind, zone, clock().now());
+    }
+    long low = bound(kind, zone);
+    if (!takeSymbol("..")) {
+      throw error("expected ..");
+    }
+    return closed(kind, zone, low, bound(kind, zone));
+  }
+
+  private Generator closed(MomentGen.Kind kind, ZoneId zone, long low, long high) {
+    try {
+      return MomentGen.of(kind, zone, low, high, clock().now());
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private long bound(MomentGen.Kind kind, ZoneId zone) {
+    try {
+      return Moments.bound(kind, boundToken(), zone, clock().now());
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private String boundToken() {
+    skip();
+    if (take("now")) {
+      return "now" + durationTail();
+    }
+    return rawToken();
+  }
+
+  private String durationTail() {
+    StringBuilder out = new StringBuilder();
+    while (signAhead()) {
+      out.append(text.charAt(at));
+      at++;
+      appendPiece(out);
+    }
+    return out.toString();
+  }
+
+  private boolean signAhead() {
+    skip();
+    if (at >= text.length()) {
+      return false;
+    }
+    char sign = text.charAt(at);
+    return sign == '+' || sign == '-';
+  }
+
+  private void appendPiece(StringBuilder out) {
+    int mark = at;
+    while (at < text.length() && pieceChar(text.charAt(at))) {
+      out.append(text.charAt(at));
+      at++;
+    }
+    if (at == mark) {
+      throw error("expected a duration");
+    }
+  }
+
+  private boolean pieceChar(char c) {
+    return Character.isDigit(c) || c == 'd' || c == 'h' || c == 'm' || c == 's';
+  }
+
+  private String rawToken() {
+    skip();
+    int start = at;
+    while (at < text.length() && !Character.isWhitespace(text.charAt(at)) && !text.startsWith("..", at)) {
+      at++;
+    }
+    if (start == at) {
+      throw error("expected a bound");
+    }
+    return text.substring(start, at);
+  }
+
+  private Generator period() {
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    PeriodGen.Unit unit = unit();
+    return new PeriodGen(unit, resolve(optionalZone()));
+  }
+
+  private PeriodGen.Unit unit() {
+    if (take("day")) {
+      return PeriodGen.Unit.DAY;
+    }
+    if (take("week")) {
+      return PeriodGen.Unit.WEEK;
+    }
+    if (take("month")) {
+      return PeriodGen.Unit.MONTH;
+    }
+    throw error("expected day, week, or month");
+  }
+
+  private Generator nowSpec() {
+    resolve(null);
+    return new NowGen(clock());
+  }
+
+  private ZoneId optionalZone() {
+    if (!take("zone")) {
+      return null;
+    }
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    try {
+      return ZoneId.of(rawToken());
+    } catch (DateTimeException e) {
+      throw error("zone is not a zone id");
+    }
+  }
+
+  private ZoneId resolve(ZoneId override) {
+    if (override != null) {
+      return override;
+    }
+    if (clock == null || clock.zone() == null) {
+      throw error("zone is not configured");
+    }
+    return clock.zone();
+  }
+
+  private Clock clock() {
+    if (clock == null) {
+      throw error("zone is not configured");
+    }
+    return clock;
   }
 
   private Generator allOf() {

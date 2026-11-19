@@ -9,7 +9,8 @@ import java.util.Random;
  * the shrinker, most aggressive first.
  */
 public abstract sealed class Generator
-    permits IntGen, BoolGen, StringGen, ListGen, OneOfGen, DecimalGen, PatternGen, AllOfGen {
+    permits IntGen, BoolGen, StringGen, ListGen, OneOfGen, DecimalGen, PatternGen, AllOfGen,
+    MomentGen, PeriodGen, NowGen {
 
   /** Most cases an enumeration may run. A larger domain is refused. */
   public static final int ENUMERATION_LIMIT = 256;
@@ -21,5 +22,10 @@ public abstract sealed class Generator
   /** The cases of an enumerated generator, or null when this generator is sampled. */
   public List<Value> domain() {
     return null;
+  }
+
+  /** True when a draw depends on the property clock. */
+  public boolean timed() {
+    return false;
   }
 }

@@ -133,7 +133,7 @@ public class CellLanguageTest {
   @Test
   public void mapsDatesWeightsAndBrokenSpecsAreRejected() {
     assertRejects("map", "expected");
-    assertRejects("date", "expected");
+    assertRejects("date", "zone is not configured");
     assertRejects("weighted", "expected");
     assertRejects("", "missing");
     assertRejects("   ", "missing");

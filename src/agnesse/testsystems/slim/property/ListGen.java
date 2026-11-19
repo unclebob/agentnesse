@@ -26,6 +26,11 @@ final class ListGen extends Generator {
   }
 
   @Override
+  public boolean timed() {
+    return element.timed();
+  }
+
+  @Override
   public Value draw(Random random) {
     int count = size.draw(random);
     List<Value> items = new ArrayList<>();
