@@ -138,12 +138,7 @@ final class SpecParser {
   }
 
   private boolean signAhead() {
-    skip();
-    if (at >= text.length()) {
-      return false;
-    }
-    char sign = text.charAt(at);
-    return sign == '+' || sign == '-';
+    return charAhead("+-");
   }
 
   private void appendPiece(StringBuilder out) {
@@ -404,12 +399,15 @@ final class SpecParser {
   }
 
   private boolean filterNext() {
+    return charAhead("!><");
+  }
+
+  private boolean charAhead(String marks) {
     skip();
     if (at >= text.length()) {
       return false;
     }
-    char c = text.charAt(at);
-    return c == '!' || c == '>' || c == '<';
+    return marks.indexOf(text.charAt(at)) >= 0;
   }
 
   private IntFilter readFilter() {

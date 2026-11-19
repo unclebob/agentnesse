@@ -111,29 +111,45 @@ final class Moments {
   }
 
   private static Piece piece(String tail, int index) {
-    long days = 0;
-    long hours = 0;
-    long minutes = 0;
-    long seconds = 0;
+    long[] units = new long[4];
     int span = 0;
     int i = index;
-    while (i < tail.length() && tail.charAt(i) != '+' && tail.charAt(i) != '-') {
-      NumberRead read = number(tail, i);
-      if (read.count == 0 || read.next >= tail.length()) {
-        throw new IllegalArgumentException("expected a duration");
-      }
-      long n = read.value;
-      switch (tail.charAt(read.next)) {
-        case 'd' -> days = add(days, n);
-        case 'h' -> hours = add(hours, n);
-        case 'm' -> minutes = add(minutes, n);
-        case 's' -> seconds = add(seconds, n);
-        default -> throw new IllegalArgumentException("expected a duration");
-      }
-      i = read.next + 1;
+    while (continues(tail, i)) {
+      i = readUnit(tail, i, units);
       span++;
     }
-    return new Piece(days, hours, minutes, seconds, i, span == 0);
+    return new Piece(units[0], units[1], units[2], units[3], i, span == 0);
+  }
+
+  private static boolean continues(String tail, int index) {
+    if (index >= tail.length()) {
+      return false;
+    }
+    char sign = tail.charAt(index);
+    return sign != '+' && sign != '-';
+  }
+
+  private static int readUnit(String tail, int index, long[] units) {
+    NumberRead read = number(tail, index);
+    if (read.count == 0 || read.next >= tail.length()) {
+      throw new IllegalArgumentException("expected a duration");
+    }
+    store(units, tail.charAt(read.next), read.value);
+    return read.next + 1;
+  }
+
+  private static void store(long[] units, char unit, long amount) {
+    int slot = switch (unit) {
+      case 'd' -> 0;
+      case 'h' -> 1;
+      case 'm' -> 2;
+      case 's' -> 3;
+      default -> -1;
+    };
+    if (slot < 0) {
+      throw new IllegalArgumentException("expected a duration");
+    }
+    units[slot] = add(units[slot], amount);
   }
 
   private static NumberRead number(String tail, int index) {
