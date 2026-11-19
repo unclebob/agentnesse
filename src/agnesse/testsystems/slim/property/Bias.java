@@ -64,14 +64,14 @@ final class Bias {
     ZoneRules rules = zone.getRules();
     Instant cursor = TimeText.startOfDay(TimeText.FIRST, zone).minusSeconds(1);
     Instant stop = TimeText.LAST.atTime(23, 59, 59).atZone(zone).toInstant().plusSeconds(1);
-    while (true) {
-      ZoneOffsetTransition transition = rules.nextTransition(cursor);
-      if (transition == null || transition.getInstant().isAfter(stop)) {
-        return;
-      }
+    for (ZoneOffsetTransition transition = rules.nextTransition(cursor); open(transition, stop);
+         transition = rules.nextTransition(transition.getInstant())) {
       consumer.accept(transition);
-      cursor = transition.getInstant();
     }
+  }
+
+  private static boolean open(ZoneOffsetTransition transition, Instant stop) {
+    return transition != null && !transition.getInstant().isAfter(stop);
   }
 
   private static void addClock(List<Long> out, ZoneOffsetTransition transition, int low, int high) {

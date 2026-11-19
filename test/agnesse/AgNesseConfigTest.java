@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class AgNesseConfigTest {
@@ -159,6 +160,33 @@ public class AgNesseConfigTest {
       fail("expected an error");
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(), containsString("integer"));
+    }
+  }
+
+  @Test
+  public void aJsonArrayIsMalformed() throws Exception {
+    File file = write("[]");
+    try {
+      AgNesseConfig.apply(ContextConfigurator.empty(), file, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString(file.getName()));
+      assertThat(e.getMessage(), containsString("malformed"));
+    }
+  }
+
+  @Test
+  public void anUnreadableFileCannotBeRead() throws Exception {
+    File file = write("{}");
+    assertTrue(file.setReadable(false));
+    try {
+      AgNesseConfig.apply(ContextConfigurator.empty(), file, true);
+      fail("expected an error");
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(), containsString(file.getName()));
+      assertThat(e.getMessage(), containsString("cannot read"));
+    } finally {
+      assertTrue(file.setReadable(true));
     }
   }
 
