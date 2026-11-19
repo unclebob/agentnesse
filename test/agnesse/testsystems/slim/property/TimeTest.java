@@ -141,6 +141,9 @@ public class TimeTest {
     assertTrue(bias("date:2023-02-01..2023-03-01", clock).contains("2023-02-28"));
     assertTrue(bias("date:2024-12-15..2025-01-15", clock).contains("2024-12-31"));
     assertTrue(bias("date:2024-12-15..2025-01-15", clock).contains("2025-01-01"));
+    assertEquals("2020-01-01", draw("date:2020-01-01..2020-01-31", clock, biased(0)));
+    assertEquals("2020-01-31", draw("date:2020-01-15..2020-01-31", clock, biased(0)));
+    assertEquals("2020-01-15", draw("date:2020-01-15..2020-01-20", clock, biased(0)));
   }
 
   @Test
@@ -159,7 +162,7 @@ public class TimeTest {
   @Test
   public void timeBiasUsesTheLocalClockOfATransition() {
     Clock clock = new Clock(NEW_YORK, NOON);
-    Set<String> hits = bias("time zone:America/New_York :01:00:00..03:30:00", clock);
+    Set<String> hits = bias("time zone:America/New_York :01:59:59..03:00:01", clock);
     assertTrue(hits.contains("01:59:59"));
     assertTrue(hits.contains("02:00:00"));
     assertTrue(hits.contains("03:00:00"));
@@ -168,6 +171,16 @@ public class TimeTest {
     Set<String> gap = bias("time zone:America/New_York :02:10:00..02:20:00", clock);
     assertFalse(gap.contains("01:59:59"));
     assertFalse(gap.contains("03:00:01"));
+  }
+
+  @Test
+  public void aCalendarStepStaysOnTheDayWhenTheTargetIsThatDay() {
+    LocalDate day = LocalDate.of(2024, 6, 1);
+    long at = day.toEpochDay();
+    assertEquals(day, Closer.stepCalendar(at, at, day, true));
+    assertEquals(day.plusYears(1), Closer.stepCalendar(at, at + 10, day, true));
+    assertEquals(day.minusYears(1), Closer.stepCalendar(at, at - 10, day, true));
+    assertEquals(day.plusMonths(1), Closer.stepCalendar(at, at + 40, day, false));
   }
 
   @Test
@@ -180,6 +193,9 @@ public class TimeTest {
       "2024-06-02T11:59:45Z",
       "2024-06-02T12:00:29Z"), cells(deadline, "2024-06-02T12:00:30Z"));
     assertTrue(cells(deadline, "2024-06-02T11:59:00Z").isEmpty());
+    Clock atEnd = clock(Instant.parse("2024-06-02T13:30:00Z"));
+    Generator closed = CellLanguage.parse("datetime:2024-06-02T11:00:00Z..2024-06-02T13:30:00Z", atEnd);
+    assertEquals("2024-06-02T13:30:00Z", cells(closed, "2024-06-02T11:30:00Z").get(0));
 
     Clock inside = clock(NOON);
     Generator window = CellLanguage.parse("datetime:2024-06-02T11:00:00Z..2024-06-02T13:00:00Z", inside);

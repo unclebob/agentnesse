@@ -76,7 +76,7 @@ final class Closer {
     return snapped.toEpochDay();
   }
 
-  private static LocalDate stepCalendar(long current, long target, LocalDate snapped, boolean year) {
+  static LocalDate stepCalendar(long current, long target, LocalDate snapped, boolean year) {
     long at = snapped.toEpochDay();
     if (target < current && at == current) {
       return year ? snapped.minusYears(1) : snapped.minusMonths(1);
@@ -116,9 +116,6 @@ final class Closer {
   }
 
   private static long step(long current, long target) {
-    if (target == current) {
-      return current;
-    }
-    return current + (target > current ? 1 : -1);
+    return current + Long.signum(target - current);
   }
 }
