@@ -72,6 +72,11 @@ public abstract class SlimTable {
     parentTable.appendChildTable(row, childTable);
   }
 
+  /** A nested table that runs with this one and is not rendered as a child. */
+  protected void adoptedBy(SlimTable parentTable) {
+    parent = parentTable;
+  }
+
   public String replaceSymbols(String s) {
     return new SymbolReplacer(s).replace();
   }

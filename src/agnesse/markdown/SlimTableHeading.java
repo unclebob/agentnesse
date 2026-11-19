@@ -22,7 +22,8 @@ public final class SlimTableHeading {
     Map.entry("scenario", "scenario"),
     Map.entry("import", "import"),
     Map.entry("library", "library"),
-    Map.entry("baseline", "baseline")
+    Map.entry("baseline", "baseline"),
+    Map.entry("property", "property")
   );
 
   private final String type;
@@ -37,9 +38,10 @@ public final class SlimTableHeading {
 
   /** A comment table is not Slim. The marker is the whole first cell, or the text before a colon. */
   public static boolean comment(String cell) {
-    String text = cell == null ? "" : cell.trim();
-    int colon = text.indexOf(':');
-    String head = colon < 0 ? text : text.substring(0, colon).trim();
+    if (cell == null) {
+      return false;
+    }
+    String head = cell.trim().split(":", 2)[0].trim();
     return head.equalsIgnoreCase("comment");
   }
 
