@@ -17,6 +17,7 @@ The user guide includes the example pages. Rendering [UserGuide](.AgNesse.UserGu
 | ensure | bundled html contains; | AgNesse.UserGuide | renders a link to each child page |
 | ensure | bundled html contains; | AgNesse.UserGuide | A one-line alias does nothing |
 | ensure | bundled html contains; | AgNesse.UserGuide | which a command that is not Java cannot do |
+| ensure | bundled html contains; | AgNesse.UserGuide | A property table draws the inputs |
 | ensure | bundled html contains; | AgNesse.UserGuide | The first token must not contain |
 | ensure | bundled html contains; | AgNesse.UserGuide | exits with the number of failing pages |
 | ensure | bundled html contains; | AgNesse.UserGuide | does not open a port |

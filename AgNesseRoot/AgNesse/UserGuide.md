@@ -41,6 +41,10 @@ include SuiteAcceptanceTests.SuiteUserGuide.JavaSlim
 ```
 
 ```agnesse
+include SuiteAcceptanceTests.SuiteUserGuide.Property
+```
+
+```agnesse
 include SuiteAcceptanceTests.SuiteUserGuide.PythonSlim
 ```
 
