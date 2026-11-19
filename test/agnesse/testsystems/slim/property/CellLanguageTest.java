@@ -179,6 +179,15 @@ public class CellLanguageTest {
     assertRejects("money:1..2 scale 2", "trailing");
     assertRejects("decimal:-9223372036854775808..9223372036854775807 scale 0", "too wide");
     assertRejects("decimal:0..10000000000000000000 scale 0", "too wide");
+    assertRejects("pattern", ":");
+    assertRejects("pattern:", "pattern");
+    assertRejects("pattern:[0-9]", "{");
+    assertRejects("pattern:[0-9]{0}", "1 through");
+    assertRejects("pattern:[0-9]{33}", "1 through");
+    assertRejects("pattern:[A-z]{1}", "unknown");
+    assertRejects("pattern:[0-9]{32}[0-9]{32}X", "longer");
+    assertRejects("pattern:[", "]");
+    assertRejects("pattern:AB size 1..1", "trailing");
   }
 
   @Test

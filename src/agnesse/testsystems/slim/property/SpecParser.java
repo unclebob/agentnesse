@@ -38,6 +38,9 @@ final class SpecParser {
     if (take("string")) {
       return string();
     }
+    if (take("pattern")) {
+      return pattern();
+    }
     if (take("decimal")) {
       return decimal(false);
     }
@@ -47,7 +50,80 @@ final class SpecParser {
     if (take("int")) {
       return integerSpec();
     }
-    throw error("expected int, boolean, string, list of, one of, decimal, or money");
+    throw error("expected int, boolean, string, list of, one of, decimal, money, or pattern");
+  }
+
+  private Generator pattern() {
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    List<PatternGen.Piece> pieces = new ArrayList<>();
+    skip();
+    if (at >= text.length()) {
+      throw error("expected a pattern");
+    }
+    while (at < text.length() && !sizeAhead()) {
+      skip();
+      if (at >= text.length() || sizeAhead()) {
+        break;
+      }
+      pieces.add(patternPiece());
+    }
+    try {
+      return new PatternGen(pieces);
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  /** {@code size} followed by a number belongs to the list that wraps this pattern. */
+  private boolean sizeAhead() {
+    int mark = at;
+    boolean found = take("size") && numberAhead();
+    at = mark;
+    return found;
+  }
+
+  private boolean numberAhead() {
+    skip();
+    int mark = at;
+    if (at < text.length() && text.charAt(at) == '-') {
+      at++;
+    }
+    boolean digits = at < text.length() && Character.isDigit(text.charAt(at));
+    at = mark;
+    return digits;
+  }
+
+  private PatternGen.Piece patternPiece() {
+    if (text.charAt(at) == '[') {
+      return characterClass();
+    }
+    int start = at;
+    while (at < text.length() && text.charAt(at) != '[' && !Character.isWhitespace(text.charAt(at))) {
+      at++;
+    }
+    if (start == at) {
+      throw error("expected a pattern");
+    }
+    return PatternGen.Piece.literal(text.substring(start, at));
+  }
+
+  private PatternGen.Piece characterClass() {
+    int close = text.indexOf(']', at);
+    if (close < 0) {
+      throw error("expected ]");
+    }
+    String name = text.substring(at, close + 1);
+    at = close + 1;
+    if (!takeSymbol("{")) {
+      throw error("expected {");
+    }
+    int count = integer();
+    if (!takeSymbol("}")) {
+      throw error("expected }");
+    }
+    return PatternGen.Piece.clazz(name, count);
   }
 
   private Generator decimal(boolean money) {

@@ -9,7 +9,7 @@ import java.util.Random;
  * the shrinker, most aggressive first.
  */
 public abstract sealed class Generator
-    permits IntGen, BoolGen, StringGen, ListGen, OneOfGen, DecimalGen {
+    permits IntGen, BoolGen, StringGen, ListGen, OneOfGen, DecimalGen, PatternGen {
 
   public abstract Value draw(Random random);
 

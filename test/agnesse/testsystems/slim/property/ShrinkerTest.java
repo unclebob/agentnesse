@@ -136,6 +136,29 @@ public class ShrinkerTest {
   }
 
   @Test
+  public void patternsShrinkTowardTheFirstCharacterOfEachClass() {
+    assertEquals(List.of("00", "07", "27", "37", "40", "43", "46"),
+        cells(simpler("pattern:[0-9]{2}", "47")));
+    assertEquals("01", shrink("pattern:[0-9]{2}", text("47"), v -> !"00".equals(v.cell()), 8));
+    assertEquals("ID-00", shrink("pattern:ID-[0-9]{2}", text("ID-47"), v -> true, 4));
+    calls = 0;
+    assertEquals("ID-00", shrink("pattern:ID-[0-9]{2}", text("ID-00"), count(v -> true), 3));
+    assertEquals(0, calls);
+    assertEquals("AB", shrink("pattern:AB", text("AB"), v -> true, 2));
+  }
+
+  @Test
+  public void aPatternRejectsAValueThatDoesNotMatch() {
+    Generator ids = CellLanguage.parse("pattern:ID-[0-9]{2}");
+    assertThrows(IllegalArgumentException.class,
+        () -> shrinker.shrink(ids, text("ID-4"), v -> true, 2));
+    assertThrows(IllegalArgumentException.class,
+        () -> shrinker.shrink(ids, text("ID-4A"), v -> true, 2));
+    assertThrows(IllegalArgumentException.class,
+        () -> shrinker.shrink(ids, text("NO-47"), v -> true, 2));
+  }
+
+  @Test
   public void aDecimalThatIsNotInScaleFailsToShrink() {
     Generator money = CellLanguage.parse("money:0..1");
     assertThrows(IllegalArgumentException.class,

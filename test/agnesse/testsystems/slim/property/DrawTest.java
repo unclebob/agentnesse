@@ -152,6 +152,20 @@ public class DrawTest {
   }
 
   @Test
+  public void patternsDrawIdentifiersFromTheSeed() {
+    String id = draw("pattern:REG-[0-9]{4}", 1L);
+    assertTrue(id, id.matches("REG-[0-9]{4}"));
+    assertEquals(id, draw("pattern:REG-[0-9]{4}", 1L));
+    assertEquals(id, draw("pattern: REG- [0-9] {4}", 1L));
+    String part = draw("pattern:PN-[A-Z]{2}[0-9]{2}", 4L);
+    assertTrue(part, part.matches("PN-[A-Z]{2}[0-9]{2}"));
+    assertEquals("AB", draw("pattern:AB", 6L));
+    assertTrue(draw("pattern:[a-z]{1}", 7L).matches("[a-z]"));
+    assertEquals("[AB]", draw("list of pattern:AB size 1..1", 8L));
+    assertEquals("[size]", draw("list of pattern:size size 1..1", 9L));
+  }
+
+  @Test
   public void adversarialStringsMixOrdinaryTextWithHostilePayloads() {
     assertEquals("", draw("string:adversarial length 0..0", 1L));
     assertEquals("", draw("string:adversarial length 0..0", 2L));
