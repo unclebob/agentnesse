@@ -147,6 +147,9 @@ public class ShrinkerTest {
     calls = 0;
     assertEquals("red", shrinker.shrink(colors, new TextValue("red"), count(v -> true), 4).cell());
     assertEquals(0, calls);
+    Generator weighted = CellLanguage.parse("one of:a 70, b 20, c 10");
+    assertEquals("a", shrinker.shrink(weighted, new TextValue("c"), v -> true, 4).cell());
+    assertEquals("b", shrinker.shrink(weighted, new TextValue("c"), v -> !"a".equals(v.cell()), 4).cell());
   }
 
   @Test

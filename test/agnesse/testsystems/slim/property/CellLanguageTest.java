@@ -77,6 +77,11 @@ public class CellLanguageTest {
   @Test
   public void aChoiceMayContainAColonButNotACommaOrASpace() {
     assertEquals(List.of("a:b", "c"), one("one of:a:b,c").choices());
+    assertEquals(List.of(), one("one of:red,green").weights());
+    assertEquals(List.of(70, 20, 10), one("one of:a 70, b 20, c 10").weights());
+    assertEquals(List.of("a", "b", "c"), one("one of: a 70, b 20, c 10").choices());
+    assertEquals(List.of(1), one("one of:only 1").weights());
+    assertThrows(IllegalArgumentException.class, () -> new OneOfGen(List.of("a"), List.of(0)));
   }
 
   @Test
@@ -148,6 +153,11 @@ public class CellLanguageTest {
     assertRejects("one of:,red", "empty");
     assertRejects("one of:red,red", "duplicate");
     assertRejects("one of:red, red", "duplicate");
+    assertRejects("one of:a 70, b", "weight");
+    assertRejects("one of:a, b 20", "weight");
+    assertRejects("one of:a 0, b 1", "at least 1");
+    assertRejects("one of:a 1, a 2", "duplicate");
+    assertRejects("one of:a -1, b 1", "trailing");
     assertRejects("list of int:0..1 size 3..1", "inverted");
     assertRejects("int:1..", "integer");
     assertRejects("int:1", "..");

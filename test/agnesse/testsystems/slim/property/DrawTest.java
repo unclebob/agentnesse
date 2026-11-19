@@ -103,6 +103,29 @@ public class DrawTest {
     assertEquals("red", draw("one of:red,green,blue", 0L));
     assertEquals("green", draw("one of:red,green,blue", 2L));
     assertEquals("blue", draw("one of:red,green,blue", 3L));
+    assertEquals(sequence("one of:a 70, b 20, c 10", 5L, 6),
+        sequence("one of:a 70, b 20, c 10", 5L, 6));
+    assertEquals("only", draw("one of:only 4", 9L));
+  }
+
+  @Test
+  public void aSmallWeightStillAppears() {
+    int rare = 0;
+    int common = 0;
+    Generator spec = CellLanguage.parse("one of:a 70, b 20, c 10");
+    Random random = new Seed(1L).random();
+    for (int i = 0; i < 2000; i++) {
+      String cell = spec.draw(random).cell();
+      if ("a".equals(cell)) {
+        common++;
+      }
+      if ("c".equals(cell)) {
+        rare++;
+      }
+    }
+    assertTrue(common > 1000);
+    assertTrue(rare > 50);
+    assertTrue(common > rare);
   }
 
   @Test

@@ -189,12 +189,36 @@ final class SpecParser {
       throw error("expected :");
     }
     List<String> choices = new ArrayList<>();
+    List<Integer> weights = new ArrayList<>();
     choices.add(choice());
+    boolean weighted = weightNext();
+    if (weighted) {
+      weights.add(weight());
+    }
     while (takeSymbol(",")) {
       choices.add(choice());
+      if (weightNext() != weighted) {
+        throw error("weight");
+      }
+      if (weighted) {
+        weights.add(weight());
+      }
     }
     requireUnique(choices);
-    return new OneOfGen(choices);
+    return weighted ? new OneOfGen(choices, weights) : new OneOfGen(choices);
+  }
+
+  private boolean weightNext() {
+    skip();
+    return at < text.length() && Character.isDigit(text.charAt(at));
+  }
+
+  private int weight() {
+    int value = integer();
+    if (value < 1) {
+      throw error("weight must be at least 1");
+    }
+    return value;
   }
 
   private String choice() {
