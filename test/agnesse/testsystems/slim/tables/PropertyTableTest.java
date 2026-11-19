@@ -18,6 +18,7 @@ import agnesse.testsystems.slim.TableFinished;
 import agnesse.testsystems.slim.property.CellLanguage;
 import agnesse.testsystems.slim.property.Seed;
 import agnesse.testsystems.slim.results.CellRecord;
+import agnesse.testsystems.slim.results.SlimExceptionResult;
 import agnesse.wiki.PathParser;
 import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
@@ -155,6 +157,7 @@ public class PropertyTableTest {
     String seed = ran.table.cellRecord(ran.table.getRowCount() - 1, 1).actual();
     assertTrue(seed.matches("-?\\d+"));
     assertFalse(source.contains(seed));
+    assertEquals(-1, rowNamed(ran, "now"));
   }
 
   @Test
@@ -730,6 +733,207 @@ public class PropertyTableTest {
     assertFalse(script, script.contains("<script>"));
   }
 
+  @Test
+  public void anIgnoredAssignDoesNotCount() {
+    PropertyTable.Ignored ignored = new PropertyTable.Ignored();
+    SlimExceptionResult boom = new SlimExceptionResult("assign", "boom");
+    assertNull(ignored.evaluateExpectation("assigned"));
+    assertNull(ignored.evaluateException(boom));
+  }
+
+  @Test
+  public void aBlankNowIsDerivedFromTheSeedAndNotSaved() throws Exception {
+    String source = """
+      !define zone {UTC}
+
+      | property:agnesse.slim.test.TestSlim |
+      | seed | 42 |
+      | trials | 1 |
+      | now | |
+      | string | return int? |
+      | one of:red | 7 |
+      """;
+    Ran ran = slim(source);
+    assertEquals(1, ran.summary.getRight());
+    assertEquals(source, ran.page.getData().getContent());
+    assertEquals("2000-01-01T00:00:42Z", fact(ran, "now"));
+    assertFalse(source.contains("2000-01-01T00:00:42Z"));
+    Opened opened = open(source);
+    assertEquals("2000-01-01T00:00:42Z", opened.context.getSymbol("now"));
+    assertTrue(opened.assertions.get(0).getInstruction().toString().contains("symbolName='now'"));
+  }
+
+  @Test
+  public void anExplicitNowIsCanonicalAndAColumnReceivesIt() throws Exception {
+    String source = """
+      !define zone {America/New_York}
+
+      | property:agnesse.slim.test.Deadline |
+      | trials | 1 |
+      | seed | 1 |
+      | now | 2024-06-02T12:00:00Z |
+      | now | at | past? |
+      | now | datetime:now+35h59m..now+35h59m | false |
+      """;
+    Ran ran = slim(source);
+    assertEquals(1, ran.summary.getRight());
+    assertEquals(0, ran.summary.getWrong());
+    assertEquals("2024-06-02T08:00:00-04:00", fact(ran, "now"));
+    List<String> sent = setterArgs(open(source).assertions);
+    assertEquals("2024-06-02T08:00:00-04:00", sent.get(0));
+    assertEquals("2024-06-03T19:59:00-04:00", sent.get(1));
+  }
+
+  @Test
+  public void aLocalNowUsesTheConfiguredZone() throws Exception {
+    Opened opened = open("""
+      !define zone {UTC}
+
+      | property:agnesse.slim.test.TestSlim |
+      | now | 2024-06-02T08:00:00 |
+      | trials | 1 |
+      | string | return string? |
+      | time:now..now | 08:00:00 |
+      """);
+    assertEquals("2024-06-02T08:00:00Z", opened.context.getSymbol("now"));
+    assertEquals("08:00:00", setterArgs(opened.assertions).get(0));
+  }
+
+  @Test
+  public void theZoneCanComeFromConfiguration() throws Exception {
+    Properties properties = new Properties();
+    properties.setProperty("zone", "UTC");
+    String source = """
+      | property:agnesse.slim.test.TestSlim |
+      | trials | 1 |
+      | seed | 42 |
+      | string | return int? |
+      | date:2020-01-15..2020-01-15 | 7 |
+      """;
+    Ran ran = slim(source, properties);
+    assertEquals(1, ran.summary.getRight());
+    assertEquals("2000-01-01T00:00:42Z", fact(ran, "now"));
+    assertFalse(source.contains("2000-01-01"));
+  }
+
+  @Test
+  public void aScenarioReadsTheSameClock() throws Exception {
+    Ran ran = slim("""
+      !define zone {UTC}
+
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | read the clock | instant |
+      | check | echo string | $now | 2024-06-01T00:00:00Z |
+      | check | echo string | @instant | 2024-06-02T12:00:00Z |
+
+      | property | read the clock |
+      | trials | 1 |
+      | seed | 1 |
+      | now | 2024-06-01T00:00:00Z |
+      | instant | datetime:2024-06-02T12:00:00Z..2024-06-02T12:00:00Z |
+      """);
+    assertEquals(1, ran.summary.getRight());
+    assertEquals(0, ran.summary.getWrong());
+    settled(ran);
+  }
+
+  @Test
+  public void aDeadlineShrinksToTheBoundary() throws Exception {
+    Ran ran = slim("""
+      !define zone {UTC}
+
+      | property:agnesse.slim.test.Deadline |
+      | trials | 1 |
+      | seed | 1 |
+      | now | 2024-06-01T00:00:00Z |
+      | now | at | past? |
+      | now | datetime:now+35h59m..now+36h01m | false |
+      """);
+    assertEquals(1, ran.summary.getWrong());
+    assertEquals(0, ran.summary.getRight());
+    assertEquals("2024-06-02T12:00:00Z", ran.table.originalCell(1, ran.table.getRowCount() - 1));
+    assertTrue(fact(ran, "trials").contains("shrunk"));
+    assertTrue(ran.shrinkRounds > 0);
+    settled(ran);
+  }
+
+  @Test
+  public void aListOfDatesAndAPeriodRoundTrip() throws Exception {
+    Ran ran = slim("""
+      !define zone {UTC}
+
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | round trip | value |
+      | check | echo string | @value | @value |
+
+      | property | round trip |
+      | trials | 1 |
+      | seed | 3 |
+      | value | list of date:2020-01-01..2020-01-01 size 1..1 |
+      """);
+    assertEquals(1, ran.summary.getRight());
+    Ran period = slim("""
+      !define zone {UTC}
+
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | round trip | value |
+      | check | echo string | @value | @value |
+
+      | property | round trip |
+      | trials | 1 |
+      | seed | 0 |
+      | value | period:day |
+      """);
+    assertEquals(1, period.summary.getRight());
+  }
+
+  @Test
+  public void badClocksAndMissingZonesAreRefused() {
+    assertMessage("now is already set", """
+      !define zone {UTC}
+
+      | property:agnesse.slim.test.TestSlim |
+      | now | 2024-06-01T00:00:00Z |
+      | now | 2024-06-01T00:00:00Z |
+      | string | return int? |
+      | one of:a | 7 |
+      """);
+    assertMessage("ISO-8601", """
+      !define zone {UTC}
+
+      | property:agnesse.slim.test.TestSlim |
+      | now | tomorrow |
+      | string | return int? |
+      | one of:a | 7 |
+      """);
+    assertMessage("zone is not configured", """
+      | property:agnesse.slim.test.TestSlim |
+      | string | return string? |
+      | date:2020-01-01..2020-01-01 | 2020-01-01 |
+      """);
+    assertMessage("zone is not configured", """
+      | property:agnesse.slim.test.TestSlim |
+      | string | return string? |
+      | datetime zone:UTC :2020-01-01T00:00:00Z..2020-01-01T00:00:00Z | 2020-01-01T00:00:00Z |
+      """);
+    assertMessage("zone id", """
+      !define zone {Not/AZone}
+
+      | property:agnesse.slim.test.TestSlim |
+      | string | return string? |
+      | date:2020-01-01..2020-01-01 | 2020-01-01 |
+      """);
+    assertMessage("zone is not configured", """
+      | property:agnesse.slim.test.TestSlim |
+      | now | 2024-06-01T00:00:00Z |
+      | string | return int? |
+      | one of:a | 7 |
+      """);
+  }
+
   private static Ran failedChoice(String spec, long seed) throws Exception {
     return slim("""
       | property:agnesse.slim.test.TestSlim |
@@ -805,12 +1009,21 @@ public class PropertyTableTest {
   }
 
   private static String trialCell(Ran ran) {
+    return fact(ran, "trials");
+  }
+
+  private static String fact(Ran ran, String label) {
+    int row = rowNamed(ran, label);
+    return row < 0 ? "" : ran.table.cellRecord(row, 1).actual();
+  }
+
+  private static int rowNamed(Ran ran, String label) {
     for (int row = 0; row < ran.table.getRowCount(); row++) {
-      if ("trials".equals(ran.table.originalCell(0, row))) {
-        return ran.table.cellRecord(row, 1).actual();
+      if (label.equals(ran.table.originalCell(0, row))) {
+        return row;
       }
     }
-    return "";
+    return -1;
   }
 
   private static void assertMessage(String message, String markdown) {
@@ -879,8 +1092,11 @@ public class PropertyTableTest {
   }
 
   private static Opened open(String markdown) throws Exception {
-    WikiPage root = InMemoryPage.makeRoot("RooT");
-    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("Example"), markdown);
+    return open(markdown, null);
+  }
+
+  private static Opened open(String markdown, Properties zone) throws Exception {
+    WikiPage page = page(markdown, zone);
     SlimTestContextImpl context = new SlimTestContextImpl(new WikiTestPage(page));
     MarkdownTableScanner scanner = new MarkdownTableScanner(page.getData().getContent());
     SlimTableFactory factory = new SlimTableFactory();
@@ -909,8 +1125,11 @@ public class PropertyTableTest {
   }
 
   private static Ran slim(String markdown) throws Exception {
-    WikiPage root = InMemoryPage.makeRoot("RooT");
-    WikiPage page = WikiPageUtil.addPage(root, PathParser.parse("Example"), markdown);
+    return slim(markdown, null);
+  }
+
+  private static Ran slim(String markdown, Properties zone) throws Exception {
+    WikiPage page = page(markdown, zone);
     Calls calls = new Calls(new InProcessSlimClientBuilder(
       new WikiPageDescriptor(page, true, false), PropertyTableTest.class.getClassLoader()).build());
     HtmlSlimTestSystem system = new HtmlSlimTestSystem("slim", calls, new SlimTableFactory());
@@ -923,6 +1142,11 @@ public class PropertyTableTest {
       system.bye();
     }
     return new Ran(page, grab.summary, grab.property(), PropertyTable.lastRounds, calls.n);
+  }
+
+  private static WikiPage page(String markdown, Properties zone) throws Exception {
+    WikiPage root = zone == null ? InMemoryPage.makeRoot("RooT") : InMemoryPage.makeRoot("RooT", zone);
+    return WikiPageUtil.addPage(root, PathParser.parse("Example"), markdown);
   }
 
   private static final class Calls implements SlimClient {

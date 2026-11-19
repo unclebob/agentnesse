@@ -23,6 +23,7 @@ import java.util.Map;
  * batch: every simpler candidate, most aggressive first, and the first that
  * still fails is kept. The page shows that shrunk row and records one
  * assertion. The seed is written on the result and not saved back onto the page.
+ * A property that draws a time also writes its clock the same way.
  *
  * <p>A fixture exception during a round counts as a failing candidate, so
  * shrinking continues, and it is not itself an assertion. A stop-test
@@ -50,6 +51,7 @@ public class PropertyTable extends SlimTable {
     }
     seedShown = true;
     showSeed();
+    showNow();
   }
 
   static PropertyTable latest;
@@ -67,11 +69,20 @@ public class PropertyTable extends SlimTable {
   @Override
   public List<SlimAssertion> getAssertions() throws TestExecutionException {
     sheet = PropertySheet.read(table, getFixtureName(), getTestContext());
-    trials = trials(sheet.draw());
-    if (sheet.scenario == null) {
-      return fixtureAssertions();
+    if (sheet.timed) {
+      setSymbol("now", sheet.clock.text());
     }
-    return scenarioAssertions();
+    trials = trials(sheet.draw());
+    List<SlimAssertion> assertions = sheet.scenario == null ? fixtureAssertions() : scenarioAssertions();
+    assignNow(assertions);
+    return assertions;
+  }
+
+  private void assignNow(List<SlimAssertion> assertions) {
+    if (!sheet.timed) {
+      return;
+    }
+    assertions.add(0, makeAssertion(assign("now", sheet.clock.text()), new Ignored()));
   }
 
   @Override
@@ -362,10 +373,19 @@ public class PropertyTable extends SlimTable {
   }
 
   private void showSeed() {
-    String text = Long.toString(sheet.seed.value());
-    int row = sheet.seedRow;
-    if (!sheet.hasSeed) {
-      row = markdown().addRow(List.of("seed", text));
+    showFact(sheet.hasSeed, sheet.seedRow, "seed", Long.toString(sheet.seed.value()));
+  }
+
+  private void showNow() {
+    if (!sheet.timed) {
+      return;
+    }
+    showFact(sheet.hasNow, sheet.nowRow, "now", sheet.clock.text());
+  }
+
+  private void showFact(boolean present, int row, String label, String text) {
+    if (!present) {
+      row = markdown().addRow(List.of(label, text));
     } else {
       widen(row);
       markdown().substitute(1, row, text);
@@ -458,6 +478,12 @@ public class PropertyTable extends SlimTable {
       broken = true;
       stop = exceptionResult != null && (exceptionResult.isStopTestException() || exceptionResult.isStopSuiteException());
     }
+  }
+
+  static final class Ignored implements SlimExpectation {
+    @Override public TestResult evaluateExpectation(Object returnValue) { return null; }
+
+    @Override public SlimExceptionResult evaluateException(SlimExceptionResult exceptionResult) { return null; }
   }
 
   private final class QuietCall implements SlimExpectation {

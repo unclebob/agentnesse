@@ -3,19 +3,23 @@ package agnesse.testsystems.slim.tables;
 import agnesse.testsystems.slim.SlimTestContext;
 import agnesse.testsystems.slim.Table;
 import agnesse.testsystems.slim.property.CellLanguage;
+import agnesse.testsystems.slim.property.Clock;
 import agnesse.testsystems.slim.property.Generator;
 import agnesse.testsystems.slim.property.Seed;
 import agnesse.testsystems.slim.property.Value;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
 /**
- * The rows of one property table: how many trials, which seed, and the
- * generator or expected text in each column. A scenario names its inputs
- * instead of a header row.
+ * The rows of one property table: how many trials, which seed, which clock,
+ * and the generator or expected text in each column. A scenario names its
+ * inputs instead of a header row. The clock is the {@code now} row, or an
+ * instant derived from the seed when that row is blank.
  */
 final class PropertySheet {
   static final int DEFAULT_TRIALS = 100;
@@ -23,21 +27,30 @@ final class PropertySheet {
   final String name;
   final int trials;
   final Seed seed;
+  final Clock clock;
   final int trialsRow;
   final int seedRow;
+  final int nowRow;
   final boolean hasTrials;
   final boolean hasSeed;
+  final boolean hasNow;
+  final boolean timed;
   final List<Column> columns;
   final ScenarioTable scenario;
 
-  private PropertySheet(String name, Config config, List<Column> columns, ScenarioTable scenario) throws SyntaxError {
+  private PropertySheet(String name, Config config, List<Column> columns, ScenarioTable scenario,
+                        Seed seed, Clock clock, boolean timed) throws SyntaxError {
     this.name = name;
     this.trials = resolved(config, columns);
-    this.seed = config.explicit == null ? new Seed(new Random().nextLong()) : new Seed(config.explicit);
+    this.seed = seed;
+    this.clock = clock;
     this.trialsRow = config.trialsRow;
     this.seedRow = config.seedRow;
+    this.nowRow = config.nowRow;
     this.hasTrials = config.trialsSeen;
     this.hasSeed = config.seedSeen;
+    this.hasNow = config.nowSeen;
+    this.timed = timed;
     this.columns = columns;
     this.scenario = scenario;
   }
@@ -46,10 +59,22 @@ final class PropertySheet {
     String name = named(table, fixtureName);
     ScenarioTable scenario = context.getScenario(name);
     Config config = readConfig(table);
+    Seed seed = new Seed(config.explicit == null ? new Random().nextLong() : config.explicit);
+    Clock clock = clock(context, config, seed);
     if (scenario != null) {
-      return scenario(name, scenario, config, table);
+      return scenario(name, scenario, config, table, seed, clock);
     }
-    return fixture(name, config, table);
+    return fixture(name, config, table, seed, clock);
+  }
+
+  private static Clock clock(SlimTestContext context, Config config, Seed seed) throws SyntaxError {
+    try {
+      ZoneId zone = Clock.named(context.getPageToTest().getVariable("zone"));
+      Instant now = config.nowText == null ? Clock.fromSeed(seed.value()) : Clock.parse(config.nowText, zone);
+      return new Clock(zone, now);
+    } catch (IllegalArgumentException bad) {
+      throw new SyntaxError(bad.getMessage());
+    }
   }
 
   List<Drawn> draw() {
@@ -197,12 +222,16 @@ final class PropertySheet {
     return config;
   }
 
+  /** A clock column needs a wider row than the {@code now} setting, which has one or two cells. */
   private static boolean configKey(Table table, int row) {
+    if (table.getColumnCountInRow(row) > 2) {
+      return false;
+    }
     String key = table.getCellContents(0, row).trim().toLowerCase(Locale.ROOT);
-    return key.equals("trials") || key.equals("seed");
+    return key.equals("trials") || key.equals("seed") || key.equals("now");
   }
 
-  private static PropertySheet fixture(String name, Config config, Table table) throws SyntaxError {
+  private static PropertySheet fixture(String name, Config config, Table table, Seed seed, Clock clock) throws SyntaxError {
     int header = config.next;
     int spec = header + 1;
     if (spec >= table.getRowCount()) {
@@ -211,17 +240,35 @@ final class PropertySheet {
     if (spec != table.getRowCount() - 1) {
       throw new SyntaxError("a property has one generator row");
     }
-    return new PropertySheet(name, config, columns(table, header, spec), null);
+    return assemble(name, config, columns(table, header, spec, clock), null, seed, clock);
   }
 
-  private static List<Column> columns(Table table, int header, int spec) throws SyntaxError {
+  private static PropertySheet assemble(String name, Config config, List<Column> columns, ScenarioTable scenario,
+                                        Seed seed, Clock clock) throws SyntaxError {
+    boolean timed = config.nowSeen || anyTimed(columns);
+    if (timed && clock.zone() == null) {
+      throw new SyntaxError("zone is not configured");
+    }
+    return new PropertySheet(name, config, columns, scenario, seed, clock, timed);
+  }
+
+  private static boolean anyTimed(List<Column> columns) {
+    for (Column column : columns) {
+      if (column.generator != null && column.generator.timed()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static List<Column> columns(Table table, int header, int spec, Clock clock) throws SyntaxError {
     int width = table.getColumnCountInRow(header);
     if (table.getColumnCountInRow(spec) != width) {
       throw new SyntaxError("the generator row must have " + width + " columns");
     }
     List<Column> columns = new ArrayList<>();
     for (int index = 0; index < width; index++) {
-      columns.add(column(table, header, spec, index));
+      columns.add(column(table, header, spec, index, clock));
     }
     requireInput(columns);
     return columns;
@@ -236,7 +283,7 @@ final class PropertySheet {
     throw new SyntaxError("a property needs an input");
   }
 
-  private static Column column(Table table, int header, int spec, int index) throws SyntaxError {
+  private static Column column(Table table, int header, int spec, int index, Clock clock) throws SyntaxError {
     String title = table.getCellContents(index, header).trim();
     String body = table.getCellContents(index, spec).trim();
     if (title.isBlank()) {
@@ -248,22 +295,24 @@ final class PropertySheet {
     if (title.endsWith("?") || title.endsWith("!")) {
       return Column.output(index, title.substring(0, title.length() - 1).trim(), body);
     }
-    return Column.input(index, title, parse(body));
+    return Column.input(index, title, parse(body, clock));
   }
 
-  private static PropertySheet scenario(String name, ScenarioTable scenario, Config config, Table table) throws SyntaxError {
+  private static PropertySheet scenario(String name, ScenarioTable scenario, Config config, Table table,
+                                        Seed seed, Clock clock) throws SyntaxError {
     if (config.next >= table.getRowCount()) {
       throw new SyntaxError("a property needs a generator");
     }
     List<Column> columns = new ArrayList<>();
     for (int row = config.next; row < table.getRowCount(); row++) {
-      columns.add(argument(scenario, table, row, columns));
+      columns.add(argument(scenario, table, row, columns, clock));
     }
     requireInputs(scenario, columns);
-    return new PropertySheet(name, config, columns, scenario);
+    return assemble(name, config, columns, scenario, seed, clock);
   }
 
-  private static Column argument(ScenarioTable scenario, Table table, int row, List<Column> soFar) throws SyntaxError {
+  private static Column argument(ScenarioTable scenario, Table table, int row, List<Column> soFar, Clock clock)
+      throws SyntaxError {
     String name = Disgracer.disgraceMethodName(table.getCellContents(0, row).trim());
     if (!scenario.getInputs().contains(name)) {
       throw new SyntaxError(name + " is not an input to the scenario");
@@ -275,7 +324,7 @@ final class PropertySheet {
     if (spec.isBlank()) {
       throw new SyntaxError("a generator spec is missing");
     }
-    return Column.input(soFar.size(), name, parse(spec));
+    return Column.input(soFar.size(), name, parse(spec, clock));
   }
 
   private static void requireInputs(ScenarioTable scenario, List<Column> columns) throws SyntaxError {
@@ -295,9 +344,9 @@ final class PropertySheet {
     return false;
   }
 
-  private static Generator parse(String spec) throws SyntaxError {
+  private static Generator parse(String spec, Clock clock) throws SyntaxError {
     try {
-      return CellLanguage.parse(spec);
+      return CellLanguage.parse(spec, clock);
     } catch (IllegalArgumentException e) {
       throw new SyntaxError(e.getMessage());
     }
@@ -352,15 +401,20 @@ final class PropertySheet {
     private Long explicit;
     private int seedRow = -1;
     private boolean seedSeen;
+    private String nowText;
+    private int nowRow = -1;
+    private boolean nowSeen;
     private int next = 1;
 
     private void take(Table table, int row) throws SyntaxError {
       String key = table.getCellContents(0, row).trim().toLowerCase(Locale.ROOT);
       if (key.equals("trials")) {
         setTrials(second(table, row), row);
-        return;
+      } else if (key.equals("seed")) {
+        setSeed(second(table, row), row);
+      } else {
+        setNow(second(table, row), row);
       }
-      setSeed(second(table, row), row);
     }
 
     private void setTrials(String value, int row) throws SyntaxError {
@@ -380,6 +434,15 @@ final class PropertySheet {
       seedSeen = true;
       explicit = parseSeed(value);
       seedRow = row;
+    }
+
+    private void setNow(String value, int row) throws SyntaxError {
+      if (nowSeen) {
+        throw new SyntaxError("now is already set");
+      }
+      nowSeen = true;
+      nowText = value.isBlank() ? null : value.trim();
+      nowRow = row;
     }
 
     private static int parseTrials(String text) throws SyntaxError {
