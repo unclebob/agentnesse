@@ -560,11 +560,11 @@ A fixture can ignore the rest of the script by throwing an ignore-script excepti
 
 A property table checks one claim against generated inputs and counts as one assertion. The cell language, the seed, and shrinking are in the user guide at `AgNesse.UserGuide`.
 
-Name a fixture the way a decision table does. Optional `trials` and `seed` rows come next, then a column header and one generator row. An output column ends in `?` or `!` and its generator cell is the expected value. The default is 100 trials when that row is omitted or left blank.
+Name a fixture the way a decision table does. Optional `trials` and `seed` rows come next, then a column header and one generator row. An output column ends in `?` or `!` and its generator cell is the expected value. The default is 100 trials when that row is omitted or left blank. `all of` is the exception: the trial count is the number of cases, and a number you write has to match it.
 
 Leave `seed` blank and the result shows the seed that was used. Copy that number back into the cell to draw the same inputs again. A failure appends one shrunk row and names the original draw in the trials cell.
 
-Generators are lowercase. Ranges are inclusive. `int` draws from `-10000..10000`. `boolean`, `string`, `list of`, and `one of:red,green,blue` are the other v1 forms. A scenario can be the claim; `@value` is the drawn cell.
+Generators are lowercase. Ranges are inclusive. `int` draws from `-10000..10000`. `boolean`, `string`, `list of`, and `one of:red,green,blue` are the other forms. `decimal:0..1 scale 2` and `money:0..1` are fixed-point, never a binary fraction. `one of:a 70, b 30` weights the choices. `string:adversarial` mixes in hostile text. `pattern:REG-[0-9]{4}` draws an identifier shape. `all of:red,blue` and `all of:admin,user x view,edit` run every case. A scenario can be the claim; `@value` is the drawn cell.
 
 The full language, shrinking, and the Python example are the Property page included from `AgNesse.UserGuide`.
 

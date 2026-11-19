@@ -2,7 +2,8 @@
 """A Slim 0.5 server small enough to show the wire protocol.
 
 Port 1 is the pipe AgNesse uses when SLIM_PORT is 1: the protocol is stdin and stdout.
-Any other port is a socket on 127.0.0.1. The method hello returns world. bye ends the session.
+Any other port is a socket on 127.0.0.1. hello returns world. echo returns its string
+argument. bye ends the session.
 """
 import socket
 import sys
@@ -40,9 +41,23 @@ def speak(incoming, outgoing):
 def answer(instructions):
     results = []
     for instruction in instructions:
-        method = method_name(instruction)
-        results.append([instruction[0], "world" if method == "hello" else "OK"])
+        results.append([instruction[0], reply(instruction)])
     return results
+
+
+def reply(instruction):
+    method = method_name(instruction)
+    if method == "hello":
+        return "world"
+    if method == "echo":
+        return echoed(instruction)
+    return "OK"
+
+
+def echoed(instruction):
+    if len(instruction) > 4 and isinstance(instruction[4], str):
+        return instruction[4]
+    return "OK"
 
 
 def method_name(instruction):
@@ -98,11 +113,13 @@ def read_message(incoming):
         prefix += byte
     length = int(prefix[:-1])
     data = b""
-    while len(data) < length:
-        chunk = incoming.read(length - len(data))
+    remaining = length
+    while remaining != 0:
+        chunk = incoming.read(remaining)
         if not chunk:
             return None
         data += chunk
+        remaining = remaining - len(chunk)
     return data.decode("utf-8")
 
 
