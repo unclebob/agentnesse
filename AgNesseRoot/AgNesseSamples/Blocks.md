@@ -13,7 +13,7 @@ define MAX
 
 ```agnesse
 scenarios
-Login
+ScriptLogin
 ```
 
 ```agnesse
@@ -26,7 +26,7 @@ contents
 ```
 
 ```agnesse
-alias Division eg.Division
+alias Division agnesse.slim.test.Division
 ```
 
 ```agnesse

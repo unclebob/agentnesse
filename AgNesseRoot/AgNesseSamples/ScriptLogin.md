@@ -11,7 +11,7 @@
 | enter | @user | |
 | login | | |
 
-| script | | |
+| script | Login |
 | --- | --- | --- |
 | login as | bob | |
 | check | logged in | true |

@@ -9,3 +9,4 @@
 | import |
 | --- |
 | agnesse.fixtures |
+| agnesse.slim.test |
