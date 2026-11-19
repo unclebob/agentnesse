@@ -151,6 +151,49 @@ public class DrawTest {
     assertEquals("[0.25]", draw("list of decimal:0.25..0.25 scale 2 size 1..1", 5L));
   }
 
+  @Test
+  public void adversarialStringsMixOrdinaryTextWithHostilePayloads() {
+    assertEquals("", draw("string:adversarial length 0..0", 1L));
+    assertEquals("", draw("string:adversarial length 0..0", 2L));
+    assertEquals(sequence("string:adversarial length 0..30", 8L, 5),
+        sequence("string:adversarial length 0..30", 8L, 5));
+    Generator spec = CellLanguage.parse("string:adversarial length 0..40");
+    List<String> catalog = Adversarial.fitting(new Span(0, 40));
+    boolean ordinary = false;
+    boolean hostile = false;
+    boolean markup = false;
+    boolean emoji = false;
+    boolean longText = false;
+    Random random = new Seed(3L).random();
+    for (int i = 0; i < 400; i++) {
+      String cell = spec.draw(random).cell();
+      if (catalog.contains(cell)) {
+        hostile = true;
+      } else {
+        ordinary = true;
+        assertTrue(cell.length() <= 40);
+      }
+      if (cell.contains("<script>")) {
+        markup = true;
+      }
+      if (cell.contains("\uD83D\uDE00")) {
+        emoji = true;
+      }
+      if (cell.equals("A".repeat(40))) {
+        longText = true;
+      }
+    }
+    assertTrue(ordinary);
+    assertTrue(hostile);
+    assertTrue(markup);
+    assertTrue(emoji);
+    assertTrue(longText);
+    assertTrue(catalog.contains("|"));
+    assertTrue(catalog.contains("e\u0301"));
+    assertTrue(catalog.contains("\u202Ertl"));
+    assertTrue(catalog.contains("a\u200Bb"));
+  }
+
   private static void assertIn(String spec, int low, int high, Integer banned) {
     for (long seed = 0; seed < 40; seed++) {
       int n = Integer.parseInt(draw(spec, seed));

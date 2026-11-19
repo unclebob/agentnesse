@@ -19,6 +19,9 @@ public class CellLanguageTest {
     assertEquals(10, ints(list("list of int:-10..10 size 0..8").element()).highest());
     assertEquals(0, text("string:ascii length 0..20").shortest());
     assertEquals(20, text("string:ascii length 0..20").longest());
+    assertTrue(!text("string:ascii").adversarial());
+    assertTrue(text("string:adversarial length 0..40").adversarial());
+    assertEquals(40, text("string:adversarial length 0..40").longest());
     assertTrue(CellLanguage.parse("boolean") instanceof BoolGen);
     assertEquals(List.of("red", "green", "blue"), one("one of:red,green,blue").choices());
     assertEquals(2, dec("decimal:-1.50..2 scale 2").scale());

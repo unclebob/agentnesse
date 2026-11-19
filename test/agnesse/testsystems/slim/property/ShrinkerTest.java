@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 
 public class ShrinkerTest {
@@ -79,6 +80,13 @@ public class ShrinkerTest {
     calls = 0;
     assertEquals("ab", shrink("string length 2..10", text("ab"), count(v -> true), 3));
     assertEquals(0, calls);
+    assertEquals("", shrink("string:adversarial length 0..40", text("<script>alert(1)</script>"), v -> true, 4));
+    List<Value> pieces = shrinker.candidates(
+        CellLanguage.parse("string:adversarial length 0..8"), text("a\uD83D\uDE00"));
+    assertEquals(List.of("", "a"), cells(pieces));
+    for (Value piece : pieces) {
+      assertFalse(unpaired(piece.cell()));
+    }
   }
 
   @Test
@@ -218,6 +226,20 @@ public class ShrinkerTest {
 
   private List<Value> simpler(String spec, String cell) {
     return shrinker.candidates(CellLanguage.parse(spec), text(cell));
+  }
+
+  private static boolean unpaired(String text) {
+    for (int i = 0; i < text.length(); i++) {
+      if (Character.isHighSurrogate(text.charAt(i))) {
+        if (i + 1 >= text.length() || !Character.isLowSurrogate(text.charAt(i + 1))) {
+          return true;
+        }
+        i++;
+      } else if (Character.isLowSurrogate(text.charAt(i))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static int at(Value value) {

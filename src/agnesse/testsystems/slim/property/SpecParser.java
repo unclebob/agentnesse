@@ -163,13 +163,16 @@ final class SpecParser {
   }
 
   private Generator string() {
+    boolean adversarial = false;
     if (takeSymbol(":")) {
-      if (!take("ascii")) {
-        throw error("expected ascii");
+      if (take("adversarial")) {
+        adversarial = true;
+      } else if (!take("ascii")) {
+        throw error("expected ascii or adversarial");
       }
     }
     Span length = take("length") ? readSpan() : Span.TEXT;
-    return new StringGen(length);
+    return new StringGen(length, adversarial);
   }
 
   private Generator list() {

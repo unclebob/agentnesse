@@ -9,9 +9,19 @@ final class StringGen extends Generator {
   static final String ASCII = ascii();
 
   private final Span length;
+  private final boolean adversarial;
 
   StringGen(Span length) {
+    this(length, false);
+  }
+
+  StringGen(Span length, boolean adversarial) {
     this.length = length;
+    this.adversarial = adversarial;
+  }
+
+  boolean adversarial() {
+    return adversarial;
   }
 
   int shortest() {
@@ -24,6 +34,16 @@ final class StringGen extends Generator {
 
   @Override
   public Value draw(Random random) {
+    if (adversarial && random.nextBoolean()) {
+      List<String> catalog = Adversarial.fitting(length);
+      if (!catalog.isEmpty()) {
+        return new TextValue(catalog.get(random.nextInt(catalog.size())));
+      }
+    }
+    return ordinary(random);
+  }
+
+  private Value ordinary(Random random) {
     int count = length.draw(random);
     StringBuilder text = new StringBuilder(count);
     for (int i = 0; i < count; i++) {
@@ -37,9 +57,15 @@ final class StringGen extends Generator {
     String text = ((TextValue) value).text();
     List<Value> out = new ArrayList<>();
     for (int size : Numbers.shorter(text.length(), length.min)) {
-      out.add(new TextValue(text.substring(0, size)));
+      if (!cutsSurrogate(text, size)) {
+        out.add(new TextValue(text.substring(0, size)));
+      }
     }
     return out;
+  }
+
+  private static boolean cutsSurrogate(String text, int size) {
+    return size > 0 && size < text.length() && Character.isHighSurrogate(text.charAt(size - 1));
   }
 
   private static String ascii() {
