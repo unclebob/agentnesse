@@ -603,7 +603,7 @@ There is no `or` inside `when` or `next`. Two endings are two rows of the same c
 | reserve | phase=open | phase=held | held |
 | reserve | phase=open | phase=wait | wait |
 
-After the call, every row whose checks match the fixture is kept. A later command is drawn only when its `when` holds in every one of those rows. The trial fails when none match. The trials cell names the step and what was seen against each row (`held or wait`). More than 64 candidates is a bad table: `model too ambiguous`.
+After the call, every row whose checks match the fixture is kept. A later command is drawn when its `when` holds in at least one of those rows. The trial fails when none match. The trials cell names the step and what was seen against each row (`held or wait`). More than 64 candidates is a bad table: `model too ambiguous`.
 
 Each trial is a new fixture. The cells are ordinary strings, so Java, Python, and any other Slim server run the same table.
 

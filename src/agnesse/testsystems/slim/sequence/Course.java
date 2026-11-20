@@ -37,7 +37,7 @@ public final class Course {
     return serial(plan, random, length, Candidates.start(plan.initial));
   }
 
-  /** Draws {@code length} commands that are legal in every candidate, or fewer when the machine stops. */
+  /** Draws {@code length} commands legal in at least one candidate, or fewer when the machine stops. */
   static Trace serial(Plan plan, Random random, int length, Candidates cast) {
     List<Step> steps = new ArrayList<>();
     while (steps.size() < length) {

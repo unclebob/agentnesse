@@ -21,16 +21,16 @@ import static org.junit.Assert.assertTrue;
 
 public class ScheduleTest {
   @Test
-  public void aSeedDrawsTheSameBranchesAndSkipsACommandTheOtherRowForbids() {
+  public void aSeedDrawsTheSameBranchesAndACommandOneRowAllows() {
     Plan plan = desk();
     Schedule drawn = Schedule.draw(plan, new Rolls(0, 0, 0, 0, 0, 0, 0), 2, 2, 1, 1);
     assertEquals(1, drawn.prefix.steps.size());
     assertEquals(0, drawn.prefix.steps.get(0).command);
     assertEquals(2, drawn.branches.size());
-    assertEquals(3, drawn.branches.get(0).steps.get(0).command);
-    assertEquals(3, drawn.branches.get(1).steps.get(0).command);
+    assertEquals(2, drawn.branches.get(0).steps.get(0).command);
+    assertEquals(2, drawn.branches.get(1).steps.get(0).command);
     assertTrue(drawn.legal(plan));
-    assertFalse(new Schedule(drawn.prefix, List.of(step(2), step(3))).legal(plan));
+    assertTrue(new Schedule(drawn.prefix, List.of(step(2), step(3))).legal(plan));
     assertFalse(new Schedule(step(2), List.of(step(3), step(3))).legal(plan));
     assertFalse(new Schedule(new Trace(List.of()), List.of(step(3))).legal(plan));
 

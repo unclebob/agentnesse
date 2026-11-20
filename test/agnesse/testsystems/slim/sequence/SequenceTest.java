@@ -451,8 +451,9 @@ public class SequenceTest {
     assertEquals(2, either.size());
     assertTrue(either.has("phase", "held"));
     assertTrue(either.has("phase", "wait"));
-    assertFalse(either.allows(plan, 2));
+    assertTrue(either.allows(plan, 2));
     assertTrue(either.allows(plan, 3));
+    assertFalse(either.allows(plan, 0));
     Advance confirmed = either.take(plan, new Step(2, List.of()), Reading.returned("ok"));
     assertTrue(confirmed.ok());
     assertEquals(1, confirmed.candidates.size());
@@ -479,6 +480,7 @@ public class SequenceTest {
     assertEquals(3, neither.column);
     Advance shut = start.take(plan, new Step(2, List.of()), Reading.returned("ok"));
     assertEquals(Advance.Kind.EMPTY, shut.kind);
+    assertEquals(0, shut.column);
     assertTrue(shut.detail, shut.detail.contains("no row matched"));
     Advance blank = start.take(plan, reserve, new Reading(null, null));
     assertEquals(Advance.Kind.EMPTY, blank.kind);
@@ -544,12 +546,16 @@ public class SequenceTest {
   }
 
   @Test
-  public void aCommandEnabledInOnlyOneCandidateIsNotDrawn() {
+  public void aCommandEnabledInOneCandidateIsDrawn() {
     Plan plan = desk();
     Trace trace = Course.drawOne(plan, new Rolls(0, 0, 0));
     assertEquals(0, trace.steps.get(0).command);
-    assertEquals(3, trace.steps.get(1).command);
-    assertFalse(plan.legal(new Trace(List.of(new Step(0, List.of(Value.text("4"))), new Step(2, List.of())))));
+    assertEquals(2, trace.steps.get(1).command);
+    Trace confirm = new Trace(List.of(new Step(0, List.of(Value.text("4"))), new Step(2, List.of())));
+    assertTrue(plan.legal(confirm));
+    Candidates after = Candidates.start(plan.initial).image(plan, confirm.steps.get(0)).image(plan, confirm.steps.get(1));
+    assertEquals(1, after.size());
+    assertTrue(after.has("phase", "done"));
     assertTrue(plan.legal(new Trace(List.of(new Step(0, List.of(Value.text("4"))), new Step(3, List.of())))));
     Candidates start = Candidates.start(plan.initial);
     Candidates same = start.image(plan, new Step(0, List.of(Value.text("1"))));
@@ -619,6 +625,16 @@ public class SequenceTest {
     assertEquals(Advance.Kind.EMPTY, missed.kind);
     assertEquals(4, missed.column);
     assertEquals("saw phase=no; held or wait", missed.detail);
+    Command firstQuery = new Command("ask", "", "", List.of(), List.of(
+        new Command.Expect(false, "phase", "held", 0),
+        new Command.Expect(false, "lane", "open", 4)));
+    Command laterQuery = new Command("ask", "", "", List.of(), List.of(
+        new Command.Expect(false, "phase", "wait", 2)));
+    Plan both = Plan.create(state("phase", "open"), 1, 1, List.of(firstQuery, laterQuery), List.of());
+    Advance earliest = Candidates.start(both.initial).take(both, new Step(0, List.of()),
+        new Reading("ignored", state("phase", "no", "lane", "shut")));
+    assertEquals(Advance.Kind.EMPTY, earliest.kind);
+    assertEquals(0, earliest.column);
   }
 
   @Test

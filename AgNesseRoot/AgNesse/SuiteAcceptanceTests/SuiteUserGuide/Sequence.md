@@ -18,7 +18,7 @@ An invariant row is `when`, `model`, `query`, and `expect`. It runs after a comm
 
 A missing command, an unknown `@name`, a precondition that can never hold, a steps range outside 1 through 32, and more than 64 candidates after one command are refused before any trial. That last refusal says `model too ambiguous`.
 
-There is no `or` inside `when` or `next`. A second ending is another row with the same command. After the call, every row whose `when` held and whose checks match the fixture is kept. The trial fails only when none remain, and the trials cell names the step and what was seen against each row. A later command is drawn only when its `when` holds in every row still kept. An invariant has to hold in every one of them.
+There is no `or` inside `when` or `next`. A second ending is another row with the same command. After the call, every row whose `when` held and whose checks match the fixture is kept. The trial fails only when none remain, and the trials cell names the step and what was seen against each row. A later command is drawn when its `when` holds in at least one row still kept. An invariant has to hold in every one of them.
 
 This reserve either holds the slot or waitlists it. The fixture waitlists, so the `wait` row is the one that remains. `ping` is legal on both endings, so it can follow `reserve`.
 

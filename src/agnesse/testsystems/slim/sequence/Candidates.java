@@ -10,7 +10,7 @@ import java.util.StringJoiner;
 
 /**
  * The model states still consistent with what has happened. A command row is
- * drawn only when its precondition holds in every state. After the fixture
+ * drawn when its precondition holds in at least one state. After the fixture
  * answers, every row of that command whose precondition held and whose
  * expectations match is kept. The trial fails when none remain.
  */
@@ -50,17 +50,14 @@ public final class Candidates {
     return false;
   }
 
-  /** The row's precondition holds in every candidate, so the call is safe in all of them. */
+  /** The row's precondition holds in at least one candidate. */
   public boolean allows(Plan plan, int command) {
-    if (states.isEmpty()) {
-      return false;
-    }
     for (Map<String, String> state : states) {
-      if (!plan.allows(command, state)) {
-        return false;
+      if (plan.allows(command, state)) {
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   public List<Integer> allowed(Plan plan) {
@@ -189,20 +186,11 @@ public final class Candidates {
     String name = plan.commands.get(step.command).name;
     for (int index = 0; index < plan.commands.size(); index++) {
       Command row = plan.commands.get(index);
-      if (row.name.equals(name) && matchesAny(plan, index)) {
+      if (row.name.equals(name) && allows(plan, index)) {
         indexes.add(index);
       }
     }
     return indexes;
-  }
-
-  private boolean matchesAny(Plan plan, int index) {
-    for (Map<String, String> state : states) {
-      if (plan.allows(index, state)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private Advance miss(Plan plan, List<Integer> open, Map<String, String> args, Reading reading, int shown) {
@@ -284,7 +272,7 @@ public final class Candidates {
     String name = plan.commands.get(step.command).name;
     for (int index = 0; index < plan.commands.size(); index++) {
       Command row = plan.commands.get(index);
-      if (row.name.equals(name) && matchesAny(plan, index)) {
+      if (row.name.equals(name) && allows(plan, index)) {
         row.collectQueries(names);
       }
     }
