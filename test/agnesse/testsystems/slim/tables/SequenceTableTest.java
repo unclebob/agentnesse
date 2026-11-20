@@ -157,6 +157,10 @@ public class SequenceTableTest {
     assertEquals(1, ran.summary.getWrong());
     assertEquals(0, ran.summary.getExceptions());
     assertEquals(List.of("open", "block", "release"), shown(ran.table, source));
+    int release = resultRow(ran.table, source, "release");
+    assertEquals("release", ran.table.cellRecord(release, 0).actual());
+    assertEquals("phase=blocked", ran.table.cellRecord(release, 1).actual());
+    assertEquals("blocked", ran.table.cellRecord(release, 4).actual());
     CellRecord failed = failure(ran.table);
     assertEquals("ok", failed.actual());
     assertEquals("refused", failed.expected());
@@ -185,6 +189,8 @@ public class SequenceTableTest {
     assertEquals(List.of("lock", "tweak"), shown(ran.table, source));
     int tweak = resultRow(ran.table, source, "tweak");
     assertEquals("5", ran.table.originalCell(3, tweak));
+    assertEquals("5", ran.table.cellRecord(tweak, 3).actual());
+    assertEquals("tweak", ran.table.cellRecord(tweak, 0).actual());
     assertEquals("ok", failure(ran.table).actual());
     assertEquals("refused", failure(ran.table).expected());
     assertTrue(trials(ran.table), trials(ran.table).contains("shrunk"));
@@ -213,6 +219,8 @@ public class SequenceTableTest {
     assertEquals("false", failure(ran.table).expected());
     int invariant = resultRow(ran.table, source, "invariant");
     assertEquals("released?", ran.table.originalCell(3, invariant));
+    assertEquals("invariant", ran.table.cellRecord(invariant, 0).actual());
+    assertEquals("released?", ran.table.cellRecord(invariant, 3).actual());
     assertEquals("fail", ran.table.cellRecord(invariant, 4).status());
     assertTrue(trials(ran.table), trials(ran.table).contains("drew open, block"));
     assertTrue(trials(ran.table), trials(ran.table).contains("invariant released"));

@@ -224,10 +224,18 @@ public class SequenceTable extends SlimTable {
   private void paintSteps(Attempt attempt) {
     for (int index = 0; index < attempt.trace.steps.size(); index++) {
       int row = markdown().addRow(cells(attempt, index));
+      show(row);
       if (cellFailure(attempt, index)) {
         markdown().updateContent(attempt.hit.at, row, attempt.hit.result);
         getTestContext().increment(attempt.hit.result.getExecutionResult());
       }
+    }
+  }
+
+  private void show(int row) {
+    MarkdownTable table = markdown();
+    for (int column = 0; column < table.getColumnCountInRow(row); column++) {
+      table.updateContent(column, row, SlimTestResult.plain(table.originalCell(column, row)));
     }
   }
 
@@ -241,6 +249,7 @@ public class SequenceTable extends SlimTable {
     String expect = sheet.plan.substitute(guard.expect, state, argsAt(attempt, attempt.hit.step));
     String query = guard.query == null ? "" : guard.query + "?";
     int row = markdown().addRow(List.of("invariant", guard.whenText, guard.modelText, query, expect));
+    show(row);
     markdown().updateContent(attempt.hit.model ? 2 : 4, row, attempt.hit.result);
     getTestContext().increment(attempt.hit.result.getExecutionResult());
   }
