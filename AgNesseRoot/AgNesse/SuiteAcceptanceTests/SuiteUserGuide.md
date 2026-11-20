@@ -19,6 +19,7 @@ Each page in this suite is an example, and the suite runs it. The same pages are
 | [Alias](>Alias) | An `alias` block gives a table a business name |
 | [JavaSlim](>JavaSlim) | A Java fixture answers a Slim table |
 | [Property](>Property) | A property table draws inputs, shrinks a failure, and counts as one assertion |
+| [Sequence](>Sequence) | A sequence table draws commands, checks a model, and shrinks a failing sequence |
 | [PythonSlim](>PythonSlim) | A command that is not Java can speak Slim |
 | [CommandLine](>CommandLine) | `-c` writes JSON and exits with the failure count. `--rerun-failures` skips pages that passed |
 | [Mcp](>Mcp) | `-mcp` serves list_pages, run, and get_results on standard input and output |

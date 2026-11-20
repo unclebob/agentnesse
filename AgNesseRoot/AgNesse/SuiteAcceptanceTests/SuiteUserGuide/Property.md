@@ -382,3 +382,5 @@ The walk stops after 32 accepted steps. The trials cell then says `shrink cap`, 
 A fixture exception counts as a failing candidate, so the walk continues, and that exception is not an extra assertion. A stop-test exception shows the current candidate and sends no further batch.
 
 When the property calls a scenario, a failure renders that scenario's steps for the shrunk input as a child table, the same way a scenario call already does. The round-trip tables above pass, so they have no child table.
+
+A sequence of commands, with preconditions and invariants, is a [sequence table](>Sequence).

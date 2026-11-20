@@ -45,6 +45,10 @@ include SuiteAcceptanceTests.SuiteUserGuide.Property
 ```
 
 ```agnesse
+include SuiteAcceptanceTests.SuiteUserGuide.Sequence
+```
+
+```agnesse
 include SuiteAcceptanceTests.SuiteUserGuide.PythonSlim
 ```
 

@@ -496,6 +496,26 @@ A property table draws inputs and checks one claim against many generated values
 
 An unknown type in the first cell is an error table (`"…" is not a valid table type.`).
 
+### Sequence
+
+A sequence table draws commands and checks one model across many sequences. One sequence is one assertion. The table form and shrinking are in [Sequence tables](#sequence-tables) and in the wiki guide.
+
+```
+| sequence:agnesse.slim.test.ItemLife |
+| --- |
+| trials | 8 |
+| steps | 1..4 |
+| seed | 1 |
+| state | phase=new; blocked=no |
+| command | when | next | result? | phase? |
+| open | phase=new | phase=open | ok | open |
+| block | phase=open | phase=blocked; blocked=yes | ok | blocked |
+| release | phase=open | phase=released | ok | released |
+| release | phase=blocked | | refused | blocked |
+| invariant | when | model | query | expect |
+| | blocked=yes | phase!=released | released? | false |
+```
+
 ## Symbols and cell conventions
 
 ### Slim symbols
@@ -567,6 +587,24 @@ Leave `seed` blank and the result shows the seed that was used. A property that 
 Generators are lowercase. Ranges are inclusive. `int` draws from `-10000..10000`. `boolean`, `string`, `list of`, and `one of:red,green,blue` are the other forms. `decimal:0..1 scale 2` and `money:0..1` are fixed-point, never a binary fraction. `one of:a 70, b 30` weights the choices. `string:adversarial` mixes in hostile text. `pattern:REG-[0-9]{4}` draws an identifier shape. `all of:red,blue` and `all of:admin,user x view,edit` run every case. `date:2020-01-15..2020-01-31`, `time:08:00:00..17:00:00`, `datetime:now+35h59m..now+36h01m`, `period:day`, and `now` draw ISO-8601 text. `zone:America/New_York` overrides the `zone` key for that generator. A week starts on Sunday. `int after start:0..9` stays one above an earlier column, and `before` stays one below. `list of int:0..20 size 0..5 unique sorted` is strictly increasing. `span:0..100 length 1..10` draws `start+length`. `partition:10.00 into 3` splits a total into that many non-negative parts. `monotonic:0..100 size 1..5 reset` is a meter that may drop and keeps its running total when it shrinks. `record:name string; age int:0..120` is a JSON object whose leaves are strings; nest another record in parentheses. A scenario can be the claim; `@value` is the drawn cell, and `$now` is the clock. A column whose generator is `now` sends that same text as a Slim argument.
 
 The full language, shrinking, and the Python example are the Property page included from `AgNesse.UserGuide`.
+
+## Sequence tables
+
+A sequence table lists commands. Optional `trials`, `steps`, `seed`, and `state` rows come first. `trials` defaults to 100. `steps` defaults to `1..8`, and each bound is from 1 through 32. Leave `seed` blank and the result shows the seed. It is not written back onto the page. `state` is `name=value` pairs separated by `;`.
+
+A command row is the name, `when`, and `next`, then arguments and checks. `when` is a precondition, and every value is a literal, so a command is drawn only when the model matches. `next` assigns the model, left to right. `@name` reads the model or an argument of this step. An argument column uses the property cell language and is sent to Slim. An empty argument cell is left out of the call. `result?` is the return value. Any other `name?` is a no-arg query after the command. `!` means the same as `?`.
+
+An invariant row is `when`, `model`, `query`, and `expect`. It is checked after a command whose `when` matches. `model` sees the model after `next`, not the fixture. A query sees the fixture.
+
+Each trial is a new fixture. The cells are ordinary strings, so Java, Python, and any other Slim server run the same table.
+
+A failure drops commands that are not needed, shortest first, and only when the remaining preconditions still hold. A shorter length is tried when there are at most 64 ways to choose those commands. Argument cells then shrink with the property shrinkers. The trials cell names the trial, the drawn commands, and the failing step or invariant. It says `shrunk` when a shorter failure was kept, and `shrink cap` after 32 accepted steps. The result rows show that sequence. The saved page is unchanged.
+
+The whole specification is one Markdown table. A blank line starts a new table.
+
+A missing command, an unknown `@name`, a precondition that can never hold, and a steps range outside 1 through 32 are refused before any trial.
+
+The Sequence page included from `AgNesse.UserGuide` runs the examples, including a Python gate.
 
 ## Running tests
 
@@ -663,6 +701,7 @@ The in-wiki guide is `AgNesseRoot/AgNesse/UserGuide.md`, wiki path [`AgNesse.Use
 | [Alias](AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteUserGuide/Alias.md) | table aliases |
 | [JavaSlim](AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteUserGuide/JavaSlim.md) | the default Java Slim process |
 | [Property](AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteUserGuide/Property.md) | property tables |
+| [Sequence](AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteUserGuide/Sequence.md) | sequence tables |
 | [PythonSlim](AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteUserGuide/PythonSlim.md) | `COMMAND_PATTERN` for a non-Java Slim server |
 | [CommandLine](AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteUserGuide/CommandLine.md) | `-c`, JSON, `--rerun-failures` |
 | [Mcp](AgNesseRoot/AgNesse/SuiteAcceptanceTests/SuiteUserGuide/Mcp.md) | `-mcp` |
