@@ -250,13 +250,14 @@ func call(row []any, instanceAt, methodAt int, instances map[string]any, mu *syn
 }
 
 func plain(method string, args []any) (string, bool) {
+	if value, ok := numbers(method, args); ok {
+		return value, true
+	}
+	return words(method, args)
+}
+
+func numbers(method string, args []any) (string, bool) {
 	switch method {
-	case "hello":
-		return "world", true
-	case "endIsAfterStart":
-		return ordered(args), true
-	case "kind":
-		return kindOf(args), true
 	case "plus":
 		return plus(args), true
 	case "wide":
@@ -265,8 +266,35 @@ func plain(method string, args []any) (string, bool) {
 		return scale(args), true
 	case "flag":
 		return flag(args), true
+	default:
+		return "", false
+	}
+}
+
+func words(method string, args []any) (string, bool) {
+	if value, ok := greetings(method, args); ok {
+		return value, true
+	}
+	return shaped(method, args)
+}
+
+func greetings(method string, args []any) (string, bool) {
+	switch method {
+	case "hello":
+		return "world", true
+	case "endIsAfterStart":
+		return ordered(args), true
+	case "kind":
+		return kindOf(args), true
 	case "initial":
 		return initial(args), true
+	default:
+		return "", false
+	}
+}
+
+func shaped(method string, args []any) (string, bool) {
+	switch method {
 	case "day":
 		return day(args), true
 	case "shade":
@@ -858,19 +886,33 @@ func convert(value any, kind string) any {
 	if !ok {
 		return value
 	}
+	if number, ok := convertNumber(text, kind, value); ok {
+		return number
+	}
+	return convertText(text, kind, value)
+}
+
+func convertNumber(text, kind string, fallback any) (any, bool) {
 	switch kind {
 	case "int":
-		return parsedInt(text, value)
+		return parsedInt(text, fallback), true
 	case "long":
-		return parsedLong(text, value)
+		return parsedLong(text, fallback), true
 	case "double":
-		return parsedDouble(text, value)
+		return parsedDouble(text, fallback), true
 	case "boolean":
-		return text == "true"
+		return text == "true", true
+	default:
+		return nil, false
+	}
+}
+
+func convertText(text, kind string, fallback any) any {
+	switch kind {
 	case "char":
-		return parsedChar(text, value)
+		return parsedChar(text, fallback)
 	case "date":
-		return parsedDate(text, value)
+		return parsedDate(text, fallback)
 	case "list":
 		return parsedList(text)
 	default:

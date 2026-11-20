@@ -203,15 +203,39 @@ async function call(row: Cell[], instanceAt: number, methodAt: number, instances
 }
 
 function plain(method: string, args: unknown[]): string | undefined {
+  const number = numbers(method, args)
+  if (number !== undefined) return number
+  return words(method, args)
+}
+
+function numbers(method: string, args: unknown[]): string | undefined {
   switch (method) {
-    case "hello": return "world"
-    case "endIsAfterStart": return ordered(args)
-    case "kind": return kindOf(args)
     case "plus": return plus(args)
     case "wide": return wide(args)
     case "scale": return scale(args)
     case "flag": return flag(args)
+    default: return undefined
+  }
+}
+
+function words(method: string, args: unknown[]): string | undefined {
+  const greeting = greetings(method, args)
+  if (greeting !== undefined) return greeting
+  return shaped(method, args)
+}
+
+function greetings(method: string, args: unknown[]): string | undefined {
+  switch (method) {
+    case "hello": return "world"
+    case "endIsAfterStart": return ordered(args)
+    case "kind": return kindOf(args)
     case "initial": return initial(args)
+    default: return undefined
+  }
+}
+
+function shaped(method: string, args: unknown[]): string | undefined {
+  switch (method) {
     case "day": return day(args)
     case "shade": return shade(args)
     case "join": return join(args)
@@ -404,18 +428,19 @@ function transition(method: string, seat: Seat | undefined): string | undefined 
 }
 
 async function asked(method: string, name: string, arg: string, count: number, seat: Seat | undefined): Promise<string> {
+  const seatValue = seatValueOf(method, name, arg, seat)
+  if (seatValue !== undefined) return seatValue
+  if (method === "table" || method === "beginTable" || method === "reset" || method === "execute" || method === "endTable") return "OK"
+  return unknown(method, name, count, seat)
+}
+
+function seatValueOf(method: string, name: string, arg: string, seat: Seat | undefined): string | undefined {
   switch (method) {
     case "book": return book(seat, name)
     case "phase": return phaseOf(seat)
     case "released": return releasedOf(seat)
     case "setWord": return storeWord(seat, arg)
-    case "table":
-    case "beginTable":
-    case "reset":
-    case "execute":
-    case "endTable":
-      return "OK"
-    default: return unknown(method, name, count, seat)
+    default: return undefined
   }
 }
 

@@ -498,10 +498,18 @@ fn symbol_at(text: &str, index: usize) -> Option<Found> {
     let after = rest.get(1..)?;
     let start_char = after.chars().next()?;
     if start_char == '`' {
-        let close = after[1..].find('`')?;
-        let name = after[..=close + 1].to_string();
-        return Some(Found { start: index, end: index + 1 + name.len(), name });
+        return backtick(after, index);
     }
+    word_symbol(after, start_char, index)
+}
+
+fn backtick(after: &str, index: usize) -> Option<Found> {
+    let close = after[1..].find('`')?;
+    let name = after[..=close + 1].to_string();
+    Some(Found { start: index, end: index + 1 + name.len(), name })
+}
+
+fn word_symbol(after: &str, start_char: char, index: usize) -> Option<Found> {
     if !start_char.is_alphabetic() {
         return None;
     }
