@@ -594,7 +594,16 @@ A sequence table lists commands. Optional `trials`, `steps`, `seed`, and `state`
 
 A command row is the name, `when`, and `next`, then arguments and checks. `when` is a precondition, and every value is a literal, so a command is drawn only when the model matches. `next` assigns the model, left to right. `@name` reads the model or an argument of this step. An argument column uses the property cell language and is sent to Slim. An empty argument cell is left out of the call. `result?` is the return value. Any other `name?` is a no-arg query after the command. `!` means the same as `?`.
 
-An invariant row is `when`, `model`, `query`, and `expect`. It is checked after a command whose `when` matches. `model` sees the model after `next`, not the fixture. A query sees the fixture.
+An invariant row is `when`, `model`, `query`, and `expect`. It is checked after a command whose `when` matches, and it has to hold in every row still kept. `model` sees the model after `next`, not the fixture. A query sees the fixture.
+
+There is no `or` inside `when` or `next`. Two endings are two rows of the same command:
+
+| command | when | next | result? |
+| --- | --- | --- | --- |
+| reserve | phase=open | phase=held | held |
+| reserve | phase=open | phase=wait | wait |
+
+After the call, every row whose checks match the fixture is kept. A later command is drawn only when its `when` holds in every one of those rows. The trial fails when none match. The trials cell names the step and what was seen against each row (`held or wait`). More than 64 candidates is a bad table: `model too ambiguous`.
 
 Each trial is a new fixture. The cells are ordinary strings, so Java, Python, and any other Slim server run the same table.
 
@@ -602,7 +611,7 @@ A failure drops commands that are not needed, shortest first, and only when the 
 
 The whole specification is one Markdown table. A blank line starts a new table.
 
-A missing command, an unknown `@name`, a precondition that can never hold, and a steps range outside 1 through 32 are refused before any trial.
+A missing command, an unknown `@name`, a precondition that can never hold, a steps range outside 1 through 32, and more than 64 candidates after one command are refused before any trial.
 
 The Sequence page included from `AgNesse.UserGuide` runs the examples, including a Python gate.
 

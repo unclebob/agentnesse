@@ -16,7 +16,37 @@ A command row is the name, `when`, `next`, then arguments and checks. `when` is 
 
 An invariant row is `when`, `model`, `query`, and `expect`. It runs after a command whose `when` matches. `model` compares the model after `next`. It does not see the fixture, so a fixture that drifts is caught by `result?` or by a query. `query` is a no-arg fixture call, and `expect` is what it must return. `@name` in an expected cell is filled from the model.
 
-A missing command, an unknown `@name`, a precondition that can never hold, and a steps range outside 1 through 32 are refused before any trial.
+A missing command, an unknown `@name`, a precondition that can never hold, a steps range outside 1 through 32, and more than 64 candidates after one command are refused before any trial. That last refusal says `model too ambiguous`.
+
+There is no `or` inside `when` or `next`. A second ending is another row with the same command. After the call, every row whose `when` held and whose checks match the fixture is kept. The trial fails only when none remain, and the trials cell names the step and what was seen against each row. A later command is drawn only when its `when` holds in every row still kept. An invariant has to hold in every one of them.
+
+This reserve either holds the slot or waitlists it. The fixture waitlists, so the `wait` row is the one that remains. `ping` is legal on both endings, so it can follow `reserve`.
+
+| sequence:agnesse.slim.test.Waitlist |
+| --- |
+| trials | 4 |
+| steps | 1..2 |
+| seed | 1 |
+| state | phase=open |
+| command | when | next | result? | phase? |
+| reserve | phase=open | phase=held | held | held |
+| reserve | phase=open | phase=wait | wait | wait |
+| ping | | | ok | @phase |
+
+A return that matches neither row fails the trial. The cell expected `held or wait`.
+
+| script | page driver |
+| --- |
+| given page | SequenceGuideNope | with content | &#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>1<br>&#96;&#96;&#96;<br><br>\| sequence:agnesse.slim.test.Waitlist \| nope \|<br>\| trials \| 1 \|<br>\| steps \| 1..1 \|<br>\| seed \| 1 \|<br>\| state \| phase=open \|<br>\| command \| when \| next \| result? \|<br>\| reserve \| phase=open \| phase=held \| held \|<br>\| reserve \| phase=open \| phase=wait \| wait \| |
+| make | SequenceGuideNope | a test page |
+| check | request page | SequenceGuideNope?test&format=json | 200 |
+| ensure | content contains | "wrong":1 |
+| ensure | content contains | "right":0 |
+| ensure | content contains | saw nope |
+| ensure | content contains | held or wait |
+| ensure | content contains | step 1 reserve |
+| ensure | source contains; | SequenceGuideNope | seed \| 1 |
+| reject | source contains; | SequenceGuideNope | shrunk |
 
 This item can be opened, blocked, or released. A blocked item cannot be released.
 
