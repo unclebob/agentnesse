@@ -3,7 +3,6 @@ const { spawn } = require("node:child_process");
 const { EventEmitter } = require("node:events");
 const fs = require("fs");
 const http = require("http");
-const net = require("net");
 const os = require("os");
 const path = require("path");
 const test = require("node:test");
@@ -58,17 +57,6 @@ function startServer(dir) {
     });
   });
   return listen(server).then((port) => ({ server, port }));
-}
-
-function freePort() {
-  return new Promise((resolve, reject) => {
-    const probe = net.createServer();
-    probe.listen(0, "127.0.0.1", () => {
-      const { port } = probe.address();
-      probe.close(() => resolve(port));
-    });
-    probe.on("error", reject);
-  });
 }
 
 function executable(file) {
@@ -127,7 +115,21 @@ function stopChild(child, timeoutMs = 2000) {
   });
 }
 
-function waitJson(url, chrome) {
+function debuggingPort(dir) {
+  const file = path.join(dir, "profile", "DevToolsActivePort");
+  if (!fs.existsSync(file)) return 0;
+  const port = Number(fs.readFileSync(file, "utf8").split("\n")[0]);
+  return Number.isInteger(port) && port > 0 ? port : 0;
+}
+
+function chromeDetail(chrome, stderr) {
+  return [chrome.spawnFailure, Buffer.concat(stderr).toString().trim()].filter(Boolean).join("\n");
+}
+
+// Chrome writes the port it actually bound into DevToolsActivePort. Asking for a
+// free port first, then fetching 127.0.0.1, misses the debugger when Chrome
+// binds that port on IPv6 only or finishes binding after the probe is closed.
+function waitForDebugger(dir, chrome) {
   const stderr = [];
   chrome.stderr.on("data", (chunk) => {
     stderr.push(chunk);
@@ -135,14 +137,24 @@ function waitJson(url, chrome) {
   });
   return new Promise((resolve, reject) => {
     const started = Date.now();
+    function fail() {
+      const detail = chromeDetail(chrome, stderr);
+      reject(new Error("Chrome did not open a debugger" + (detail ? `\n${detail}` : "")));
+    }
     function attempt() {
-      fetch(url).then((res) => res.json()).then(resolve).catch(() => {
-        if (chrome.spawnFailure || chrome.exitCode != null || Date.now() - started > 20000) {
-          const detail = [chrome.spawnFailure, Buffer.concat(stderr).toString().trim()].filter(Boolean).join("\n");
-          reject(new Error("Chrome did not open a debugger" + (detail ? `\n${detail}` : "")));
-          return;
-        }
-        setTimeout(attempt, 20);
+      if (chrome.spawnFailure || chrome.exitCode != null) {
+        fail();
+        return;
+      }
+      const port = debuggingPort(dir);
+      if (!port) {
+        if (Date.now() - started > 20000) fail();
+        else setTimeout(attempt, 20);
+        return;
+      }
+      fetch(`http://127.0.0.1:${port}/json`).then((res) => res.json()).then(resolve).catch(() => {
+        if (Date.now() - started > 20000) fail();
+        else setTimeout(attempt, 20);
       });
     }
     attempt();
@@ -233,6 +245,21 @@ test("a child that failed to spawn is not awaited", async () => {
   assert.ok(Date.now() - started < 200);
 });
 
+test("the debugger port is the first line Chrome writes", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "agnesse-devtools-"));
+  try {
+    assert.equal(debuggingPort(dir), 0);
+    fs.mkdirSync(path.join(dir, "profile"));
+    assert.equal(debuggingPort(dir), 0);
+    fs.writeFileSync(path.join(dir, "profile", "DevToolsActivePort"), "9222\n/devtools/browser/abc\n");
+    assert.equal(debuggingPort(dir), 9222);
+    fs.writeFileSync(path.join(dir, "profile", "DevToolsActivePort"), "nope\n");
+    assert.equal(debuggingPort(dir), 0);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("enter and space on the disclosure toggle a section in Chrome", async (t) => {
   const chromePath = findChrome();
   if (!chromePath) {
@@ -244,11 +271,12 @@ test("enter and space on the disclosure toggle a section in Chrome", async (t) =
   fs.copyFileSync(scriptPath, path.join(dir, "agnesse.js"));
   fs.copyFileSync(cssPath, path.join(dir, "agnesse.css"));
   const web = await startServer(dir);
-  const port = await freePort();
+  fs.mkdirSync(path.join(dir, "profile"));
   let socket;
   const chrome = spawn(chromePath, [
     "--headless=new",
-    `--remote-debugging-port=${port}`,
+    "--remote-debugging-port=0",
+    "--remote-debugging-address=127.0.0.1",
     "--no-sandbox",
     "--disable-gpu",
     "--disable-dev-shm-usage",
@@ -260,7 +288,7 @@ test("enter and space on the disclosure toggle a section in Chrome", async (t) =
     chrome.spawnFailure = error.message;
   });
   try {
-    const targets = await waitJson(`http://127.0.0.1:${port}/json`, chrome);
+    const targets = await waitForDebugger(dir, chrome);
     const page = targets.find((item) => item.type === "page");
     const connected = await connect(page.webSocketDebuggerUrl);
     socket = connected.ws;
