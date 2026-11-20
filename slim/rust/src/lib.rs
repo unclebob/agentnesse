@@ -284,8 +284,8 @@ fn plain(method: &str, args: &[Stored]) -> Option<String> {
 fn numbers(method: &str, args: &[Stored]) -> Option<String> {
     match method {
         "plus" => Some(plus(args)),
-        "wide" => Some(wide(args)),
-        "scale" => Some(scale(args)),
+        "wide" => Some(as_shown(args, Show::Wide)),
+        "scale" => Some(as_shown(args, Show::Scale)),
         "flag" => Some(flag(args)),
         _ => None,
     }
@@ -300,7 +300,7 @@ fn greetings(method: &str, args: &[Stored]) -> Option<String> {
         "hello" => Some("world".into()),
         "endIsAfterStart" => Some(ordered(args)),
         "kind" => Some(kind_of(args)),
-        "initial" => Some(initial(args)),
+        "initial" => Some(as_shown(args, Show::Initial)),
         _ => None,
     }
 }
@@ -778,11 +778,21 @@ fn convert_args(method: &str, args: Vec<Stored>) -> Vec<Stored> {
 }
 
 fn signature(method: &str) -> Option<&'static [&'static str]> {
+    number_signature(method).or_else(|| word_signature(method))
+}
+
+fn number_signature(method: &str) -> Option<&'static [&'static str]> {
     match method {
         "plus" => Some(&["int", "int"]),
         "wide" => Some(&["long"]),
         "scale" => Some(&["double"]),
         "flag" => Some(&["boolean"]),
+        _ => None,
+    }
+}
+
+fn word_signature(method: &str) -> Option<&'static [&'static str]> {
+    match method {
         "initial" => Some(&["char"]),
         "day" => Some(&["date"]),
         "shade" => Some(&["enum"]),
@@ -844,29 +854,22 @@ fn plus(args: &[Stored]) -> String {
     }
 }
 
-fn wide(args: &[Stored]) -> String {
-    match args.first() {
-        Some(Stored::Int(number)) => number.to_string(),
-        _ => "no".into(),
-    }
-}
+enum Show { Wide, Scale, Initial }
 
-fn scale(args: &[Stored]) -> String {
-    match args.first() {
-        Some(Stored::Float(number)) => number.to_string(),
+fn as_shown(args: &[Stored], show: Show) -> String {
+    let Some(value) = args.first() else {
+        return "no".into();
+    };
+    match (show, value) {
+        (Show::Wide, Stored::Int(number)) => number.to_string(),
+        (Show::Scale, Stored::Float(number)) => number.to_string(),
+        (Show::Initial, Stored::Char(ch)) => ch.to_string(),
         _ => "no".into(),
     }
 }
 
 fn flag(args: &[Stored]) -> String {
     if matches!(args.first(), Some(Stored::Bool(true))) { "yes".into() } else { "no".into() }
-}
-
-fn initial(args: &[Stored]) -> String {
-    match args.first() {
-        Some(Stored::Char(ch)) => ch.to_string(),
-        _ => "no".into(),
-    }
 }
 
 fn day(args: &[Stored]) -> String {

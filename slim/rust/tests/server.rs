@@ -185,7 +185,9 @@ fn objects_actors_opt_out_and_typed_arguments() {
     assert_eq!(cell(&gate.answer(&[call("30", "again", "shade", &["green"])]), 0), "green");
     assert_eq!(cell(&gate.answer(&[call("31", "again", "shade", &["pink"])]), 0), "no");
     assert_eq!(cell(&gate.answer(&[call("32", "again", "wide", &["4"])]), 0), "4");
+    assert_eq!(cell(&gate.answer(&[call("32b", "again", "wide", &[])]), 0), "no");
     assert_eq!(cell(&gate.answer(&[call("33", "again", "scale", &["1.25"])]), 0), "1.25");
+    assert_eq!(cell(&gate.answer(&[call("33b", "again", "scale", &["nope"])]), 0), "no");
     assert_eq!(cell(&gate.answer(&[call("34", "again", "initial", &["Q"])]), 0), "Q");
     assert_eq!(cell(&gate.answer(&[call("35", "again", "initial", &["QQ"])]), 0), "no");
     assert_eq!(cell(&gate.answer(&[call("36", "again", "label", &[])]), 0), "no");
