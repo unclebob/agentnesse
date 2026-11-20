@@ -195,7 +195,7 @@
     :else value))
 
 (defn args-from [row index]
-  (if (>= index (count row)) [] (vec (drop index row))))
+  (vec (drop index row)))
 
 (defn call [row instance-at method-at instances symbols]
   (let [method (text row method-at)
@@ -349,7 +349,7 @@
 
 (defn serve [port]
   (try
-    (let [socket (ServerSocket. port 1 (InetAddress/getByName "127.0.0.1"))]
+    (let [socket (ServerSocket. port 50 (InetAddress/getByName "127.0.0.1"))]
       (try
         (let [^Socket conn (.accept socket)]
           (.close socket)
@@ -361,10 +361,16 @@
     (catch Exception e
       (.getMessage e))))
 
-(defn -main [& args]
+(defn launch [args in out]
   (let [port (command-port args)]
     (cond
-      (= :bad port) (System/exit (status true))
-      (= :pipe port) (speak System/in System/out (atom {}) (atom {}))
-      :else (serve port)))
-  (shutdown-agents))
+      (= :bad port) (status true)
+      (= :pipe port) (do (speak in out (atom {}) (atom {})) (status false))
+      :else (do (serve port) (status false)))))
+
+(defn exit! [code]
+  (shutdown-agents)
+  (System/exit code))
+
+(defn -main [& args]
+  (exit! (launch args System/in System/out)))

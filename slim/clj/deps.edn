@@ -8,4 +8,4 @@
                     "--test-ns-path" "test"
                     "--runner" ":clojure.test"
                     "--ns-exclude-regex" "agnesse\\.slim-test"
-                    "-m" "agnesse.slim-test"]}}}
+                    "--lcov"]}}}

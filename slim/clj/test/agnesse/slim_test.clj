@@ -1,8 +1,11 @@
 (ns agnesse.slim-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [agnesse.slim :as slim])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]
            [java.net Socket]))
+
+(use-fixtures :once (fn [tests]
+                      (try (tests) (finally (shutdown-agents)))))
 
 (defn cell [rows index]
   (second (nth rows index)))
@@ -75,11 +78,77 @@
                     0)]
     (mapv #(nth % 4) rows)))
 
+(deftest comparisons-symbols-and-launch
+  (let [instances (atom {})
+        symbols (atom {})]
+    (is (= "yes" (cell (slim/answer [(call "1" "a" "endIsAfterStart" "0" "1")] instances symbols) 0)))
+    (is (= "no" (cell (slim/answer [(call "2" "a" "endIsAfterStart" "2" "2")] instances symbols) 0)))
+    (is (= "no" (cell (slim/answer [(call "3" "a" "endIsAfterStart" "4" "1")] instances symbols) 0)))
+    (is (= "no" (cell (slim/answer [(call "4" "a" "endIsAfterStart" "a" "1")] instances symbols) 0)))
+    (is (= "no" (cell (slim/answer [(call "5" "a" "endIsAfterStart")] instances symbols) 0)))
+    (is (= "id" (cell (slim/answer [(call "6" "a" "kind" "{\"doc\":{\"kind\":\"id\"}}")] instances symbols) 0)))
+    (is (= "no" (cell (slim/answer [(call "7" "a" "kind" "{\"kind\":\"passport\"}")] instances symbols) 0)))
+    (is (= "no" (cell (slim/answer [(call "8" "a" "kind")] instances symbols) 0)))
+    (is (= "OK" (cell (slim/answer [(call "9" "a" "echo")] instances symbols) 0)))
+    (is (= "OK" (cell (slim/answer [(call "10" "a" "echo" ["nested"])] instances symbols) 0)))
+    (is (= "OK" (cell (slim/answer [["11" "make" "" "slim"]] instances symbols) 0)))
+    (is (= "OK" (cell (slim/answer [["12" "make" "blank" ""]] instances symbols) 0)))
+    (is (.contains (cell (slim/answer [(call "13" "blank" "noSuch")] instances symbols) 0) "in class slim")))
+  (is (= "pre kept tail" (slim/expand-string "pre $kept tail" {"kept" "kept"})))
+  (is (= "$missing" (slim/expand-string "$missing" {})))
+  (is (= "$" (slim/expand-string "$" {})))
+  (is (= "A1" (slim/expand-string "$a1" {"a1" "A1"})))
+  (is (= "A0" (slim/expand-string "$a0" {"a0" "A0"})))
+  (is (= "A9" (slim/expand-string "$a9" {"a9" "A9"})))
+  (is (= "up" (slim/expand-string "$A" {"A" "up"})))
+  (is (= "up" (slim/expand-string "$Z" {"Z" "up"})))
+  (is (= "low" (slim/expand-string "$a" {"a" "low"})))
+  (is (= "low" (slim/expand-string "$z" {"z" "low"})))
+  (is (= "yes" (slim/expand-string "$a_b" {"a_b" "yes"})))
+  (is (= [nil 0] (slim/read-list "nope")))
+  (is (= [0 4] (slim/read-length "nope" 0)))
+  (is (= [0 5] (slim/read-length "abcd:" 0)))
+  (is (= ["a" 9] (slim/read-field "000001:a" 0)))
+  (is (= "ab" (slim/read-exact (ByteArrayInputStream. (.getBytes "ab" "UTF-8")) 2)))
+  (is (= "0000000001" (slim/read-prefix (ByteArrayInputStream. (.getBytes "0000000001:" "UTF-8")))))
+  (is (nil? (slim/read-prefix (ByteArrayInputStream. (.getBytes (str (apply str (repeat 11 "x")) ":") "UTF-8")))))
+  (is (= ["yes"] (slim/expand ["$a"] {"a" "yes"})))
+  (is (= 4 (slim/expand 4 {})))
+  (is (= 1 (slim/launch ["slim" "nope"] nil nil)))
+  (let [out (ByteArrayOutputStream.)]
+    (is (zero? (slim/launch ["slim" "1"] (ByteArrayInputStream. (.getBytes "" "UTF-8")) out)))
+    (is (= "Slim -- V0.5\n" (.toString out "UTF-8"))))
+  (let [busy (java.net.ServerSocket. 0)
+        code (atom nil)]
+    (try
+      (is (zero? (slim/launch ["slim" (str (.getLocalPort busy))] nil nil)))
+      (with-redefs [slim/exit! (fn [status] (reset! code status))]
+        (slim/-main "slim" "nope")
+        (is (= 1 @code)))
+      (finally (.close busy)))))
+
 (deftest lanes-book-a-racy-seat-twice-and-a-safe-seat-once
   (is (= "lanes" (cell (slim/answer [["1" "lanes"]] (atom {}) (atom {})) 0)))
   (is (= [] (cell (slim/answer [["2" "lanes" "not-a-group"]] (atom {}) (atom {})) 0)))
   (is (= ["booked" "booked"] (sort (lane-results "racy"))))
-  (is (= ["booked" "full"] (sort (lane-results "safe")))))
+  (is (= ["booked" "full"] (sort (lane-results "safe"))))
+  (let [instances (atom {})
+        symbols (atom {})]
+    (slim/answer [["1" "make" "seat" "slim" "racy"]] instances symbols)
+    (is (= "booked" (cell (slim/answer [(call "2" "seat" "book")] instances symbols) 0)))
+    (is (= "full" (cell (slim/answer [(call "3" "seat" "book")] instances symbols) 0)))
+    (swap! (get @instances "seat") assoc :seats nil)
+    (is (= "full" (cell (slim/answer [(call "4" "seat" "book")] instances symbols) 0)))
+    (is (.contains (cell (slim/answer [(call "5" "missing" "book")] instances symbols) 0) "NO_INSTANCE")))
+  (let [instances (atom {})
+        symbols (atom {})
+        _ (slim/answer [["1" "make" "seat" "slim"]] instances symbols)
+        rows (cell (slim/answer [["9" "lanes"
+                                  ["t1" [(call "a" "seat" "hello") (call "b" "seat" "hello")]]]]
+                                instances symbols)
+                    0)]
+    (is (= ["t1" "a" "1" "2" "world"] (subvec (first rows) 0 5)))
+    (is (= "3" (nth (second rows) 2)))))
 
 (defn frame [value]
   (let [body (slim/serialize [value])]
@@ -130,5 +199,6 @@
 
 (defn -main [& _]
   (let [{:keys [fail error]} (clojure.test/run-tests 'agnesse.slim-test)]
+    (shutdown-agents)
     (when (pos? (+ fail error))
       (throw (ex-info "tests failed" {:fail fail :error error})))))
