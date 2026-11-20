@@ -218,8 +218,29 @@ task pythonSlimTest(type: Exec) {
   commandLine 'python3', 'test/agnesse/files/tiny_slim_test.py'
 }
 
+task goSlimTest(type: Exec) {
+  group = 'verification'
+  description = 'Run the Go Slim server tests.'
+  workingDir = 'slim/go'
+  commandLine 'go', 'test', '-count=1', '-timeout', '60s', './...'
+}
+
+task rustSlimTest(type: Exec) {
+  group = 'verification'
+  description = 'Run the Rust Slim server tests.'
+  workingDir = 'slim/rust'
+  commandLine 'cargo', 'test', '--offline', '--quiet'
+}
+
+task tsSlimTest(type: Exec) {
+  group = 'verification'
+  description = 'Run the TypeScript Slim server tests.'
+  workingDir = 'slim/ts'
+  commandLine 'npm', 'test'
+}
+
 test {
-  dependsOn copyRuntimeLibs, javascriptTest, pythonSlimTest
+  dependsOn copyRuntimeLibs, javascriptTest, pythonSlimTest, goSlimTest, rustSlimTest, tsSlimTest
   maxParallelForks = 1
   finalizedBy jacocoTestReport
 }

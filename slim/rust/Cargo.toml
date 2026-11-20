@@ -1,0 +1,8 @@
+[package]
+name = "slim"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "slim"
+path = "src/main.rs"

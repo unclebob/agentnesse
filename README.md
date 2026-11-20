@@ -605,7 +605,7 @@ There is no `or` inside `when` or `next`. Two endings are two rows of the same c
 
 After the call, every row whose checks match the fixture is kept. A later command is drawn when its `when` holds in at least one of those rows. The trial fails when none match. The trials cell names the step and what was seen against each row (`held or wait`). More than 64 candidates is a bad table: `model too ambiguous`.
 
-Each trial is a new fixture. The cells are ordinary strings, so Java, Python, and any other Slim server run the same table.
+Each trial is a new fixture. The cells are ordinary strings, so the same table runs on the Java server, the Python server at `AgNesseRoot/files/agnesse/tiny_slim.py`, and the servers in `slim/go`, `slim/rust`, and `slim/ts`.
 
 A `threads` row runs one branch per thread against that same fixture. `threads` is `low..high`, from 2 through 32. `steps` is how long each branch is. `prefix` is the serial length before the branches, from 0 through 32, and it defaults to `0..0`. Each branch is a legal continuation of the prefix on its own. AgNesse runs the prefix, then one command from each branch at the same time, and looks for a serial order that explains every return. One such order passes. None fails. The search stops after 4096 states and the trials cell says `linearizability search hit its bound`.
 

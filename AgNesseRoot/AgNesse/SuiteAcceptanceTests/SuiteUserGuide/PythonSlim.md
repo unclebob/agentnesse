@@ -10,6 +10,8 @@
 
 The script answers `world` from `hello`. The header is `Slim -- V0.5` and each message is a six-digit length, a colon, and the bytes.
 
+The same protocol is spoken by the servers in `slim/go`, `slim/rust`, and `slim/ts`. Each one has a decision table, a property table, and a sequence table, and the socket servers share one fixture across the threads of a concurrent sequence. A `.js` file uses the `slim/ts` server: `node` runs the `.ts` file.
+
 ```agnesse
 define COMMAND_PATTERN
 python3 AgNesseRoot/files/agnesse/tiny_slim.py
