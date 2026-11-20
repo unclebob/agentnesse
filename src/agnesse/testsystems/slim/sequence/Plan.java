@@ -63,21 +63,18 @@ public final class Plan {
   }
 
   public boolean legal(Trace trace) {
-    Map<String, String> state = new LinkedHashMap<>(initial);
-    for (Step step : trace.steps) {
-      if (!allows(step.command, state)) {
-        return false;
-      }
-      state = apply(state, step);
-    }
-    return true;
+    return Candidates.start(initial).accepts(this, trace);
   }
 
   public Map<String, String> apply(Map<String, String> state, Step step) {
     Command command = commands.get(step.command);
+    return apply(state, step.command, command.args(step.values()));
+  }
+
+  public Map<String, String> apply(Map<String, String> state, int command, Map<String, String> args) {
     Map<String, String> next = new LinkedHashMap<>(state);
-    for (Binding binding : command.next) {
-      next.put(binding.name, binding.eval(next, command.args(step.values())));
+    for (Binding binding : commands.get(command).next) {
+      next.put(binding.name, binding.eval(next, args));
     }
     return next;
   }

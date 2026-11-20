@@ -438,6 +438,189 @@ public class SequenceTest {
   }
 
   @Test
+  public void overlappingRowsStayCandidatesUntilTheResultChooses() {
+    Plan plan = desk();
+    Map<String, String> initial = state("phase", "open", "seat", "0");
+    Candidates start = Candidates.start(initial);
+    initial.put("phase", "shut");
+    assertTrue(start.has("phase", "open"));
+    assertFalse(start.has("phase", "shut"));
+    assertEquals("open", start.firstMatch(plan, 2).get("phase"));
+    Step reserve = new Step(0, List.of(Value.text("4")));
+    Candidates either = start.image(plan, reserve);
+    assertEquals(2, either.size());
+    assertTrue(either.has("phase", "held"));
+    assertTrue(either.has("phase", "wait"));
+    assertFalse(either.allows(plan, 2));
+    assertTrue(either.allows(plan, 3));
+    Advance confirmed = either.take(plan, new Step(2, List.of()), Reading.returned("ok"));
+    assertTrue(confirmed.ok());
+    assertEquals(1, confirmed.candidates.size());
+    assertTrue(confirmed.candidates.has("phase", "done"));
+    Advance missedConfirm = either.take(plan, new Step(2, List.of()), Reading.returned("nope"));
+    assertFalse(missedConfirm.ok());
+    assertEquals(Advance.Kind.EMPTY, missedConfirm.kind);
+    assertEquals("saw nope; ok", missedConfirm.detail);
+    Advance held = start.take(plan, reserve, Reading.returned("held"));
+    assertTrue(held.ok());
+    assertEquals(1, held.candidates.size());
+    assertTrue(held.candidates.has("seat", "4"));
+    assertEquals(0, held.shown);
+    Advance waited = start.take(plan, reserve, Reading.returned("wait"));
+    assertTrue(waited.ok());
+    assertTrue(waited.candidates.has("phase", "wait"));
+    assertEquals(1, waited.shown);
+    Advance neither = start.take(plan, reserve, Reading.returned("nope"));
+    assertEquals(Advance.Kind.EMPTY, neither.kind);
+    assertFalse(neither.ok());
+    assertTrue(neither.detail, neither.detail.contains("saw nope"));
+    assertTrue(neither.detail, neither.detail.contains("held"));
+    assertTrue(neither.detail, neither.detail.contains("wait"));
+    assertEquals(3, neither.column);
+    Advance shut = start.take(plan, new Step(2, List.of()), Reading.returned("ok"));
+    assertEquals(Advance.Kind.EMPTY, shut.kind);
+    assertTrue(shut.detail, shut.detail.contains("no row matched"));
+    Advance blank = start.take(plan, reserve, new Reading(null, null));
+    assertEquals(Advance.Kind.EMPTY, blank.kind);
+    assertEquals("", blank.actual);
+  }
+
+  @Test
+  public void aQueryAndAnInvariantSelectAmongCandidates() {
+    Command held = new Command("reserve", "phase=open", "phase=held", List.of(),
+        List.of(result("held"), query("phase", "@phase")));
+    Command wait = new Command("reserve", "phase=open", "phase=wait", List.of(),
+        List.of(result("wait"), query("phase", "@phase")));
+    Command ping = new Command("ping", "", "", List.of(), List.of(result("ok"), query("phase", "@phase")));
+    Guard waiting = new Guard("phase=wait", "phase=wait", "lane", "wait");
+    Plan plan = Plan.create(state("phase", "open"), 1, 2, List.of(held, wait, ping), List.of(waiting));
+    Candidates start = Candidates.start(plan.initial);
+    Step reserve = new Step(0, List.of());
+    assertEquals(List.of("phase", "lane"), start.queries(plan, reserve));
+    Plan one = Plan.create(state("phase", "open"), 1, 1, List.of(held), List.of());
+    Advance resultCell = Candidates.start(one.initial).take(one, reserve, new Reading("nope", state("phase", "held")));
+    assertEquals(Advance.Kind.CELL, resultCell.kind);
+    assertEquals("nope", resultCell.actual);
+    assertEquals("held", resultCell.expected);
+    Advance queryCell = Candidates.start(one.initial).take(one, reserve, new Reading("held", state("phase", "no")));
+    assertEquals(Advance.Kind.CELL, queryCell.kind);
+    assertEquals(4, queryCell.column);
+    assertEquals("no", queryCell.actual);
+    assertEquals("held", queryCell.expected);
+    Advance heldState = start.take(plan, reserve, new Reading("held", state("phase", "held")));
+    assertTrue(heldState.ok());
+    assertEquals(List.of("phase"), heldState.candidates.queries(plan, new Step(2, List.of())));
+    Advance broken = start.take(plan, reserve, new Reading("wait", state("phase", "no")));
+    assertEquals(Advance.Kind.EMPTY, broken.kind);
+    assertTrue(broken.detail, broken.detail.contains("phase=no"));
+    Advance waited = start.take(plan, reserve, new Reading("wait", state("phase", "wait", "lane", "wait")));
+    assertTrue(waited.ok());
+    Advance queryFails = waited.candidates.take(plan, new Step(2, List.of()),
+        new Reading("ok", state("phase", "wait", "lane", "held")));
+    assertEquals(Advance.Kind.GUARD, queryFails.kind);
+    assertFalse(queryFails.model);
+    assertEquals("lane", queryFails.name);
+    assertEquals("held", queryFails.actual);
+    assertEquals("wait", queryFails.expected);
+    Guard both = new Guard("", "phase!=missing", null, "");
+    Plan open = Plan.create(state("phase", "open"), 1, 1, List.of(
+        new Command("reserve", "phase=open", "phase=held", List.of(), List.of(result("ok"))),
+        new Command("reserve", "phase=open", "phase=wait", List.of(), List.of(result("ok")))
+    ), List.of(both));
+    Advance two = Candidates.start(open.initial).take(open, reserve, Reading.returned("ok"));
+    assertTrue(two.ok());
+    assertEquals(2, two.candidates.size());
+    Guard onlyWait = new Guard("phase=wait", "phase=held", null, "");
+    Plan strict = Plan.create(state("phase", "open"), 1, 1, List.of(
+        new Command("reserve", "phase=open", "phase=held", List.of(), List.of(result("ok"))),
+        new Command("reserve", "phase=open", "phase=wait", List.of(), List.of(result("ok")))
+    ), List.of(onlyWait, new Guard("phase=held", "phase=held", null, "")));
+    Advance guard = Candidates.start(strict.initial).take(strict, reserve, Reading.returned("ok"));
+    assertEquals(Advance.Kind.GUARD, guard.kind);
+    assertTrue(guard.model);
+    assertEquals("phase", guard.name);
+    assertEquals("wait", guard.actual);
+    assertEquals("held", guard.expected);
+  }
+
+  @Test
+  public void aCommandEnabledInOnlyOneCandidateIsNotDrawn() {
+    Plan plan = desk();
+    Trace trace = Course.drawOne(plan, new Rolls(0, 0, 0));
+    assertEquals(0, trace.steps.get(0).command);
+    assertEquals(3, trace.steps.get(1).command);
+    assertFalse(plan.legal(new Trace(List.of(new Step(0, List.of(Value.text("4"))), new Step(2, List.of())))));
+    assertTrue(plan.legal(new Trace(List.of(new Step(0, List.of(Value.text("4"))), new Step(3, List.of())))));
+    Candidates start = Candidates.start(plan.initial);
+    Candidates same = start.image(plan, new Step(0, List.of(Value.text("1"))));
+    assertEquals(2, same.size());
+    Plan copies = Plan.create(state("phase", "open"), 1, 1, List.of(
+        command("reserve", "phase=open", "phase=held"),
+        command("reserve", "phase=open", "phase=held")
+    ), List.of());
+    assertEquals(1, Candidates.start(copies.initial).image(copies, new Step(0, List.of())).size());
+    Advance once = Candidates.start(copies.initial).take(copies, new Step(1, List.of()), Reading.returned("ok"));
+    assertTrue(once.ok());
+    assertEquals(1, once.candidates.size());
+    assertEquals(0, once.shown);
+    Plan life = life(1, 2);
+    Candidates opened = Candidates.start(life.initial).image(life, new Step(0, List.of()));
+    assertEquals(1, opened.image(life, new Step(3, List.of())).size());
+  }
+
+  @Test
+  public void sixtyFourCandidatesAreKeptAndOneMoreIsAnError() {
+    Plan wide = branches(64);
+    Candidates next = Candidates.start(wide.initial).image(wide, new Step(0, List.of()));
+    assertEquals(64, next.size());
+    assertTrue(next.allows(wide, 0));
+    Advance kept = Candidates.start(wide.initial).take(wide, new Step(0, List.of()), Reading.returned("ok"));
+    assertTrue(kept.ok());
+    assertEquals(64, kept.candidates.size());
+    Plan over = branches(65);
+    IllegalArgumentException tooMany = assertThrows(IllegalArgumentException.class,
+        () -> Candidates.start(over.initial).image(over, new Step(0, List.of())));
+    assertEquals(Candidates.AMBIGUOUS, tooMany.getMessage());
+    IllegalArgumentException taken = assertThrows(IllegalArgumentException.class,
+        () -> Candidates.start(over.initial).take(over, new Step(0, List.of()), Reading.returned("ok")));
+    assertEquals(Candidates.AMBIGUOUS, taken.getMessage());
+    assertFalse(over.legal(new Trace(List.of(new Step(0, List.of())))));
+    Plan numbers = Plan.create(state("n", "0", "one", "1"), 1, 1, List.of(
+        command("set", "", "n=@amount+@one", generated("amount", "int:1..1"))), List.of());
+    IllegalArgumentException bad = assertThrows(IllegalArgumentException.class,
+        () -> numbers.legal(new Trace(List.of(new Step(0, List.of(Value.text("x")))))));
+    assertTrue(bad.getMessage(), bad.getMessage().contains("whole number"));
+    Candidates empty = Candidates.start(state("phase", "open")).image(life(1, 1), new Step(0, List.of()));
+    assertEquals(0, empty.size());
+    assertFalse(empty.allows(life(1, 1), 0));
+  }
+
+  @Test
+  public void queriesFollowTheRowsThatCouldMatch() {
+    Command held = new Command("reserve", "phase=open", "phase=held", List.of(),
+        List.of(result("held"), query("phase", "@phase")));
+    Command wait = new Command("reserve", "phase=open", "phase=wait", List.of(),
+        List.of(result("wait"), query("lane", "wait")));
+    Guard blocked = new Guard("phase=held", "phase=held", "phase", "held");
+    Guard counted = new Guard("", "phase!=gone", null, "");
+    Guard quiet = new Guard("phase=open", "phase=open", "extra", "open");
+    Plan plan = Plan.create(state("phase", "open"), 1, 1, List.of(held, wait), List.of(blocked, counted, quiet));
+    assertEquals(List.of("phase", "lane"), Candidates.start(plan.initial).queries(plan, new Step(0, List.of())));
+    Advance heldState = Candidates.start(plan.initial).take(plan, new Step(0, List.of()),
+        new Reading("held", state("phase", "held")));
+    assertTrue(heldState.ok());
+    assertEquals(List.of(), heldState.candidates.queries(plan, new Step(0, List.of())));
+    Command askHeld = new Command("ask", "", "", List.of(), List.of(query("phase", "held")));
+    Command askWait = new Command("ask", "", "", List.of(), List.of(query("phase", "wait")));
+    Plan asks = Plan.create(state("phase", "open"), 1, 1, List.of(askHeld, askWait), List.of());
+    Advance missed = Candidates.start(asks.initial).take(asks, new Step(0, List.of()),
+        new Reading("ignored", state("phase", "no")));
+    assertEquals(Advance.Kind.EMPTY, missed.kind);
+    assertEquals(4, missed.column);
+    assertEquals("saw phase=no; held or wait", missed.detail);
+  }
+
+  @Test
   public void walkDropsCommandsBeforeArgumentsAndStopsAtTheCap() {
     Walk dropped = new Walk(life(1, 4), new Trace(List.of(
         new Step(1, List.of()), new Step(3, List.of()))));
@@ -558,6 +741,31 @@ public class SequenceTest {
 
   private static Command.Expect ok() {
     return new Command.Expect(true, null, "ok", 0);
+  }
+
+  private static Command.Expect result(String text) {
+    return new Command.Expect(true, null, text, 3);
+  }
+
+  private static Command.Expect query(String method, String text) {
+    return new Command.Expect(false, method, text, 4);
+  }
+
+  private static Plan desk() {
+    Command held = new Command("reserve", "phase=open", "phase=held; seat=@n",
+        List.of(generated("n", "int:1..4")), List.of(result("held")));
+    Command wait = new Command("reserve", "phase=open", "phase=wait; seat=@n",
+        List.of(generated("n", "int:1..4")), List.of(result("wait")));
+    return Plan.create(state("phase", "open", "seat", "0"), 2, 2,
+        List.of(held, wait, command("confirm", "phase=held", "phase=done"), command("ping", "", "")), List.of());
+  }
+
+  private static Plan branches(int count) {
+    List<Command> commands = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      commands.add(command("go", "", "n=" + i));
+    }
+    return Plan.create(state("n", "0"), 1, 1, commands, List.of());
   }
 
   private static Command.Argument generated(String name, String spec) {

@@ -5,9 +5,7 @@ import agnesse.testsystems.slim.property.Shrinker;
 import agnesse.testsystems.slim.property.Value;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /** Draws command sequences from a seed and offers shorter ones that still replay. */
@@ -29,16 +27,16 @@ public final class Course {
 
   public static Trace drawOne(Plan plan, Random random) {
     int length = plan.stepsMin + random.nextInt(plan.stepsMax - plan.stepsMin + 1);
-    Map<String, String> state = new LinkedHashMap<>(plan.initial);
+    Candidates cast = Candidates.start(plan.initial);
     List<Step> steps = new ArrayList<>();
     while (steps.size() < length) {
-      List<Integer> enabled = enabled(plan, state);
+      List<Integer> enabled = cast.allowed(plan);
       if (enabled.isEmpty()) {
         break;
       }
       int index = enabled.get(random.nextInt(enabled.size()));
       Step step = new Step(index, drawArgs(plan.commands.get(index), random));
-      state = plan.apply(state, step);
+      cast = cast.image(plan, step);
       steps.add(step);
     }
     return new Trace(steps);
@@ -71,16 +69,6 @@ public final class Course {
       }
     }
     return out;
-  }
-
-  private static List<Integer> enabled(Plan plan, Map<String, String> state) {
-    List<Integer> indexes = new ArrayList<>();
-    for (int i = 0; i < plan.commands.size(); i++) {
-      if (plan.allows(i, state)) {
-        indexes.add(i);
-      }
-    }
-    return indexes;
   }
 
   private static List<Value> drawArgs(Command command, Random random) {
