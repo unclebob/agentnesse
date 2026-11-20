@@ -188,6 +188,13 @@ public class SlimServiceTest extends SlimServiceTestBase {
   }
 
   @Test
+  public void abandonClosesAClientThatNeverConnected() throws Exception {
+    SlimCommandRunningClient client = newClient(1);
+    client.abandon();
+    assertFalse(client.isConnected());
+  }
+
+  @Test
   public void daemonConnectionsShareOneFixture() throws Exception {
     SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
     SlimFactory shared = JavaSlimFactory.createJavaSlimFactory(options);
@@ -231,10 +238,9 @@ public class SlimServiceTest extends SlimServiceTestBase {
       client.invokeAndGetResponse(List.of(new MakeInstruction("m", "seat", "agnesse.slim.test.Waitlist")));
       Map<String, Object> result = second.invokeAndGetResponse(List.of(new CallInstruction("c", "seat", "ping")));
       assertEquals("ok", result.get("c"));
+      second.abandon();
       client.bye();
       client.kill();
-      second.bye();
-      second.kill();
       socket.close();
       server.join(5000);
       assertFalse(server.isAlive());

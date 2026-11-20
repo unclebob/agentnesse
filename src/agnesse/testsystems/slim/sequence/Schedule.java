@@ -68,15 +68,10 @@ public final class Schedule {
   }
 
   private static void threads(int low, int high) {
-    if (low < LEAST || high < low || high > Course.CAP) {
-      throw new IllegalArgumentException(
-          "threads must be low..high from " + LEAST + " through " + Course.CAP);
-    }
+    Course.bounds(low, high, LEAST, "threads");
   }
 
   private static void span(int low, int high) {
-    if (low < 0 || high < low || high > Course.CAP) {
-      throw new IllegalArgumentException("prefix must be low..high from 0 through " + Course.CAP);
-    }
+    Course.bounds(low, high, 0, "prefix");
   }
 }

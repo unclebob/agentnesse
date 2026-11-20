@@ -285,15 +285,7 @@ public final class Candidates {
     for (int index = 0; index < plan.commands.size(); index++) {
       Command row = plan.commands.get(index);
       if (row.name.equals(name) && matchesAny(plan, index)) {
-        addExpects(row, names);
-      }
-    }
-  }
-
-  private static void addExpects(Command row, List<String> names) {
-    for (Command.Expect expect : row.expects) {
-      if (!expect.result && !names.contains(expect.method)) {
-        names.add(expect.method);
+        row.collectQueries(names);
       }
     }
   }
@@ -380,7 +372,7 @@ public final class Candidates {
   private static List<String> queryNames(Plan plan, List<Integer> open) {
     List<String> names = new ArrayList<>();
     for (int index : open) {
-      addExpects(plan.commands.get(index), names);
+      plan.commands.get(index).collectQueries(names);
     }
     return names;
   }

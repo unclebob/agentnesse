@@ -39,6 +39,14 @@ public final class Command {
     return args;
   }
 
+  public void collectQueries(List<String> names) {
+    for (Expect expect : expects) {
+      if (!expect.result && !names.contains(expect.method)) {
+        names.add(expect.method);
+      }
+    }
+  }
+
   public List<String> call(List<Value> values) {
     List<String> cells = new ArrayList<>();
     for (Value value : values) {

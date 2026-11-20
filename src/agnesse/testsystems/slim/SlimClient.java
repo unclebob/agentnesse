@@ -15,5 +15,15 @@ public interface SlimClient {
 
   void bye() throws IOException;
 
+  /** Stop without waiting for a daemon process to exit on its own. */
+  default void abandon() throws IOException {
+    bye();
+  }
+
+  /** Another connection to the server this client already started, or null when that is impossible. */
+  default SlimClient another() {
+    return null;
+  }
+
   void kill();
 }

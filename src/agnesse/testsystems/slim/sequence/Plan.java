@@ -88,9 +88,7 @@ public final class Plan {
   }
 
   private static void steps(int low, int high) {
-    if (low < 1 || high < low || high > Course.CAP) {
-      throw new IllegalArgumentException("steps must be low..high from 1 through " + Course.CAP);
-    }
+    Course.bounds(low, high, 1, "steps");
   }
 
   private static void arguments(List<Command> commands) {

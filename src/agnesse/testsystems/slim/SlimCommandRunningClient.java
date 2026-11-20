@@ -22,6 +22,8 @@ import agnesse.slim.protocol.SlimListBuilder;
 import agnesse.slim.protocol.SlimSerializer;
 import agnesse.socketservice.ClientSocketFactory;
 import agnesse.testsystems.CommandRunner;
+import agnesse.testsystems.CompositeExecutionLogListener;
+import agnesse.testsystems.MockCommandRunner;
 import agnesse.util.Clock;
 
 public class SlimCommandRunningClient implements SlimClient {
@@ -192,6 +194,39 @@ public class SlimCommandRunningClient implements SlimClient {
     SlimStreamReader.sendSlimMessage(writer, SlimVersion.BYEMESSAGE);
     slimRunner.join();
     kill();
+  }
+
+  @Override
+  public void abandon() throws IOException {
+    try {
+      writeBye();
+    } finally {
+      slimRunner.kill();
+      FileUtil.close(reader);
+      FileUtil.close(writer);
+      FileUtil.close(client);
+    }
+  }
+
+  private void writeBye() throws IOException {
+    if (writer == null) {
+      return;
+    }
+    SlimStreamReader.sendSlimMessage(writer, SlimVersion.BYEMESSAGE);
+  }
+
+  @Override
+  public SlimCommandRunningClient another() {
+    if (port == SlimClientBuilder.SLIM_USE_PIPE_PORT) {
+      return null;
+    }
+    return new SlimCommandRunningClient(
+        new MockCommandRunner(new CompositeExecutionLogListener()),
+        hostName, port, 2, requiredSlimVersion, clientSocketFactory);
+  }
+
+  public int port() {
+    return port;
   }
 
   public static Map<String, Object> resultToMap(List<?> slimResults) {

@@ -47,4 +47,18 @@ public interface SlimTestContext {
   void setCurrentScriptActor(String currentScriptActor);
 
   String getCurrentScriptActor();
+
+  default void client(SlimClient client) {
+  }
+
+  default SlimClient client() {
+    return null;
+  }
+
+  default void abandonAfter() {
+  }
+
+  default boolean abandonAfterRun() {
+    return false;
+  }
 }

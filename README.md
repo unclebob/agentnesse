@@ -607,6 +607,23 @@ After the call, every row whose checks match the fixture is kept. A later comman
 
 Each trial is a new fixture. The cells are ordinary strings, so Java, Python, and any other Slim server run the same table.
 
+A `threads` row runs one branch per thread against that same fixture. `threads` is `low..high`, from 2 through 32. `steps` is how long each branch is. `prefix` is the serial length before the branches, from 0 through 32, and it defaults to `0..0`. Each branch is a legal continuation of the prefix on its own. AgNesse runs the prefix, then one command from each branch at the same time, and looks for a serial order that explains every return. One such order passes. None fails. The search stops after 4096 states and the trials cell says `linearizability search hit its bound`.
+
+Those calls are ordinary Slim calls, one socket connection per thread. The Java server needs `-d` so the connections share the fixture the first connection created. A pipe cannot, and the table says so. A server that keeps a private fixture per connection says it does not share one fixture. `SLIM_FLAGS` `-d` and `SLIM_PORT` `0` are the Java settings. The shipped Python server shares instances on a socket.
+
+```
+| sequence:agnesse.slim.test.LastSeatSafe |
+| threads | 2..2 |
+| prefix | 0..0 |
+| steps | 1..1 |
+| state | seats=1 |
+| command | when | next | result? |
+| book | seats=1 | seats=0 | booked |
+| book | seats=0 | | full |
+```
+
+Shrinking drops threads, then the prefix, then commands, then arguments. A race may not show on every run, so each candidate runs 3 times and is kept if any run fails. The trials cell shows the drawn prefix and branches, what came back, and `shrunk` when a shorter failure was kept.
+
 A failure drops commands that are not needed, shortest first, and only when the remaining preconditions still hold. A shorter length is tried when there are at most 64 ways to choose those commands. Argument cells then shrink with the property shrinkers. The trials cell names the trial, the drawn commands, and the failing step or invariant. It says `shrunk` when a shorter failure was kept, and `shrink cap` after 32 accepted steps. The result rows show that sequence. The saved page is unchanged.
 
 The whole specification is one Markdown table. A blank line starts a new table.

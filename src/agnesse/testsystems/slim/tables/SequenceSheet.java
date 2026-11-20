@@ -9,6 +9,7 @@ import agnesse.testsystems.slim.sequence.Command;
 import agnesse.testsystems.slim.sequence.Course;
 import agnesse.testsystems.slim.sequence.Guard;
 import agnesse.testsystems.slim.sequence.Plan;
+import agnesse.testsystems.slim.sequence.Schedule;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -33,7 +34,7 @@ final class SequenceSheet {
   private static final int DEFAULT_STEPS = 8;
   private static final Clock PARSED = new Clock(ZoneId.of("UTC"), Instant.parse("2020-01-01T00:00:00Z"));
   private static final Pattern RANGE = Pattern.compile("(\\d+)\\s*\\.\\.\\s*(\\d+)");
-  private static final Set<String> KEYS = Set.of("trials", "steps", "seed", "state");
+  private static final Set<String> KEYS = Set.of("trials", "steps", "seed", "state", "threads", "prefix");
   private static final Set<String> TIMED = Set.of("date", "time", "datetime", "period", "now");
   private static final Set<String> WORDS = Set.of(
       "int", "boolean", "string", "list", "one", "all", "decimal", "money", "pattern",
@@ -49,6 +50,11 @@ final class SequenceSheet {
   final boolean hasSeed;
   final int width;
   final Plan plan;
+  final boolean concurrent;
+  final int threadsLow;
+  final int threadsHigh;
+  final int prefixLow;
+  final int prefixHigh;
 
   private SequenceSheet(String fixture, String[] arguments, Config config, int width, Plan plan) {
     this.fixture = fixture;
@@ -61,6 +67,11 @@ final class SequenceSheet {
     this.hasSeed = config.seed.seen();
     this.width = width;
     this.plan = plan;
+    this.concurrent = config.concurrent;
+    this.threadsLow = config.threadsLow;
+    this.threadsHigh = config.threadsHigh;
+    this.prefixLow = config.prefixLow;
+    this.prefixHigh = config.prefixHigh;
   }
 
   static SequenceSheet read(Table table, String fixtureName) throws SyntaxError {
@@ -76,6 +87,9 @@ final class SequenceSheet {
     String fixture = fixture(table, fixtureName, named);
     String[] arguments = arguments(table, named);
     Config config = config(table);
+    if (config.prefixSeen && !config.concurrent) {
+      throw new SyntaxError("prefix needs a threads row");
+    }
     int header = config.next;
     commandHeader(table, header);
     int width = table.getColumnCountInRow(header);
@@ -277,20 +291,31 @@ final class SequenceSheet {
     private int low = 1;
     private int high = DEFAULT_STEPS;
     private boolean stepsSeen;
+    private boolean concurrent;
+    private boolean threadsSeen;
+    private int threadsLow = Schedule.LEAST;
+    private int threadsHigh = Schedule.LEAST;
+    private boolean prefixSeen;
+    private int prefixLow;
+    private int prefixHigh;
     private final Map<String, String> state = new LinkedHashMap<>();
     private boolean stateSeen;
     private int next = 1;
 
     private void take(String key, String value, int row) throws SyntaxError {
-      if (key.equals("trials")) {
-        trials(value, row);
-      } else if (key.equals("steps")) {
-        steps(value);
-      } else if (key.equals("seed")) {
-        seed.read(value, row);
-      } else {
-        state(value);
-      }
+    if (key.equals("trials")) {
+      trials(value, row);
+    } else if (key.equals("steps")) {
+      steps(value);
+    } else if (key.equals("threads")) {
+      threads(value);
+    } else if (key.equals("prefix")) {
+      prefix(value);
+    } else if (key.equals("seed")) {
+      seed.read(value, row);
+    } else {
+      state(value);
+    }
     }
 
     private void trials(String value, int row) throws SyntaxError {
@@ -325,17 +350,59 @@ final class SequenceSheet {
       if (value.isBlank()) {
         return;
       }
-      int[] range = range(value);
+      int[] range = bounds(value, stepsMessage());
       low = range[0];
       high = range[1];
     }
 
-    private static int[] range(String text) throws SyntaxError {
+    private void threads(String value) throws SyntaxError {
+      if (threadsSeen) {
+        throw new SyntaxError("threads is already set");
+      }
+      threadsSeen = true;
+      concurrent = true;
+      int[] range = bounds(value, threadsMessage());
+      if (range[0] < Schedule.LEAST || range[1] < range[0] || range[1] > Course.CAP) {
+        throw new SyntaxError(threadsMessage());
+      }
+      threadsLow = range[0];
+      threadsHigh = range[1];
+    }
+
+    private void prefix(String value) throws SyntaxError {
+      if (prefixSeen) {
+        throw new SyntaxError("prefix is already set");
+      }
+      prefixSeen = true;
+      if (value.isBlank()) {
+        return;
+      }
+      int[] range = bounds(value, prefixMessage());
+      if (range[1] < range[0] || range[1] > Course.CAP) {
+        throw new SyntaxError(prefixMessage());
+      }
+      prefixLow = range[0];
+      prefixHigh = range[1];
+    }
+
+    private static int[] bounds(String text, String message) throws SyntaxError {
       Matcher matcher = RANGE.matcher(text.trim());
       if (!matcher.matches()) {
-        throw new SyntaxError(stepsMessage());
+        throw new SyntaxError(message);
       }
-      return new int[] {Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2))};
+      try {
+        return new int[] {Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2))};
+      } catch (NumberFormatException e) {
+        throw new SyntaxError(message);
+      }
+    }
+
+    private static String threadsMessage() {
+      return "threads must be low..high from " + Schedule.LEAST + " through " + Course.CAP;
+    }
+
+    private static String prefixMessage() {
+      return "prefix must be low..high from 0 through " + Course.CAP;
     }
 
     private static String stepsMessage() {

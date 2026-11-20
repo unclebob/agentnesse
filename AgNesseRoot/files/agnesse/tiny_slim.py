@@ -6,10 +6,12 @@ Any other port is a socket on 127.0.0.1. hello returns world. echo returns its s
 argument. endIsAfterStart returns yes when the second integer is greater than the first.
 kind returns id when its argument contains a kind field of id. A make starts a gate at
 phase new. open, block, and release move that gate, and release from blocked is refused.
-bye ends the session.
+bye ends the session. A socket accepts one connection per thread and those connections share instances. book on a safe seat takes it once. book on a racy seat checks, waits, then acts.
 """
 import socket
 import sys
+import threading
+import time
 
 
 def main():
@@ -17,27 +19,62 @@ def main():
     if port == 1:
         speak(sys.stdin.buffer, sys.stdout.buffer)
         return
+    serve(port)
+
+
+def serve(port):
     server = socket.socket()
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(("127.0.0.1", port))
-    server.listen(1)
-    connection, _ = server.accept()
+    server.listen(8)
+    server.settimeout(0.2)
+    instances = {}
+    active = {"n": 0, "seen": False}
+    lock = threading.Lock()
+
+    def finished():
+        with lock:
+            active["n"] -= 1
+
+    def idle():
+        with lock:
+            return active["seen"] and active["n"] == 0
+
     try:
-        speak(connection.makefile("rb"), connection.makefile("wb"))
+        while True:
+            try:
+                connection, _ = server.accept()
+            except socket.timeout:
+                if idle():
+                    return
+                continue
+            except OSError:
+                return
+            with lock:
+                active["n"] += 1
+                active["seen"] = True
+            threading.Thread(target=session, args=(connection, instances, finished), daemon=True).start()
     finally:
-        connection.close()
         server.close()
 
 
-def speak(incoming, outgoing):
+def session(connection, instances, finished):
+    try:
+        speak(connection.makefile("rb"), connection.makefile("wb"), instances)
+    finally:
+        connection.close()
+        finished()
+
+
+def speak(incoming, outgoing, instances=None):
     outgoing.write(b"Slim -- V0.5\n")
     outgoing.flush()
-    instances = {}
+    state = {} if instances is None else instances
     while True:
         message = read_message(incoming)
         if message is None or message.lower() == "bye":
             return
-        payload = serialize(answer(parse(message), instances)).encode("utf-8")
+        payload = serialize(answer(parse(message), state)).encode("utf-8")
         outgoing.write(f"{len(payload):06d}:".encode("ascii") + payload)
         outgoing.flush()
 
@@ -66,6 +103,12 @@ def invoke(method, instruction, instances):
     query = QUERIES.get(method)
     if query is not None:
         return query(instruction, instances)
+    if method == "book":
+        return book(instruction, instances)
+    if method == "__agnesse_lane_probe__":
+        if gate(instruction, instances) is None:
+            return missing_instance(instruction)
+        return missing_method(method)
     return "OK"
 
 
@@ -86,8 +129,54 @@ def text_at(instruction, index, fallback):
 def made(instruction, instances):
     name = instance_name(instruction)
     if name:
-        instances[name] = {"phase": "new"}
+        instances[name] = opened(instruction)
     return "OK"
+
+
+def opened(instruction):
+    mark = text_at(instruction, 4, "")
+    if mark == "racy":
+        return {"seats": 1, "race": True}
+    if mark == "safe":
+        return {"seats": 1, "race": False}
+    return {"phase": "new"}
+
+
+def book(instruction, instances):
+    state = gate(instruction, instances)
+    if state is None or "seats" not in state:
+        return missing_instance(instruction)
+    if state.get("race"):
+        return race_book(state)
+    return safe_book(state)
+
+
+def race_book(state):
+    seen = state["seats"]
+    if seen <= 0:
+        return "full"
+    time.sleep(0.05)
+    state["seats"] = seen - 1
+    return "booked"
+
+
+def safe_book(state):
+    with BOOK:
+        if state["seats"] <= 0:
+            return "full"
+        state["seats"] -= 1
+        return "booked"
+
+
+def missing_instance(instruction):
+    return "__EXCEPTION__:message:<<NO_INSTANCE " + instance_name(instruction) + ">>"
+
+
+def missing_method(method):
+    return "__EXCEPTION__:message:<<NO_METHOD_IN_CLASS " + method + ">>"
+
+
+BOOK = threading.Lock()
 
 
 def move(instruction, instances, needed, nxt):

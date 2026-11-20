@@ -183,9 +183,51 @@ class TinySlimTest(unittest.TestCase):
             thread.join(2)
             self.assertFalse(thread.is_alive())
             self.assertEqual(1, seen["reuse"])
-            self.assertEqual(1, seen["backlog"])
+            self.assertEqual(8, seen["backlog"])
         finally:
             self.slim.socket.socket = real
+
+    def test_a_safe_seat_books_once_and_an_unknown_call_is_named(self):
+        shared = {}
+        self.assertEqual("OK", self.slim.answer([["1", "make", "seat", "tiny", "safe"]], shared)[0][1])
+        self.assertEqual("booked", self.slim.answer([["2", "call", "seat", "book"]], shared)[0][1])
+        self.assertEqual("full", self.slim.answer([["3", "call", "seat", "book"]], shared)[0][1])
+        self.assertIn("NO_METHOD_IN_CLASS", self.slim.answer([["4", "call", "seat", "__agnesse_lane_probe__"]], shared)[0][1])
+        self.assertIn("NO_INSTANCE", self.slim.answer([["5", "call", "other", "book"]])[0][1])
+        raced = {}
+        self.assertEqual("OK", self.slim.answer([["6", "make", "seat", "tiny", "racy"]], raced)[0][1])
+        self.assertEqual("booked", self.slim.answer([["7", "call", "seat", "book"]], raced)[0][1])
+        self.assertEqual("full", self.slim.answer([["8", "call", "seat", "book"]], raced)[0][1])
+
+    def test_two_sockets_share_one_safe_seat(self):
+        probe = socket.socket()
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+        probe.close()
+        stdout = io.BytesIO()
+        thread = threading.Thread(
+            target=drive_main,
+            args=(self, ["tiny_slim.py", "not-a-port", str(port)], io.BytesIO(b""), stdout),
+            daemon=True)
+        thread.start()
+        first = connect(port)
+        second = connect(port)
+        try:
+            self.assertEqual(b"Slim -- V0.5\n", read_until(first, b"\n"))
+            self.assertEqual(b"Slim -- V0.5\n", read_until(second, b"\n"))
+            first.sendall(frame(self.slim, ["1", "make", "seat", "tiny", "safe"]))
+            self.assertIn(b"OK", read_until(first, b"OK"))
+            second.sendall(frame(self.slim, ["2", "call", "seat", "book"]))
+            self.assertIn(b"booked", read_until(second, b"booked"))
+            first.sendall(frame(self.slim, ["3", "call", "seat", "book"]))
+            self.assertIn(b"full", read_until(first, b"full"))
+            second.sendall(frame(self.slim, "bye"))
+            first.sendall(frame(self.slim, "bye"))
+        finally:
+            second.close()
+            first.close()
+        thread.join(2)
+        self.assertFalse(thread.is_alive())
 
     def test_an_unreadable_stream_ends_after_the_header(self):
         for raw in (b"", b"000010:short"):

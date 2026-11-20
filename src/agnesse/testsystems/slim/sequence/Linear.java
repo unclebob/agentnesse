@@ -58,7 +58,7 @@ public final class Linear {
         continue;
       }
       visited++;
-      if (done(frame.at, branches)) {
+      if (Trace.finished(frame.at, branches)) {
         return Outcome.PASS;
       }
       extend(stack, plan, branches, readings, frame);
@@ -87,15 +87,6 @@ public final class Linear {
     int[] next = frame.at.clone();
     next[thread]++;
     stack.push(new Frame(next, advance.candidates));
-  }
-
-  private static boolean done(int[] at, List<Trace> branches) {
-    for (int index = 0; index < at.length; index++) {
-      if (at[index] < branches.get(index).steps.size()) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private static String key(Frame frame) {

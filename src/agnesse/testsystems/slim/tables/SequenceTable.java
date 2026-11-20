@@ -16,10 +16,13 @@ import agnesse.testsystems.slim.sequence.Candidates;
 import agnesse.testsystems.slim.sequence.Command;
 import agnesse.testsystems.slim.sequence.Course;
 import agnesse.testsystems.slim.sequence.Guard;
+import agnesse.testsystems.slim.sequence.Race;
 import agnesse.testsystems.slim.sequence.Reading;
+import agnesse.testsystems.slim.sequence.Schedule;
 import agnesse.testsystems.slim.sequence.Step;
 import agnesse.testsystems.slim.sequence.Trace;
 import agnesse.testsystems.slim.sequence.Walk;
+import agnesse.testsystems.slim.sequence.Waves;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +47,7 @@ public class SequenceTable extends SlimTable {
   private Attempt best;
   private String original = "";
   private boolean painted;
+  private boolean raced;
   private int round;
 
   public SequenceTable(Table table, String id, SlimTestContext context) {
@@ -59,6 +63,10 @@ public class SequenceTable extends SlimTable {
   @Override
   public List<SlimAssertion> getAssertions() throws TestExecutionException {
     sheet = SequenceSheet.read(table, getFixtureName());
+    if (sheet.concurrent) {
+      race();
+      return List.of();
+    }
     List<Trace> drawn = draw();
     List<SlimAssertion> batch = new ArrayList<>();
     for (int index = 0; index < drawn.size(); index++) {
@@ -67,6 +75,26 @@ public class SequenceTable extends SlimTable {
       batch.addAll(script(attempt, getTableName() + "_t" + index));
     }
     return batch;
+  }
+
+  private void race() throws TestExecutionException {
+    raced = true;
+    getTestContext().abandonAfter();
+    List<Schedule> drawn;
+    try {
+      drawn = Race.draw(sheet.plan, new Seed(sheet.seed).random(), sheet.trials,
+          sheet.threadsLow, sheet.threadsHigh, sheet.prefixLow, sheet.prefixHigh);
+    } catch (IllegalArgumentException e) {
+      throw new SyntaxError(e.getMessage());
+    }
+    SlimDesk desk = SlimLanes.open(getTestContext().client(), sheet);
+    try {
+      Race.Result result = Race.check(sheet.plan, drawn, desk, sheet.fixture, sheet.arguments, Waves::together);
+      RaceView.paint(markdown(), sheet, result, getTestContext());
+      painted = true;
+    } finally {
+      desk.close();
+    }
   }
 
   private List<Trace> draw() throws SyntaxError {
@@ -79,7 +107,7 @@ public class SequenceTable extends SlimTable {
 
   @Override
   public List<SlimAssertion> furtherAssertions() {
-    if (painted) {
+    if (painted || raced) {
       return List.of();
     }
     if (walk == null) {
@@ -91,7 +119,7 @@ public class SequenceTable extends SlimTable {
 
   @Override
   public void finishNow() {
-    if (painted) {
+    if (painted || raced) {
       return;
     }
     applyRound();
@@ -290,11 +318,7 @@ public class SequenceTable extends SlimTable {
   }
 
   private int summary() {
-    if (!sheet.hasTrials) {
-      return markdown().addRow(List.of("trials", ""));
-    }
-    markdown().secondCell(sheet.trialsRow);
-    return sheet.trialsRow;
+    return RaceView.trialsRow(markdown(), sheet);
   }
 
   private void mark(int row, SlimTestResult result) {
@@ -348,14 +372,7 @@ public class SequenceTable extends SlimTable {
   }
 
   private void showSeed() {
-    int row = sheet.seedRow;
-    if (!sheet.hasSeed) {
-      row = markdown().addRow(List.of("seed", Long.toString(sheet.seed)));
-    } else {
-      markdown().secondCell(row);
-      markdown().substitute(1, row, Long.toString(sheet.seed));
-    }
-    markdown().updateContent(1, row, SlimTestResult.plain(Long.toString(sheet.seed)));
+    RaceView.showSeed(markdown(), sheet);
   }
 
   private MarkdownTable markdown() {

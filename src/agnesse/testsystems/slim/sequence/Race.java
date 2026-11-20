@@ -142,7 +142,7 @@ public final class Race {
       branches.add(new ArrayList<>());
     }
     int[] at = new int[schedule.branches.size()];
-    while (!done(at, schedule.branches)) {
+    while (!Trace.finished(at, schedule.branches)) {
       wave(plan, schedule, desk, instance, overlap, branches, at);
     }
     return branches;
@@ -202,7 +202,7 @@ public final class Race {
     String name = plan.commands.get(step.command).name;
     for (Command command : plan.commands) {
       if (command.name.equals(name)) {
-        addQueries(command, names);
+        command.collectQueries(names);
       }
     }
     for (Guard guard : plan.guards) {
@@ -211,14 +211,6 @@ public final class Race {
       }
     }
     return names;
-  }
-
-  private static void addQueries(Command command, List<String> names) {
-    for (Command.Expect expect : command.expects) {
-      if (!expect.result && !names.contains(expect.method)) {
-        names.add(expect.method);
-      }
-    }
   }
 
   private static String required(String value) {
@@ -237,15 +229,6 @@ public final class Race {
       }
     }
     return jobs;
-  }
-
-  private static boolean done(int[] at, List<Trace> branches) {
-    for (int index = 0; index < at.length; index++) {
-      if (at[index] < branches.get(index).steps.size()) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private static String reason(Linear.Outcome outcome, int bound) {
@@ -341,11 +324,11 @@ public final class Race {
       this.capped = capped;
     }
 
-    static Result pass(int trials) {
+    public static Result pass(int trials) {
       return new Result(true, false, trials, 0, null, null, null, "", false, false);
     }
 
-    static Result fail(int trial, int trials, Schedule drawn, Schedule schedule, History history, String why,
+    public static Result fail(int trial, int trials, Schedule drawn, Schedule schedule, History history, String why,
                        boolean shrunk, boolean capped) {
       return new Result(false, !history.ok(), trials, trial, drawn, schedule, history, why, shrunk, capped);
     }

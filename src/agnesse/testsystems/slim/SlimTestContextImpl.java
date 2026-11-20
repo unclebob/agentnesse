@@ -27,6 +27,8 @@ public class SlimTestContextImpl implements SlimTestContext {
   private boolean isSorted = true;
   private String currentScriptActor;
   private Class<? extends ScriptTable> currentScriptClass = ScriptTable.class;
+  private SlimClient client;
+  private boolean abandon;
 
   public SlimTestContextImpl(TestPage pageToTest) {
     this.pageToTest = pageToTest;
@@ -154,6 +156,26 @@ public class SlimTestContextImpl implements SlimTestContext {
   }
 
   @Override public void setCurrentScriptActor(String currentScriptActor) { this.currentScriptActor = currentScriptActor; }
+
+  @Override
+  public void client(SlimClient client) {
+    this.client = client;
+  }
+
+  @Override
+  public SlimClient client() {
+    return client;
+  }
+
+  @Override
+  public void abandonAfter() {
+    abandon = true;
+  }
+
+  @Override
+  public boolean abandonAfterRun() {
+    return abandon;
+  }
 
   @Override
   public String getCurrentScriptActor() {

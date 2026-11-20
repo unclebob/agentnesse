@@ -82,7 +82,11 @@ public abstract class SlimTestSystem implements TestSystem {
   public void bye() throws UnableToStopException {
     if (testSystemIsStopped) return;
     try {
-      slimClient.bye();
+      if (testContext != null && testContext.abandonAfterRun()) {
+        slimClient.abandon();
+      } else {
+        slimClient.bye();
+      }
       testSystemStopped(null);
     } catch (IOException e) {
       stopTestSystem(e);
@@ -111,6 +115,7 @@ public abstract class SlimTestSystem implements TestSystem {
 
   protected void initializeTest(TestPage testPage) {
     testContext = createTestContext(testPage);
+    testContext.client(slimClient);
     stopTestCalled = false;
     ignoreAllTestsCalled = false;
   }

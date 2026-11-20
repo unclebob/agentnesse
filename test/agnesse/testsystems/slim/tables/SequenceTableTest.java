@@ -20,8 +20,23 @@ import agnesse.wiki.WikiPage;
 import agnesse.wiki.WikiPageUtil;
 import agnesse.wiki.fs.InMemoryPage;
 
+import agnesse.slim.JavaSlimFactory;
+import agnesse.slim.SlimFactory;
+import agnesse.slim.SlimService;
+import agnesse.socketservice.PlainClientSocketFactory;
+import agnesse.testsystems.CompositeExecutionLogListener;
+import agnesse.testsystems.MockCommandRunner;
+import agnesse.testsystems.slim.SlimCommandRunningClient;
+import agnesse.testsystems.slim.property.Seed;
+import agnesse.testsystems.slim.sequence.History;
+import agnesse.testsystems.slim.sequence.Race;
+import agnesse.testsystems.slim.sequence.Schedule;
+import agnesse.testsystems.slim.sequence.Trace;
+import agnesse.testsystems.slim.sequence.Waves;
+
 import org.junit.Test;
 
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -900,6 +915,161 @@ public class SequenceTableTest {
         | command | when | next | result? |
         | open | phase=new; blocked=no | phase=open | ok |
         """);
+    assertMessage("threads must be low..high from 2 through 32", """
+        | sequence:agnesse.slim.test.LastSeat |
+        | threads | 1..2 |
+        | command | when | next | result? |
+        | book | seats=1 | seats=0 | booked |
+        """);
+    assertMessage("threads must be low..high from 2 through 32", """
+        | sequence:agnesse.slim.test.LastSeat |
+        | threads | many |
+        | command | when | next | result? |
+        | book | seats=1 | seats=0 | booked |
+        """);
+    assertMessage("threads is already set", """
+        | sequence:agnesse.slim.test.LastSeat |
+        | threads | 2..2 |
+        | threads | 2..3 |
+        | command | when | next | result? |
+        | book | seats=1 | seats=0 | booked |
+        """);
+    assertMessage("prefix must be low..high from 0 through 32", """
+        | sequence:agnesse.slim.test.LastSeat |
+        | threads | 2..2 |
+        | prefix | 1..33 |
+        | command | when | next | result? |
+        | book | seats=1 | seats=0 | booked |
+        """);
+    assertMessage("prefix needs a threads row", """
+        | sequence:agnesse.slim.test.LastSeat |
+        | prefix | 0..0 |
+        | command | when | next | result? |
+        | book | seats=1 | seats=0 | booked |
+        """);
+    assertMessage("a pipe runs one call at a time", """
+        | sequence:agnesse.slim.test.LastSeat |
+        | threads | 2..2 |
+        | steps | 1..1 |
+        | seed | 1 |
+        | state | seats=1 |
+        | command | when | next | result? |
+        | book | seats=1 | seats=0 | booked |
+        | book | seats=0 | | full |
+        """);
+  }
+
+  @Test
+  public void aPipeClientIsRefusedBeforeItConnects() throws Exception {
+    SequenceSheet sheet = sheet(seat("2..2", "1..1"));
+    SlimCommandRunningClient pipe = new SlimCommandRunningClient(
+        new MockCommandRunner(new CompositeExecutionLogListener()),
+        "localhost", 1, 2, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
+    SyntaxError error = assertThrows(SyntaxError.class, () -> SlimLanes.open(pipe, sheet));
+    assertTrue(error.getMessage(), error.getMessage().contains("a pipe runs one call at a time"));
+  }
+
+  @Test
+  public void theProbeNamesAPrivateFixtureAndAMissingMethod() {
+    assertEquals(null, SlimLanes.probeVerdict("NO_METHOD_IN_CLASS book", false));
+    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("NO_INSTANCE seat", false));
+    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict(null, true));
+    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("  ", false));
+    assertEquals("missing class", SlimLanes.probeVerdict("missing class", false));
+  }
+
+  @Test
+  public void aShrunkRacePaintsTheBranchesAndTheSeed() throws Exception {
+    String source = seat("2..2", "2..2");
+    MarkdownTable table = (MarkdownTable) new MarkdownTableScanner(source).getTable(0);
+    SequenceSheet sheet = SequenceSheet.read(table, "agnesse.slim.test.LastSeat");
+    Race.Result result = Race.check(sheet.plan, Race.draw(sheet.plan, new Seed(sheet.seed).random(), sheet.trials,
+        sheet.threadsLow, sheet.threadsHigh, sheet.prefixLow, sheet.prefixHigh),
+        alwaysBooked(), "agnesse.slim.test.LastSeat", new String[0], Waves.DIRECT);
+    SlimTestContextImpl context = new SlimTestContextImpl(new WikiTestPage(page(source)));
+    RaceView.paint(table, sheet, result, context);
+    assertEquals(1, context.getTestSummary().getWrong());
+    assertEquals(0, context.getTestSummary().getRight());
+    assertTrue(trials(table), trials(table).contains("no serial order"));
+    assertTrue(trials(table), trials(table).contains("shrunk"));
+    assertTrue(trials(table), trials(table).contains("t1 [book book]"));
+    assertEquals("1", seed(table));
+    assertTrue(names(table, source).contains("t1 book"));
+    assertTrue(names(table, source).contains("t2 book"));
+  }
+
+  @Test
+  public void aPassingRacePaintsOnlyTheTrialsCell() throws Exception {
+    String source = seat("2..2", "1..1");
+    MarkdownTable table = (MarkdownTable) new MarkdownTableScanner(source).getTable(0);
+    SequenceSheet sheet = SequenceSheet.read(table, "agnesse.slim.test.LastSeatSafe");
+    Race.Result result = Race.check(sheet.plan, Race.draw(sheet.plan, new Seed(sheet.seed).random(), sheet.trials,
+        sheet.threadsLow, sheet.threadsHigh, sheet.prefixLow, sheet.prefixHigh),
+        bookedThenFull(), "agnesse.slim.test.LastSeatSafe", new String[0], Waves.DIRECT);
+    int rows = table.getRowCount();
+    SlimTestContextImpl context = new SlimTestContextImpl(new WikiTestPage(page(source)));
+    RaceView.paint(table, sheet, result, context);
+    assertTrue(result.passed);
+    assertEquals(1, context.getTestSummary().getRight());
+    assertEquals("1 trials", table.cellRecord(1, 1).actual());
+    assertEquals(rows, table.getRowCount());
+  }
+
+  @Test
+  public void aCappedOrBrokenRaceNamesTheReason() throws Exception {
+    String source = seat("2..2", "1..1");
+    MarkdownTable table = (MarkdownTable) new MarkdownTableScanner(source).getTable(0);
+    SequenceSheet sheet = SequenceSheet.read(table, "agnesse.slim.test.LastSeat");
+    Schedule schedule = new Schedule(new Trace(List.of()), List.of(new Trace(List.of()), new Trace(List.of())));
+    History history = History.ok(List.of(), List.of(List.of(), List.of()));
+    SlimTestContextImpl context = new SlimTestContextImpl(new WikiTestPage(page(source)));
+    RaceView.paint(table, sheet, Race.Result.fail(1, 1, schedule, schedule, history, "no serial order; saw ", true, true), context);
+    assertTrue(trials(table), trials(table).contains("shrink cap"));
+    assertFalse(trials(table), trials(table).contains("shrunk"));
+    assertEquals(1, context.getTestSummary().getWrong());
+
+    MarkdownTable broken = (MarkdownTable) new MarkdownTableScanner(source).getTable(0);
+    SlimTestContextImpl errors = new SlimTestContextImpl(new WikiTestPage(page(source)));
+    RaceView.paint(broken, sheet, Race.Result.fail(1, 1, schedule, schedule, History.broke("boom"), "boom", false, false), errors);
+    assertEquals(1, errors.getTestSummary().getExceptions());
+    assertTrue(trials(broken), trials(broken).contains("boom"));
+  }
+
+  @Test
+  public void twoLanesCallTheFixtureTheFirstConnectionCreated() throws Exception {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
+    try (ServerSocket socket = new ServerSocket(0)) {
+      int port = socket.getLocalPort();
+      SlimFactory factory = JavaSlimFactory.createJavaSlimFactory(options);
+      SlimService service = new SlimService(factory.getSlimServer(), socket, true);
+      Thread server = new Thread(() -> {
+        try {
+          service.accept();
+        } catch (Exception ignored) {
+          // Closing the socket ends the daemon loop.
+        }
+      });
+      server.setDaemon(true);
+      server.start();
+      SlimCommandRunningClient client = new SlimCommandRunningClient(
+          new MockCommandRunner(new CompositeExecutionLogListener()),
+          "localhost", port, 2, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
+      connect(client);
+      MarkdownTable markdown = (MarkdownTable) new MarkdownTableScanner(seat("2..2", "1..1")).getTable(0);
+      SequenceSheet sheet = SequenceSheet.read(markdown, "agnesse.slim.test.Waitlist");
+      SlimDesk desk = SlimLanes.open(client, sheet);
+      try {
+        assertEquals(2, desk.lanes());
+        assertEquals("ok", desk.call(1, "laneProbe", "ping", List.of()));
+      } finally {
+        desk.close();
+        client.bye();
+        client.kill();
+        socket.close();
+        server.join(5000);
+      }
+      assertFalse(server.isAlive());
+    }
   }
 
   private static void assertMessage(String message, String markdown) {
@@ -960,6 +1130,67 @@ public class SequenceTableTest {
       }
     }
     return -1;
+  }
+
+  private static String seat(String threads, String steps) {
+    return """
+        | sequence:agnesse.slim.test.LastSeat |
+        | trials | 1 |
+        | threads | %s |
+        | steps | %s |
+        | seed | 1 |
+        | state | seats=1 |
+        | command | when | next | result? |
+        | book | seats=1 | seats=0 | booked |
+        | book | seats=0 | | full |
+        """.formatted(threads, steps);
+  }
+
+  private static SequenceSheet sheet(String source) throws Exception {
+    return SequenceSheet.read((MarkdownTable) new MarkdownTableScanner(source).getTable(0), "agnesse.slim.test.LastSeat");
+  }
+
+  private static agnesse.testsystems.slim.sequence.Desk alwaysBooked() {
+    return new agnesse.testsystems.slim.sequence.Desk() {
+      public void make(String instance, String fixture, String[] arguments) {
+      }
+      public String call(int lane, String instance, String method, List<String> arguments) {
+        return "booked";
+      }
+    };
+  }
+
+  private static agnesse.testsystems.slim.sequence.Desk bookedThenFull() {
+    return new agnesse.testsystems.slim.sequence.Desk() {
+      private int calls;
+      public void make(String instance, String fixture, String[] arguments) {
+        calls = 0;
+      }
+      public String call(int lane, String instance, String method, List<String> arguments) {
+        calls++;
+        return calls == 1 ? "booked" : "full";
+      }
+    };
+  }
+
+  private static void connect(SlimCommandRunningClient client) {
+    long deadline = System.nanoTime() + 5_000_000_000L;
+    while (!client.isConnected() && System.nanoTime() < deadline) {
+      try {
+        client.connect();
+      } catch (Exception ignored) {
+        Thread.onSpinWait();
+      }
+    }
+    assertTrue("the Slim server did not accept a connection", client.isConnected());
+  }
+
+  private static String names(MarkdownTable table, String source) {
+    StringBuilder out = new StringBuilder();
+    for (int row = lines(source); row < table.getRowCount(); row++) {
+      out.append(table.originalCell(0, row)).append('\n');
+    }
+    return out.toString();
   }
 
   private static String trials(MarkdownTable table) {

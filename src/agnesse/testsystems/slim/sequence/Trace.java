@@ -9,4 +9,14 @@ public final class Trace {
   public Trace(List<Step> steps) {
     this.steps = List.copyOf(steps);
   }
+
+  /** Every thread has run every step it was given. */
+  static boolean finished(int[] at, List<Trace> branches) {
+    for (int index = 0; index < at.length; index++) {
+      if (at[index] < branches.get(index).steps.size()) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

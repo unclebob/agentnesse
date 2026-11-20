@@ -11,6 +11,13 @@ import java.util.Random;
 /** Draws command sequences from a seed and offers shorter ones that still replay. */
 public final class Course {
   public static final int CAP = 32;
+
+  static void bounds(int low, int high, int least, String name) {
+    if (low < least || high < low || high > CAP) {
+      throw new IllegalArgumentException(
+          name + " must be low..high from " + least + " through " + CAP);
+    }
+  }
   private static final int WIDE = 64;
   private static final Shrinker SHRINKER = new Shrinker();
 
