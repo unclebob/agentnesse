@@ -4,7 +4,7 @@
   "help": null,
   "prune": false
 }
-# A TypeScript server speaks Slim
+# The slim/ts server speaks Slim
 
 `node` starts the server. Port `0` asks for a free socket, so the sequence branches share one seat. A racy book yields, so two calls can both see the seat free. A safe book waits its turn.
 
