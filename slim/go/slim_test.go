@@ -157,8 +157,18 @@ func TestJavaSymbolForms(t *testing.T) {
 		t.Fatal(symbols["copy"])
 	}
 	answer([]any{[]any{"4", "make", "again", "$copy"}}, shared, mu, symbols)
-	if answer([]any{[]any{"5", "call", "again", "phase"}}, shared, mu, symbols)[0].([]any)[1] != "new" {
-		t.Fatal("actor")
+	if shared["again"] != symbols["copy"] {
+		t.Fatal("actor identity")
+	}
+	answer([]any{[]any{"4b", "make", "stringy", "$ab"}}, shared, mu, symbols)
+	if answer([]any{[]any{"4c", "call", "stringy", "phase"}}, shared, mu, symbols)[0].([]any)[1] != "new" {
+		t.Fatal("string class")
+	}
+	if _, ok := actorFrom("$", symbols); ok {
+		t.Fatal("short symbol")
+	}
+	if _, ok := actorFrom(3, symbols); ok {
+		t.Fatal("non string class")
 	}
 	answer([]any{[]any{"6", "make", "scriptTableActor", "slim"}}, shared, mu, symbols)
 	answer([]any{[]any{"7", "call", "SlimHelperLibrary", "pushFixture"}}, shared, mu, symbols)
@@ -177,6 +187,30 @@ func TestJavaSymbolForms(t *testing.T) {
 	}
 	if answer([]any{[]any{"14", "call", "again", "plus", "2", "3"}}, shared, mu, symbols)[0].([]any)[1] != "5" {
 		t.Fatal("int")
+	}
+	if answer([]any{[]any{"14b", "call", "again", "plus", "2"}}, shared, mu, symbols)[0].([]any)[1] != "no" {
+		t.Fatal("plus short")
+	}
+	if answer([]any{[]any{"14c", "call", "again", "plus", "a", "1"}}, shared, mu, symbols)[0].([]any)[1] != "no" {
+		t.Fatal("plus text")
+	}
+	if answer([]any{[]any{"14d", "call", "again", "flag", "false"}}, shared, mu, symbols)[0].([]any)[1] != "no" {
+		t.Fatal("flag")
+	}
+	if answer([]any{[]any{"14e", "call", "again", "join", "red"}}, shared, mu, symbols)[0].([]any)[1] != "no" {
+		t.Fatal("join plain")
+	}
+	if answer([]any{[]any{"14f", "call", "again", "join", "[]"}}, shared, mu, symbols)[0].([]any)[1] != "" {
+		t.Fatal("join empty")
+	}
+	if answer([]any{[]any{"14g", "call", "again", "label", []any{[]any{"other", "Ada"}}}}, shared, mu, symbols)[0].([]any)[1] != "no" {
+		t.Fatal("label miss")
+	}
+	if answer([]any{[]any{"14h", "call", "again", "scale", "nope"}}, shared, mu, symbols)[0].([]any)[1] != "no" {
+		t.Fatal("scale")
+	}
+	if cellAt([]any{"only"}, 3) != "" {
+		t.Fatal("cell")
 	}
 	if answer([]any{[]any{"15", "call", "again", "wide", "4"}}, shared, mu, symbols)[0].([]any)[1] != "4" {
 		t.Fatal("long")
