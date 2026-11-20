@@ -51,12 +51,12 @@ public final class Binding {
   private static Binding one(String piece) {
     String text = piece.trim();
     int mark = text.indexOf('=');
-    if (mark <= 0 || text.indexOf('=', mark + 1) >= 0) {
+    if (mark < 1 || text.indexOf('=', mark + 1) != -1) {
       throw new IllegalArgumentException("state must be name=value");
     }
     String name = text.substring(0, mark).trim();
     String raw = text.substring(mark + 1).trim();
-    if (!Clause.name(name) || raw.isEmpty()) {
+    if (raw.isEmpty() || !Clause.spelled(name)) {
       throw new IllegalArgumentException("state must be name=value");
     }
     return new Binding(name, expr(raw));
@@ -65,13 +65,13 @@ public final class Binding {
   private static Expr expr(String raw) {
     int plus = raw.indexOf('+');
     int minus = raw.indexOf('-');
-    if (plus >= 0 && minus >= 0) {
+    if (plus != -1 && minus != -1) {
       throw new IllegalArgumentException("state must be name=value");
     }
-    if (plus >= 0) {
+    if (plus != -1) {
       return op(raw, plus, '+');
     }
-    if (minus >= 0) {
+    if (minus != -1) {
       return op(raw, minus, '-');
     }
     if (raw.startsWith("@")) {
@@ -81,7 +81,7 @@ public final class Binding {
   }
 
   private static Expr op(String raw, int mark, char operator) {
-    if (raw.indexOf(operator, mark + 1) >= 0 || raw.indexOf(' ') >= 0) {
+    if (raw.indexOf(operator, mark + 1) != -1 || raw.indexOf(' ') != -1) {
       throw new IllegalArgumentException("state must be name=value");
     }
     return new Op(ref(raw.substring(0, mark)), operator, ref(raw.substring(mark + 1)));

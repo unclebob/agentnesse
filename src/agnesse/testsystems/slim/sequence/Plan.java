@@ -59,7 +59,7 @@ public final class Plan {
   }
 
   public boolean allows(int command, Map<String, String> state) {
-    return holds(commands.get(command).when, state);
+    return Clause.holds(commands.get(command).when, state);
   }
 
   public boolean legal(Trace trace) {
@@ -279,7 +279,7 @@ public final class Plan {
       if (end > index + 1) {
         names.add(template.substring(index + 1, end));
       }
-      index = Math.max(end, index + 1);
+      index = end;
     }
     return names;
   }
@@ -427,7 +427,7 @@ public final class Plan {
       return true;
     }
     for (Map<String, String> state : states) {
-      if (holds(guard.when, state)) {
+      if (Clause.holds(guard.when, state)) {
         return true;
       }
     }
@@ -437,20 +437,11 @@ public final class Plan {
   private static List<Integer> enabled(List<Command> commands, Map<String, String> state) {
     List<Integer> indexes = new ArrayList<>();
     for (int i = 0; i < commands.size(); i++) {
-      if (holds(commands.get(i).when, state)) {
+      if (Clause.holds(commands.get(i).when, state)) {
         indexes.add(i);
       }
     }
     return indexes;
-  }
-
-  private static boolean holds(List<Clause> clauses, Map<String, String> state) {
-    for (Clause clause : clauses) {
-      if (!clause.holds(state)) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private static Map<String, String> move(Map<String, String> state, Command command, List<String> controls) {

@@ -182,7 +182,7 @@ public class SequenceTable extends SlimTable {
                          Map<String, String> state, Map<String, String> args) {
     for (int guard = 0; guard < sheet.plan.guards.size(); guard++) {
       Guard check = sheet.plan.guards.get(guard);
-      if (check.query != null && holds(check.when, state)) {
+      if (check.query != null && Clause.holds(check.when, state)) {
         String expected = sheet.plan.substitute(check.expect, state, args);
         batch.add(makeAssertion(invoke(instance, check.query, List.of()), new Compare(attempt, index, expected, 4, guard, check.query)));
       }
@@ -191,15 +191,6 @@ public class SequenceTable extends SlimTable {
 
   private Instruction invoke(String instance, String name, List<String> args) {
     return callFunction(instance, name, (Object[]) args.toArray(new String[0]));
-  }
-
-  private static boolean holds(List<Clause> clauses, Map<String, String> state) {
-    for (Clause clause : clauses) {
-      if (!clause.holds(state)) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private void paintPass() {
@@ -453,7 +444,7 @@ public class SequenceTable extends SlimTable {
 
     private boolean broken(int index) {
       Guard guard = sheet.plan.guards.get(index);
-      if (holds(guard.when, state)) {
+      if (Clause.holds(guard.when, state)) {
         clause(index, guard);
       }
       return attempt.failed();

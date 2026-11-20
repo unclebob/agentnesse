@@ -47,8 +47,15 @@ public class SequenceTest {
     Clause.when("phase=open; blocked=no");
     Clause.when(null);
     assertTrue(Clause.model("phase!=@other").get(0).holds(state("phase", "open", "other", "shut")));
+    assertTrue(Clause.holds(List.of(), Map.of()));
+    assertTrue(Clause.holds(Clause.when("phase=open"), state("phase", "open")));
+    assertFalse(Clause.holds(Clause.when("phase=open; blocked=no"), state("phase", "open", "blocked", "yes")));
     assertFalse(Clause.name("1"));
     assertTrue(Clause.name("a"));
+    assertFalse(Clause.name(""));
+    assertTrue(Clause.spelled(""));
+    assertTrue(Clause.spelled("a"));
+    assertFalse(Clause.spelled("1"));
   }
 
   @Test
@@ -66,6 +73,9 @@ public class SequenceTest {
     assertEquals("unknown reference ", message(() -> Clause.model("phase=@")));
     assertEquals("unknown reference 1", message(() -> Clause.model("phase=@1")));
     assertEquals("state must be name=value", message(() -> Clause.when("phase=")));
+    assertEquals("state must be name=value", message(() -> Clause.when("phase=a b")));
+    assertEquals("state must be name=value", message(() -> Clause.when("phase=open=")));
+    assertEquals("state must be name=value", message(() -> Clause.when("a!=b!=c")));
   }
 
   @Test
@@ -95,6 +105,14 @@ public class SequenceTest {
     assertEquals("unknown reference @", message(() -> Binding.list("value=@")));
     assertEquals("unknown reference a", message(() -> Binding.list("value=a+@b")));
     assertEquals("unknown reference @1", message(() -> Binding.list("value=@1")));
+    assertEquals("b", Binding.list("a=b").get(0).eval(Map.of(), Map.of()));
+    assertEquals("state must be name=value", message(() -> Binding.list("phase=open;")));
+    assertEquals("state must be name=value", message(() -> Binding.list("=open")));
+    assertEquals("state must be name=value", message(() -> Binding.list("1=open")));
+    assertEquals("unknown reference ", message(() -> Binding.list("value=+1")));
+    assertEquals("unknown reference ", message(() -> Binding.list("value=-1")));
+    assertEquals("state must be name=value", message(() -> Binding.list("value=+1-2")));
+    assertEquals("state must be name=value", message(() -> Binding.list("value=-1+2")));
     Map<String, String> broken = new LinkedHashMap<>();
     broken.put("a", null);
     broken.put("b", "1");
@@ -243,6 +261,7 @@ public class SequenceTest {
     assertEquals(1, pairs.get(0).steps.get(1).command);
     assertEquals(0, Course.shorter(always(8), indexed(8), 4).size());
     assertEquals(56, Course.shorter(always(8), indexed(8), 3).size());
+    assertEquals(64, Course.shorter(always(64), indexed(64), 1).size());
   }
 
   @Test
@@ -338,6 +357,10 @@ public class SequenceTest {
         state("phase", "new", "missing", "no"), 1, 1, List.of(
             command("open", "phase=new", "phase=open"),
             command("nope", "phase=missing", "")), List.of())));
+    assertEquals("unsatisfiable precondition: phase=missing", message(() -> Plan.create(
+        state("phase", "new", "missing", "no"), 1, 1, List.of(
+            command("nope", "phase=missing", ""),
+            command("open", "phase=new", "phase=open")), List.of())));
     assertEquals("unsatisfiable precondition: phase=missing", message(() -> Plan.create(
         state("phase", "new", "missing", "no"), 1, 2, List.of(
             command("open", "phase=new", "phase=open")),

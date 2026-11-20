@@ -44,6 +44,16 @@ public final class Clause {
     return equal == actual.equals(expected);
   }
 
+  /** Every clause holds. An empty list holds. */
+  public static boolean holds(List<Clause> clauses, Map<String, String> state) {
+    for (Clause clause : clauses) {
+      if (!clause.holds(state)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public String expected(Map<String, String> state, Map<String, String> args) {
     if (!reference) {
       return value;
@@ -56,6 +66,11 @@ public final class Clause {
 
   static boolean name(String text) {
     return text.matches("[A-Za-z][A-Za-z0-9_]*");
+  }
+
+  /** Empty is allowed. A missing name is rejected by the caller, not here. */
+  static boolean spelled(String name) {
+    return name.matches("|[A-Za-z][A-Za-z0-9_]*");
   }
 
   private static List<Clause> parsed(String text, boolean allowReference) {
@@ -77,7 +92,7 @@ public final class Clause {
     String[] parts = unequal ? splitUnequal(text) : splitEqual(text);
     String name = parts[0].trim();
     String raw = parts[1].trim();
-    if (!name(name) || raw.isEmpty() || raw.indexOf(' ') >= 0) {
+    if (!name(name) || raw.isEmpty() || raw.indexOf(' ') != -1) {
       throw new IllegalArgumentException("state must be name=value");
     }
     if (raw.startsWith("@")) {
@@ -107,7 +122,7 @@ public final class Clause {
 
   private static String[] splitUnequal(String text) {
     int mark = text.indexOf("!=");
-    if (text.indexOf("!=", mark + 1) >= 0) {
+    if (text.indexOf("!=", mark + 1) != -1) {
       throw new IllegalArgumentException("state must be name=value");
     }
     return new String[] {text.substring(0, mark), text.substring(mark + 2)};
@@ -115,8 +130,11 @@ public final class Clause {
 
   private static void contradict(List<Clause> clauses, String text) {
     for (int i = 0; i < clauses.size(); i++) {
-      for (int j = i + 1; j < clauses.size(); j++) {
-        if (clash(clauses.get(i), clauses.get(j))) {
+      Clause left = clauses.get(i);
+      int j = i;
+      j++;
+      for (; j < clauses.size(); j++) {
+        if (clash(left, clauses.get(j))) {
           throw new IllegalArgumentException("unsatisfiable precondition: " + text);
         }
       }

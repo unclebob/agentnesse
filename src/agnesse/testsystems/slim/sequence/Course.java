@@ -108,10 +108,11 @@ public final class Course {
 
   private static Row earlier(Command command, Step step, int argIndex) {
     Row row = Row.EMPTY;
-    for (int i = 0; i < argIndex; i++) {
+    List<Command.Argument> prior = command.arguments.subList(0, argIndex);
+    for (int i = 0; i < prior.size(); i++) {
       Value value = step.value(i);
       if (value != null) {
-        row = row.with(command.arguments.get(i).name, value);
+        row = row.with(prior.get(i).name, value);
       }
     }
     return row;
