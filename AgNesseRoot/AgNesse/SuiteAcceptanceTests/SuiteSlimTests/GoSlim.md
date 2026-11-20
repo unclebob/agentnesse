@@ -6,7 +6,7 @@
 }
 # A Go server speaks Slim
 
-`go run` starts the server. Port `0` asks for a free socket, so the sequence branches share one seat.
+`go run` starts the server. One connection carries the whole table, including a pipe on port `1`. A `lanes` instruction runs each branch on its own goroutine.
 
 ```agnesse
 define COMMAND_PATTERN
@@ -15,7 +15,7 @@ go -C slim/go run .
 
 ```agnesse
 define SLIM_PORT
-0
+1
 ```
 
 | slim |

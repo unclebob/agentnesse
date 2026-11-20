@@ -1,6 +1,10 @@
-// A Slim 0.5 server. Port 1 is stdin and stdout. Any other port is a socket on
-// 127.0.0.1. Connections share instances. A racy book yields so two calls can
-// both see the seat free; a safe book waits its turn.
+// A Slim 0.5 server. Port 1 is stdin and stdout. Any other port accepts one
+// socket on 127.0.0.1.
+//
+// TypeScript has no real threads. A lanes instruction runs every lane as an
+// async task on Node's one event loop. The tasks interleave at await. A racy
+// book awaits a timer, so two lanes can both see the seat free. A safe book
+// waits its turn on a promise chain. There are no worker threads.
 import net from "node:net"
 import process from "node:process"
 
@@ -44,27 +48,16 @@ export async function run(args: string[], input: NodeJS.ReadableStream = process
 
 export function serve(port: number): Promise<void> {
   const instances = new Map<string, Seat>()
-  let active = 0
-  let seen = false
   return new Promise((resolve, reject) => {
-    const server = net.createServer((socket) => {
-      active += 1
-      seen = true
+    const server = net.createServer()
+    server.once("connection", (socket) => {
+      server.close()
       speak(socket, socket, instances).finally(() => {
-        active -= 1
         socket.end()
+        resolve()
       })
     })
-    const timer = setInterval(() => {
-      if (seen && active === 0) {
-        clearInterval(timer)
-        server.close(() => resolve())
-      }
-    }, 20)
-    server.on("error", (err) => {
-      clearInterval(timer)
-      reject(err)
-    })
+    server.on("error", (err) => reject(err))
     server.listen(port, "127.0.0.1")
   })
 }
@@ -124,9 +117,38 @@ export async function answer(instructions: Cell[], instances: Map<string, Seat>,
   const results: Cell[] = []
   for (const item of instructions) {
     if (!Array.isArray(item)) continue
-    results.push([textAt(item, 0), await reply(item, instances, symbols)])
+    results.push([textAt(item, 0), await effect(item, instances, symbols)])
   }
   return results
+}
+
+async function effect(row: Cell[], instances: Map<string, Seat>, symbols: Map<string, string>): Promise<Cell> {
+  if (textAt(row, 1) === "lanes") return runLanes(row, instances, symbols)
+  return reply(row, instances, symbols)
+}
+
+async function runLanes(row: Cell[], instances: Map<string, Seat>, symbols: Map<string, string>): Promise<Cell> {
+  if (row.length <= 2) return "lanes"
+  let counter = 0
+  const stamp = (): string => {
+    counter += 1
+    return String(counter)
+  }
+  const rows: Cell[] = []
+  await Promise.all(row.slice(2).map(async (item) => {
+    if (!Array.isArray(item) || item.length < 2) return
+    const calls = item[1]
+    if (!Array.isArray(calls)) return
+    const tag = textAt(item, 0)
+    for (const call of calls) {
+      if (!Array.isArray(call)) continue
+      const started = stamp()
+      const value = await reply(call, instances, symbols)
+      const finished = stamp()
+      rows.push([tag, textAt(call, 0), started, finished, value])
+    }
+  }))
+  return rows
 }
 
 async function reply(row: Cell[], instances: Map<string, Seat>, symbols: Map<string, string>): Promise<string> {

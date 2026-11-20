@@ -127,7 +127,9 @@ test("a gate, a word, and a booking", async () => {
   await answer([["1", "make", "seat", "slim", "safe"]], seat, symbols)
   assert.equal(cell(await answer([call("2", "seat", "book")], seat, symbols), 0), "booked")
   assert.equal(cell(await answer([call("3", "seat", "book")], seat, symbols), 0), "full")
-  assert.match(cell(await answer([call("4", "seat", "__agnesse_lane_probe__")], seat, symbols), 0), /NO_METHOD_IN_CLASS/)
+  assert.equal(cell(await answer([["4", "lanes"]], seat, symbols), 0), "lanes")
+  const skipped = await answer([["6", "lanes", "not-a-group"]], seat, symbols)
+  assert.deepEqual(skipped[0]?.[1], [])
   assert.match(cell(await answer([call("5", "other", "book")], seat, symbols), 0), /NO_INSTANCE other/)
   const raced = new Map()
   await answer([["1", "make", "seat", "slim", "racy"]], raced, symbols)
@@ -136,18 +138,29 @@ test("a gate, a word, and a booking", async () => {
 })
 
 test("two racy books can both succeed and two safe books cannot", async () => {
-  assert.deepEqual((await both("racy")).sort(), ["booked", "booked"])
-  assert.deepEqual((await both("safe")).sort(), ["booked", "full"])
+  const racy = await both("racy")
+  assert.deepEqual(racy.results.sort(), ["booked", "booked"])
+  assert.equal(racy.overlap, true)
+  const safe = await both("safe")
+  assert.deepEqual(safe.results.sort(), ["booked", "full"])
 })
 
-async function both(mark: string): Promise<string[]> {
+async function both(mark: string): Promise<{ results: string[], overlap: boolean }> {
   const instances = new Map()
   const symbols = new Map<string, string>()
   await answer([["1", "make", "seat", "slim", mark]], instances, symbols)
-  return Promise.all([
-    answer([call("2", "seat", "book")], instances, symbols).then((rows) => cell(rows, 0)),
-    answer([call("3", "seat", "book")], instances, symbols).then((rows) => cell(rows, 0)),
-  ])
+  const got = await answer([["9", "lanes",
+    ["t1", [["a", "call", "seat", "book"]]],
+    ["t2", [["b", "call", "seat", "book"]]],
+  ]], instances, symbols)
+  const rows = got[0]?.[1]
+  if (!Array.isArray(rows) || !Array.isArray(rows[0]) || !Array.isArray(rows[1])) {
+    return { results: [], overlap: false }
+  }
+  return {
+    results: [String(rows[0][4]), String(rows[1][4])],
+    overlap: Number(rows[0][2]) < Number(rows[1][3]) && Number(rows[1][2]) < Number(rows[0][3]),
+  }
 }
 
 test("lists, lengths, and a socket", async () => {
@@ -176,18 +189,14 @@ test("lists, lengths, and a socket", async () => {
   assert.equal(header, "Slim -- V0.5\n")
   await delay(80)
   assert.equal(settled, false)
-  const second = await dial(port)
-  await readUntil(second, "\n")
   first.write(frame(["1", "make", "seat", "slim", "safe"]))
   assert.match(await readUntil(first, "OK"), /OK/)
-  second.write(frame(["2", "call", "seat", "book"]))
-  assert.match(await readUntil(second, "booked"), /booked/)
+  first.write(frame(["2", "call", "seat", "book"]))
+  assert.match(await readUntil(first, "booked"), /booked/)
   first.write(frame(["3", "call", "seat", "book"]))
   assert.match(await readUntil(first, "full"), /full/)
   first.write("000003:bye")
-  second.write("000003:bye")
   first.end()
-  second.end()
   assert.equal(await done, 0)
 })
 

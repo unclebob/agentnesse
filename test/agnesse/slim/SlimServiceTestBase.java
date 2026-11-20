@@ -43,7 +43,7 @@ public abstract class SlimServiceTestBase {
     }
     ServerSocket socket = new PlainServerSocketFactory().createServerSocket(options.port, LOOPBACK);
     port = socket.getLocalPort();
-    final SlimService slimservice = new SlimService(slimFactory.getSlimServer(), socket, options.daemon);
+    final SlimService slimservice = new SlimService(slimFactory.getSlimServer(), socket);
     service = new Thread() {
       @Override
       public void run() {

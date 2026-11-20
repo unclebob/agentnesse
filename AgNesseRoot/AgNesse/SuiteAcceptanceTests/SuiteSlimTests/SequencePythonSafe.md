@@ -6,7 +6,7 @@
 }
 # Python threads share one locked seat
 
-The Python Slim server accepts one socket per thread and those sockets share the seat. `safe` books under a lock, so one call returns `booked` and the other returns `full`.
+The Python Slim server accepts one connection. A `lanes` instruction runs each branch on its own thread against that connection's seat. `safe` books under a lock, so one call returns `booked` and the other returns `full`. A pipe on port `1` carries the table.
 
 ```agnesse
 define COMMAND_PATTERN
@@ -15,7 +15,7 @@ python3 AgNesseRoot/files/agnesse/tiny_slim.py
 
 ```agnesse
 define SLIM_PORT
-0
+1
 ```
 
 | sequence:tiny | safe |

@@ -141,17 +141,33 @@ A locked record's tweak is supposed to be refused. This one changes the value. T
 
 A `threads` row runs the branches at the same time, on one fresh fixture. `threads` is `low..high`, from 2 through 32. `steps` is the length of each branch. `prefix` is the serial length before the branches. It is `low..high` from 0 through 32, and a missing row means `0..0`. Each branch is drawn as a legal continuation of the prefix. The threads do not see each other's commands until the check.
 
-The table runs the prefix, then sends one command from each branch at the same time, and records what came back. The trial passes when some serial order, consistent with each thread's order, explains every return under the same candidate rule as a serial sequence. It fails when none does. The search stops after 4096 states. The trials cell then says `linearizability search hit its bound`.
+The table runs the prefix, then runs every branch call together, and records what came back. The trial passes when some serial order, consistent with each thread's order, explains every return under the same candidate rule as a serial sequence. It fails when none does. The search stops after 4096 states. The trials cell then says `linearizability search hit its bound`.
 
-The calls are ordinary Slim calls. Each thread has its own socket connection. The Java server has to be started with `-d`, so those connections share the fixture the first connection created. A pipe runs one call at a time, and the table says so instead of pretending the calls overlapped. A server that accepts a second connection but keeps a private fixture says it does not share one fixture. The Python server shares instances on a socket.
+The calls stay ordinary Slim calls on the one connection the page already has, including a pipe. `AgNesse` runs the prefix as normal instructions, then sends one `lanes` instruction. Each group is a lane tag and that lane's calls, in order:
 
-Set `SLIM_FLAGS` to `-d` and `SLIM_PORT` to `0`.
+```
+["L1", "lanes",
+  ["t1", [["a", "call", "seat", "book"], ["b", "call", "seat", "phase"]]],
+  ["t2", [["c", "call", "seat", "book"]]]]
+```
+
+A server that implements `lanes` answers `lanes` to that instruction with no groups. A server that does not answers something else, and the table says `a concurrent sequence needs the lanes instruction; this Slim server does not provide it`. There is no second connection and no silent fallback.
+
+The server starts one thread per lane. The `slim/ts` server has no real threads, so it runs the lanes as async tasks on Node's one event loop; that is documented on the server. Each lane runs its calls in order against the same instances. The result is one row per call, tagged with the lane and two decimal stamps from a counter that starts at 1: the value when the call began, and the value when it returned.
+
+```
+[["t1", "a", "1", "4", "booked"],
+ ["t1", "b", "5", "6", "held"],
+ ["t2", "c", "2", "3", "full"]]
+```
+
+Rows may come back in completion order. `AgNesse` matches them by call id. A stamp of 0 means the history has no real-time constraint. Otherwise a call that finished before another began has to stay in that order.
 
 This seat is booked under a lock. One thread gets `booked` and the other gets `full`. That is a serial order.
 
 | script | page driver |
 | --- |
-| given page | SequenceGuideSafe | with content | &#96;&#96;&#96;agnesse<br>define SLIM_FLAGS<br>-d<br>&#96;&#96;&#96;<br><br>&#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>0<br>&#96;&#96;&#96;<br><br>\| sequence:agnesse.slim.test.LastSeatSafe \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 1..1 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
+| given page | SequenceGuideSafe | with content | \| sequence:agnesse.slim.test.LastSeatSafe \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 1..1 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
 | make | SequenceGuideSafe | a test page |
 | check | request page | SequenceGuideSafe?test&format=json | 200 |
 | ensure | content matches | "right":1[,}] |
@@ -164,7 +180,7 @@ This seat is booked by checking, then acting. Both threads can see the seat free
 
 | script | page driver |
 | --- |
-| given page | SequenceGuideRace | with content | &#96;&#96;&#96;agnesse<br>define SLIM_FLAGS<br>-d<br>&#96;&#96;&#96;<br><br>&#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>0<br>&#96;&#96;&#96;<br><br>\| sequence:agnesse.slim.test.LastSeat \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 2..2 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
+| given page | SequenceGuideRace | with content | \| sequence:agnesse.slim.test.LastSeat \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 2..2 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
 | make | SequenceGuideRace | a test page |
 | check | request page | SequenceGuideRace?test&format=json | 200 |
 | ensure | content contains | "wrong":1 |

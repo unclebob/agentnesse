@@ -30,7 +30,7 @@ public class JavaSlimFactoryTest {
   }
 
   private SlimService.Options optionsWithStatementTimeout() {
-    return new SlimService.Options(false, 8099, new DefaultInteraction(), false, 1000);
+    return new SlimService.Options(false, 8099, new DefaultInteraction(), 1000);
   }
 
 }

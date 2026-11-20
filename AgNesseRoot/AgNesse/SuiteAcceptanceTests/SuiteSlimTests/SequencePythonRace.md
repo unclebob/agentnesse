@@ -10,7 +10,7 @@
 
 | script | page driver |
 | --- | --- |
-| given page | SequencePythonRaceRun | with content | &#96;&#96;&#96;agnesse<br>define COMMAND_PATTERN<br>python3 AgNesseRoot/files/agnesse/tiny_slim.py<br>&#96;&#96;&#96;<br><br>&#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>0<br>&#96;&#96;&#96;<br><br>\| sequence:tiny \| racy \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 2..2 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
+| given page | SequencePythonRaceRun | with content | &#96;&#96;&#96;agnesse<br>define COMMAND_PATTERN<br>python3 AgNesseRoot/files/agnesse/tiny_slim.py<br>&#96;&#96;&#96;<br><br>&#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>1<br>&#96;&#96;&#96;<br><br>\| sequence:tiny \| racy \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 2..2 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
 | make | SequencePythonRaceRun | a test page |
 | check | request page | SequencePythonRaceRun?test&format=json | 200 |
 | ensure | content contains | "wrong":1 |

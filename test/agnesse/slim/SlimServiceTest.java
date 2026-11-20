@@ -99,7 +99,7 @@ public class SlimServiceTest extends SlimServiceTestBase {
 
   @Test
   public void wholeSecondConstructorStoresMillisAndTheSameLabel() {
-    SlimService.Options options = new SlimService.Options(true, 1, new agnesse.slim.fixtureInteraction.DefaultInteraction(), false, 3);
+    SlimService.Options options = new SlimService.Options(true, 1, new agnesse.slim.fixtureInteraction.DefaultInteraction(), 3);
     assertEquals(Integer.valueOf(3), options.statementTimeout);
     assertEquals(Long.valueOf(3_000L), options.statementTimeoutMillis);
     assertEquals("3", options.statementTimeoutLabel);
@@ -108,19 +108,18 @@ public class SlimServiceTest extends SlimServiceTestBase {
 
   @Test
   public void absentTimeoutConstructorStoresNoMillis() {
-    SlimService.Options options = new SlimService.Options(false, 1, new agnesse.slim.fixtureInteraction.DefaultInteraction(), false, null);
+    SlimService.Options options = new SlimService.Options(false, 1, new agnesse.slim.fixtureInteraction.DefaultInteraction(), null);
     assertNull(options.statementTimeout);
     assertNull(options.statementTimeoutMillis);
     assertNull(options.statementTimeoutLabel);
   }
 
   @Test
-  public void verboseAndDaemonFlagsAreParsed() {
-    SlimService.Options options = SlimService.parseCommandLine(new String[]{
-      "-v", "-d", "8099"});
+  public void verboseFlagIsParsedAndDaemonIsRejected() {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-v", "8099"});
     assertTrue(options.verbose);
-    assertTrue(options.daemon);
     assertEquals(8099, options.port);
+    assertNull(SlimService.parseCommandLine(new String[]{"-d", "8099"}));
   }
 
   @Test
@@ -149,7 +148,7 @@ public class SlimServiceTest extends SlimServiceTestBase {
     SlimService.Options options = SlimService.parseCommandLine(new String[]{"0"});
     try (ServerSocket socket = new ServerSocket(0)) {
       SlimService service = new SlimService(
-        JavaSlimFactory.createJavaSlimFactory(options).getSlimServer(), socket, false);
+        JavaSlimFactory.createJavaSlimFactory(options).getSlimServer(), socket);
       assertEquals(socket.getLocalPort(), service.getPort());
     }
   }
@@ -223,119 +222,6 @@ public class SlimServiceTest extends SlimServiceTestBase {
     assertFalse(client.isConnected());
   }
 
-  @Test
-  public void daemonConnectionsShareOneFixture() throws Exception {
-    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
-    SlimFactory shared = JavaSlimFactory.createJavaSlimFactory(options);
-    StatementExecutorInterface first = shared.getStatementExecutor();
-    StatementExecutorInterface second = shared.getStatementExecutor();
-    first.create("seat", "agnesse.slim.test.Waitlist");
-    assertEquals("ok", second.call("seat", "ping"));
-
-    SlimFactory isolated = JavaSlimFactory.createJavaSlimFactory(SlimService.parseCommandLine(new String[]{"0"}));
-    StatementExecutorInterface left = isolated.getStatementExecutor();
-    StatementExecutorInterface right = isolated.getStatementExecutor();
-    left.create("seat", "agnesse.slim.test.Waitlist");
-    try {
-      right.call("seat", "ping");
-      fail("a plain server keeps a fixture on the connection that created it");
-    } catch (SlimException e) {
-      assertTrue(e.toString(), e.toString().contains("NO_INSTANCE"));
-    }
-  }
-
-  @Test
-  public void daemonSocketsCallTheSameFixture() throws Exception {
-    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
-    try (ServerSocket socket = new ServerSocket(0)) {
-      int port = socket.getLocalPort();
-      SlimFactory factory = JavaSlimFactory.createJavaSlimFactory(options);
-      SlimService service = new SlimService(factory.getSlimServer(), socket, true);
-      Thread server = new Thread(() -> {
-        try {
-          service.accept();
-        } catch (IOException ignored) {
-          // Closing the socket ends the daemon loop.
-        }
-      });
-      server.setDaemon(true);
-      server.start();
-      SlimCommandRunningClient client = newClient(port);
-      connectWithin(client);
-      SlimCommandRunningClient second = newClient(port);
-      connectWithin(second);
-      client.invokeAndGetResponse(List.of(new MakeInstruction("m", "seat", "agnesse.slim.test.Waitlist")));
-      Map<String, Object> result = second.invokeAndGetResponse(List.of(new CallInstruction("c", "seat", "ping")));
-      assertEquals("ok", result.get("c"));
-      second.abandon();
-      client.bye();
-      client.kill();
-      socket.close();
-      server.join(5000);
-      assertFalse(server.isAlive());
-    }
-  }
-
-  @Test
-  public void daemonAcceptsAConnectionUntilTheSocketCloses() throws Exception {
-    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
-    try (ServerSocket socket = new ServerSocket(0)) {
-      int port = socket.getLocalPort();
-      SlimService service = new SlimService(
-        JavaSlimFactory.createJavaSlimFactory(options).getSlimServer(), socket, true);
-      Thread server = new Thread(() -> {
-        try {
-          service.accept();
-        } catch (IOException ignored) {
-          // Closing the socket ends the daemon loop.
-        }
-      });
-      server.setDaemon(true);
-      server.start();
-
-      SlimCommandRunningClient client = newClient(port);
-      connectWithin(client);
-      assertTrue(client.isConnected());
-      SlimCommandRunningClient second = newClient(port);
-      connectWithin(second);
-      assertTrue(second.isConnected());
-      client.bye();
-      client.kill();
-      second.bye();
-      second.kill();
-      assertTrue(server.isAlive());
-      socket.close();
-      server.join(5000);
-      assertFalse(server.isAlive());
-    }
-  }
-
-  @Test
-  public void pipeModeUsesTheConsoleAndDoesNotReplaceSystemOut() throws Exception {
-    SlimService.Console previous = SlimService.console;
-    ByteArrayOutputStream err = new ByteArrayOutputStream();
-    PrintStream realOut = System.out;
-    SlimService.console = new SlimService.Console() {
-      private PrintStream errStream = new PrintStream(err, true);
-      private PrintStream outStream = new PrintStream(new ByteArrayOutputStream(), true);
-      public InputStream in() { return new ByteArrayInputStream(new byte[0]); }
-      public PrintStream out() { return outStream; }
-      public PrintStream err() { return errStream; }
-      public void setOut(PrintStream out) { outStream = out; }
-      public void setErr(PrintStream err) { errStream = err; }
-      public void exit(int code) { }
-    };
-    try {
-      SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "1"});
-      try (java.net.ServerSocket socket = SlimService.open(options)) {
-        assertEquals(1, socket.getLocalPort());
-      }
-      assertTrue(err.toString(), err.toString().contains("Warning: in Slim Pipe mode"));
-      assertSame(realOut, System.out);
-    } finally {
-      SlimService.console = previous;
-    }
-  }
 
   @Test
   public void pipeModeWithoutDaemonDoesNotWarn() throws Exception {

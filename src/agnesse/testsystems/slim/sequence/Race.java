@@ -137,6 +137,9 @@ public final class Race {
 
   private static List<List<Reading>> waves(Plan plan, Schedule schedule, Desk desk, String instance,
                                            Waves.Overlap overlap) {
+    if (desk.lanes()) {
+      return byLanes(plan, schedule, desk, instance);
+    }
     List<List<Reading>> branches = new ArrayList<>();
     for (Trace ignored : schedule.branches) {
       branches.add(new ArrayList<>());
@@ -146,6 +149,80 @@ public final class Race {
       wave(plan, schedule, desk, instance, overlap, branches, at);
     }
     return branches;
+  }
+
+  private static List<List<Reading>> byLanes(Plan plan, Schedule schedule, Desk desk, String instance) {
+    List<Lane.Group> groups = new ArrayList<>();
+    List<List<Slot>> slots = new ArrayList<>();
+    for (int lane = 0; lane < schedule.branches.size(); lane++) {
+      List<Lane.Call> calls = new ArrayList<>();
+      List<Slot> laneSlots = new ArrayList<>();
+      for (Step step : schedule.branches.get(lane).steps) {
+        laneSlots.add(pack(plan, instance, lane, laneSlots.size(), step, calls));
+      }
+      groups.add(new Lane.Group("t" + (lane + 1), calls));
+      slots.add(laneSlots);
+    }
+    return unpack(slots, index(desk.runLanes(groups)));
+  }
+
+  private static Slot pack(Plan plan, String instance, int lane, int step, Step command, List<Lane.Call> calls) {
+    String id = "l" + lane + "s" + step;
+    Command row = plan.commands.get(command.command);
+    calls.add(new Lane.Call(id, instance, row.name, row.call(command.values())));
+    List<String> names = queries(plan, command);
+    List<String> ids = new ArrayList<>();
+    for (int index = 0; index < names.size(); index++) {
+      String query = id + "q" + index;
+      calls.add(new Lane.Call(query, instance, names.get(index), List.of()));
+      ids.add(query);
+    }
+    return new Slot(id, names, ids);
+  }
+
+  private static Map<String, Lane.Stamp> index(List<Lane.Stamp> hits) {
+    Map<String, Lane.Stamp> byId = new LinkedHashMap<>();
+    for (Lane.Stamp hit : hits) {
+      byId.put(hit.id(), hit);
+    }
+    return byId;
+  }
+
+  private static List<List<Reading>> unpack(List<List<Slot>> slots, Map<String, Lane.Stamp> byId) {
+    List<List<Reading>> branches = new ArrayList<>();
+    for (List<Slot> lane : slots) {
+      List<Reading> readings = new ArrayList<>();
+      for (Slot slot : lane) {
+        readings.add(reading(slot, byId));
+      }
+      branches.add(readings);
+    }
+    return branches;
+  }
+
+  private static Reading reading(Slot slot, Map<String, Lane.Stamp> byId) {
+    Lane.Stamp command = requiredStamp(byId.get(slot.callId));
+    Map<String, String> queries = new LinkedHashMap<>();
+    long finished = command.finished();
+    for (int index = 0; index < slot.names.size(); index++) {
+      Lane.Stamp query = requiredStamp(byId.get(slot.ids.get(index)));
+      queries.put(slot.names.get(index), query.result());
+      finished = query.finished();
+    }
+    return new Reading(command.result(), queries, command.started(), finished);
+  }
+
+  private static Lane.Stamp requiredStamp(Lane.Stamp hit) {
+    if (hit == null) {
+      throw new CallBroke("no result");
+    }
+    if (hit.result() != null && hit.result().startsWith(agnesse.slim.SlimServer.EXCEPTION_TAG)) {
+      throw new CallBroke(hit.result());
+    }
+    return hit;
+  }
+
+  private record Slot(String callId, List<String> names, List<String> ids) {
   }
 
   private static void wave(Plan plan, Schedule schedule, Desk desk, String instance, Waves.Overlap overlap,

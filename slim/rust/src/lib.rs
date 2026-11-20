@@ -1,9 +1,11 @@
-//! A Slim 0.5 server. Port 1 is stdin and stdout. Any other port is a socket on
-//! 127.0.0.1, and those connections share instances.
+//! A Slim 0.5 server. Port 1 is stdin and stdout. Any other port accepts one
+//! socket on 127.0.0.1. A lanes instruction runs each lane on its own thread
+//! against that connection's instances.
 
 use std::collections::HashMap;
 use std::io::{Read, Write};
 use std::net::TcpListener;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
@@ -23,13 +25,11 @@ struct Seat {
 
 struct Shared {
     instances: HashMap<String, Arc<Mutex<Seat>>>,
-    active: i32,
-    seen: bool,
 }
 
 impl Shared {
     fn fresh() -> Self {
-        Self { instances: HashMap::new(), active: 0, seen: false }
+        Self { instances: HashMap::new() }
     }
 }
 
@@ -61,36 +61,10 @@ pub fn rejected(number: i32) -> bool {
 
 pub fn serve(port: i32) -> Result<(), String> {
     let listener = TcpListener::bind(format!("127.0.0.1:{port}")).map_err(|err| err.to_string())?;
-    listener.set_nonblocking(true).map_err(|err| err.to_string())?;
-    let shared = Arc::new(Mutex::new(Shared::fresh()));
-    loop {
-        match listener.accept() {
-            Ok((mut conn, _)) => {
-                {
-                    let mut gate = shared.lock().unwrap();
-                    gate.active += 1;
-                    gate.seen = true;
-                }
-                let gate = Arc::clone(&shared);
-                thread::spawn(move || {
-                    let mut writer = conn.try_clone().unwrap();
-                    speak(&mut conn, &mut writer, Arc::clone(&gate));
-                    gate.lock().unwrap().active -= 1;
-                });
-            }
-            Err(err) if err.kind() == std::io::ErrorKind::WouldBlock => {
-                let idle = {
-                    let gate = shared.lock().unwrap();
-                    gate.seen && gate.active == 0
-                };
-                if idle {
-                    return Ok(());
-                }
-                thread::sleep(Duration::from_millis(20));
-            }
-            Err(_) => return Ok(()),
-        }
-    }
+    let (mut conn, _) = listener.accept().map_err(|err| err.to_string())?;
+    let mut writer = conn.try_clone().map_err(|err| err.to_string())?;
+    speak(&mut conn, &mut writer, Arc::new(Mutex::new(Shared::fresh())));
+    Ok(())
 }
 
 fn speak<R: Read, W: Write>(input: &mut R, output: &mut W, shared: Arc<Mutex<Shared>>) {
@@ -168,13 +142,67 @@ fn answer(instructions: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut Has
     let mut results = Vec::new();
     for item in instructions {
         let Value::List(row) = item else { continue };
-        results.push(Value::List(vec![text_at(row, 0), Value::Text(reply(row, shared, symbols))]));
+        results.push(Value::List(vec![text_at(row, 0), effect(row, shared, symbols)]));
     }
     Value::List(results)
 }
 
 pub fn drive(input: &mut impl Read, output: &mut impl Write) {
     speak(input, output, Arc::new(Mutex::new(Shared::fresh())));
+}
+
+fn effect(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, String>) -> Value {
+    if text_of(&text_at(row, 1)) == "lanes" {
+        return run_lanes(row, shared, symbols);
+    }
+    Value::Text(reply(row, shared, symbols))
+}
+
+fn run_lanes(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, String>) -> Value {
+    if row.len() <= 2 {
+        return Value::Text("lanes".into());
+    }
+    let store = Arc::new(Mutex::new(std::mem::take(symbols)));
+    let counter = Arc::new(AtomicU64::new(0));
+    let rows = Arc::new(Mutex::new(Vec::new()));
+    let mut handles = Vec::new();
+    for item in row.iter().skip(2) {
+        let Value::List(group) = item else { continue };
+        if group.len() < 2 {
+            continue;
+        }
+        let Value::List(calls) = &group[1] else { continue };
+        let tag = text_of(&text_at(group, 0));
+        let calls = calls.clone();
+        let shared = Arc::clone(shared);
+        let store = Arc::clone(&store);
+        let counter = Arc::clone(&counter);
+        let rows = Arc::clone(&rows);
+        handles.push(thread::spawn(move || {
+            for call in calls {
+                let Value::List(instruction) = call else { continue };
+                let started = counter.fetch_add(1, Ordering::SeqCst) + 1;
+                let snapshot = store.lock().unwrap().clone();
+                let mut local = snapshot;
+                let value = reply(&instruction, &shared, &mut local);
+                store.lock().unwrap().extend(local);
+                let finished = counter.fetch_add(1, Ordering::SeqCst) + 1;
+                rows.lock().unwrap().push(Value::List(vec![
+                    Value::Text(tag.clone()),
+                    text_at(&instruction, 0),
+                    Value::Text(started.to_string()),
+                    Value::Text(finished.to_string()),
+                    Value::Text(value),
+                ]));
+            }
+        }));
+    }
+    for handle in handles {
+        let _ = handle.join();
+    }
+    *symbols = store.lock().unwrap().clone();
+    let finished = rows.lock().unwrap().clone();
+    Value::List(finished)
 }
 
 fn reply(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, String>) -> String {

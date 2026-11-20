@@ -6,7 +6,7 @@
 }
 # A Rust server speaks Slim
 
-`cargo run` starts the server. Port `0` asks for a free socket, so the sequence branches share one seat.
+`cargo run` starts the server. One connection carries the whole table, including a pipe on port `1`. A `lanes` instruction runs each branch on its own thread.
 
 ```agnesse
 define COMMAND_PATTERN
@@ -15,7 +15,7 @@ cargo run --quiet --manifest-path slim/rust/Cargo.toml --
 
 ```agnesse
 define SLIM_PORT
-0
+1
 ```
 
 | slim |

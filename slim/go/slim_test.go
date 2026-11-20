@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -208,16 +209,16 @@ func TestBooksAndTheProbe(t *testing.T) {
 	if answer([]any{[]any{"3", "call", "seat", "book"}}, shared, mu, symbols)[0].([]any)[1] != "full" {
 		t.Fatal("second")
 	}
-	probed := answer([]any{[]any{"4", "call", "seat", "__agnesse_lane_probe__"}}, shared, mu, symbols)[0].([]any)[1].(string)
-	if !strings.Contains(probed, "NO_METHOD_IN_CLASS") {
+	probed := answer([]any{[]any{"4", "lanes"}}, shared, mu, symbols)[0].([]any)[1]
+	if probed != "lanes" {
 		t.Fatal(probed)
 	}
 	missing := answer([]any{[]any{"5", "call", "other", "book"}}, shared, mu, symbols)[0].([]any)[1].(string)
 	if !strings.Contains(missing, "NO_INSTANCE other") {
 		t.Fatal(missing)
 	}
-	bare := answer([]any{[]any{"6", "call", "seat", "__agnesse_lane_probe__"}}, map[string]*seat{}, &sync.Mutex{}, symbols)[0].([]any)[1].(string)
-	if !strings.Contains(bare, "NO_INSTANCE") {
+	bare := answer([]any{[]any{"6", "lanes", "not-a-group"}}, map[string]*seat{}, &sync.Mutex{}, symbols)[0].([]any)[1].([]any)
+	if len(bare) != 0 {
 		t.Fatal(bare)
 	}
 	raced := map[string]*seat{}
@@ -237,30 +238,53 @@ func TestBooksAndTheProbe(t *testing.T) {
 }
 
 func TestOverlappingBooks(t *testing.T) {
-	if !same(both("racy"), "booked", "booked") {
-		t.Fatal(both("racy"))
+	racy := both("racy")
+	if !same(racy.results, "booked", "booked") || !racy.overlap {
+		t.Fatal(racy)
 	}
-	if !same(both("safe"), "booked", "full") {
-		t.Fatal(both("safe"))
+	safe := both("safe")
+	if !same(safe.results, "booked", "full") {
+		t.Fatal(safe)
 	}
 }
 
-func both(mark string) []string {
+type laneHit struct {
+	results []string
+	overlap bool
+}
+
+func both(mark string) laneHit {
 	shared := map[string]*seat{}
 	mu := &sync.Mutex{}
 	answer([]any{[]any{"1", "make", "seat", "slim", mark}}, shared, mu, map[string]string{})
-	found := make([]string, 2)
-	var wg sync.WaitGroup
-	wg.Add(2)
-	for i := 0; i < 2; i++ {
-		go func(i int) {
-			defer wg.Done()
-			row := answer([]any{[]any{"2", "call", "seat", "book"}}, shared, mu, map[string]string{})
-			found[i] = row[0].([]any)[1].(string)
-		}(i)
+	got := answer([]any{[]any{"9", "lanes",
+		[]any{"t1", []any{[]any{"a", "call", "seat", "book"}}},
+		[]any{"t2", []any{[]any{"b", "call", "seat", "book"}}},
+	}}, shared, mu, map[string]string{})
+	rows := got[0].([]any)[1].([]any)
+	return laneHit{[]string{cell(rows[0]), cell(rows[1])}, overlaps(rows)}
+}
+
+func cell(row any) string {
+	return row.([]any)[4].(string)
+}
+
+func overlaps(rows []any) bool {
+	left := rows[0].([]any)
+	right := rows[1].([]any)
+	return before(left[2], right[3]) && before(right[2], left[3])
+}
+
+func before(early, late any) bool {
+	start, err := strconv.Atoi(early.(string))
+	if err != nil {
+		return false
 	}
-	wg.Wait()
-	return found
+	finish, err := strconv.Atoi(late.(string))
+	if err != nil {
+		return false
+	}
+	return start < finish
 }
 
 func same(got []string, a, b string) bool {
@@ -335,28 +359,24 @@ func TestSocketSharesASeat(t *testing.T) {
 	done := make(chan error, 1)
 	go func() { done <- serve(port) }()
 	first := dial(t, port)
-	second := dial(t, port)
 	defer first.Close()
-	defer second.Close()
-	if readUntil(t, first, "\n") != "Slim -- V0.5\n" || readUntil(t, second, "\n") != "Slim -- V0.5\n" {
+	if readUntil(t, first, "\n") != "Slim -- V0.5\n" {
 		t.Fatal("header")
 	}
 	send(t, first, []any{"1", "make", "seat", "slim", "safe"})
 	if !strings.Contains(readUntil(t, first, "OK"), "OK") {
 		t.Fatal("make")
 	}
-	send(t, second, []any{"2", "call", "seat", "book"})
-	if !strings.Contains(readUntil(t, second, "booked"), "booked") {
+	send(t, first, []any{"2", "call", "seat", "book"})
+	if !strings.Contains(readUntil(t, first, "booked"), "booked") {
 		t.Fatal("booked")
 	}
 	send(t, first, []any{"3", "call", "seat", "book"})
 	if !strings.Contains(readUntil(t, first, "full"), "full") {
 		t.Fatal("full")
 	}
-	sendRaw(t, second, "bye")
 	sendRaw(t, first, "bye")
 	first.Close()
-	second.Close()
 	select {
 	case err := <-done:
 		if err != nil {
@@ -368,24 +388,6 @@ func TestSocketSharesASeat(t *testing.T) {
 }
 
 func TestIdleAndAClosedListener(t *testing.T) {
-	var mu sync.Mutex
-	seen := false
-	active := 0
-	if !idle(boom{}, &mu, &seen, &active) {
-		t.Fatal("other error stops")
-	}
-	if idle(timeoutErr{}, &mu, &seen, &active) {
-		t.Fatal("unseen timeout waits")
-	}
-	seen = true
-	if !idle(timeoutErr{}, &mu, &seen, &active) {
-		t.Fatal("idle")
-	}
-	enter(&mu, &seen, &active)
-	if idle(timeoutErr{}, &mu, &seen, &active) {
-		t.Fatal("busy")
-	}
-	leave(&mu, &active)
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
@@ -470,17 +472,6 @@ func TestParseEdges(t *testing.T) {
 	}
 }
 
-type boom struct{}
-
-func (boom) Error() string   { return "boom" }
-func (boom) Timeout() bool   { return false }
-func (boom) Temporary() bool { return false }
-
-type timeoutErr struct{}
-
-func (timeoutErr) Error() string   { return "timeout" }
-func (timeoutErr) Timeout() bool   { return true }
-func (timeoutErr) Temporary() bool { return true }
 
 type zeroReader struct{}
 

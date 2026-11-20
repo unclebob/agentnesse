@@ -947,7 +947,7 @@ public class SequenceTableTest {
         | command | when | next | result? |
         | book | seats=1 | seats=0 | booked |
         """);
-    assertMessage("a pipe runs one call at a time", """
+    assertMessage("lanes instruction", """
         | sequence:agnesse.slim.test.LastSeat |
         | threads | 2..2 |
         | steps | 1..1 |
@@ -966,16 +966,12 @@ public class SequenceTableTest {
         new MockCommandRunner(new CompositeExecutionLogListener()),
         "localhost", 1, 2, SlimCommandRunningClient.MINIMUM_REQUIRED_SLIM_VERSION, new PlainClientSocketFactory());
     SyntaxError error = assertThrows(SyntaxError.class, () -> SlimLanes.open(pipe, sheet));
-    assertTrue(error.getMessage(), error.getMessage().contains("a pipe runs one call at a time"));
+    assertTrue(error.getMessage(), error.getMessage().contains("lanes instruction"));
   }
 
   @Test
-  public void theProbeNamesAPrivateFixtureAndAMissingMethod() {
-    assertEquals(null, SlimLanes.probeVerdict("NO_METHOD_IN_CLASS book"));
-    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("NO_INSTANCE seat"));
-    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict(null));
-    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("  "));
-    assertEquals("missing class", SlimLanes.probeVerdict("missing class"));
+  public void aServerWithoutLanesIsNamed() {
+    assertTrue(SlimLanes.NEED.contains("lanes instruction"));
   }
 
   @Test
@@ -1039,17 +1035,17 @@ public class SequenceTableTest {
   }
 
   @Test
-  public void twoLanesCallTheFixtureTheFirstConnectionCreated() throws Exception {
-    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
+  public void oneConnectionRunsTwoLanes() throws Exception {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"0"});
     try (ServerSocket socket = new ServerSocket(0)) {
       int port = socket.getLocalPort();
       SlimFactory factory = JavaSlimFactory.createJavaSlimFactory(options);
-      SlimService service = new SlimService(factory.getSlimServer(), socket, true);
+      SlimService service = new SlimService(factory.getSlimServer(), socket);
       Thread server = new Thread(() -> {
         try {
           service.accept();
         } catch (Exception ignored) {
-          // Closing the socket ends the daemon loop.
+          // Closing the socket ends the single accept.
         }
       });
       server.setDaemon(true);
@@ -1062,17 +1058,16 @@ public class SequenceTableTest {
       SequenceSheet sheet = SequenceSheet.read(markdown, "agnesse.slim.test.Waitlist");
       SlimDesk desk = SlimLanes.open(client, sheet);
       try {
-        assertEquals(2, desk.lanes());
-        assertEquals("ok", desk.call(1, "laneProbe", "ping", List.of()));
-        SlimDesk alone = new SlimDesk(client, List.of());
-        alone.make("solo", "agnesse.slim.test.Waitlist", new String[0]);
-        assertEquals("ok", alone.call(0, "solo", "ping", List.of()));
-        agnesse.testsystems.slim.sequence.CallBroke broken = assertThrows(
-            agnesse.testsystems.slim.sequence.CallBroke.class,
-            () -> desk.make("missing", "no.such.Fixture", new String[0]));
-        assertTrue(broken.getMessage(), broken.getMessage().contains("NO_CLASS"));
+        desk.make("seat", "agnesse.slim.test.Waitlist", new String[0]);
+        java.util.List<agnesse.testsystems.slim.sequence.Lane.Stamp> hits = desk.runLanes(java.util.List.of(
+            new agnesse.testsystems.slim.sequence.Lane.Group("t1",
+                java.util.List.of(new agnesse.testsystems.slim.sequence.Lane.Call("a", "seat", "ping", java.util.List.of()))),
+            new agnesse.testsystems.slim.sequence.Lane.Group("t2",
+                java.util.List.of(new agnesse.testsystems.slim.sequence.Lane.Call("b", "seat", "ping", java.util.List.of())))));
+        assertEquals(2, hits.size());
+        assertEquals("ok", hits.get(0).result());
+        assertEquals("ok", hits.get(1).result());
       } finally {
-        desk.close();
         client.bye();
         client.kill();
         socket.close();

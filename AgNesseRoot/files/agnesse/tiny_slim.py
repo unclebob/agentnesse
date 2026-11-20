@@ -26,36 +26,12 @@ def serve(port):
     server = socket.socket()
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(("127.0.0.1", port))
-    server.listen(8)
-    server.settimeout(0.2)
-    instances = {}
-    active = {"n": 0, "seen": False}
-    lock = threading.Lock()
-
-    def finished():
-        with lock:
-            active["n"] -= 1
-
-    def idle():
-        with lock:
-            return active["seen"] and active["n"] == 0
-
+    server.listen(1)
     try:
-        while True:
-            try:
-                connection, _ = server.accept()
-            except socket.timeout:
-                if idle():
-                    return
-                continue
-            except OSError:
-                return
-            with lock:
-                active["n"] += 1
-                active["seen"] = True
-            threading.Thread(target=session, args=(connection, instances, finished)).start()
+        connection, _ = server.accept()
     finally:
         server.close()
+    session(connection, {}, lambda: None)
 
 
 def session(connection, instances, finished):
@@ -83,8 +59,50 @@ def answer(instructions, instances=None):
     state = {} if instances is None else instances
     results = []
     for instruction in instructions:
-        results.append([instruction[0], reply(instruction, state)])
+        results.append([instruction[0], effect(instruction, state)])
     return results
+
+
+def effect(instruction, instances):
+    if command(instruction) == "lanes":
+        return run_lanes(instruction, instances)
+    return reply(instruction, instances)
+
+
+def run_lanes(instruction, instances):
+    if len(instruction) <= 2:
+        return "lanes"
+    counter = {"n": 0}
+    counter_lock = threading.Lock()
+    rows = []
+    rows_lock = threading.Lock()
+
+    def stamp():
+        with counter_lock:
+            counter["n"] += 1
+            return str(counter["n"])
+
+    def lane(group):
+        if not isinstance(group, list) or len(group) < 2 or not isinstance(group[1], list):
+            return
+        tag = text_at(group, 0, "")
+        for call in group[1]:
+            if not isinstance(call, list):
+                continue
+            started = stamp()
+            value = reply(call, instances)
+            finished = stamp()
+            with rows_lock:
+                rows.append([tag, text_at(call, 0, ""), started, finished, value])
+
+    threads = []
+    for group in instruction[2:]:
+        thread = threading.Thread(target=lane, args=(group,))
+        threads.append(thread)
+        thread.start()
+    for thread in threads:
+        thread.join()
+    return rows
 
 
 def reply(instruction, instances):

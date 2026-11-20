@@ -79,6 +79,9 @@ public final class Linear {
     if (frame.at[thread] >= branch.steps.size()) {
       return;
     }
+    if (!ready(branches, readings, frame, thread)) {
+      return;
+    }
     Advance advance = frame.cast.take(plan, branch.steps.get(frame.at[thread]),
         readings.get(thread).get(frame.at[thread]));
     if (!advance.ok()) {
@@ -87,6 +90,30 @@ public final class Linear {
     int[] next = frame.at.clone();
     next[thread]++;
     stack.push(new Frame(next, advance.candidates));
+  }
+
+  /** A step that already finished before this one started has to be taken first. */
+  private static boolean ready(List<Trace> branches, List<List<Reading>> readings, Frame frame, int thread) {
+    Reading next = readings.get(thread).get(frame.at[thread]);
+    if (next.started() == 0L) {
+      return true;
+    }
+    for (int other = 0; other < branches.size(); other++) {
+      if (other != thread && precedes(readings.get(other), frame.at[other], next.started())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean precedes(List<Reading> branch, int from, long started) {
+    for (int index = from; index < branch.size(); index++) {
+      long finished = branch.get(index).finished();
+      if (finished > 0L && finished < started) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static String key(Frame frame) {

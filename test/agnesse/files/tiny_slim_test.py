@@ -183,7 +183,7 @@ class TinySlimTest(unittest.TestCase):
             thread.join(2)
             self.assertFalse(thread.is_alive())
             self.assertEqual(1, seen["reuse"])
-            self.assertEqual(8, seen["backlog"])
+            self.assertEqual(1, seen["backlog"])
         finally:
             self.slim.socket.socket = real
 
@@ -192,7 +192,8 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("OK", self.slim.answer([["1", "make", "seat", "tiny", "safe"]], shared)[0][1])
         self.assertEqual("booked", self.slim.answer([["2", "call", "seat", "book"]], shared)[0][1])
         self.assertEqual("full", self.slim.answer([["3", "call", "seat", "book"]], shared)[0][1])
-        self.assertIn("NO_METHOD_IN_CLASS", self.slim.answer([["4", "call", "seat", "__agnesse_lane_probe__"]], shared)[0][1])
+        self.assertEqual("lanes", self.slim.answer([["4", "lanes"]], shared)[0][1])
+        self.assertEqual([], self.slim.answer([["4b", "lanes", "not-a-group"]], shared)[0][1])
         self.assertIn("NO_INSTANCE", self.slim.answer([["5", "call", "other", "book"]])[0][1])
         raced = {}
         self.assertEqual("OK", self.slim.answer([["6", "make", "seat", "tiny", "racy"]], raced)[0][1])
@@ -211,20 +212,16 @@ class TinySlimTest(unittest.TestCase):
             daemon=True)
         thread.start()
         first = connect(port)
-        second = connect(port)
         try:
             self.assertEqual(b"Slim -- V0.5\n", read_until(first, b"\n"))
-            self.assertEqual(b"Slim -- V0.5\n", read_until(second, b"\n"))
             first.sendall(frame(self.slim, ["1", "make", "seat", "tiny", "safe"]))
             self.assertIn(b"OK", read_until(first, b"OK"))
-            second.sendall(frame(self.slim, ["2", "call", "seat", "book"]))
-            self.assertIn(b"booked", read_until(second, b"booked"))
+            first.sendall(frame(self.slim, ["2", "call", "seat", "book"]))
+            self.assertIn(b"booked", read_until(first, b"booked"))
             first.sendall(frame(self.slim, ["3", "call", "seat", "book"]))
             self.assertIn(b"full", read_until(first, b"full"))
-            second.sendall(frame(self.slim, "bye"))
             first.sendall(frame(self.slim, "bye"))
         finally:
-            second.close()
             first.close()
         thread.join(2)
         self.assertFalse(thread.is_alive())
@@ -251,17 +248,11 @@ class TinySlimTest(unittest.TestCase):
 def both(test, mark):
     shared = {}
     test.slim.answer([["1", "make", "seat", "tiny", mark]], shared)
-    found = []
-
-    def run():
-        found.append(test.slim.answer([["2", "call", "seat", "book"]], shared)[0][1])
-
-    threads = [threading.Thread(target=run), threading.Thread(target=run)]
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
-    return found
+    rows = test.slim.answer([["9", "lanes",
+        ["t1", [["a", "call", "seat", "book"]]],
+        ["t2", [["b", "call", "seat", "book"]]],
+    ]], shared)[0][1]
+    return [rows[0][4], rows[1][4]]
 
 
 def connect(port):

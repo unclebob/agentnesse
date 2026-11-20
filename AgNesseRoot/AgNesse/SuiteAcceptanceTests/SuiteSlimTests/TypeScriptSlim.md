@@ -6,7 +6,9 @@
 }
 # The slim/ts server speaks Slim
 
-`node` starts the server. Port `0` asks for a free socket, so the sequence branches share one seat. A racy book yields, so two calls can both see the seat free. A safe book waits its turn.
+`node` starts the server. One connection carries the whole table, including a pipe on port `1`. A `lanes` instruction runs every branch as an async task on that process.
+
+This server has no real threads. The lanes share Node's one event loop and run concurrently by yielding at `await`, which is the closest honest equivalent of a thread. A racy book awaits a timer, so two lanes can both see the seat free. A safe book waits its turn on a promise chain. The server does not start worker threads.
 
 ```agnesse
 define COMMAND_PATTERN
@@ -15,7 +17,7 @@ node --experimental-strip-types slim/ts/slim.ts
 
 ```agnesse
 define SLIM_PORT
-0
+1
 ```
 
 | slim |

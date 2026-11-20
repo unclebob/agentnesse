@@ -10,7 +10,7 @@ Two threads book the last seat without a lock. Both can observe it free. The sho
 
 | script | page driver |
 | --- | --- |
-| given page | SequenceRaceRun | with content | &#96;&#96;&#96;agnesse<br>define SLIM_FLAGS<br>-d<br>&#96;&#96;&#96;<br><br>&#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>0<br>&#96;&#96;&#96;<br><br>\| sequence:agnesse.slim.test.LastSeat \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 2..2 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
+| given page | SequenceRaceRun | with content | \| sequence:agnesse.slim.test.LastSeat \|<br>\| trials \| 4 \|<br>\| threads \| 2..2 \|<br>\| prefix \| 0..0 \|<br>\| steps \| 2..2 \|<br>\| seed \| 1 \|<br>\| state \| seats=1 \|<br>\| command \| when \| next \| result? \|<br>\| book \| seats=1 \| seats=0 \| booked \|<br>\| book \| seats=0 \| \| full \| |
 | make | SequenceRaceRun | a test page |
 | check | request page | SequenceRaceRun?test&format=json | 200 |
 | ensure | content contains | "wrong":1 |

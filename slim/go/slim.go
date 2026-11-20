@@ -1,6 +1,6 @@
-// A Slim 0.5 server. Port 1 is stdin and stdout. Any other port is a socket on
-// 127.0.0.1, and those connections share instances so a concurrent sequence can
-// call one fixture from several threads.
+// A Slim 0.5 server. Port 1 is stdin and stdout. Any other port accepts one
+// socket on 127.0.0.1. A lanes instruction runs each lane on its own goroutine
+// against that one connection's instances.
 package main
 
 import (
@@ -51,46 +51,12 @@ func serve(port int) error {
 		return err
 	}
 	defer listener.Close()
-	tcp := listener.(*net.TCPListener)
-	instances := map[string]*seat{}
-	var mu sync.Mutex
-	active := 0
-	seen := false
-	for {
-		_ = tcp.SetDeadline(time.Now().Add(200 * time.Millisecond))
-		conn, err := listener.Accept()
-		if err != nil {
-			if idle(err, &mu, &seen, &active) {
-				return nil
-			}
-			continue
-		}
-		enter(&mu, &seen, &active)
-		go session(conn, instances, &mu, func() { leave(&mu, &active) })
+	conn, err := listener.Accept()
+	if err != nil {
+		return err
 	}
-}
-
-func idle(err error, mu *sync.Mutex, seen *bool, active *int) bool {
-	netErr, ok := err.(net.Error)
-	if !ok || !netErr.Timeout() {
-		return true
-	}
-	mu.Lock()
-	defer mu.Unlock()
-	return *seen && *active == 0
-}
-
-func enter(mu *sync.Mutex, seen *bool, active *int) {
-	mu.Lock()
-	*active++
-	*seen = true
-	mu.Unlock()
-}
-
-func leave(mu *sync.Mutex, active *int) {
-	mu.Lock()
-	*active--
-	mu.Unlock()
+	session(conn, map[string]*seat{}, &sync.Mutex{}, func() {})
+	return nil
 }
 
 func session(conn net.Conn, instances map[string]*seat, mu *sync.Mutex, done func()) {
@@ -164,9 +130,63 @@ func answer(instructions []any, instances map[string]*seat, mu *sync.Mutex, symb
 		if !ok {
 			continue
 		}
-		results = append(results, []any{textAt(row, 0), reply(row, instances, mu, symbols)})
+		results = append(results, []any{textAt(row, 0), effect(row, instances, mu, symbols)})
 	}
 	return results
+}
+
+func effect(row []any, instances map[string]*seat, mu *sync.Mutex, symbols map[string]string) any {
+	if textAt(row, 1) == "lanes" {
+		return runLanes(row, instances, mu, symbols)
+	}
+	return reply(row, instances, mu, symbols)
+}
+
+func runLanes(row []any, instances map[string]*seat, mu *sync.Mutex, symbols map[string]string) any {
+	if len(row) <= 2 {
+		return "lanes"
+	}
+	var counter int64
+	var counterMu sync.Mutex
+	stamp := func() string {
+		counterMu.Lock()
+		counter++
+		value := counter
+		counterMu.Unlock()
+		return strconv.FormatInt(value, 10)
+	}
+	rows := make([]any, 0)
+	var rowsMu sync.Mutex
+	var wg sync.WaitGroup
+	for _, item := range row[2:] {
+		group, ok := item.([]any)
+		if !ok || len(group) < 2 {
+			continue
+		}
+		calls, ok := group[1].([]any)
+		if !ok {
+			continue
+		}
+		tag := textAt(group, 0)
+		wg.Add(1)
+		go func(tag string, calls []any) {
+			defer wg.Done()
+			for _, item := range calls {
+				instruction, ok := item.([]any)
+				if !ok {
+					continue
+				}
+				started := stamp()
+				value := reply(instruction, instances, mu, symbols)
+				finished := stamp()
+				rowsMu.Lock()
+				rows = append(rows, []any{tag, textAt(instruction, 0), started, finished, value})
+				rowsMu.Unlock()
+			}
+		}(tag, calls)
+	}
+	wg.Wait()
+	return rows
 }
 
 func reply(row []any, instances map[string]*seat, mu *sync.Mutex, symbols map[string]string) string {

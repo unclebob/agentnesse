@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import agnesse.slim.fixtureInteraction.FixtureInteraction;
 import agnesse.socketservice.PlainServerSocketFactory;
@@ -20,7 +18,7 @@ import util.CommandLine;
 import static agnesse.slim.JavaSlimFactory.*;
 
 public class SlimService {
-  private static final String OPTION_DESCRIPTOR = "[-v] [-i interactionClass] [-s statementTimeout] [-d] port";
+  private static final String OPTION_DESCRIPTOR = "[-v] [-i interactionClass] [-s statementTimeout] port";
 
   /**
    * The process streams and the exit call. Tests replace this so pipe mode
@@ -54,10 +52,6 @@ public class SlimService {
     public final boolean verbose;
     public final int port;
     public final FixtureInteraction interaction;
-    /**
-     * daemon mode: keep accepting new connections indefinitely.
-     */
-    public final boolean daemon;
     /** Whole seconds from <code>-s 1</code>. Null when the flag is absent or uses the <code>ms</code> form. */
     public final Integer statementTimeout;
     /** How long a statement may run, in milliseconds. Null when no timeout was requested. */
@@ -65,16 +59,15 @@ public class SlimService {
     /** The number of seconds reported when the timeout fires, such as <code>1</code> or <code>0.5</code>. */
     public final String statementTimeoutLabel;
 
-    public Options(boolean verbose, int port, FixtureInteraction interaction, boolean daemon, Integer statementTimeout) {
-      this(verbose, port, interaction, daemon, statementTimeout, millisFor(statementTimeout), labelFor(statementTimeout));
+    public Options(boolean verbose, int port, FixtureInteraction interaction, Integer statementTimeout) {
+      this(verbose, port, interaction, statementTimeout, millisFor(statementTimeout), labelFor(statementTimeout));
     }
 
-    public Options(boolean verbose, int port, FixtureInteraction interaction, boolean daemon,
+    public Options(boolean verbose, int port, FixtureInteraction interaction,
                    Integer statementTimeout, Long statementTimeoutMillis, String statementTimeoutLabel) {
       this.verbose = verbose;
       this.port = port;
       this.interaction = interaction;
-      this.daemon = daemon;
       this.statementTimeout = statementTimeout;
       this.statementTimeoutMillis = statementTimeoutMillis;
       this.statementTimeoutLabel = statementTimeoutLabel;
@@ -83,8 +76,6 @@ public class SlimService {
 
   private final ServerSocket serverSocket;
   private final SlimServer slimServer;
-  private final boolean daemon;
-  private final Executor executor = Executors.newFixedThreadPool(5);
 
   public static void main(String[] args) throws IOException {
     System.exit(run(args));
@@ -114,9 +105,6 @@ public class SlimService {
 
   static ServerSocket open(Options options) throws IOException {
     if (options.port == 1) {
-      if (options.daemon) {
-        console.err().println("Warning: in Slim Pipe mode the daemon flag is not supported.");
-      }
       return new SlimPipeSocket(console);
     }
     return new PlainServerSocketFactory().createServerSocket(options.port);
@@ -125,8 +113,7 @@ public class SlimService {
   public static void startWithFactory(SlimFactory slimFactory, Options options) throws IOException {
     ServerSocket socket = open(options);
     try {
-      SlimService slimservice = new SlimService(slimFactory.getSlimServer(),
-          socket, options.daemon);
+      SlimService slimservice = new SlimService(slimFactory.getSlimServer(), socket);
       slimservice.accept();
     } catch (java.lang.OutOfMemoryError e) {
       onOutOfMemory(e);
@@ -145,9 +132,8 @@ public class SlimService {
       Integer statementTimeout = statementTimeoutString == null ? null : secondsOf(statementTimeoutString);
       Long statementTimeoutMillis = statementTimeoutString == null ? null : millisOf(statementTimeoutString);
       String statementTimeoutLabel = statementTimeoutString == null ? null : labelOf(statementTimeoutString);
-      boolean daemon = commandLine.hasOption("d");
       FixtureInteraction interaction = createInteraction(interactionClassName);
-      return new Options(verbose, port, interaction, daemon, statementTimeout, statementTimeoutMillis, statementTimeoutLabel);
+      return new Options(verbose, port, interaction, statementTimeout, statementTimeoutMillis, statementTimeoutLabel);
     }
     return null;
   }
@@ -182,11 +168,9 @@ public class SlimService {
     return BigDecimal.valueOf(millis).movePointLeft(3).stripTrailingZeros().toPlainString();
   }
 
-  public SlimService(SlimServer slimServer, ServerSocket serverSocket, boolean daemon) throws IOException {
-    this.daemon = daemon;
+  public SlimService(SlimServer slimServer, ServerSocket serverSocket) throws IOException {
     this.slimServer = slimServer;
     this.serverSocket = serverSocket;
-//
   }
 
   public int getPort() {
@@ -204,26 +188,7 @@ public class SlimService {
   }
 
   private void acceptConnections() throws IOException {
-    do {
-      Socket socket = serverSocket.accept();
-      if (daemon)
-        handOff(socket);
-      else
-        handle(socket);
-    } while (daemon);
-  }
-
-  private void handOff(final Socket socket) {
-    executor.execute(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          handle(socket);
-        } catch (IOException e) {
-          throw new SlimError(e);
-        }
-      }
-    });
+    handle(serverSocket.accept());
   }
 
   private void handle(Socket socket) throws IOException {

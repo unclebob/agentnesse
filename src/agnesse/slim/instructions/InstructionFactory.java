@@ -27,6 +27,8 @@ public class InstructionFactory {
       instruction = createCallInstruction(id, words, methodNameTranslator);
     } else if (ImportInstruction.INSTRUCTION.equalsIgnoreCase(operation)) {
       instruction = createImportInstruction(id, words);
+    } else if (LanesInstruction.INSTRUCTION.equalsIgnoreCase(operation)) {
+      instruction = LanesInstruction.fromWire(id, words);
     } else {
       instruction = createInvalidInstruction(id, operation);
     }

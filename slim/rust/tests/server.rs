@@ -138,10 +138,10 @@ fn books_and_the_probe() {
     gate.answer(&[Value::List(vec![t("1"), t("make"), t("seat"), t("slim"), t("safe")])]);
     assert_eq!(cell(&gate.answer(&[call("2", "seat", "book", &[])]), 0), "booked");
     assert_eq!(cell(&gate.answer(&[call("3", "seat", "book", &[])]), 0), "full");
-    assert!(cell(&gate.answer(&[call("4", "seat", "__agnesse_lane_probe__", &[])]), 0).contains("NO_METHOD_IN_CLASS"));
+    assert_eq!(cell(&gate.answer(&[Value::List(vec![t("4"), t("lanes")])]), 0), "lanes");
+    let skipped = gate.answer(&[Value::List(vec![t("6"), t("lanes"), t("not-a-group")])]);
+    assert_eq!(list_cell(&skipped), Vec::<Value>::new());
     assert!(cell(&gate.answer(&[call("5", "other", "book", &[])]), 0).contains("NO_INSTANCE other"));
-    let bare = Gate::new();
-    assert!(cell(&bare.answer(&[call("6", "seat", "__agnesse_lane_probe__", &[])]), 0).contains("NO_INSTANCE"));
     let raced = Gate::new();
     raced.answer(&[Value::List(vec![t("1"), t("make"), t("seat"), t("slim"), t("racy")])]);
     assert_eq!(cell(&raced.answer(&[call("2", "seat", "book", &[])]), 0), "booked");
@@ -153,18 +153,50 @@ fn books_and_the_probe() {
 
 #[test]
 fn overlapping_books() {
-    assert!(same(&both("racy"), "booked", "booked"));
-    assert!(same(&both("safe"), "booked", "full"));
+    let racy = both("racy");
+    assert!(same(&racy.results, "booked", "booked") && racy.overlap);
+    let safe = both("safe");
+    assert!(same(&safe.results, "booked", "full"));
 }
 
-fn both(mark: &str) -> [String; 2] {
-    let gate = std::sync::Arc::new(Gate::new());
+struct LaneHit { results: [String; 2], overlap: bool }
+
+fn both(mark: &str) -> LaneHit {
+    let gate = Gate::new();
     gate.answer(&[Value::List(vec![t("1"), t("make"), t("seat"), t("slim"), t(mark)])]);
-    let gate_a = std::sync::Arc::clone(&gate);
-    let gate_b = std::sync::Arc::clone(&gate);
-    let left = thread::spawn(move || cell(&gate_a.answer(&[call("2", "seat", "book", &[])]), 0));
-    let right = thread::spawn(move || cell(&gate_b.answer(&[call("3", "seat", "book", &[])]), 0));
-    [left.join().unwrap(), right.join().unwrap()]
+    let got = gate.answer(&[Value::List(vec![
+        t("9"), t("lanes"),
+        Value::List(vec![t("t1"), Value::List(vec![call("a", "seat", "book", &[])])]),
+        Value::List(vec![t("t2"), Value::List(vec![call("b", "seat", "book", &[])])]),
+    ])]);
+    let rows = list_cell(&got);
+    LaneHit { results: [hit(&rows[0]), hit(&rows[1])], overlap: overlaps(&rows) }
+}
+
+fn list_cell(value: &Value) -> Vec<Value> {
+    let Value::List(results) = value else { return Vec::new() };
+    let Some(Value::List(row)) = results.first() else { return Vec::new() };
+    match row.get(1) { Some(Value::List(items)) => items.clone(), _ => Vec::new() }
+}
+
+fn hit(value: &Value) -> String {
+    let Value::List(row) = value else { return String::new() };
+    text(row.get(4).unwrap_or(&t("")))
+}
+
+fn overlaps(rows: &[Value]) -> bool {
+    let Value::List(left) = &rows[0] else { return false };
+    let Value::List(right) = &rows[1] else { return false };
+    before(left.get(2), right.get(3)) && before(right.get(2), left.get(3))
+}
+
+fn before(early: Option<&Value>, late: Option<&Value>) -> bool {
+    let Some(Value::Text(start)) = early else { return false };
+    let Some(Value::Text(finish)) = late else { return false };
+    match (start.parse::<u64>(), finish.parse::<u64>()) {
+        (Ok(start), Ok(finish)) => start < finish,
+        _ => false,
+    }
 }
 
 fn same(got: &[String; 2], a: &str, b: &str) -> bool {
@@ -242,21 +274,17 @@ fn socket_shares_a_seat_and_waits() {
     thread::sleep(Duration::from_millis(300));
     assert!(!done.is_finished());
     let mut first = dial(port);
-    let mut second = dial(port);
     assert_eq!(read_until(&mut first, b"\n"), "Slim -- V0.5\n");
     thread::sleep(Duration::from_millis(100));
-    assert!(!done.is_finished(), "server left before the second connection");
-    assert_eq!(read_until(&mut second, b"\n"), "Slim -- V0.5\n");
+    assert!(!done.is_finished(), "server left before the client finished");
     write_frame(&mut first, &Value::List(vec![t("1"), t("make"), t("seat"), t("slim"), t("safe")]));
     assert!(read_until(&mut first, b"OK").contains("OK"));
-    write_frame(&mut second, &call("2", "seat", "book", &[]));
-    assert!(read_until(&mut second, b"booked").contains("booked"));
+    write_frame(&mut first, &call("2", "seat", "book", &[]));
+    assert!(read_until(&mut first, b"booked").contains("booked"));
     write_frame(&mut first, &call("3", "seat", "book", &[]));
     assert!(read_until(&mut first, b"full").contains("full"));
     let _ = first.write_all(b"000003:bye");
-    let _ = second.write_all(b"000003:bye");
     drop(first);
-    drop(second);
     let finished = done.join().expect("server thread");
     assert!(finished.is_ok());
 }

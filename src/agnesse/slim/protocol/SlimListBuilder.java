@@ -11,6 +11,7 @@ import agnesse.slim.instructions.CallInstruction;
 import agnesse.slim.instructions.ImportInstruction;
 import agnesse.slim.instructions.Instruction;
 import agnesse.slim.instructions.InstructionExecutor;
+import agnesse.slim.instructions.LanesInstruction;
 import agnesse.slim.instructions.MakeInstruction;
 
 import static java.util.Arrays.asList;
@@ -30,6 +31,10 @@ public class SlimListBuilder {
   public List<Object> toList(List<Instruction> instructions) {
     final List<Object> statementsAsList = new ArrayList<>(instructions.size());
     for (final Instruction instruction : instructions) {
+      if (instruction instanceof LanesInstruction lanes) {
+        statementsAsList.add(lanes.statement());
+        continue;
+      }
       ToListExecutor executor = new ToListExecutor() {
 
         private List<Object> mergeAsList(Object[] a, Object[] b) {
