@@ -414,6 +414,37 @@ public class SequenceTest {
     }
   }
 
+  @Test
+  public void walkDropsCommandsBeforeArgumentsAndStopsAtTheCap() {
+    Walk dropped = new Walk(life(1, 4), new Trace(List.of(
+        new Step(1, List.of()), new Step(3, List.of()))));
+    assertTrue(dropped.next().isEmpty());
+    assertFalse(dropped.capped());
+
+    Walk prefix = new Walk(life(1, 4), new Trace(List.of(
+        new Step(0, List.of()), new Step(1, List.of()), new Step(3, List.of()))));
+    List<Trace> singles = prefix.next();
+    assertEquals(0, singles.get(0).steps.get(0).command);
+    prefix.accept(singles.get(0));
+    assertEquals(1, prefix.trace().steps.size());
+    assertTrue(prefix.next().isEmpty());
+
+    Plan ints = Plan.create(state("n", "0"), 1, 1, List.of(
+        command("set", "", "n=@amount", literal("flag", "on"), generated("amount", "int:1..100"))), List.of());
+    Walk shrink = new Walk(ints, new Trace(List.of(
+        new Step(0, List.of(Value.text("on"), Value.text("40"))))));
+    List<Trace> first = shrink.next();
+    assertEquals("20", first.get(0).steps.get(0).value(1).cell());
+    for (int i = 0; i < Course.CAP; i++) {
+      List<Trace> batch = i == 0 ? first : shrink.next();
+      assertFalse(batch.isEmpty());
+      shrink.accept(batch.get(batch.size() - 1));
+    }
+    assertTrue(shrink.next().isEmpty());
+    assertTrue(shrink.capped());
+    assertEquals("8", shrink.trace().steps.get(0).value(1).cell());
+  }
+
   private static void expect(String template) {
     Plan.create(Map.of(), 1, 1, List.of(
         new Command("go", "", "", List.of(), List.of(new Command.Expect(true, null, template, 0)))), List.of());

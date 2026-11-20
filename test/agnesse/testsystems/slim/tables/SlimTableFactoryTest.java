@@ -50,6 +50,8 @@ public class SlimTableFactoryTest {
     map.put("library", LibraryTable.class);
     map.put("property:", PropertyTable.class);
     map.put("property", PropertyTable.class);
+    map.put("sequence:", SequenceTable.class);
+    map.put("sequence", SequenceTable.class);
   }
 
   @Test

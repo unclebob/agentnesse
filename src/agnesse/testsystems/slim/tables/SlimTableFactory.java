@@ -40,6 +40,7 @@ public class SlimTableFactory {
     addTableType("library", LibraryTable.class);
     addTableType("baseline", BaselineDecisionTable.class);
     addTableType("property", PropertyTable.class);
+    addTableType("sequence", SequenceTable.class);
   }
 
   protected SlimTableFactory(Map<String, Class<? extends SlimTable>> tableTypes, Map<String, String> tableTypeArrays, Map<String, String> aliasArrays) {

@@ -23,7 +23,8 @@ public final class SlimTableHeading {
     Map.entry("import", "import"),
     Map.entry("library", "library"),
     Map.entry("baseline", "baseline"),
-    Map.entry("property", "property")
+    Map.entry("property", "property"),
+    Map.entry("sequence", "sequence")
   );
 
   private final String type;

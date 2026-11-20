@@ -32,6 +32,8 @@ public class SlimTableHeadingTest {
     assertEquals("scenario", SlimTableHeading.parse("scenario:Pay").type());
     assertEquals("property", SlimTableHeading.parse("property:ListReversal").type());
     assertEquals("ListReversal", SlimTableHeading.parse("property:ListReversal").name());
+    assertEquals("sequence", SlimTableHeading.parse("sequence:ItemLife").type());
+    assertEquals("ItemLife", SlimTableHeading.parse("sequence:ItemLife").name());
   }
 
   @Test
