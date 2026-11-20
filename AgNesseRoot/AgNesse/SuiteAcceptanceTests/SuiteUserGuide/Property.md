@@ -64,6 +64,18 @@ A bound can be `now` plus a duration. `now+35h59m` is 35 hours and 59 minutes af
 
 `period:day`, `period:week`, and `period:month` draw a datetime one second before, at, or one second after a boundary in the default date window. A week starts on Sunday.
 
+A column may name an earlier column. `int after start:0..9` is at least one above `start` and still inside `0..9`. `before` is at least one below. The step is one int, one decimal place, one day, or one second. `money after paid` and `date after start` use that same step. A reference to a later column, an unknown name, or a different kind is refused, and so is a cycle. A repeated name is refused when a column refers to it. An empty window, such as an `int after start:0..20` when `start` is already 20, is an error.
+
+`unique` and `sorted` follow `size` on the list just closed, in either order. `list of int:0..20 size 0..5 unique` draws distinct cells. `sorted` orders ints and decimals as numbers, dates and times chronologically, and strings as text. `unique sorted` is strictly increasing. A `unique` list whose minimum size is larger than a known domain is refused.
+
+`span:0..100 length 1..10` draws `start+length`, the half-open interval from the start for that many steps. `-3+5` starts at -3. `list of span:0..10 length 1..3 size 0..4` is a set of them, and the spans may overlap.
+
+`partition:100 into 3` draws three non-negative ints that add to 100. `partition:10.00 into 3` keeps the scale of the written total, here 2. `into` is 1 through 8. The cell is a Slim list, such as `[10, 0, 0]`.
+
+`monotonic:0..100 size 1..5` is a non-decreasing list of ints. `monotonic:0..100 size 1..5 reset` may drop. A drop counts from the floor again: `[10, 25, 3, 8]` with floor 0 totals 10 + 15 + 3 + 5. Shrinking a reset sequence keeps that total.
+
+`record:name string; age int:0..120` is one JSON object, fields in that order, with no extra spaces. A leaf is a JSON string, so an int cell is `"36"` and money is `"1.50"`. A nested record is parenthesized: `record:name string; doc record:(kind string)`. A field may use `after` or `before` on an earlier field or an earlier column. The field name hides a column of the same name. `all of` cannot be a field.
+
 When the range contains a boundary, half the draws are one of those points and half are ordinary. A date uses the first day and the last day of each month in the range, so a leap day and a year end are in that set. A time uses the local clock time of a DST transition in the zone from 2000 through 2099, the second before it, and the second after it. A datetime uses a DST instant, midnight on the first of a month, the last second of a month, and midnight on a leap day. A range with no such point is uniform. `UTC` has no DST, so a time there is uniform.
 
 `below?` is true for every int under 50, so this filtered range passes.
@@ -235,6 +247,78 @@ The same round trip carries a date, a time, a datetime, a zoned datetime, a dura
 | now | 2024-06-01T00:00:00Z |
 | value | now |
 
+`order stays after` echoes the later int, so the check passes. The other tables round-trip a sorted list, a span, a partition, a meter, and a record.
+
+| scenario | order | start | stays after | end |
+| --- | --- | --- | --- | --- |
+| check | echo string | @end | @end |
+
+| property | order stays after |
+| --- |
+| trials | 4 |
+| seed | 1 |
+| start | int:0..5 |
+| end | int after start:0..9 |
+
+| property | round trip |
+| --- |
+| trials | 2 |
+| seed | 30 |
+| value | list of int:0..12 size 3..3 unique sorted |
+
+| property | round trip |
+| --- |
+| trials | 2 |
+| seed | 31 |
+| value | span:-5..5 length 1..4 |
+
+| property | round trip |
+| --- |
+| trials | 2 |
+| seed | 38 |
+| value | list of span:0..8 length 1..3 size 2..2 |
+
+| property | round trip |
+| --- |
+| trials | 2 |
+| seed | 32 |
+| value | partition:10.00 into 3 |
+
+| property | round trip |
+| --- |
+| trials | 2 |
+| seed | 33 |
+| value | monotonic:0..20 size 2..4 |
+
+| property | round trip |
+| --- |
+| trials | 2 |
+| seed | 34 |
+| value | monotonic:0..20 size 2..4 reset |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 35 |
+| value | record:name one of:Ada; age int:36..36 |
+
+| scenario | later day | start | stays after | end |
+| --- | --- | --- | --- | --- |
+| check | echo string | @end | @end |
+
+| property | later day stays after |
+| --- |
+| trials | 2 |
+| seed | 36 |
+| start | date:2020-01-01..2020-01-05 |
+| end | date after start:2020-01-01..2020-01-10 |
+
+| property | round trip |
+| --- |
+| trials | 1 |
+| seed | 37 |
+| value | record:name one of:Ada; doc record:(kind one of:id; expires date:2020-06-01..2020-06-01) |
+
 `read the clock` sees the same instant the table fixed. `$now` is the clock. `@instant` is the drawn cell.
 
 | scenario | read the clock | instant |
@@ -290,6 +374,8 @@ After the first failing trial, shrinking sends simpler candidates. Each round is
 A decimal shrinks toward fewer places and toward zero, and it stays inside the range. `1.23` at scale 2 in `-10..10` offers `0.00`, then `1.00`, `1.20`, `0.61`, and `1.22`. A range that does not contain zero shrinks toward the end nearer zero. A weighted `one of` still shrinks toward the first choice. A pattern shrinks toward the first character of each class (`0`, `A`, or `a`). An adversarial string shortens the way any string does, and a cut that would split a surrogate pair is skipped. `all of` shrinks toward the first case. That case is also the first one enumerated, so the first failure is already there and the trials cell does not say `shrunk`.
 
 A date, a time, or a datetime shrinks toward the clock when the clock sits in the range, and toward the start of the range otherwise. Whole units come first: a year, a month, or a day; an hour or a minute; or a local day, hour, or minute. The candidate stays inside the range. A period that is one second off its boundary shrinks onto the boundary. `datetime:now+35h59m..now+36h01m`, with the clock at `2024-06-01T00:00:00Z` and seed 1, draws `2024-06-02T12:00:41Z` and shrinks to `2024-06-02T12:00:00Z`.
+
+`after` and `before` shrink inside the live window, so a column never crosses the one it names. Shrinking the named column is kept only when the later cells still hold. A span shortens its length toward the minimum, then moves the start toward zero. A partition moves later parts onto the first and keeps the total, so the simplest row is the total followed by zeros. A monotonic list shortens toward the floor. With `reset`, the shortest sequence with the same running total is tried first. A unique or sorted list drops a candidate that would repeat or fall out of order. A record shrinks one field at a time, and a later field that would break is left as it is.
 
 The walk stops after 32 accepted steps. The trials cell then says `shrink cap`, and the row is the value reached then, which may not be the smallest failure.
 
