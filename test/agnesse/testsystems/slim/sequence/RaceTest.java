@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class RaceTest {
@@ -172,6 +173,110 @@ public class RaceTest {
     Thread.currentThread().interrupt();
     Waves.together(List.of(() -> { }));
     assertTrue(Thread.interrupted());
+  }
+
+  @Test
+  public void lanesCarryEveryBranchOnTheOneConnection() {
+    Race.Result result = Race.check(queried(), List.of(pair(once(0), once(1))),
+        laneDesk(false, false, false), "Seat", new String[0], Waves.DIRECT);
+    assertTrue(result.why, result.passed);
+  }
+
+  @Test
+  public void aMissingLaneStampIsNoResult() {
+    Race.Result result = Race.check(seats(), List.of(pair(once(0), once(1))),
+        laneDesk(true, false, false), "Seat", new String[0], Waves.DIRECT);
+    assertTrue(result.broken);
+    assertEquals("no result", result.why);
+  }
+
+  @Test
+  public void anExceptionFromALaneBreaksTheTrial() {
+    Race.Result result = Race.check(seats(), List.of(pair(once(0), once(1))),
+        laneDesk(false, true, false), "Seat", new String[0], Waves.DIRECT);
+    assertTrue(result.broken);
+    assertTrue(result.why, result.why.contains("__EXCEPTION__"));
+  }
+
+  @Test
+  public void aNullLaneResultIsNotAnException() {
+    Race.Result result = Race.check(seats(), List.of(pair(once(0), once(1))),
+        laneDesk(false, false, true), "Seat", new String[0], Waves.DIRECT);
+    assertFalse(result.broken);
+  }
+
+  @Test
+  public void aDeskThatDoesNotImplementLanesRefusesThem() {
+    Desk desk = new Desk() {
+      public void make(String instance, String fixture, String[] arguments) {
+      }
+      public String call(int lane, String instance, String method, List<String> arguments) {
+        return "ok";
+      }
+    };
+    CallBroke broke = assertThrows(CallBroke.class, () -> desk.runLanes(List.of()));
+    assertEquals("lanes", broke.getMessage());
+  }
+
+  @Test
+  public void aCallThatAlreadyFinishedHasToBeOrderedFirst() {
+    Reading booked = new Reading("booked", Map.of(), 1L, 2L);
+    Reading full = new Reading("full", Map.of(), 3L, 4L);
+    assertEquals(null, Race.explain(seats(), pair(once(0), once(1)),
+        History.ok(List.of(), List.of(List.of(booked), List.of(full))), Linear.BOUND));
+    Reading lateBooked = new Reading("booked", Map.of(), 3L, 4L);
+    Reading earlyFull = new Reading("full", Map.of(), 1L, 2L);
+    String reversed = Race.explain(seats(), pair(once(0), once(1)),
+        History.ok(List.of(), List.of(List.of(lateBooked), List.of(earlyFull))), Linear.BOUND);
+    assertTrue(reversed, reversed.contains("no serial order"));
+    Reading overlap = new Reading("booked", Map.of(), 1L, 4L);
+    Reading during = new Reading("full", Map.of(), 2L, 3L);
+    assertEquals(null, Race.explain(seats(), pair(once(0), once(1)),
+        History.ok(List.of(), List.of(List.of(overlap), List.of(during))), Linear.BOUND));
+    Reading unfinished = new Reading("booked", Map.of(), 5L, 0L);
+    Reading after = new Reading("full", Map.of(), 6L, 7L);
+    assertEquals(null, Race.explain(seats(), pair(once(0), once(1)),
+        History.ok(List.of(), List.of(List.of(unfinished), List.of(after))), Linear.BOUND));
+  }
+
+  private static Desk laneDesk(boolean drop, boolean boom, boolean blank) {
+    return new Desk() {
+      public void make(String instance, String fixture, String[] arguments) {
+      }
+      public String call(int lane, String instance, String method, List<String> arguments) {
+        return "ok";
+      }
+      public boolean lanes() {
+        return true;
+      }
+      public List<Lane.Stamp> runLanes(List<Lane.Group> groups) {
+        List<Lane.Stamp> hits = new ArrayList<>();
+        long clock = 1L;
+        for (Lane.Group group : groups) {
+          for (Lane.Call call : group.calls()) {
+            if (drop && "book".equals(call.method())) {
+              continue;
+            }
+            hits.add(new Lane.Stamp(group.tag(), call.id(), clock, clock + 1, valueOf(call, boom, blank)));
+            clock += 2;
+          }
+        }
+        return hits;
+      }
+    };
+  }
+
+  private static String valueOf(Lane.Call call, boolean boom, boolean blank) {
+    if (boom && "book".equals(call.method())) {
+      return "__EXCEPTION__:message:<<down>>";
+    }
+    if (blank && "book".equals(call.method())) {
+      return null;
+    }
+    if ("book".equals(call.method())) {
+      return call.id().startsWith("l0") ? "booked" : "full";
+    }
+    return "seats".equals(call.method()) ? "0" : "1";
   }
 
   private static Plan seats() {
