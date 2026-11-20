@@ -293,14 +293,15 @@ public class TimeTest {
   @Test
   public void aPeriodDrawsJustAroundABoundaryAndShrinksOntoIt() {
     Clock clock = clock(NOON);
-    assertEquals("2000-01-03T00:00:00Z", draw("period:week", clock, fixed(0, 1)));
-    assertEquals("2000-01-02T23:59:59Z", draw("period:week", clock, fixed(0, 0)));
-    assertEquals("2000-01-03T00:00:01Z", draw("period:week", clock, fixed(0, 2)));
-    assertEquals(java.time.DayOfWeek.MONDAY, LocalDate.parse("2000-01-03").getDayOfWeek());
+    assertEquals("2000-01-02T00:00:00Z", draw("period:week", clock, fixed(0, 1)));
+    assertEquals("2000-01-01T23:59:59Z", draw("period:week", clock, fixed(0, 0)));
+    assertEquals("2000-01-02T00:00:01Z", draw("period:week", clock, fixed(0, 2)));
+    assertEquals(java.time.DayOfWeek.SUNDAY, LocalDate.parse("2000-01-02").getDayOfWeek());
+    assertEquals("2045-10-08T00:00:00Z", draw("period:week", clock, new Seed(0).random()));
     Generator weeks = CellLanguage.parse("period:week", clock);
-    assertEquals(List.of("2000-01-03T00:00:00Z"), cells(weeks, "2000-01-02T23:59:59Z"));
-    assertEquals(List.of("2000-01-03T00:00:00Z"), cells(weeks, "2000-01-03T00:00:01Z"));
-    assertTrue(cells(weeks, "2000-01-03T00:00:00Z").isEmpty());
+    assertEquals(List.of("2000-01-02T00:00:00Z"), cells(weeks, "2000-01-01T23:59:59Z"));
+    assertEquals(List.of("2000-01-02T00:00:00Z"), cells(weeks, "2000-01-02T00:00:01Z"));
+    assertTrue(cells(weeks, "2000-01-02T00:00:00Z").isEmpty());
     assertTrue(cells(weeks, "2000-01-01T12:00:00Z").isEmpty());
     assertEquals("2000-01-01T00:00:00Z", draw("period:day", clock, fixed(0, 1)));
     assertEquals("2000-01-01T00:00:00Z", draw("period:month", clock, fixed(0, 1)));

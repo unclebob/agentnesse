@@ -11,13 +11,12 @@ import java.util.Random;
 
 /**
  * A datetime one second before, at, or one second after a day, week, or month
- * boundary. Weeks start on Monday, the ISO-8601 week. Shrinking moves onto
- * the boundary itself.
+ * boundary. Weeks start on Sunday. Shrinking moves onto the boundary itself.
  */
 final class PeriodGen extends Generator {
   enum Unit { DAY, WEEK, MONTH }
 
-  static final DayOfWeek WEEK_START = DayOfWeek.MONDAY;
+  static final DayOfWeek WEEK_START = DayOfWeek.SUNDAY;
 
   private final Unit unit;
   private final ZoneId zone;
@@ -41,8 +40,8 @@ final class PeriodGen extends Generator {
   @Override
   List<Value> simpler(Value value) {
     Instant instant = OffsetDateTime.parse(value.cell(), TimeText.OFFSET).toInstant();
-    Instant boundary = nearest(instant);
-    if (Math.abs(instant.getEpochSecond() - boundary.getEpochSecond()) != 1) {
+    Instant boundary = oneSecondOff(instant);
+    if (boundary == null) {
       return List.of();
     }
     return List.of(new TextValue(TimeText.offset(boundary, zone)));
@@ -51,21 +50,23 @@ final class PeriodGen extends Generator {
   private LocalDate boundary(Random random) {
     return switch (unit) {
       case DAY -> TimeText.FIRST.plusDays(random.nextLong(TimeText.DAYS));
-      case WEEK -> TimeText.firstMonday().plusWeeks(random.nextLong(TimeText.WEEKS));
+      case WEEK -> TimeText.firstWeek().plusWeeks(random.nextLong(TimeText.WEEKS));
       case MONTH -> TimeText.FIRST.plusMonths(random.nextLong(TimeText.MONTHS));
     };
   }
 
-  private Instant nearest(Instant instant) {
+  /** The snapped boundary, or the next one, when the instant is a second away. */
+  private Instant oneSecondOff(Instant instant) {
     LocalDate snapped = snap(instant.atZone(zone).toLocalDate());
-    Instant best = TimeText.startOfDay(shift(snapped, -1), zone);
-    for (int step = 0; step <= 1; step++) {
-      Instant candidate = TimeText.startOfDay(shift(snapped, step), zone);
-      if (distance(instant, candidate) < distance(instant, best)) {
-        best = candidate;
-      }
+    Instant at = TimeText.startOfDay(snapped, zone);
+    if (distance(instant, at) == 1) {
+      return at;
     }
-    return best;
+    Instant next = TimeText.startOfDay(shift(snapped, 1), zone);
+    if (distance(instant, next) == 1) {
+      return next;
+    }
+    return null;
   }
 
   private LocalDate snap(LocalDate date) {

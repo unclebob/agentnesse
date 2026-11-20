@@ -62,7 +62,7 @@ A bound can be `now` plus a duration. `now+35h59m` is 35 hours and 59 minutes af
 
 `now` draws that clock, the same text on every trial. A `now` row sets it. `2024-06-01T00:00:00Z` is an offset datetime. `2024-06-01T00:00:00` is local, and it is read in the configured zone. Leave the cell blank and the clock is `2000-01-01T00:00:00Z` plus the seed, wrapping with an unsigned remainder through the seconds until `2100-01-01T00:00:00Z`. The result shows that instant. It is not written back onto the page. The row has one or two cells. A column named `now` needs a wider header, so `| now | at | past? |` is the header and not a second setting. A scenario reads `$now`. A two-cell input named `now` would set the clock, so a scenario input uses another name.
 
-`period:day`, `period:week`, and `period:month` draw a datetime one second before, at, or one second after a boundary in the default date window. A week starts on Monday.
+`period:day`, `period:week`, and `period:month` draw a datetime one second before, at, or one second after a boundary in the default date window. A week starts on Sunday.
 
 When the range contains a boundary, half the draws are one of those points and half are ordinary. A date uses the first day and the last day of each month in the range, so a leap day and a year end are in that set. A time uses the local clock time of a DST transition in the zone from 2000 through 2099, the second before it, and the second after it. A datetime uses a DST instant, midnight on the first of a month, the last second of a month, and midnight on a leap day. A range with no such point is uniform. `UTC` has no DST, so a time there is uniform.
 

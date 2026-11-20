@@ -52,7 +52,7 @@ package agnesse.testsystems.slim.property;
  * past midnight. Cells are ISO-8601: {@code yyyy-MM-dd}, {@code HH:mm:ss},
  * and {@code yyyy-MM-dd'T'HH:mm:ssXXX}. {@code period} draws one second
  * before, at, or one second after a boundary in that date window. Weeks
- * start on Monday. Half the draws are boundaries when the range contains
+ * start on Sunday. Half the draws are boundaries when the range contains
  * any: DST transitions in the zone, month ends, year ends, and leap days.
  */
 public final class CellLanguage {

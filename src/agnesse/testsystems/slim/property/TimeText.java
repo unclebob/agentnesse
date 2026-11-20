@@ -17,7 +17,7 @@ final class TimeText {
   static final LocalDate LAST = LocalDate.of(2099, 12, 31);
   static final long DAYS = ChronoUnit.DAYS.between(FIRST, LAST) + 1;
   static final long MONTHS = ChronoUnit.MONTHS.between(FIRST, LAST.withDayOfMonth(1)) + 1;
-  static final long WEEKS = ChronoUnit.WEEKS.between(firstMonday(), lastMonday()) + 1;
+  static final long WEEKS = ChronoUnit.WEEKS.between(firstWeek(), lastWeek()) + 1;
   static final DateTimeFormatter OFFSET = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
   static final DateTimeFormatter LOCAL = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
   static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -25,12 +25,12 @@ final class TimeText {
   private TimeText() {
   }
 
-  static LocalDate firstMonday() {
-    return FIRST.with(TemporalAdjusters.nextOrSame(java.time.DayOfWeek.MONDAY));
+  static LocalDate firstWeek() {
+    return FIRST.with(TemporalAdjusters.nextOrSame(PeriodGen.WEEK_START));
   }
 
-  static LocalDate lastMonday() {
-    return LAST.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+  static LocalDate lastWeek() {
+    return LAST.with(TemporalAdjusters.previousOrSame(PeriodGen.WEEK_START));
   }
 
   static String date(LocalDate value) {
