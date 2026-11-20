@@ -11,10 +11,12 @@ import agnesse.testsystems.slim.property.Seed;
 import agnesse.testsystems.slim.property.Value;
 import agnesse.testsystems.slim.results.SlimExceptionResult;
 import agnesse.testsystems.slim.results.SlimTestResult;
-import agnesse.testsystems.slim.sequence.Clause;
+import agnesse.testsystems.slim.sequence.Advance;
+import agnesse.testsystems.slim.sequence.Candidates;
 import agnesse.testsystems.slim.sequence.Command;
 import agnesse.testsystems.slim.sequence.Course;
 import agnesse.testsystems.slim.sequence.Guard;
+import agnesse.testsystems.slim.sequence.Reading;
 import agnesse.testsystems.slim.sequence.Step;
 import agnesse.testsystems.slim.sequence.Trace;
 import agnesse.testsystems.slim.sequence.Walk;
@@ -57,7 +59,7 @@ public class SequenceTable extends SlimTable {
   @Override
   public List<SlimAssertion> getAssertions() throws TestExecutionException {
     sheet = SequenceSheet.read(table, getFixtureName());
-    List<Trace> drawn = Course.draw(sheet.plan, new Seed(sheet.seed).random(), sheet.trials);
+    List<Trace> drawn = draw();
     List<SlimAssertion> batch = new ArrayList<>();
     for (int index = 0; index < drawn.size(); index++) {
       Attempt attempt = new Attempt(index, drawn.get(index));
@@ -65,6 +67,14 @@ public class SequenceTable extends SlimTable {
       batch.addAll(script(attempt, getTableName() + "_t" + index));
     }
     return batch;
+  }
+
+  private List<Trace> draw() throws SyntaxError {
+    try {
+      return Course.draw(sheet.plan, new Seed(sheet.seed).random(), sheet.trials);
+    } catch (IllegalArgumentException e) {
+      throw new SyntaxError(e.getMessage());
+    }
   }
 
   @Override
@@ -145,9 +155,10 @@ public class SequenceTable extends SlimTable {
   private List<SlimAssertion> script(Attempt attempt, String instance) {
     List<SlimAssertion> batch = new ArrayList<>();
     batch.add(makeAssertion(make(instance), new Quiet(attempt, -1)));
-    Map<String, String> state = new LinkedHashMap<>(sheet.plan.initial);
+    attempt.cast = Candidates.start(sheet.plan.initial);
+    Candidates image = attempt.cast;
     for (int index = 0; index < attempt.trace.steps.size(); index++) {
-      state = addStep(batch, attempt, instance, index, state);
+      image = addStep(batch, attempt, instance, index, image);
     }
     return batch;
   }
@@ -156,36 +167,20 @@ public class SequenceTable extends SlimTable {
     return new MakeInstruction(makeInstructionTag(), instance, sheet.fixture, sheet.arguments);
   }
 
-  private Map<String, String> addStep(List<SlimAssertion> batch, Attempt attempt, String instance,
-                                      int index, Map<String, String> before) {
+  private Candidates addStep(List<SlimAssertion> batch, Attempt attempt, String instance,
+                             int index, Candidates image) {
     Step step = attempt.trace.steps.get(index);
     Command command = sheet.plan.commands.get(step.command);
-    Map<String, String> args = command.args(step.values());
-    Map<String, String> after = sheet.plan.apply(before, step);
-    batch.add(makeAssertion(invoke(instance, command.name, command.call(step.values())), new CommandSaw(attempt, index, command, after, args)));
-    addQueries(batch, attempt, instance, index, command, after, args);
-    addGuards(batch, attempt, instance, index, after, args);
-    return after;
+    List<String> queries = image.queries(sheet.plan, step);
+    Noted noted = new Noted(attempt, index, queries);
+    batch.add(makeAssertion(invoke(instance, command.name, command.call(step.values())), noted));
+    ask(batch, instance, queries, noted);
+    return image.image(sheet.plan, step);
   }
 
-  private void addQueries(List<SlimAssertion> batch, Attempt attempt, String instance, int index,
-                          Command command, Map<String, String> state, Map<String, String> args) {
-    for (Command.Expect expect : command.expects) {
-      if (!expect.result) {
-        String expected = sheet.plan.substitute(expect.template, state, args);
-        batch.add(makeAssertion(invoke(instance, expect.method, List.of()), new Compare(attempt, index, expected, expect.column, -1, "")));
-      }
-    }
-  }
-
-  private void addGuards(List<SlimAssertion> batch, Attempt attempt, String instance, int index,
-                         Map<String, String> state, Map<String, String> args) {
-    for (int guard = 0; guard < sheet.plan.guards.size(); guard++) {
-      Guard check = sheet.plan.guards.get(guard);
-      if (check.query != null && Clause.holds(check.when, state)) {
-        String expected = sheet.plan.substitute(check.expect, state, args);
-        batch.add(makeAssertion(invoke(instance, check.query, List.of()), new Compare(attempt, index, expected, 4, guard, check.query)));
-      }
+  private void ask(List<SlimAssertion> batch, String instance, List<String> queries, Noted noted) {
+    for (String query : queries) {
+      batch.add(makeAssertion(invoke(instance, query, List.of()), noted));
     }
   }
 
@@ -236,7 +231,7 @@ public class SequenceTable extends SlimTable {
 
   private void paintGuard(Attempt attempt) {
     Guard guard = sheet.plan.guards.get(attempt.hit.at);
-    Map<String, String> state = replay(attempt.trace, attempt.hit.step);
+    Map<String, String> state = replay(attempt, attempt.hit.step);
     String expect = sheet.plan.substitute(guard.expect, state, argsAt(attempt, attempt.hit.step));
     String query = guard.query == null ? "" : guard.query + "?";
     int row = markdown().addRow(List.of("invariant", guard.whenText, guard.modelText, query, expect));
@@ -247,9 +242,9 @@ public class SequenceTable extends SlimTable {
 
   private List<String> cells(Attempt attempt, int index) {
     Step step = attempt.trace.steps.get(index);
-    Command command = sheet.plan.commands.get(step.command);
+    Command command = sheet.plan.commands.get(attempt.shown[index]);
     String[] row = blanks(command, step);
-    fillExpects(row, command, replay(attempt.trace, index), command.args(step.values()));
+    fillExpects(row, command, replay(attempt, index), argsAt(attempt, index));
     return List.of(row);
   }
 
@@ -274,13 +269,14 @@ public class SequenceTable extends SlimTable {
 
   private Map<String, String> argsAt(Attempt attempt, int index) {
     Step step = attempt.trace.steps.get(index);
-    return sheet.plan.commands.get(step.command).args(step.values());
+    return sheet.plan.commands.get(attempt.shown[index]).args(step.values());
   }
 
-  private Map<String, String> replay(Trace trace, int inclusive) {
+  private Map<String, String> replay(Attempt attempt, int inclusive) {
     Map<String, String> state = new LinkedHashMap<>(sheet.plan.initial);
     for (int index = 0; index <= inclusive; index++) {
-      state = sheet.plan.apply(state, trace.steps.get(index));
+      Step step = attempt.trace.steps.get(index);
+      state = sheet.plan.apply(state, new Step(attempt.shown[index], step.values()));
     }
     return state;
   }
@@ -320,7 +316,14 @@ public class SequenceTable extends SlimTable {
   }
 
   private String label() {
-    return "trial " + (best.index + 1) + " of " + sheet.trials + " drew " + original + "; " + where() + tail();
+    return "trial " + (best.index + 1) + " of " + sheet.trials + " drew " + original + "; " + where() + detail() + tail();
+  }
+
+  private String detail() {
+    if (best.hit.detail.isEmpty()) {
+      return "";
+    }
+    return "; " + best.hit.detail;
   }
 
   private String where() {
@@ -368,10 +371,6 @@ public class SequenceTable extends SlimTable {
     return null;
   }
 
-  private static String text(String value) {
-    return value == null ? "" : value;
-  }
-
   private abstract class Check implements SlimExpectation {
     final Attempt attempt;
     final int step;
@@ -387,16 +386,15 @@ public class SequenceTable extends SlimTable {
     }
   }
 
-  private final class CommandSaw extends Check {
-    private final Command command;
-    private final Map<String, String> state;
-    private final Map<String, String> args;
+  private final class Noted extends Check {
+    private final List<String> queries;
+    private final Map<String, String> answers = new LinkedHashMap<>();
+    private int got;
+    private String returned;
 
-    private CommandSaw(Attempt attempt, int step, Command command, Map<String, String> state, Map<String, String> args) {
+    private Noted(Attempt attempt, int step, List<String> queries) {
       super(attempt, step);
-      this.command = command;
-      this.state = state;
-      this.args = args;
+      this.queries = queries;
     }
 
     @Override
@@ -404,87 +402,30 @@ public class SequenceTable extends SlimTable {
       if (attempt.failed() || attempt.absent(step, returnValue)) {
         return null;
       }
-      if (!results(returnValue.toString())) {
-        model();
+      keep(returnValue.toString());
+      if (got == queries.size() + 1) {
+        judge();
       }
       return null;
     }
 
-    private boolean results(String actual) {
-      for (Command.Expect expect : command.expects) {
-        if (expect.result && differs(actual, expect)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    private boolean differs(String actual, Command.Expect expect) {
-      String expected = sheet.plan.substitute(expect.template, state, args);
-      if (actual.equals(expected)) {
-        return false;
-      }
-      attempt.mismatch(step, expect.column, actual, expected);
-      return true;
-    }
-
-    private void model() {
-      for (int index = 0; index < sheet.plan.guards.size(); index++) {
-        if (broken(index)) {
-          return;
-        }
-      }
-    }
-
-    private boolean broken(int index) {
-      Guard guard = sheet.plan.guards.get(index);
-      if (Clause.holds(guard.when, state)) {
-        clause(index, guard);
-      }
-      return attempt.failed();
-    }
-
-    private void clause(int index, Guard guard) {
-      for (Clause check : guard.model) {
-        if (!check.holds(state, args)) {
-          attempt.guard(step, index, check.name, text(state.get(check.name)), text(check.expected(state, args)), true);
-          return;
-        }
-      }
-    }
-  }
-
-  private final class Compare extends Check {
-    private final String expected;
-    private final int column;
-    private final int guard;
-    private final String name;
-
-    private Compare(Attempt attempt, int step, String expected, int column, int guard, String name) {
-      super(attempt, step);
-      this.expected = expected;
-      this.column = column;
-      this.guard = guard;
-      this.name = name;
-    }
-
-    @Override
-    public TestResult evaluateExpectation(Object returnValue) {
-      if (attempt.failed() || attempt.absent(step, returnValue)) {
-        return null;
-      }
-      if (!returnValue.toString().equals(expected)) {
-        record(returnValue.toString());
-      }
-      return null;
-    }
-
-    private void record(String actual) {
-      if (guard < 0) {
-        attempt.mismatch(step, column, actual, expected);
+    private void keep(String value) {
+      if (got == 0) {
+        returned = value;
       } else {
-        attempt.guard(step, guard, name, actual, expected, false);
+        answers.put(queries.get(got - 1), value);
       }
+      got++;
+    }
+
+    private void judge() {
+      Advance advance = attempt.cast.take(sheet.plan, attempt.trace.steps.get(step), new Reading(returned, answers));
+      attempt.shown[step] = advance.shown;
+      if (advance.ok()) {
+        attempt.cast = advance.candidates;
+        return;
+      }
+      attempt.fail(step, advance);
     }
   }
 
@@ -503,11 +444,25 @@ public class SequenceTable extends SlimTable {
   private static final class Attempt {
     private final int index;
     private final Trace trace;
+    private final int[] shown;
+    private Candidates cast;
     private Hit hit;
 
     private Attempt(int index, Trace trace) {
       this.index = index;
       this.trace = trace;
+      shown = new int[trace.steps.size()];
+      for (int i = 0; i < shown.length; i++) {
+        shown[i] = trace.steps.get(i).command;
+      }
+    }
+
+    private void fail(int step, Advance advance) {
+      if (advance.kind == Advance.Kind.GUARD) {
+        guard(step, advance.guard, advance.name, advance.actual, advance.expected, advance.model);
+        return;
+      }
+      mismatch(step, advance.column, advance.actual, advance.expected, advance.detail);
     }
 
     private boolean failed() {
@@ -527,8 +482,8 @@ public class SequenceTable extends SlimTable {
       return null;
     }
 
-    private void mismatch(int step, int column, String actual, String expected) {
-      hit = new Hit(Hit.Kind.CELL, step).at(column).result(SlimTestResult.fail(actual, expected));
+    private void mismatch(int step, int column, String actual, String expected, String detail) {
+      hit = new Hit(Hit.Kind.CELL, step).at(column).result(SlimTestResult.fail(actual, expected)).detail(detail);
     }
 
     private void guard(int step, int guard, String name, String actual, String expected, boolean model) {
@@ -552,7 +507,8 @@ public class SequenceTable extends SlimTable {
     private final Kind kind;
     private final int step;
     private int at;
-    private String name;
+    private String name = "";
+    private String detail = "";
     private boolean model;
     private SlimTestResult result;
     private boolean stop;
@@ -576,6 +532,7 @@ public class SequenceTable extends SlimTable {
 
     private Hit at(int value) { this.at = value; return this; }
     private Hit name(String value) { this.name = value; return this; }
+    private Hit detail(String value) { this.detail = value; return this; }
     private Hit model(boolean value) { this.model = value; return this; }
     private Hit result(SlimTestResult value) { this.result = value; return this; }
     private Hit stop(boolean value) { this.stop = value; return this; }

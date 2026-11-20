@@ -104,6 +104,108 @@ public class SequenceTableTest {
   }
 
   @Test
+  public void aWaitlistedReserveIsAPassingTrial() throws Exception {
+    assertEquals(1, reserve("held").summary.getRight());
+    Ran wait = reserve("");
+    assertEquals(0, wait.summary.getWrong());
+    assertEquals(1, wait.summary.getRight());
+  }
+
+  @Test
+  public void theShownRowIsTheCandidateThatMatched() throws Exception {
+    Ran ran = slim("""
+        | sequence:agnesse.slim.test.Waitlist | wait |
+        | trials | 1 |
+        | steps | 1..1 |
+        | seed | 1 |
+        | state | phase=open |
+        | command | when | next | result? |
+        | reserve | phase=open | phase=held | held |
+        | reserve | phase=open | phase=wait | wait |
+        | invariant | when | model | query | expect |
+        | | phase=wait | phase=held | | kept |
+        """);
+    assertEquals(1, ran.summary.getWrong());
+    assertEquals("wait", failure(ran.table).actual());
+    assertEquals("held", failure(ran.table).expected());
+    int row = resultRow(ran.table, sourceLines(ran), "reserve");
+    assertEquals("phase=wait", ran.table.cellRecord(row, 2).actual());
+    assertTrue(trials(ran.table), trials(ran.table).contains("invariant phase"));
+  }
+
+  @Test
+  public void anUnexplainedResultNamesEveryCandidate() throws Exception {
+    Ran ran = slim("""
+        | sequence:agnesse.slim.test.Waitlist | nope |
+        | trials | 1 |
+        | steps | 1..1 |
+        | seed | 1 |
+        | state | phase=open |
+        | command | when | next | result? |
+        | reserve | phase=open | phase=held | held |
+        | reserve | phase=open | phase=wait | wait |
+        """);
+    assertEquals(1, ran.summary.getWrong());
+    assertEquals("nope", failure(ran.table).actual());
+    assertEquals("held or wait", failure(ran.table).expected());
+    assertTrue(trials(ran.table), trials(ran.table).contains("saw nope"));
+    assertTrue(trials(ran.table), trials(ran.table).contains("step 1 reserve"));
+  }
+
+  @Test
+  public void aCommandLegalInOnlyOneCandidateIsNotRun() throws Exception {
+    Ran ran = slim("""
+        | sequence:agnesse.slim.test.Waitlist | wait |
+        | trials | 1 |
+        | steps | 2..2 |
+        | seed | 2 |
+        | state | phase=open |
+        | command | when | next | result? |
+        | reserve | phase=open | phase=held | held |
+        | reserve | phase=open | phase=wait | wait |
+        | confirm | phase=held | phase=done | ok |
+        | ping | | | ok |
+        """);
+    assertEquals(0, ran.summary.getWrong());
+    assertEquals(1, ran.summary.getRight());
+  }
+
+  @Test
+  public void sixtyFiveCandidatesIsABadTable() {
+    StringBuilder markdown = new StringBuilder("""
+        | sequence:agnesse.slim.test.ItemLife |
+        | trials | 1 |
+        | steps | 1..1 |
+        | seed | 1 |
+        | state | n=0 |
+        | command | when | next | result? |
+        """);
+    for (int i = 0; i < 65; i++) {
+      markdown.append("| go | | n=").append(i).append(" | ok |\n");
+    }
+    assertMessage("model too ambiguous", markdown.toString());
+  }
+
+  private static Ran reserve(String answer) throws Exception {
+    String fixture = answer.isEmpty()
+        ? "| sequence:agnesse.slim.test.Waitlist |"
+        : "| sequence:agnesse.slim.test.Waitlist | " + answer + " |";
+    return slim("""
+        %s
+        | trials | 1 |
+        | steps | 1..1 |
+        | seed | 1 |
+        | state | phase=open |
+        | command | when | next | result? | phase? |
+        | reserve | phase=open | phase=held | held | held |
+        | reserve | phase=open | phase=wait | wait | wait |
+        | invariant | when | model | query | expect |
+        | | phase=held | phase=held | | kept |
+        | | phase=wait | phase=wait | | kept |
+        """.formatted(fixture));
+  }
+
+  @Test
   public void aOneLetterStateNameIsKept() throws Exception {
     Ran ran = slim("""
         | sequence:agnesse.slim.test.ItemLife |
