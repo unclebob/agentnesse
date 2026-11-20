@@ -12,16 +12,34 @@ public final class Guard {
   public final List<Clause> model;
 
   public Guard(String whenText, String modelText, String query, String expect) {
-    this.whenText = whenText == null ? "" : whenText.trim();
-    this.modelText = modelText == null ? "" : modelText.trim();
-    this.query = query == null || query.isBlank() ? null : query.trim();
-    this.expect = expect == null ? "" : expect.trim();
+    this.whenText = text(whenText);
+    this.modelText = text(modelText);
+    this.query = name(query);
+    this.expect = text(expect);
     this.when = Clause.when(this.whenText);
     this.model = Clause.model(this.modelText);
-    if (this.model.isEmpty() && this.query == null) {
+    present(this.model, this.query, this.expect);
+  }
+
+  private static String text(String value) {
+    if (value == null) {
+      return "";
+    }
+    return value.trim();
+  }
+
+  private static String name(String value) {
+    if (value == null || value.isBlank()) {
+      return null;
+    }
+    return value.trim();
+  }
+
+  private static void present(List<Clause> model, String query, String expect) {
+    if (model.isEmpty() && query == null) {
       throw new IllegalArgumentException("an invariant needs a model or a query");
     }
-    if (this.query != null && this.expect.isEmpty()) {
+    if (query != null && expect.isEmpty()) {
       throw new IllegalArgumentException("a check needs an expected value");
     }
   }
