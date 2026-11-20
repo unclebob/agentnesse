@@ -21,6 +21,7 @@ struct Seat {
     seats: Option<i32>,
     race: String,
     word: String,
+    class_name: String,
 }
 
 struct Shared {
@@ -236,7 +237,7 @@ fn call(row: &[Value], instance_at: usize, method_at: usize, shared: &Arc<Mutex<
     if let Some(value) = plain(&method, &args) {
         return value;
     }
-    on_seat(&method, &name, &first_text(&args), seat.as_ref())
+    on_seat(&method, &name, &first_text(&args), args.len(), seat.as_ref())
 }
 
 fn plain(method: &str, args: &[Value]) -> Option<String> {
@@ -287,11 +288,11 @@ fn first_text(args: &[Value]) -> String {
     }
 }
 
-fn on_seat(method: &str, name: &str, arg: &str, seat: Option<&Arc<Mutex<Seat>>>) -> String {
+fn on_seat(method: &str, name: &str, arg: &str, count: usize, seat: Option<&Arc<Mutex<Seat>>>) -> String {
     if let Some(moved) = transition(method, seat) {
         return moved;
     }
-    asked(method, name, arg, seat)
+    asked(method, name, arg, count, seat)
 }
 
 fn transition(method: &str, seat: Option<&Arc<Mutex<Seat>>>) -> Option<String> {
@@ -303,15 +304,28 @@ fn transition(method: &str, seat: Option<&Arc<Mutex<Seat>>>) -> Option<String> {
     }
 }
 
-fn asked(method: &str, name: &str, arg: &str, seat: Option<&Arc<Mutex<Seat>>>) -> String {
+fn asked(method: &str, name: &str, arg: &str, count: usize, seat: Option<&Arc<Mutex<Seat>>>) -> String {
     match method {
         "book" => book(seat, name),
-        "__agnesse_lane_probe__" => probe(seat, name),
         "phase" => phase_of(seat),
         "released" => released_of(seat),
         "setWord" => store_word(seat, arg),
-        _ => "OK".into(),
+        "table" | "beginTable" | "reset" | "execute" | "endTable" => "OK".into(),
+        _ => unknown(method, name, count, seat),
     }
+}
+
+fn unknown(method: &str, name: &str, count: usize, seat: Option<&Arc<Mutex<Seat>>>) -> String {
+    let Some(seat) = seat else { return missing_instance(name) };
+    let mut class_name = seat.lock().unwrap().class_name.clone();
+    if class_name.is_empty() {
+        class_name = "slim".into();
+    }
+    no_method(method, count, &class_name)
+}
+
+fn no_method(method: &str, count: usize, class_name: &str) -> String {
+    format!("__EXCEPTION__:message:<<NO_METHOD_IN_CLASS No Method {method}[{count}] in class {class_name}.\n Available methods:\n{CATALOG}>>")
 }
 
 fn book(seat: Option<&Arc<Mutex<Seat>>>, name: &str) -> String {
@@ -323,16 +337,8 @@ fn book(seat: Option<&Arc<Mutex<Seat>>>, name: &str) -> String {
     if race == "racy" { race_book(seat) } else { safe_book(seat) }
 }
 
-fn probe(seat: Option<&Arc<Mutex<Seat>>>, name: &str) -> String {
-    if seat.is_none() { missing_instance(name) } else { missing_method("__agnesse_lane_probe__") }
-}
-
 fn missing_instance(name: &str) -> String {
     format!("__EXCEPTION__:message:<<NO_INSTANCE {name}>>")
-}
-
-fn missing_method(method: &str) -> String {
-    format!("__EXCEPTION__:message:<<NO_METHOD_IN_CLASS {method}>>")
 }
 
 fn move_phase(seat: Option<&Arc<Mutex<Seat>>>, needed: &str, next: &str) -> String {
@@ -370,16 +376,19 @@ fn made(row: &[Value], shared: &Arc<Mutex<Shared>>) -> String {
     if name.is_empty() {
         return "OK".into();
     }
-    shared.lock().unwrap().instances.insert(name, Arc::new(Mutex::new(opened(&text_of(&text_at(row, 4))))));
+    shared.lock().unwrap().instances.insert(name, Arc::new(Mutex::new(opened(&text_of(&text_at(row, 3)), &text_of(&text_at(row, 4))))));
     "OK".into()
 }
 
-fn opened(mark: &str) -> Seat {
+fn opened(class_name: &str, mark: &str) -> Seat {
+    let class_name = if class_name.is_empty() { "slim".into() } else { class_name.to_string() };
     if mark == "racy" || mark == "safe" {
-        return Seat { phase: String::new(), seats: Some(1), race: mark.into(), word: String::new() };
+        return Seat { phase: String::new(), seats: Some(1), race: mark.into(), word: String::new(), class_name };
     }
-    Seat { phase: "new".into(), seats: None, race: String::new(), word: String::new() }
+    Seat { phase: "new".into(), seats: None, race: String::new(), word: String::new(), class_name }
 }
+
+const CATALOG: &str = "beginTable() -> string\nblock() -> string\nbook() -> string\necho(string) -> string\nendIsAfterStart(string, string) -> string\nendTable() -> string\nexecute() -> string\nhello() -> string\nkind(string) -> string\nopen() -> string\nphase() -> string\nrelease() -> string\nreleased() -> string\nreset() -> string\nsetWord(string) -> string\ntable(list) -> string";
 
 fn race_book(seat: &Arc<Mutex<Seat>>) -> String {
     let seen = match seat.lock().unwrap().seats {

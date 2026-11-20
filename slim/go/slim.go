@@ -222,7 +222,7 @@ func call(row []any, instanceAt, methodAt int, instances map[string]*seat, mu *s
 	if value, ok := plain(method, args); ok {
 		return value
 	}
-	return onSeat(method, name, firstText(args), seat)
+	return onSeat(method, name, firstText(args), len(args), seat)
 }
 
 func plain(method string, args []any) (string, bool) {
@@ -292,11 +292,11 @@ func firstText(args []any) string {
 	return text
 }
 
-func onSeat(method, name, arg string, seat *seat) string {
+func onSeat(method, name, arg string, count int, seat *seat) string {
 	if moved, ok := transition(method, seat); ok {
 		return moved
 	}
-	return asked(method, name, arg, seat)
+	return asked(method, name, arg, count, seat)
 }
 
 func transition(method string, seat *seat) (string, bool) {
@@ -312,21 +312,36 @@ func transition(method string, seat *seat) (string, bool) {
 	}
 }
 
-func asked(method, name, arg string, seat *seat) string {
+func asked(method, name, arg string, count int, seat *seat) string {
 	switch method {
 	case "book":
 		return book(seat, name)
-	case "__agnesse_lane_probe__":
-		return probe(seat, name)
 	case "phase":
 		return phaseOf(seat)
 	case "released":
 		return releasedOf(seat)
 	case "setWord":
 		return storeWord(seat, arg)
-	default:
+	case "table", "beginTable", "reset", "execute", "endTable":
 		return "OK"
+	default:
+		return unknown(method, name, count, seat)
 	}
+}
+
+func unknown(method, name string, count int, seat *seat) string {
+	if seat == nil {
+		return missingInstance(name)
+	}
+	className := seat.className
+	if className == "" {
+		className = "slim"
+	}
+	return noMethod(method, count, className)
+}
+
+func noMethod(method string, count int, className string) string {
+	return "__EXCEPTION__:message:<<NO_METHOD_IN_CLASS No Method " + method + "[" + strconv.Itoa(count) + "] in class " + className + ".\n Available methods:\n" + catalog + ">>"
 }
 
 func book(seat *seat, name string) string {
@@ -339,19 +354,8 @@ func book(seat *seat, name string) string {
 	return safeBook(seat)
 }
 
-func probe(seat *seat, name string) string {
-	if seat == nil {
-		return missingInstance(name)
-	}
-	return missingMethod("__agnesse_lane_probe__")
-}
-
 func missingInstance(name string) string {
 	return "__EXCEPTION__:message:<<NO_INSTANCE " + name + ">>"
-}
-
-func missingMethod(method string) string {
-	return "__EXCEPTION__:message:<<NO_METHOD_IN_CLASS " + method + ">>"
 }
 
 func move(seat *seat, needed, next string) string {
@@ -392,11 +396,12 @@ func wordOf(seat *seat) string {
 }
 
 type seat struct {
-	mu    sync.Mutex
-	phase string
-	seats int
-	race  string
-	word  string
+	mu        sync.Mutex
+	phase     string
+	seats     int
+	race      string
+	word      string
+	className string
 }
 
 func made(row []any, instances map[string]*seat, mu *sync.Mutex) string {
@@ -404,18 +409,24 @@ func made(row []any, instances map[string]*seat, mu *sync.Mutex) string {
 	if name == "" {
 		return "OK"
 	}
+	className := textAt(row, 3)
+	if className == "" {
+		className = "slim"
+	}
 	mu.Lock()
-	instances[name] = opened(textAt(row, 4))
+	instances[name] = opened(className, textAt(row, 4))
 	mu.Unlock()
 	return "OK"
 }
 
-func opened(mark string) *seat {
+func opened(className, mark string) *seat {
 	if mark == "racy" || mark == "safe" {
-		return &seat{seats: 1, race: mark}
+		return &seat{seats: 1, race: mark, className: className}
 	}
-	return &seat{phase: "new"}
+	return &seat{phase: "new", className: className}
 }
+
+const catalog = "beginTable() -> string\nblock() -> string\nbook() -> string\necho(string) -> string\nendIsAfterStart(string, string) -> string\nendTable() -> string\nexecute() -> string\nhello() -> string\nkind(string) -> string\nopen() -> string\nphase() -> string\nrelease() -> string\nreleased() -> string\nreset() -> string\nsetWord(string) -> string\ntable(list) -> string"
 
 func raceBook(seat *seat) string {
 	seat.mu.Lock()

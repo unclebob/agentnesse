@@ -106,12 +106,19 @@ def run_lanes(instruction, instances):
 
 
 def reply(instruction, instances):
-    if command(instruction) == "make":
+    kind = command(instruction)
+    if kind == "make":
         return made(instruction, instances)
-    return invoke(method_name(instruction), instruction, instances)
+    if kind == "call":
+        return invoke(text_at(instruction, 3, ""), instruction, instances)
+    if kind == "callAndAssign":
+        return invoke(text_at(instruction, 4, ""), instruction, instances)
+    return "OK"
 
 
 def invoke(method, instruction, instances):
+    if method == "":
+        return "OK"
     plain = PLAIN.get(method)
     if plain is not None:
         return plain(instruction)
@@ -123,11 +130,14 @@ def invoke(method, instruction, instances):
         return query(instruction, instances)
     if method == "book":
         return book(instruction, instances)
-    if method == "__agnesse_lane_probe__":
-        if gate(instruction, instances) is None:
-            return missing_instance(instruction)
-        return missing_method(method)
-    return "OK"
+    if method == "setWord":
+        return set_word(instruction, instances)
+    if method in LIFECYCLE:
+        return "OK"
+    state = gate(instruction, instances)
+    if state is None:
+        return missing_instance(instruction)
+    return missing_method(method, len(arguments(instruction)), state.get("class", "slim"))
 
 
 def hello(_instruction):
@@ -152,10 +162,13 @@ def made(instruction, instances):
 
 
 def opened(instruction):
+    class_name = text_at(instruction, 3, "")
+    if class_name == "":
+        class_name = "slim"
     mark = text_at(instruction, 4, "")
     if mark == "racy" or mark == "safe":
-        return {"seats": 1, "race": mark}
-    return {"phase": "new"}
+        return {"seats": 1, "race": mark, "class": class_name}
+    return {"phase": "new", "class": class_name}
 
 
 def book(instruction, instances):
@@ -188,8 +201,24 @@ def missing_instance(instruction):
     return "__EXCEPTION__:message:<<NO_INSTANCE " + instance_name(instruction) + ">>"
 
 
-def missing_method(method):
-    return "__EXCEPTION__:message:<<NO_METHOD_IN_CLASS " + method + ">>"
+def missing_method(method, count, class_name):
+    if class_name == "":
+        class_name = "slim"
+    return (
+        "__EXCEPTION__:message:<<NO_METHOD_IN_CLASS No Method "
+        + method + "[" + str(count) + "] in class " + class_name
+        + ".\n Available methods:\n" + CATALOG + ">>"
+    )
+
+
+def set_word(instruction, instances):
+    state = gate(instruction, instances)
+    if state is None:
+        return "OK"
+    values = arguments(instruction)
+    if values and isinstance(values[0], str):
+        state["word"] = values[0]
+    return "OK"
 
 
 BOOK = threading.Lock()
@@ -321,6 +350,27 @@ QUERIES = {
     "phase": phase,
     "released": released,
 }
+
+LIFECYCLE = {"table", "beginTable", "reset", "execute", "endTable"}
+
+CATALOG = "\n".join([
+    "beginTable() -> string",
+    "block() -> string",
+    "book() -> string",
+    "echo(string) -> string",
+    "endIsAfterStart(string, string) -> string",
+    "endTable() -> string",
+    "execute() -> string",
+    "hello() -> string",
+    "kind(string) -> string",
+    "open() -> string",
+    "phase() -> string",
+    "release() -> string",
+    "released() -> string",
+    "reset() -> string",
+    "setWord(string) -> string",
+    "table(list) -> string",
+])
 
 
 def read_message(incoming):

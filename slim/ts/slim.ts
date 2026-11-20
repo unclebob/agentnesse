@@ -15,6 +15,7 @@ interface Seat {
   seats: number | undefined
   race: string
   word: string
+  className: string
   tail: Promise<void>
 }
 
@@ -180,7 +181,7 @@ async function call(row: Cell[], instanceAt: number, methodAt: number, instances
   if (method === "echo") return echoOf(seat, args)
   const plainValue = plain(method, args)
   if (plainValue !== undefined) return plainValue
-  return onSeat(method, name, firstText(args), seat)
+  return onSeat(method, name, firstText(args), args.length, seat)
 }
 
 function plain(method: string, args: Cell[]): string | undefined {
@@ -221,10 +222,10 @@ function firstText(args: Cell[]): string {
   return first
 }
 
-async function onSeat(method: string, name: string, arg: string, seat: Seat | undefined): Promise<string> {
+async function onSeat(method: string, name: string, arg: string, count: number, seat: Seat | undefined): Promise<string> {
   const moved = transition(method, seat)
   if (moved !== undefined) return moved
-  return asked(method, name, arg, seat)
+  return asked(method, name, arg, count, seat)
 }
 
 function transition(method: string, seat: Seat | undefined): string | undefined {
@@ -236,15 +237,30 @@ function transition(method: string, seat: Seat | undefined): string | undefined 
   }
 }
 
-async function asked(method: string, name: string, arg: string, seat: Seat | undefined): Promise<string> {
+async function asked(method: string, name: string, arg: string, count: number, seat: Seat | undefined): Promise<string> {
   switch (method) {
     case "book": return book(seat, name)
-    case "__agnesse_lane_probe__": return probe(seat, name)
     case "phase": return phaseOf(seat)
     case "released": return releasedOf(seat)
     case "setWord": return storeWord(seat, arg)
-    default: return "OK"
+    case "table":
+    case "beginTable":
+    case "reset":
+    case "execute":
+    case "endTable":
+      return "OK"
+    default: return unknown(method, name, count, seat)
   }
+}
+
+function unknown(method: string, name: string, count: number, seat: Seat | undefined): string {
+  if (seat === undefined) return missingInstance(name)
+  const className = seat.className === "" ? "slim" : seat.className
+  return noMethod(method, count, className)
+}
+
+function noMethod(method: string, count: number, className: string): string {
+  return `__EXCEPTION__:message:<<NO_METHOD_IN_CLASS No Method ${method}[${count}] in class ${className}.\n Available methods:\n${CATALOG}>>`
 }
 
 function phaseOf(seat: Seat | undefined): string {
@@ -261,16 +277,8 @@ async function book(seat: Seat | undefined, name: string): Promise<string> {
   return safeBook(seat)
 }
 
-function probe(seat: Seat | undefined, name: string): string {
-  return seat === undefined ? missingInstance(name) : missingMethod("__agnesse_lane_probe__")
-}
-
 function missingInstance(name: string): string {
   return `__EXCEPTION__:message:<<NO_INSTANCE ${name}>>`
-}
-
-function missingMethod(method: string): string {
-  return `__EXCEPTION__:message:<<NO_METHOD_IN_CLASS ${method}>>`
 }
 
 function move(seat: Seat | undefined, needed: string, next: string): string {
@@ -293,12 +301,12 @@ function wordOf(seat: Seat | undefined): string {
 function made(row: Cell[], instances: Map<string, Seat>): string {
   const name = textAt(row, 2)
   if (name === "") return "OK"
-  instances.set(name, opened(textAt(row, 4)))
+  instances.set(name, opened(textAt(row, 3), textAt(row, 4)))
   return "OK"
 }
 
-function opened(mark: string): Seat {
-  const seat = { phase: "new", seats: undefined as number | undefined, race: "", word: "", tail: Promise.resolve() }
+function opened(className: string, mark: string): Seat {
+  const seat = { phase: "new", seats: undefined as number | undefined, race: "", word: "", className: className === "" ? "slim" : className, tail: Promise.resolve() }
   if (mark === "racy" || mark === "safe") {
     seat.phase = ""
     seat.seats = 1
@@ -306,6 +314,25 @@ function opened(mark: string): Seat {
   }
   return seat
 }
+
+const CATALOG = [
+  "beginTable() -> string",
+  "block() -> string",
+  "book() -> string",
+  "echo(string) -> string",
+  "endIsAfterStart(string, string) -> string",
+  "endTable() -> string",
+  "execute() -> string",
+  "hello() -> string",
+  "kind(string) -> string",
+  "open() -> string",
+  "phase() -> string",
+  "release() -> string",
+  "released() -> string",
+  "reset() -> string",
+  "setWord(string) -> string",
+  "table(list) -> string",
+].join("\n")
 
 async function raceBook(seat: Seat): Promise<string> {
   const seen = seat.seats

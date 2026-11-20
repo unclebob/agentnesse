@@ -115,7 +115,13 @@ fn a_gate_and_a_word() {
     assert_eq!(cell(&gate.answer(&[Value::List(vec![t("18"), t("make")])]), 0), "OK");
     assert_eq!(cell(&gate.answer(&[Value::List(vec![t("19"), t("make"), t(""), t("slim")])]), 0), "OK");
     assert_eq!(cell(&gate.answer(&[call("20", "", "open", &[])]), 0), "refused");
-    assert_eq!(cell(&gate.answer(&[call("21", "gate", "noSuch", &[])]), 0), "OK");
+    let unknown = cell(&gate.answer(&[call("21", "gate", "noSuch", &[])]), 0);
+    assert!(unknown.contains("No Method noSuch[0] in class slim"), "{unknown}");
+    assert!(unknown.contains("Available methods:") && unknown.contains("hello() -> string"));
+    assert!(cell(&gate.answer(&[call("22", "gate", "noSuch", &["x"])]), 0).contains("No Method noSuch[1] in class slim"));
+    assert!(cell(&gate.answer(&[call("23", "absent", "noSuch", &[])]), 0).contains("NO_INSTANCE absent"));
+    assert_eq!(cell(&gate.answer(&[call("24", "gate", "beginTable", &[])]), 0), "OK");
+    assert_eq!(cell(&gate.answer(&[call("25", "gate", "execute", &[])]), 0), "OK");
     assert_eq!(cell(&gate.answer(&[call("22", "gate", "block", &[])]), 0), "refused");
 }
 

@@ -193,8 +193,23 @@ func TestAGateAndADecisionWord(t *testing.T) {
 	if answer([]any{[]any{"14", "make", []any{"gate"}}, []any{"15", "call", []any{"gate"}, "open"}}, shared, mu, symbols)[1].([]any)[1] != "refused" {
 		t.Fatal("list name")
 	}
-	if answer([]any{[]any{"16", "call", "gate", "noSuch"}}, shared, mu, symbols)[0].([]any)[1] != "OK" {
-		t.Fatal("unknown")
+	unknown := answer([]any{[]any{"16", "call", "gate", "noSuch"}}, shared, mu, symbols)[0].([]any)[1].(string)
+	if !strings.Contains(unknown, "No Method noSuch[0] in class slim") || !strings.Contains(unknown, "Available methods:") || !strings.Contains(unknown, "hello() -> string") {
+		t.Fatal(unknown)
+	}
+	withArg := answer([]any{[]any{"17", "call", "gate", "noSuch", "x"}}, shared, mu, symbols)[0].([]any)[1].(string)
+	if !strings.Contains(withArg, "No Method noSuch[1] in class slim") {
+		t.Fatal(withArg)
+	}
+	missing := answer([]any{[]any{"18", "call", "absent", "noSuch"}}, shared, mu, symbols)[0].([]any)[1].(string)
+	if !strings.Contains(missing, "NO_INSTANCE absent") {
+		t.Fatal(missing)
+	}
+	if answer([]any{[]any{"19", "call", "gate", "beginTable"}}, shared, mu, symbols)[0].([]any)[1] != "OK" {
+		t.Fatal("begin")
+	}
+	if answer([]any{[]any{"20", "call", "gate", "execute"}}, shared, mu, symbols)[0].([]any)[1] != "OK" {
+		t.Fatal("execute")
 	}
 }
 

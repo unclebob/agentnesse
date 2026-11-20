@@ -115,6 +115,7 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("true", self.slim.answer([["5", "call", "gate", "released"]], shared)[0][1])
         self.assertEqual("refused", self.slim.answer([["6", "call", "gate", "open"]], shared)[0][1])
         self.assertEqual("refused", self.slim.answer([["7", "call", "gate", "block"]], shared)[0][1])
+        self.assertIn("in class slim", self.slim.answer([["8b", "call", "gate", "noSuch"]], shared)[0][1])
         self.assertEqual("refused", self.slim.answer([["8", "call", "missing", "open"]])[0][1])
         self.assertEqual("", self.slim.answer([["9", "call", "missing", "phase"]])[0][1])
         self.assertEqual("false", self.slim.answer([["10", "call", "missing", "released"]])[0][1])
@@ -199,6 +200,15 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("OK", self.slim.answer([["6", "make", "seat", "tiny", "racy"]], raced)[0][1])
         self.assertEqual("booked", self.slim.answer([["7", "call", "seat", "book"]], raced)[0][1])
         self.assertEqual("full", self.slim.answer([["8", "call", "seat", "book"]], raced)[0][1])
+        named = self.slim.answer([["9", "call", "seat", "noSuch"]], shared)[0][1]
+        self.assertIn("No Method noSuch[0] in class tiny", named)
+        self.assertIn("Available methods:", named)
+        self.assertIn("hello() -> string", named)
+        self.assertIn("No Method noSuch[1] in class tiny", self.slim.answer([["10", "call", "seat", "noSuch", "x"]], shared)[0][1])
+        self.assertIn("NO_INSTANCE absent", self.slim.answer([["11", "call", "absent", "noSuch"]])[0][1])
+        self.assertEqual("OK", self.slim.answer([["12", "call", "seat", "beginTable"]], shared)[0][1])
+        self.assertEqual("OK", self.slim.answer([["13", "call", "seat", "execute"]], shared)[0][1])
+        self.assertEqual("OK", self.slim.answer([["14", "call", "seat", "setWord", "red"]], shared)[0][1])
 
     def test_two_sockets_share_one_safe_seat(self):
         probe = socket.socket()
