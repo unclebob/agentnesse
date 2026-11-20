@@ -27,7 +27,11 @@ public final class Course {
 
   public static Trace drawOne(Plan plan, Random random) {
     int length = plan.stepsMin + random.nextInt(plan.stepsMax - plan.stepsMin + 1);
-    Candidates cast = Candidates.start(plan.initial);
+    return serial(plan, random, length, Candidates.start(plan.initial));
+  }
+
+  /** Draws {@code length} commands that are legal in every candidate, or fewer when the machine stops. */
+  static Trace serial(Plan plan, Random random, int length, Candidates cast) {
     List<Step> steps = new ArrayList<>();
     while (steps.size() < length) {
       List<Integer> enabled = cast.allowed(plan);
@@ -43,10 +47,14 @@ public final class Course {
   }
 
   public static List<Trace> shorter(Plan plan, Trace trace, int length) {
+    return shorter(plan, trace, length, Candidates.start(plan.initial));
+  }
+
+  static List<Trace> shorter(Plan plan, Trace trace, int length, Candidates start) {
     List<Trace> out = new ArrayList<>();
     for (List<Integer> indexes : combinations(trace.steps.size(), length)) {
       Trace candidate = subsequence(trace, indexes);
-      if (plan.legal(candidate)) {
+      if (start.accepts(plan, candidate)) {
         out.add(candidate);
       }
     }
@@ -54,6 +62,10 @@ public final class Course {
   }
 
   public static List<Trace> simpler(Plan plan, Trace trace, int stepIndex, int argIndex) {
+    return simpler(plan, trace, stepIndex, argIndex, Candidates.start(plan.initial));
+  }
+
+  static List<Trace> simpler(Plan plan, Trace trace, int stepIndex, int argIndex, Candidates start) {
     Step step = trace.steps.get(stepIndex);
     Command command = plan.commands.get(step.command);
     Command.Argument argument = command.arguments.get(argIndex);
@@ -64,7 +76,7 @@ public final class Course {
     Row row = earlier(command, step, argIndex);
     for (Value candidate : SHRINKER.candidates(argument.generator, step.value(argIndex), row)) {
       Trace next = replace(trace, stepIndex, argIndex, candidate);
-      if (plan.legal(next)) {
+      if (start.accepts(plan, next)) {
         out.add(next);
       }
     }
@@ -128,7 +140,7 @@ public final class Course {
     return new Step(step.command, values);
   }
 
-  private static List<List<Integer>> combinations(int n, int k) {
+  static List<List<Integer>> combinations(int n, int k) {
     if (k < 1 || k >= n || wide(n, k)) {
       return List.of();
     }
