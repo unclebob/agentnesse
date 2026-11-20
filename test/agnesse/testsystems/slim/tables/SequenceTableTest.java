@@ -104,6 +104,21 @@ public class SequenceTableTest {
   }
 
   @Test
+  public void aOneLetterStateNameIsKept() throws Exception {
+    Ran ran = slim("""
+        | sequence:agnesse.slim.test.ItemLife |
+        | trials | 1 |
+        | steps | 1..1 |
+        | seed | 1 |
+        | state | a=b |
+        | command | when | next | result? |
+        | open | a=b | a=c | ok |
+        """);
+    assertEquals(1, ran.summary.getRight());
+    assertEquals(0, ran.summary.getWrong());
+  }
+
+  @Test
   public void aBlankTrialsCellUsesTheDefault() throws Exception {
     Opened opened = open("""
         | sequence:agnesse.slim.test.ItemLife |
@@ -628,6 +643,18 @@ public class SequenceTableTest {
         | command | when | next | result? |
         | open | phase=new | phase=open | ok |
         """);
+    assertMessage("state must be name=value", """
+        | sequence:agnesse.slim.test.ItemLife |
+        | state | =open |
+        | command | when | next | result? |
+        | open | phase=new | phase=open | ok |
+        """);
+    assertMessage("state must be name=value", """
+        | sequence:agnesse.slim.test.ItemLife |
+        | state | a=b; |
+        | command | when | next | result? |
+        | open | phase=new | phase=open | ok |
+        """);
     assertMessage("a command needs a name", """
         | sequence:agnesse.slim.test.ItemLife |
         | state | phase=new |
@@ -754,7 +781,7 @@ public class SequenceTableTest {
         """);
     assertMessage("a sequence stops before 2 steps", """
         | sequence:agnesse.slim.test.ItemLife |
-        | steps | 2..2 |
+        | steps | 2..4 |
         | state | phase=new |
         | command | when | next | result? |
         | open | phase=new | phase=open | ok |

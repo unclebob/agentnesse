@@ -336,4 +336,11 @@ public final class MarkdownTable implements Table {
       this.table = table;
     }
   }
+
+  /** A result row is a label and a value. A one-cell row gains an empty value. */
+  public void secondCell(int row) {
+    if (getColumnCountInRow(row) < 2) {
+      addColumnToRow(row, "");
+    }
+  }
 }

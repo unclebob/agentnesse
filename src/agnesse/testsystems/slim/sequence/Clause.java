@@ -69,7 +69,7 @@ public final class Clause {
   }
 
   /** Empty is allowed. A missing name is rejected by the caller, not here. */
-  static boolean spelled(String name) {
+  public static boolean spelled(String name) {
     return name.matches("|[A-Za-z][A-Za-z0-9_]*");
   }
 

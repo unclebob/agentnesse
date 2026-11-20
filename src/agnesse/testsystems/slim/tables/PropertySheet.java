@@ -47,10 +47,10 @@ final class PropertySheet {
     this.seed = seed;
     this.clock = clock;
     this.trialsRow = config.trialsRow;
-    this.seedRow = config.seedRow;
+    this.seedRow = config.seed.row();
     this.nowRow = config.nowRow;
     this.hasTrials = config.trialsSeen;
-    this.hasSeed = config.seedSeen;
+    this.hasSeed = config.seed.seen();
     this.hasNow = config.nowSeen;
     this.timed = timed;
     this.columns = columns;
@@ -61,7 +61,7 @@ final class PropertySheet {
     String name = named(table, fixtureName);
     ScenarioTable scenario = context.getScenario(name);
     Config config = readConfig(table);
-    Seed seed = new Seed(config.explicit == null ? new Random().nextLong() : config.explicit);
+    Seed seed = new Seed(config.seed.explicit() == null ? new Random().nextLong() : config.seed.explicit());
     Clock clock = clock(context, config, seed);
     if (scenario != null) {
       return scenario(name, scenario, config, table, seed, clock);
@@ -420,9 +420,7 @@ final class PropertySheet {
     private int trialsRow = -1;
     private boolean trialsSeen;
     private boolean trialsNumber;
-    private Long explicit;
-    private int seedRow = -1;
-    private boolean seedSeen;
+    private final SeedCell seed = new SeedCell();
     private String nowText;
     private int nowRow = -1;
     private boolean nowSeen;
@@ -433,7 +431,7 @@ final class PropertySheet {
       if (key.equals("trials")) {
         setTrials(second(table, row), row);
       } else if (key.equals("seed")) {
-        setSeed(second(table, row), row);
+        seed.read(second(table, row), row);
       } else {
         setNow(second(table, row), row);
       }
@@ -447,15 +445,6 @@ final class PropertySheet {
       trialsNumber = !value.isBlank();
       trials = parseTrials(value);
       trialsRow = row;
-    }
-
-    private void setSeed(String value, int row) throws SyntaxError {
-      if (seedSeen) {
-        throw new SyntaxError("seed is already set");
-      }
-      seedSeen = true;
-      explicit = parseSeed(value);
-      seedRow = row;
     }
 
     private void setNow(String value, int row) throws SyntaxError {
@@ -476,17 +465,6 @@ final class PropertySheet {
         throw new SyntaxError("trials must be at least 1");
       }
       return n;
-    }
-
-    private static Long parseSeed(String text) throws SyntaxError {
-      if (text.isBlank()) {
-        return null;
-      }
-      try {
-        return Long.parseLong(text.trim());
-      } catch (NumberFormatException e) {
-        throw new SyntaxError("seed must be a whole number");
-      }
     }
 
     private static int whole(String text) throws SyntaxError {

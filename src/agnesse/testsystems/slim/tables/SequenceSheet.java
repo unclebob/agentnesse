@@ -4,6 +4,7 @@ import agnesse.testsystems.slim.Table;
 import agnesse.testsystems.slim.property.CellLanguage;
 import agnesse.testsystems.slim.property.Clock;
 import agnesse.testsystems.slim.property.Generator;
+import agnesse.testsystems.slim.sequence.Clause;
 import agnesse.testsystems.slim.sequence.Command;
 import agnesse.testsystems.slim.sequence.Course;
 import agnesse.testsystems.slim.sequence.Guard;
@@ -55,9 +56,9 @@ final class SequenceSheet {
     this.trials = config.trials;
     this.trialsRow = config.trialsRow;
     this.hasTrials = config.trialsSeen;
-    this.seed = config.explicit == null ? new Random().nextLong() : config.explicit;
-    this.seedRow = config.seedRow;
-    this.hasSeed = config.seedSeen;
+    this.seed = config.seed.explicit() == null ? new Random().nextLong() : config.seed.explicit();
+    this.seedRow = config.seed.row();
+    this.hasSeed = config.seed.seen();
     this.width = width;
     this.plan = plan;
   }
@@ -211,11 +212,9 @@ final class SequenceSheet {
   }
 
   private static String word(String text) {
-    int end = 0;
-    while (end < text.length() && Character.isLetter(text.charAt(end))) {
-      end++;
-    }
-    return text.substring(0, end).toLowerCase(Locale.ROOT);
+    Matcher matcher = Pattern.compile("[A-Za-z]*").matcher(text);
+    matcher.lookingAt();
+    return text.substring(0, matcher.end()).toLowerCase(Locale.ROOT);
   }
 
   private static List<Guard> guards(Table table, int row) throws SyntaxError {
@@ -274,9 +273,7 @@ final class SequenceSheet {
     private int trials = DEFAULT_TRIALS;
     private int trialsRow = -1;
     private boolean trialsSeen;
-    private Long explicit;
-    private int seedRow = -1;
-    private boolean seedSeen;
+    private final SeedCell seed = new SeedCell();
     private int low = 1;
     private int high = DEFAULT_STEPS;
     private boolean stepsSeen;
@@ -290,7 +287,7 @@ final class SequenceSheet {
       } else if (key.equals("steps")) {
         steps(value);
       } else if (key.equals("seed")) {
-        seed(value, row);
+        seed.read(value, row);
       } else {
         state(value);
       }
@@ -345,26 +342,6 @@ final class SequenceSheet {
       return "steps must be low..high from 1 through " + Course.CAP;
     }
 
-    private void seed(String value, int row) throws SyntaxError {
-      if (seedSeen) {
-        throw new SyntaxError("seed is already set");
-      }
-      seedSeen = true;
-      explicit = parseSeed(value);
-      seedRow = row;
-    }
-
-    private static Long parseSeed(String text) throws SyntaxError {
-      if (text.isBlank()) {
-        return null;
-      }
-      try {
-        return Long.parseLong(text.trim());
-      } catch (NumberFormatException e) {
-        throw new SyntaxError("seed must be a whole number");
-      }
-    }
-
     private void state(String value) throws SyntaxError {
       if (stateSeen) {
         throw new SyntaxError("state is already set");
@@ -380,12 +357,12 @@ final class SequenceSheet {
 
     private void put(String item) throws SyntaxError {
       int at = item.indexOf('=');
-      if (at <= 0 || item.indexOf(' ') >= 0) {
+      if (at < 1 || item.indexOf(' ') != -1) {
         throw new SyntaxError("state must be name=value");
       }
       String name = item.substring(0, at).trim();
       String raw = item.substring(at + 1).trim();
-      if (!name.matches("[A-Za-z][A-Za-z0-9_]*") || raw.isEmpty()) {
+      if (raw.isEmpty() || !Clause.spelled(name)) {
         throw new SyntaxError("state must be name=value");
       }
       if (state.containsKey(name)) {

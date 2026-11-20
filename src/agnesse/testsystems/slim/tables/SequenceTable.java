@@ -297,7 +297,7 @@ public class SequenceTable extends SlimTable {
     if (!sheet.hasTrials) {
       return markdown().addRow(List.of("trials", ""));
     }
-    widen(sheet.trialsRow);
+    markdown().secondCell(sheet.trialsRow);
     return sheet.trialsRow;
   }
 
@@ -349,16 +349,10 @@ public class SequenceTable extends SlimTable {
     if (!sheet.hasSeed) {
       row = markdown().addRow(List.of("seed", Long.toString(sheet.seed)));
     } else {
-      widen(row);
+      markdown().secondCell(row);
       markdown().substitute(1, row, Long.toString(sheet.seed));
     }
     markdown().updateContent(1, row, SlimTestResult.plain(Long.toString(sheet.seed)));
-  }
-
-  private void widen(int row) {
-    if (markdown().getColumnCountInRow(row) < 2) {
-      markdown().addColumnToRow(row, "");
-    }
   }
 
   private MarkdownTable markdown() {

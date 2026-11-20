@@ -387,7 +387,7 @@ public class PropertyTable extends SlimTable {
     if (!present) {
       row = markdown().addRow(List.of(label, text));
     } else {
-      widen(row);
+      markdown().secondCell(row);
       markdown().substitute(1, row, text);
     }
     markdown().updateContent(1, row, shown(text));
@@ -395,16 +395,10 @@ public class PropertyTable extends SlimTable {
 
   private int summaryRow() {
     if (sheet.hasTrials) {
-      widen(sheet.trialsRow);
+      markdown().secondCell(sheet.trialsRow);
       return sheet.trialsRow;
     }
     return markdown().addRow(List.of("trials", ""));
-  }
-
-  private void widen(int row) {
-    if (markdown().getColumnCountInRow(row) < 2) {
-      markdown().addColumnToRow(row, "");
-    }
   }
 
   private void mark(int row, SlimTestResult result) {
