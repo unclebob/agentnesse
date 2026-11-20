@@ -239,8 +239,15 @@ task tsSlimTest(type: Exec) {
   commandLine 'npm', 'test'
 }
 
+task clojureSlimTest(type: Exec) {
+  group = 'verification'
+  description = 'Run the Clojure Slim server tests.'
+  workingDir = 'slim/clj'
+  commandLine 'clojure', '-M:test'
+}
+
 test {
-  dependsOn copyRuntimeLibs, javascriptTest, pythonSlimTest, goSlimTest, rustSlimTest, tsSlimTest
+  dependsOn copyRuntimeLibs, javascriptTest, pythonSlimTest, goSlimTest, rustSlimTest, tsSlimTest, clojureSlimTest
   maxParallelForks = 1
   finalizedBy jacocoTestReport
 }
