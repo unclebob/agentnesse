@@ -12,6 +12,11 @@ public sealed interface Value permits TextValue, ListValue, RecordValue {
 
   /** Compact JSON. Text is a JSON string. Lists and records stay structured. */
   String json();
+
+  /** A plain cell. Lists and records are built by their generators. */
+  static Value text(String cell) {
+    return new TextValue(cell);
+  }
 }
 
 record TextValue(String text) implements Value {

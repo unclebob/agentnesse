@@ -14,6 +14,7 @@ public class ValueTest {
     assertEquals("true", new TextValue("true").cell());
     assertEquals("false", new TextValue("false").cell());
     assertEquals("", new TextValue("").cell());
+    assertEquals("ok", Value.text("ok").cell());
   }
 
   @Test
