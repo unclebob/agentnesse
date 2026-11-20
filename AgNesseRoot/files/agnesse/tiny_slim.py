@@ -83,8 +83,6 @@ def run_lanes(instruction, instances):
             return str(counter["n"])
 
     def lane(group):
-        if not isinstance(group, list) or len(group) < 2 or not isinstance(group[1], list):
-            return
         tag = text_at(group, 0, "")
         for call in group[1]:
             if not isinstance(call, list):
@@ -97,6 +95,12 @@ def run_lanes(instruction, instances):
 
     threads = []
     for group in instruction[2:]:
+        if not isinstance(group, list):
+            continue
+        if len(group) < 2:
+            continue
+        if not isinstance(group[1], list):
+            continue
         thread = threading.Thread(target=lane, args=(group,))
         threads.append(thread)
         thread.start()

@@ -22,10 +22,12 @@ SCRIPT = locate()
 
 
 def load():
-    spec = importlib.util.spec_from_file_location("tiny_slim", SCRIPT)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    directory = str(SCRIPT.parent)
+    if directory not in sys.path:
+        sys.path.insert(0, directory)
+    sys.modules.pop("tiny_slim", None)
+    import tiny_slim
+    return tiny_slim
 
 
 class TinySlimTest(unittest.TestCase):
@@ -75,6 +77,9 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("no", self.slim.answer([single])[0][1])
         self.assertEqual("", self.slim.method_name(["1", "callAndAssign"]))
         self.assertEqual("", self.slim.method_name(["1", "callAndAssign", "symbol", "actor"]))
+        self.assertEqual("hello", self.slim.method_name(["1", "call", "actor", "hello"]))
+        self.assertEqual("", self.slim.method_name(["1", "call", "actor"]))
+        self.assertEqual("hello", self.slim.method_name(["1", "callAndAssign", "sym", "actor", "hello"]))
         self.assertEqual("id", self.slim.answer([person])[0][1])
         self.assertEqual("id", self.slim.answer([assigned_kind])[0][1])
         self.assertEqual("no", self.slim.answer([other])[0][1])
@@ -209,6 +214,14 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("OK", self.slim.answer([["12", "call", "seat", "beginTable"]], shared)[0][1])
         self.assertEqual("OK", self.slim.answer([["13", "call", "seat", "execute"]], shared)[0][1])
         self.assertEqual("OK", self.slim.answer([["14", "call", "seat", "setWord", "red"]], shared)[0][1])
+        self.assertEqual("OK", self.slim.answer([["14b", "call", "seat", "setWord"]], shared)[0][1])
+        rows = self.slim.answer([["4c", "lanes", ["t1", [["a", "call", "seat", "hello"], "skip", ["b", "call", "seat", "hello"]]], 5, ["only"], ["t2", 5]]], shared)[0][1]
+        self.assertEqual("t1", rows[0][0])
+        self.assertEqual("a", rows[0][1])
+        self.assertEqual("1", rows[0][2])
+        self.assertEqual("2", rows[0][3])
+        self.assertEqual("3", rows[1][2])
+        self.assertEqual(2, len(rows))
 
     def test_two_sockets_share_one_safe_seat(self):
         probe = socket.socket()
