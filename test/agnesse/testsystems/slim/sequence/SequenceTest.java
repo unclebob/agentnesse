@@ -592,6 +592,7 @@ public class SequenceTest {
     assertTrue(bad.getMessage(), bad.getMessage().contains("whole number"));
     Candidates empty = Candidates.start(state("phase", "open")).image(life(1, 1), new Step(0, List.of()));
     assertEquals(0, empty.size());
+    assertEquals("", empty.mark());
     assertFalse(empty.allows(life(1, 1), 0));
   }
 

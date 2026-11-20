@@ -32,6 +32,15 @@ public final class Candidates {
     return states.size();
   }
 
+  /** A stable name for this set, so a search can skip a state it has already tried. */
+  public String mark() {
+    StringJoiner joiner = new StringJoiner(";");
+    for (Map<String, String> state : states) {
+      joiner.add(key(state));
+    }
+    return joiner.toString();
+  }
+
   public boolean has(String name, String value) {
     for (Map<String, String> state : states) {
       if (value.equals(state.get(name))) {
