@@ -596,7 +596,13 @@ func made(row []any, instances map[string]any, mu *sync.Mutex, symbols map[strin
 
 func actorFrom(raw any, symbols map[string]any) (any, bool) {
 	text, ok := raw.(string)
-	if !ok || len(text) < 2 || text[0] != '$' {
+	if !ok {
+		return nil, false
+	}
+	if len(text) < 2 {
+		return nil, false
+	}
+	if text[0] != '$' {
 		return nil, false
 	}
 	value, known := symbols[text[1:]]
@@ -768,7 +774,7 @@ func expandString(text string, symbols map[string]any) string {
 
 func symbolAt(text string, index int) (string, int, bool) {
 	if index < 0 || index >= len(text) {
-		return "", 0, false
+		return "", index, false
 	}
 	loc := symbolPattern.FindStringSubmatchIndex(text[index:])
 	if loc == nil || loc[0] != 0 {
@@ -788,7 +794,10 @@ func expandCell(text string, symbols map[string]any) any {
 }
 
 func wholeStored(text string, symbols map[string]any) (any, bool) {
-	if len(text) < 2 || text[0] != '$' {
+	if len(text) < 2 {
+		return nil, false
+	}
+	if text[0] != '$' {
 		return nil, false
 	}
 	value, ok := symbols[text[1:]]
@@ -796,40 +805,34 @@ func wholeStored(text string, symbols map[string]any) (any, bool) {
 }
 
 func substitute(text string, symbols map[string]any) string {
-	var b strings.Builder
-	offset := 0
-	for offset <= len(text) {
-		loc := symbolPattern.FindStringSubmatchIndex(text[offset:])
-		if loc == nil {
-			b.WriteString(text[offset:])
-			return b.String()
-		}
-		start := offset + loc[0]
-		name := text[offset+loc[2] : offset+loc[3]]
-		b.WriteString(text[offset:start])
-		used, value, ok := resolve(name, symbols)
-		if !ok {
-			b.WriteString(text[start : offset+loc[1]])
-			offset += loc[1]
-			continue
-		}
-		b.WriteString(asText(value))
-		offset = start + 1 + len(used)
+	loc := symbolPattern.FindStringSubmatchIndex(text)
+	if loc == nil {
+		return text
 	}
-	return b.String()
+	name := text[loc[2]:loc[3]]
+	used, value, ok := resolve(name, symbols)
+	if !ok {
+		return text[:loc[1]] + substitute(text[loc[1]:], symbols)
+	}
+	return text[:loc[0]] + asText(value) + substitute(text[loc[0]+1+len(used):], symbols)
 }
 
 func resolve(name string, symbols map[string]any) (string, any, bool) {
 	if value, ok := symbols[name]; ok {
 		return name, value, true
 	}
-	for i := len(name) - 1; i > 0; i-- {
-		shorter := name[:i]
-		if value, ok := symbols[shorter]; ok {
-			return shorter, value, true
-		}
+	return shorter(name, symbols)
+}
+
+func shorter(name string, symbols map[string]any) (string, any, bool) {
+	if len(name) <= 1 {
+		return "", nil, false
 	}
-	return "", nil, false
+	name = name[:len(name)-1]
+	if value, ok := symbols[name]; ok {
+		return name, value, true
+	}
+	return shorter(name, symbols)
 }
 
 func asText(value any) string {
@@ -961,7 +964,13 @@ func parsedDate(text string, fallback any) any {
 }
 
 func parsedList(text string) any {
-	if len(text) < 2 || text[0] != '[' || text[len(text)-1] != ']' {
+	if len(text) < 2 {
+		return text
+	}
+	if text[0] != '[' {
+		return text
+	}
+	if text[len(text)-1] != ']' {
 		return text
 	}
 	body := strings.TrimSpace(text[1 : len(text)-1])

@@ -238,6 +238,113 @@ func TestJavaSymbolForms(t *testing.T) {
 	}
 }
 
+func TestSymbolBoundaries(t *testing.T) {
+	symbols := map[string]any{"a": "A", "ab": "YES"}
+	name, next, ok := symbolAt("$ab", 0)
+	if !ok || name != "ab" || next != 3 {
+		t.Fatal(name, next, ok)
+	}
+	_, next, ok = symbolAt("$ab", -1)
+	if ok || next != -1 {
+		t.Fatal("negative", next, ok)
+	}
+	_, next, ok = symbolAt("a", 1)
+	if ok || next != 1 {
+		t.Fatal("end", next, ok)
+	}
+	if _, _, ok = symbolAt("x$ab", 0); ok {
+		t.Fatal("not at the start")
+	}
+	if _, ok = wholeStored("$", symbols); ok {
+		t.Fatal("short")
+	}
+	if _, ok = wholeStored("ab", symbols); ok {
+		t.Fatal("plain")
+	}
+	if value, ok := wholeStored("$a", symbols); !ok || value != "A" {
+		t.Fatal(value, ok)
+	}
+	held := &seat{className: "gate", phase: "held"}
+	if got, ok := actorFrom("$x", map[string]any{"x": held}); !ok || got != held {
+		t.Fatal("len 2")
+	}
+	if _, ok = actorFrom("$", map[string]any{}); ok {
+		t.Fatal("dollar")
+	}
+	if _, ok = actorFrom("ab", map[string]any{"b": held}); ok {
+		t.Fatal("no dollar")
+	}
+	if _, ok = actorFrom(3, symbols); ok {
+		t.Fatal("number")
+	}
+	if _, ok = actorFrom("$missing", map[string]any{}); ok {
+		t.Fatal("unknown symbol")
+	}
+	if expandString("$zb", map[string]any{"": "EMPTY", "z": "Z"}) != "Zb" {
+		t.Fatal(expandString("$zb", map[string]any{"": "EMPTY", "z": "Z"}))
+	}
+	if got := expandString("$q", map[string]any{"": "EMPTY"}); got != "$q" {
+		t.Fatal(got)
+	}
+	shared := map[string]any{}
+	mu := &sync.Mutex{}
+	store := map[string]any{}
+	answer([]any{[]any{"1", "make", "blank"}}, shared, mu, store)
+	if shared["blank"].(*seat).className != "slim" {
+		t.Fatal(shared["blank"].(*seat).className)
+	}
+	named := unknown("noSuch", "blank", 0, shared["blank"].(*seat))
+	if !strings.Contains(named, "in class slim") {
+		t.Fatal(named)
+	}
+	if !strings.Contains(unknown("noSuch", "g", 0, &seat{className: "gate"}), "in class gate") {
+		t.Fatal("class")
+	}
+	if answer([]any{[]any{"2", "call", "blank", "plus", "1", "2", "9"}}, shared, mu, store)[0].([]any)[1] != "3" {
+		t.Fatal("extra arg")
+	}
+	if answer([]any{[]any{"3", "call", "blank", "label", []any{[]any{"name"}}}}, shared, mu, store)[0].([]any)[1] != "no" {
+		t.Fatal("short pair")
+	}
+	if answer([]any{[]any{"4", "call", "blank", "scale", "1.25"}}, shared, mu, store)[0].([]any)[1] != "1.25" {
+		t.Fatal("scale")
+	}
+	if answer([]any{[]any{"5", "call", "blank", "join", "[a"}}, shared, mu, store)[0].([]any)[1] != "no" {
+		t.Fatal("open list")
+	}
+	if answer([]any{[]any{"6", "call", "blank", "join", "a]"}}, shared, mu, store)[0].([]any)[1] != "no" {
+		t.Fatal("close list")
+	}
+	if cellAt([]any{"a"}, 1) != "" {
+		t.Fatal("cell end")
+	}
+	answer([]any{[]any{"7", "make", "first", "slim"}}, shared, mu, store)
+	answer([]any{[]any{"8", "make", "scriptTableActor", "slim"}}, shared, mu, store)
+	answer([]any{[]any{"9", "call", "SlimHelperLibrary", "pushFixture"}}, shared, mu, store)
+	answer([]any{[]any{"10", "make", "scriptTableActor", "other"}}, shared, mu, store)
+	answer([]any{[]any{"11", "call", "SlimHelperLibrary", "pushFixture"}}, shared, mu, store)
+	answer([]any{[]any{"12", "make", "scriptTableActor", "slim", "safe"}}, shared, mu, store)
+	answer([]any{[]any{"13", "call", "SlimHelperLibrary", "popFixture"}}, shared, mu, store)
+	if shared["scriptTableActor"].(*seat).className != "other" {
+		t.Fatal(shared["scriptTableActor"].(*seat).className)
+	}
+	answer([]any{[]any{"13b", "call", "SlimHelperLibrary", "popFixture"}}, shared, mu, store)
+	if shared["scriptTableActor"].(*seat).className != "slim" {
+		t.Fatal("second pop", shared["scriptTableActor"].(*seat).className)
+	}
+	noteOptOut(map[string]any{handlesSymbols: nil, optKey: true})
+	cleared := map[string]any{handlesSymbols: nil, optKey: true}
+	noteOptOut(cleared)
+	if _, ok = cleared[optKey]; ok {
+		t.Fatal("nil pattern stays")
+	}
+	got := answer([]any{[]any{"14", "lanes", "bad", []any{"only"}, []any{"t1", []any{[]any{"a", "call", "blank", "hello"}}}}}, shared, mu, store)[0].([]any)[1].([]any)
+	row := got[0].([]any)
+	if row[0] != "t1" || row[1] != "a" || row[2] != "1" {
+		t.Fatal(row)
+	}
+}
+
 func TestAGateAndADecisionWord(t *testing.T) {
 	shared := map[string]any{}
 	mu := &sync.Mutex{}
