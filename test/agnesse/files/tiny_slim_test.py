@@ -229,6 +229,10 @@ class TinySlimTest(unittest.TestCase):
         thread.join(2)
         self.assertFalse(thread.is_alive())
 
+    def test_overlapping_racy_books_both_succeed_and_safe_books_do_not(self):
+        self.assertEqual(["booked", "booked"], sorted(both(self, "racy")))
+        self.assertEqual(["booked", "full"], sorted(both(self, "safe")))
+
     def test_an_unreadable_stream_ends_after_the_header(self):
         for raw in (b"", b"000010:short"):
             outgoing = io.BytesIO()
@@ -242,6 +246,22 @@ class TinySlimTest(unittest.TestCase):
         text = outgoing.getvalue().decode("utf-8")
         self.assertIn("world", text)
         self.assertIn("hi", text)
+
+
+def both(test, mark):
+    shared = {}
+    test.slim.answer([["1", "make", "seat", "tiny", mark]], shared)
+    found = []
+
+    def run():
+        found.append(test.slim.answer([["2", "call", "seat", "book"]], shared)[0][1])
+
+    threads = [threading.Thread(target=run), threading.Thread(target=run)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    return found
 
 
 def connect(port):

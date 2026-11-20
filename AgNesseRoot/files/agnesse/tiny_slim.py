@@ -53,7 +53,7 @@ def serve(port):
             with lock:
                 active["n"] += 1
                 active["seen"] = True
-            threading.Thread(target=session, args=(connection, instances, finished), daemon=True).start()
+            threading.Thread(target=session, args=(connection, instances, finished)).start()
     finally:
         server.close()
 
@@ -135,10 +135,8 @@ def made(instruction, instances):
 
 def opened(instruction):
     mark = text_at(instruction, 4, "")
-    if mark == "racy":
-        return {"seats": 1, "race": True}
-    if mark == "safe":
-        return {"seats": 1, "race": False}
+    if mark == "racy" or mark == "safe":
+        return {"seats": 1, "race": mark}
     return {"phase": "new"}
 
 
@@ -146,7 +144,7 @@ def book(instruction, instances):
     state = gate(instruction, instances)
     if state is None or "seats" not in state:
         return missing_instance(instruction)
-    if state.get("race"):
+    if state.get("race") == "racy":
         return race_book(state)
     return safe_book(state)
 

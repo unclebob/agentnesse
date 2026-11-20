@@ -188,6 +188,35 @@ public class SlimServiceTest extends SlimServiceTestBase {
   }
 
   @Test
+  public void theTimeoutFactoriesDoNotShareAFixture() throws Exception {
+    agnesse.slim.fixtureInteraction.FixtureInteraction interaction = JavaSlimFactory.createInteraction(null);
+    assertIsolated(JavaSlimFactory.createJavaSlimFactory(interaction, (Integer) null, false));
+    assertIsolated(JavaSlimFactory.createJavaSlimFactory(interaction, 10_000L, "10", false));
+  }
+
+  @Test
+  public void aStoredActorIsTheInstanceAMakeNames() throws Exception {
+    SlimExecutionContext context = new SlimExecutionContext(JavaSlimFactory.createInteraction(null));
+    agnesse.slim.test.Waitlist seat = new agnesse.slim.test.Waitlist();
+    context.setVariable("Actor", seat);
+    StatementExecutor executor = new StatementExecutor(context);
+    executor.create("copy", "$Actor");
+    assertSame(seat, executor.getInstance("copy"));
+  }
+
+  private static void assertIsolated(SlimFactory factory) throws Exception {
+    StatementExecutorInterface left = factory.getStatementExecutor();
+    StatementExecutorInterface right = factory.getStatementExecutor();
+    left.create("seat", "agnesse.slim.test.Waitlist");
+    try {
+      right.call("seat", "ping");
+      fail("each connection keeps its own fixtures");
+    } catch (SlimException e) {
+      assertTrue(e.toString(), e.toString().contains("NO_INSTANCE"));
+    }
+  }
+
+  @Test
   public void abandonClosesAClientThatNeverConnected() throws Exception {
     SlimCommandRunningClient client = newClient(1);
     client.abandon();

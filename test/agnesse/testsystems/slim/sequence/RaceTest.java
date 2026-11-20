@@ -3,6 +3,7 @@ package agnesse.testsystems.slim.sequence;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,8 @@ public class RaceTest {
     assertEquals(1, result.trials);
     assertEquals(0, result.trial);
     assertFalse(result.broken);
+    assertFalse(result.shrunk);
+    assertFalse(result.capped);
   }
 
   @Test
@@ -91,6 +94,7 @@ public class RaceTest {
         List.of(Reading.returned("booked")), List.of(Reading.returned("booked"))));
     String why = Race.explain(seats(), schedule, history, 0);
     assertTrue(why, why.contains("linearizability search hit its bound of 0"));
+    assertEquals("no result", Race.explain(seats(), schedule, History.broke(null), Linear.BOUND));
     assertEquals("no result", Race.explain(seats(), schedule, History.broke("  "), Linear.BOUND));
     assertEquals("down", Race.explain(seats(), schedule, History.broke("down"), Linear.BOUND));
     assertEquals(null, Race.explain(seats(), pair(once(0), once(1)),
@@ -118,6 +122,7 @@ public class RaceTest {
     assertTrue(result.passed);
     assertTrue(methods.contains("seats"));
     assertTrue(methods.contains("left"));
+    assertFalse(methods.contains(null));
     assertEquals(List.of("book", "seats", "left"), methods.subList(0, 3));
   }
 
@@ -130,10 +135,43 @@ public class RaceTest {
   }
 
   @Test
+  public void aPrefixRunsOnTheFirstLaneBeforeTheBranches() {
+    Schedule schedule = new Schedule(once(0), List.of(once(1), once(1)));
+    List<Integer> lanes = new ArrayList<>();
+    Desk desk = new Desk() {
+      public void make(String instance, String fixture, String[] arguments) {
+      }
+      public String call(int lane, String instance, String method, java.util.List<String> arguments) {
+        lanes.add(lane);
+        return lanes.size() == 1 ? "booked" : "full";
+      }
+    };
+    Race.Result result = Race.check(seats(), List.of(schedule), desk, "Seat", new String[0], Waves.DIRECT);
+    assertTrue(result.passed);
+    assertEquals(List.of(0, 0, 1), lanes);
+  }
+
+  @Test
   public void directRunsEveryTask() {
     List<String> seen = new ArrayList<>();
     Waves.direct(List.of(() -> seen.add("a"), () -> seen.add("b")));
     assertEquals(List.of("a", "b"), seen);
+  }
+
+  @Test
+  public void togetherWaitsUntilEveryTaskHasFinished() {
+    List<String> seen = Collections.synchronizedList(new ArrayList<>());
+    Waves.together(List.of(() -> seen.add("a"), () -> seen.add("b")));
+    assertEquals(2, seen.size());
+    assertTrue(seen.contains("a"));
+    assertTrue(seen.contains("b"));
+  }
+
+  @Test
+  public void anInterruptDuringTheWaitIsKept() {
+    Thread.currentThread().interrupt();
+    Waves.together(List.of(() -> { }));
+    assertTrue(Thread.interrupted());
   }
 
   private static Plan seats() {
@@ -149,7 +187,10 @@ public class RaceTest {
     Command shut = new Command("book", "seats=0", "", List.of(), List.of(
         result("full"), new Command.Expect(false, "seats", "0", 4)));
     Guard guard = new Guard("", "", "left", "1");
-    return Plan.create(state("seats", "1"), 1, 2, List.of(open, shut), List.of(guard));
+    Guard again = new Guard("seats=0", "", "left", "1");
+    Guard modelOnly = new Guard("seats=0", "seats!=1", null, "");
+    Command ping = new Command("ping", "", "", List.of(), List.of(result("ok")));
+    return Plan.create(state("seats", "1"), 1, 2, List.of(open, shut, ping), List.of(guard, again, modelOnly));
   }
 
   private static Command.Expect result(String text) {

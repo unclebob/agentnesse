@@ -91,7 +91,7 @@ public class SequenceTable extends SlimTable {
     try {
       Race.Result result = Race.check(sheet.plan, drawn, desk, sheet.fixture, sheet.arguments, Waves::together);
       RaceView.paint(markdown(), sheet, result, getTestContext());
-      painted = true;
+      painted = raced;
     } finally {
       desk.close();
     }

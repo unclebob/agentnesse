@@ -37,10 +37,7 @@ final class SlimLanes {
   }
 
   /** Null when the connections share the fixture. Otherwise the page error. */
-  static String probeVerdict(String message, boolean returned) {
-    if (returned) {
-      return UNSHARED;
-    }
+  static String probeVerdict(String message) {
     if (named(message, "NO_METHOD_IN_CLASS")) {
       return null;
     }
@@ -59,11 +56,12 @@ final class SlimLanes {
   private static String probe(SlimDesk desk, SequenceSheet sheet) {
     try {
       desk.make("laneProbe", sheet.fixture, sheet.arguments);
-      desk.call(1, "laneProbe", PROBE, List.of());
-      return probeVerdict(null, true);
+      int lane = desk.lanes() - 1;
+      desk.call(lane, "laneProbe", PROBE, List.of());
     } catch (CallBroke e) {
-      return probeVerdict(e.getMessage(), false);
+      return probeVerdict(e.getMessage());
     }
+    return probeVerdict(null);
   }
 
   private static SlimCommandRunningClient socket(SlimClient client) throws SyntaxError {

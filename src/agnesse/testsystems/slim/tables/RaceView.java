@@ -64,7 +64,7 @@ final class RaceView {
 
   private static void paintTrace(MarkdownTable table, SequenceSheet sheet, String label, Trace trace,
                                  List<Reading> readings) {
-    for (int index = 0; index < trace.steps.size() && index < readings.size(); index++) {
+    for (int index = 0; index < trace.steps.size(); index++) {
       int row = table.addRow(cells(sheet, label, trace.steps.get(index), readings.get(index)));
       plain(table, row);
     }

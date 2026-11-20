@@ -971,11 +971,11 @@ public class SequenceTableTest {
 
   @Test
   public void theProbeNamesAPrivateFixtureAndAMissingMethod() {
-    assertEquals(null, SlimLanes.probeVerdict("NO_METHOD_IN_CLASS book", false));
-    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("NO_INSTANCE seat", false));
-    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict(null, true));
-    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("  ", false));
-    assertEquals("missing class", SlimLanes.probeVerdict("missing class", false));
+    assertEquals(null, SlimLanes.probeVerdict("NO_METHOD_IN_CLASS book"));
+    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("NO_INSTANCE seat"));
+    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict(null));
+    assertEquals(SlimLanes.UNSHARED, SlimLanes.probeVerdict("  "));
+    assertEquals("missing class", SlimLanes.probeVerdict("missing class"));
   }
 
   @Test
@@ -994,8 +994,11 @@ public class SequenceTableTest {
     assertTrue(trials(table), trials(table).contains("shrunk"));
     assertTrue(trials(table), trials(table).contains("t1 [book book]"));
     assertEquals("1", seed(table));
+    assertEquals("t1 book", added(table, source, 0, 0));
+    assertEquals("booked", added(table, source, 0, 4));
     assertTrue(names(table, source).contains("t1 book"));
     assertTrue(names(table, source).contains("t2 book"));
+    assertTrue(names(table, source), painted(table, source).contains("5"));
   }
 
   @Test
@@ -1061,6 +1064,13 @@ public class SequenceTableTest {
       try {
         assertEquals(2, desk.lanes());
         assertEquals("ok", desk.call(1, "laneProbe", "ping", List.of()));
+        SlimDesk alone = new SlimDesk(client, List.of());
+        alone.make("solo", "agnesse.slim.test.Waitlist", new String[0]);
+        assertEquals("ok", alone.call(0, "solo", "ping", List.of()));
+        agnesse.testsystems.slim.sequence.CallBroke broken = assertThrows(
+            agnesse.testsystems.slim.sequence.CallBroke.class,
+            () -> desk.make("missing", "no.such.Fixture", new String[0]));
+        assertTrue(broken.getMessage(), broken.getMessage().contains("NO_CLASS"));
       } finally {
         desk.close();
         client.bye();
@@ -1140,9 +1150,9 @@ public class SequenceTableTest {
         | steps | %s |
         | seed | 1 |
         | state | seats=1 |
-        | command | when | next | result? |
-        | book | seats=1 | seats=0 | booked |
-        | book | seats=0 | | full |
+        | command | when | next | n | result? |
+        | book | seats=1 | seats=0 | int:5..5 | booked |
+        | book | seats=0 | | int:5..5 | full |
         """.formatted(threads, steps);
   }
 
@@ -1183,6 +1193,20 @@ public class SequenceTableTest {
       }
     }
     assertTrue("the Slim server did not accept a connection", client.isConnected());
+  }
+
+  private static String added(MarkdownTable table, String source, int rowOffset, int column) {
+    return table.cellRecord(lines(source) + rowOffset, column).actual();
+  }
+
+  private static String painted(MarkdownTable table, String source) {
+    StringBuilder out = new StringBuilder();
+    for (int row = lines(source); row < table.getRowCount(); row++) {
+      for (int column = 0; column < table.getColumnCountInRow(row); column++) {
+        out.append(table.originalCell(column, row)).append('\n');
+      }
+    }
+    return out.toString();
   }
 
   private static String names(MarkdownTable table, String source) {

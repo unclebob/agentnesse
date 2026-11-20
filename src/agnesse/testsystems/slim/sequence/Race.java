@@ -80,7 +80,7 @@ public final class Race {
     History bestHistory = history;
     String bestWhy = why;
     boolean shrunk = false;
-    while (true) {
+    for (;;) {
       List<Schedule> batch = fold.next();
       if (batch.isEmpty()) {
         return Result.fail(index + 1, trials, schedule, best, bestHistory, bestWhy, shrunk, fold.capped());
@@ -138,7 +138,7 @@ public final class Race {
   private static List<List<Reading>> waves(Plan plan, Schedule schedule, Desk desk, String instance,
                                            Waves.Overlap overlap) {
     List<List<Reading>> branches = new ArrayList<>();
-    for (int lane = 0; lane < schedule.branches.size(); lane++) {
+    for (Trace ignored : schedule.branches) {
       branches.add(new ArrayList<>());
     }
     int[] at = new int[schedule.branches.size()];
@@ -206,11 +206,19 @@ public final class Race {
       }
     }
     for (Guard guard : plan.guards) {
-      if (guard.query != null && !names.contains(guard.query)) {
-        names.add(guard.query);
-      }
+      addGuard(guard, names);
     }
     return names;
+  }
+
+  private static void addGuard(Guard guard, List<String> names) {
+    if (guard.query == null) {
+      return;
+    }
+    if (names.contains(guard.query)) {
+      return;
+    }
+    names.add(guard.query);
   }
 
   private static String required(String value) {
