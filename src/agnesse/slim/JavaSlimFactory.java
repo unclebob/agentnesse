@@ -11,18 +11,21 @@ public class JavaSlimFactory extends SlimFactory {
   private final Long timeoutMillis;
   private final String timeoutLabel;
   private final boolean verbose;
+  private final boolean share;
   private final FixtureInteraction interaction;
+  private SlimExecutionContext shared;
 
-  private JavaSlimFactory(FixtureInteraction interaction, Long timeoutMillis, String timeoutLabel, boolean verbose) {
+  private JavaSlimFactory(FixtureInteraction interaction, Long timeoutMillis, String timeoutLabel, boolean verbose, boolean share) {
     this.interaction = interaction;
     this.timeoutMillis = timeoutMillis;
     this.timeoutLabel = timeoutLabel;
     this.verbose = verbose;
+    this.share = share;
   }
 
   @Override
   public StatementExecutorInterface getStatementExecutor() {
-    StatementExecutorInterface statementExecutor = new StatementExecutor(new SlimExecutionContext(interaction));
+    StatementExecutorInterface statementExecutor = new StatementExecutor(execution());
     if (timeoutMillis != null) {
       statementExecutor = StatementTimeoutExecutor.decorate(statementExecutor, timeoutMillis, timeoutLabel, Executors.newSingleThreadExecutor());
     }
@@ -43,17 +46,32 @@ public class JavaSlimFactory extends SlimFactory {
     return identityTranslator;
   }
 
-  // Called from main
+  private SlimExecutionContext execution() {
+    if (!share) {
+      return new SlimExecutionContext(interaction);
+    }
+    return sharedExecution();
+  }
+
+  private synchronized SlimExecutionContext sharedExecution() {
+    if (shared == null) {
+      shared = new SlimExecutionContext(interaction);
+    }
+    return shared;
+  }
+
+  // Called from main. Daemon mode keeps one fixture visible on every connection.
   public static SlimFactory createJavaSlimFactory(SlimService.Options options) {
-    return new JavaSlimFactory(options.interaction, options.statementTimeoutMillis, options.statementTimeoutLabel, options.verbose);
+    return new JavaSlimFactory(options.interaction, options.statementTimeoutMillis, options.statementTimeoutLabel,
+        options.verbose, options.daemon);
   }
 
   public static SlimFactory createJavaSlimFactory(FixtureInteraction interaction, Integer timeout, boolean verbose) {
-    return new JavaSlimFactory(interaction, SlimService.millisFor(timeout), SlimService.labelFor(timeout), verbose);
+    return new JavaSlimFactory(interaction, SlimService.millisFor(timeout), SlimService.labelFor(timeout), verbose, false);
   }
 
   public static SlimFactory createJavaSlimFactory(FixtureInteraction interaction, long timeoutMillis, String timeoutLabel, boolean verbose) {
-    return new JavaSlimFactory(interaction, timeoutMillis, timeoutLabel, verbose);
+    return new JavaSlimFactory(interaction, timeoutMillis, timeoutLabel, verbose, false);
   }
 
   public static FixtureInteraction createInteraction(String interactionClassName) {

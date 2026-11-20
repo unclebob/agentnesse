@@ -2,7 +2,6 @@ package agnesse.slim;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +19,16 @@ public class SlimExecutionContext {
       this.interaction = interaction;
     }
 
-    public List<Library> getLibraries() {
-        return Collections.unmodifiableList(libraries);
+    public synchronized List<Library> getLibraries() {
+        return List.copyOf(libraries);
     }
 
-    public void addLibrary(Library library) {
+    public synchronized void addLibrary(Library library) {
+        for (Library existing : libraries) {
+            if (existing.instanceName.equals(library.instanceName)) {
+                return;
+            }
+        }
         libraries.add(library);
     }
 
@@ -40,7 +44,7 @@ public class SlimExecutionContext {
         setVariable(name, new MethodExecutionResult(value, Object.class));
     }
 
-    public void create(String instanceName, String className, Object[] args)
+    public synchronized void create(String instanceName, String className, Object[] args)
             throws SlimError, IllegalArgumentException, IllegalAccessException, InvocationTargetException,
             InstantiationException {
       Object potentialActor = variables.getStored(className);
@@ -61,7 +65,7 @@ public class SlimExecutionContext {
         }
     }
 
-    public Object getInstance(String instanceName) {
+    public synchronized Object getInstance(String instanceName) {
         Object instance = instances.get(instanceName);
         if (instance != null) {
             return instance;
@@ -84,7 +88,7 @@ public class SlimExecutionContext {
         }
     }
 
-    public void setInstance(String instanceName, Object instance) {
+    public synchronized void setInstance(String instanceName, Object instance) {
         instances.put(instanceName, instance);
     }
 

@@ -9,9 +9,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.BindException;
 import java.net.ServerSocket;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import agnesse.slim.fixtureInteraction.InteractionDemo;
+import agnesse.slim.instructions.CallInstruction;
+import agnesse.slim.instructions.MakeInstruction;
 import agnesse.socketservice.PlainClientSocketFactory;
 import agnesse.testsystems.CompositeExecutionLogListener;
 import agnesse.testsystems.MockCommandRunner;
@@ -180,6 +184,60 @@ public class SlimServiceTest extends SlimServiceTestBase {
         assertEquals(agnesse.testsystems.slim.results.SlimFailure.Kind.LAUNCH_FAILURE, failure.kind());
         System.out.println("LAUNCH " + failure.kind() + " " + expected);
       }
+    }
+  }
+
+  @Test
+  public void daemonConnectionsShareOneFixture() throws Exception {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
+    SlimFactory shared = JavaSlimFactory.createJavaSlimFactory(options);
+    StatementExecutorInterface first = shared.getStatementExecutor();
+    StatementExecutorInterface second = shared.getStatementExecutor();
+    first.create("seat", "agnesse.slim.test.Waitlist");
+    assertEquals("ok", second.call("seat", "ping"));
+
+    SlimFactory isolated = JavaSlimFactory.createJavaSlimFactory(SlimService.parseCommandLine(new String[]{"0"}));
+    StatementExecutorInterface left = isolated.getStatementExecutor();
+    StatementExecutorInterface right = isolated.getStatementExecutor();
+    left.create("seat", "agnesse.slim.test.Waitlist");
+    try {
+      right.call("seat", "ping");
+      fail("a plain server keeps a fixture on the connection that created it");
+    } catch (SlimException e) {
+      assertTrue(e.toString(), e.toString().contains("NO_INSTANCE"));
+    }
+  }
+
+  @Test
+  public void daemonSocketsCallTheSameFixture() throws Exception {
+    SlimService.Options options = SlimService.parseCommandLine(new String[]{"-d", "0"});
+    try (ServerSocket socket = new ServerSocket(0)) {
+      int port = socket.getLocalPort();
+      SlimFactory factory = JavaSlimFactory.createJavaSlimFactory(options);
+      SlimService service = new SlimService(factory.getSlimServer(), socket, true);
+      Thread server = new Thread(() -> {
+        try {
+          service.accept();
+        } catch (IOException ignored) {
+          // Closing the socket ends the daemon loop.
+        }
+      });
+      server.setDaemon(true);
+      server.start();
+      SlimCommandRunningClient client = newClient(port);
+      connectWithin(client);
+      SlimCommandRunningClient second = newClient(port);
+      connectWithin(second);
+      client.invokeAndGetResponse(List.of(new MakeInstruction("m", "seat", "agnesse.slim.test.Waitlist")));
+      Map<String, Object> result = second.invokeAndGetResponse(List.of(new CallInstruction("c", "seat", "ping")));
+      assertEquals("ok", result.get("c"));
+      client.bye();
+      client.kill();
+      second.bye();
+      second.kill();
+      socket.close();
+      server.join(5000);
+      assertFalse(server.isAlive());
     }
   }
 
