@@ -3,7 +3,8 @@
 
 Port 1 is the pipe AgNesse uses when SLIM_PORT is 1: the protocol is stdin and stdout.
 Any other port is a socket on 127.0.0.1. hello returns world. echo returns its string
-argument. bye ends the session.
+argument. endIsAfterStart returns yes when the second integer is greater than the first.
+kind returns id when its argument contains a kind field of id. bye ends the session.
 """
 import socket
 import sys
@@ -51,6 +52,10 @@ def reply(instruction):
         return "world"
     if method == "echo":
         return echoed(instruction)
+    if method == "endIsAfterStart":
+        return ordered(instruction)
+    if method == "kind":
+        return kind_of(instruction)
     return "OK"
 
 
@@ -58,6 +63,34 @@ def echoed(instruction):
     if len(instruction) > 4 and isinstance(instruction[4], str):
         return instruction[4]
     return "OK"
+
+
+def ordered(instruction):
+    values = arguments(instruction)
+    if len(values) > 1:
+        try:
+            if int(values[1]) > int(values[0]):
+                return "yes"
+        except ValueError:
+            return "no"
+    return "no"
+
+
+def kind_of(instruction):
+    values = arguments(instruction)
+    if values and isinstance(values[0], str) and '"kind":"id"' in values[0]:
+        return "id"
+    return "no"
+
+
+def arguments(instruction):
+    if len(instruction) < 2:
+        return []
+    if instruction[1] == "callAndAssign":
+        return instruction[5:]
+    if instruction[1] == "call":
+        return instruction[4:]
+    return []
 
 
 def method_name(instruction):

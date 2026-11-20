@@ -53,6 +53,32 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("OK", self.slim.answer([instructions[5]])[0][1])
         self.assertEqual("OK", self.slim.answer([["7", "call", "actor", "echo"]])[0][1])
 
+    def test_a_later_integer_and_a_record_kind(self):
+        later = ["1", "callAndAssign", "symbol", "actor", "endIsAfterStart", "0", "1"]
+        also = ["9", "call", "actor", "endIsAfterStart", "1", "2"]
+        same = ["10", "call", "actor", "endIsAfterStart", "2", "2"]
+        earlier = ["2", "call", "actor", "endIsAfterStart", "4", "1"]
+        broken = ["3", "call", "actor", "endIsAfterStart", "a", "1"]
+        missing = ["4", "call", "actor", "endIsAfterStart"]
+        person = ["5", "call", "actor", "kind", '{"doc":{"kind":"id"}}']
+        assigned_kind = ["11", "callAndAssign", "symbol", "actor", "kind", '{"kind":"id"}']
+        other = ["6", "callAndAssign", "symbol", "actor", "kind", '{"kind":"passport"}']
+        blank = ["7", "call", "actor", "kind"]
+        nested = ["8", "call", "actor", "kind", ["not-a-string"]]
+        self.assertEqual("yes", self.slim.answer([later])[0][1])
+        self.assertEqual("yes", self.slim.answer([also])[0][1])
+        self.assertEqual("no", self.slim.answer([same])[0][1])
+        self.assertEqual("no", self.slim.answer([earlier])[0][1])
+        self.assertEqual("no", self.slim.answer([broken])[0][1])
+        self.assertEqual("no", self.slim.answer([missing])[0][1])
+        self.assertEqual("id", self.slim.answer([person])[0][1])
+        self.assertEqual("id", self.slim.answer([assigned_kind])[0][1])
+        self.assertEqual("no", self.slim.answer([other])[0][1])
+        self.assertEqual("no", self.slim.answer([blank])[0][1])
+        self.assertEqual("no", self.slim.answer([nested])[0][1])
+        self.assertEqual([], self.slim.arguments(["only"]))
+        self.assertEqual([], self.slim.arguments(["1", "make", "actor"]))
+
     def test_pipe_mode_reads_the_last_argument(self):
         incoming = frame(self.slim, ["1", "call", "actor", "hello"]) + frame(self.slim, "bye")
         stdout = io.BytesIO()
