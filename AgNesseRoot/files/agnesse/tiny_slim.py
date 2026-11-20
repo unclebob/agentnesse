@@ -4,7 +4,9 @@
 Port 1 is the pipe AgNesse uses when SLIM_PORT is 1: the protocol is stdin and stdout.
 Any other port is a socket on 127.0.0.1. hello returns world. echo returns its string
 argument. endIsAfterStart returns yes when the second integer is greater than the first.
-kind returns id when its argument contains a kind field of id. bye ends the session.
+kind returns id when its argument contains a kind field of id. A make starts a gate at
+phase new. open, block, and release move that gate, and release from blocked is refused.
+bye ends the session.
 """
 import socket
 import sys
@@ -30,39 +32,104 @@ def main():
 def speak(incoming, outgoing):
     outgoing.write(b"Slim -- V0.5\n")
     outgoing.flush()
+    instances = {}
     while True:
         message = read_message(incoming)
         if message is None or message.lower() == "bye":
             return
-        payload = serialize(answer(parse(message))).encode("utf-8")
+        payload = serialize(answer(parse(message), instances)).encode("utf-8")
         outgoing.write(f"{len(payload):06d}:".encode("ascii") + payload)
         outgoing.flush()
 
 
-def answer(instructions):
+def answer(instructions, instances=None):
+    state = {} if instances is None else instances
     results = []
     for instruction in instructions:
-        results.append([instruction[0], reply(instruction)])
+        results.append([instruction[0], reply(instruction, state)])
     return results
 
 
-def reply(instruction):
-    method = method_name(instruction)
-    if method == "hello":
-        return "world"
-    if method == "echo":
-        return echoed(instruction)
-    if method == "endIsAfterStart":
-        return ordered(instruction)
-    if method == "kind":
-        return kind_of(instruction)
+def reply(instruction, instances):
+    if command(instruction) == "make":
+        return made(instruction, instances)
+    return invoke(method_name(instruction), instruction, instances)
+
+
+def invoke(method, instruction, instances):
+    plain = PLAIN.get(method)
+    if plain is not None:
+        return plain(instruction)
+    needed = MOVES.get(method)
+    if needed is not None:
+        return move(instruction, instances, needed[0], needed[1])
+    query = QUERIES.get(method)
+    if query is not None:
+        return query(instruction, instances)
     return "OK"
+
+
+def hello(_instruction):
+    return "world"
+
+
+def command(instruction):
+    return text_at(instruction, 1, "")
+
+
+def text_at(instruction, index, fallback):
+    if index < len(instruction) and isinstance(instruction[index], str):
+        return instruction[index]
+    return fallback
+
+
+def made(instruction, instances):
+    name = instance_name(instruction)
+    if name:
+        instances[name] = {"phase": "new"}
+    return "OK"
+
+
+def move(instruction, instances, needed, nxt):
+    state = gate(instruction, instances)
+    if state is None or state.get("phase") != needed:
+        return "refused"
+    state["phase"] = nxt
+    return "ok"
+
+
+def phase(instruction, instances):
+    state = gate(instruction, instances)
+    if state is None:
+        return ""
+    return state["phase"]
+
+
+def released(instruction, instances):
+    state = gate(instruction, instances)
+    if state is not None and state.get("phase") == "released":
+        return "true"
+    return "false"
+
+
+def gate(instruction, instances):
+    name = instance_name(instruction)
+    if not name:
+        return None
+    return instances.get(name)
+
+
+def instance_name(instruction):
+    if len(instruction) < 3:
+        return ""
+    name = instruction[2]
+    if not isinstance(name, str) or not name:
+        return ""
+    return name
 
 
 def echoed(instruction):
-    if len(instruction) > 4 and isinstance(instruction[4], str):
-        return instruction[4]
-    return "OK"
+    return text_at(instruction, 4, "OK")
 
 
 def ordered(instruction):
@@ -84,11 +151,10 @@ def kind_of(instruction):
 
 
 def arguments(instruction):
-    if len(instruction) < 2:
-        return []
-    if instruction[1] == "callAndAssign":
+    command = text_at(instruction, 1, "")
+    if command == "callAndAssign":
         return instruction[5:]
-    if instruction[1] == "call":
+    if command == "call":
         return instruction[4:]
     return []
 
@@ -103,22 +169,18 @@ def method_name(instruction):
 
 
 def parse(text):
-    value, _ = read_list(text, 0)
-    return value
+    return read_list(text)
 
 
-def read_list(text, index):
-    index += 1
-    count, index = read_length(text, index)
+def read_list(text):
+    count, index = read_length(text, 1)
     items = []
     for _ in range(count):
         length, index = read_length(text, index)
         raw = text[index:index + length]
         index += length + 1
-        items.append(read_list(raw, 0)[0] if raw.startswith("[") else raw)
-    if index < len(text) and text[index] == "]":
-        index += 1
-    return items, index
+        items.append(read_list(raw) if raw.startswith("[") else raw)
+    return items
 
 
 def read_length(text, index):
@@ -135,6 +197,25 @@ def serialize(value):
 def field(value):
     text = serialize(value)
     return f"{len(text):06d}:{text}:"
+
+
+PLAIN = {
+    "hello": hello,
+    "echo": echoed,
+    "endIsAfterStart": ordered,
+    "kind": kind_of,
+}
+
+MOVES = {
+    "open": ("new", "open"),
+    "block": ("open", "blocked"),
+    "release": ("open", "released"),
+}
+
+QUERIES = {
+    "phase": phase,
+    "released": released,
+}
 
 
 def read_message(incoming):

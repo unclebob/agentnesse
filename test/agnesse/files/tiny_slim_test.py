@@ -60,6 +60,7 @@ class TinySlimTest(unittest.TestCase):
         earlier = ["2", "call", "actor", "endIsAfterStart", "4", "1"]
         broken = ["3", "call", "actor", "endIsAfterStart", "a", "1"]
         missing = ["4", "call", "actor", "endIsAfterStart"]
+        single = ["12", "call", "actor", "endIsAfterStart", "1"]
         person = ["5", "call", "actor", "kind", '{"doc":{"kind":"id"}}']
         assigned_kind = ["11", "callAndAssign", "symbol", "actor", "kind", '{"kind":"id"}']
         other = ["6", "callAndAssign", "symbol", "actor", "kind", '{"kind":"passport"}']
@@ -71,6 +72,9 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("no", self.slim.answer([earlier])[0][1])
         self.assertEqual("no", self.slim.answer([broken])[0][1])
         self.assertEqual("no", self.slim.answer([missing])[0][1])
+        self.assertEqual("no", self.slim.answer([single])[0][1])
+        self.assertEqual("", self.slim.method_name(["1", "callAndAssign"]))
+        self.assertEqual("", self.slim.method_name(["1", "callAndAssign", "symbol", "actor"]))
         self.assertEqual("id", self.slim.answer([person])[0][1])
         self.assertEqual("id", self.slim.answer([assigned_kind])[0][1])
         self.assertEqual("no", self.slim.answer([other])[0][1])
@@ -78,6 +82,60 @@ class TinySlimTest(unittest.TestCase):
         self.assertEqual("no", self.slim.answer([nested])[0][1])
         self.assertEqual([], self.slim.arguments(["only"]))
         self.assertEqual([], self.slim.arguments(["1", "make", "actor"]))
+        self.assertEqual("", self.slim.command(["1"]))
+        self.assertEqual("", self.slim.command(["1", ["make"]]))
+        self.assertEqual("make", self.slim.command(["1", "make"]))
+        self.assertEqual("OK", self.slim.text_at(["1", "make"], 4, "OK"))
+
+    def test_a_gate_starts_new_and_a_blocked_release_is_refused(self):
+        made = ["1", "make", "gate", "tiny"]
+        opened = ["2", "call", "gate", "open"]
+        blocked = ["3", "call", "gate", "block"]
+        refused = ["4", "call", "gate", "release"]
+        phase = ["5", "call", "gate", "phase"]
+        still = ["6", "call", "gate", "released"]
+        other = ["7", "make", "other", "tiny"]
+        other_phase = ["8", "call", "other", "phase"]
+        batch = [made, opened, blocked, refused, phase, still, other, other_phase]
+        answered = dict(self.slim.answer(batch))
+        self.assertEqual("OK", answered["1"])
+        self.assertEqual("ok", answered["2"])
+        self.assertEqual("ok", answered["3"])
+        self.assertEqual("refused", answered["4"])
+        self.assertEqual("blocked", answered["5"])
+        self.assertEqual("false", answered["6"])
+        self.assertEqual("new", answered["8"])
+
+    def test_release_from_open_and_the_refused_moves(self):
+        shared = {}
+        self.assertEqual("OK", self.slim.answer([["1", "make", "gate"]], shared)[0][1])
+        self.assertEqual("ok", self.slim.answer([["2", "call", "gate", "open"]], shared)[0][1])
+        self.assertEqual("ok", self.slim.answer([["3", "call", "gate", "release"]], shared)[0][1])
+        self.assertEqual("released", self.slim.answer([["4", "call", "gate", "phase"]], shared)[0][1])
+        self.assertEqual("true", self.slim.answer([["5", "call", "gate", "released"]], shared)[0][1])
+        self.assertEqual("refused", self.slim.answer([["6", "call", "gate", "open"]], shared)[0][1])
+        self.assertEqual("refused", self.slim.answer([["7", "call", "gate", "block"]], shared)[0][1])
+        self.assertEqual("refused", self.slim.answer([["8", "call", "missing", "open"]])[0][1])
+        self.assertEqual("", self.slim.answer([["9", "call", "missing", "phase"]])[0][1])
+        self.assertEqual("false", self.slim.answer([["10", "call", "missing", "released"]])[0][1])
+        self.assertEqual("OK", self.slim.answer([["11", "make"]])[0][1])
+        self.assertEqual("refused", self.slim.answer([["12", "call", "", "open"]])[0][1])
+        self.assertEqual("refused", self.slim.answer([["13", "call", ["gate"], "block"]])[0][1])
+        self.assertEqual("OK", self.slim.answer([["14", "make", "", "tiny"]])[0][1])
+        self.assertEqual("refused", self.slim.answer([["15", "make", ""], ["16", "call", "", "open"]])[1][1])
+        name = ["gate"]
+        self.assertEqual("refused", self.slim.answer([["17", "make", name], ["18", "call", name, "open"]])[1][1])
+
+    def test_a_gate_keeps_its_phase_across_messages(self):
+        incoming = frame(self.slim, ["1", "make", "gate", "tiny"])
+        incoming += frame(self.slim, ["2", "call", "gate", "open"])
+        incoming += frame(self.slim, ["3", "call", "gate", "phase"])
+        incoming += frame(self.slim, "bye")
+        outgoing = io.BytesIO()
+        self.slim.speak(io.BytesIO(incoming), outgoing)
+        text = outgoing.getvalue().decode("utf-8")
+        self.assertIn("ok", text)
+        self.assertIn("open", text)
 
     def test_pipe_mode_reads_the_last_argument(self):
         incoming = frame(self.slim, ["1", "call", "actor", "hello"]) + frame(self.slim, "bye")
@@ -86,6 +144,21 @@ class TinySlimTest(unittest.TestCase):
         self.assertIn(b"world", stdout.getvalue())
 
     def test_socket_mode_answers_on_the_given_port(self):
+        seen = {}
+        real = self.slim.socket.socket
+        reuse = socket.SO_REUSEADDR
+
+        class Watching(real):
+            def setsockopt(self, level, option, value):
+                if option == reuse:
+                    seen["reuse"] = value
+                return super().setsockopt(level, option, value)
+
+            def listen(self, backlog):
+                seen["backlog"] = backlog
+                return super().listen(backlog)
+
+        self.slim.socket.socket = Watching
         probe = socket.socket()
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
@@ -95,24 +168,30 @@ class TinySlimTest(unittest.TestCase):
             target=drive_main,
             args=(self, ["tiny_slim.py", "not-a-port", str(port)], io.BytesIO(b""), stdout),
             daemon=True)
-        thread.start()
-        client = connect(port)
         try:
-            header = read_until(client, b"\n")
-            self.assertEqual(b"Slim -- V0.5\n", header)
-            client.sendall(frame(self.slim, ["1", "call", "actor", "hello"]))
-            body = read_until(client, b"world")
-            self.assertIn(b"world", body)
-            client.sendall(frame(self.slim, "bye"))
+            thread.start()
+            client = connect(port)
+            try:
+                header = read_until(client, b"\n")
+                self.assertEqual(b"Slim -- V0.5\n", header)
+                client.sendall(frame(self.slim, ["1", "call", "actor", "hello"]))
+                body = read_until(client, b"world")
+                self.assertIn(b"world", body)
+                client.sendall(frame(self.slim, "bye"))
+            finally:
+                client.close()
+            thread.join(2)
+            self.assertFalse(thread.is_alive())
+            self.assertEqual(1, seen["reuse"])
+            self.assertEqual(1, seen["backlog"])
         finally:
-            client.close()
-        thread.join(2)
-        self.assertFalse(thread.is_alive())
+            self.slim.socket.socket = real
 
-    def test_an_empty_stream_ends_after_the_header(self):
-        outgoing = io.BytesIO()
-        self.slim.speak(io.BytesIO(b""), outgoing)
-        self.assertEqual(b"Slim -- V0.5\n", outgoing.getvalue())
+    def test_an_unreadable_stream_ends_after_the_header(self):
+        for raw in (b"", b"000010:short"):
+            outgoing = io.BytesIO()
+            self.slim.speak(io.BytesIO(raw), outgoing)
+            self.assertEqual(b"Slim -- V0.5\n", outgoing.getvalue())
 
     def test_a_short_read_does_not_swallow_the_next_message(self):
         incoming = frame(self.slim, ["1", "call", "actor", "hello"]) + frame(self.slim, ["2", "call", "actor", "echo", "hi"])
@@ -121,11 +200,6 @@ class TinySlimTest(unittest.TestCase):
         text = outgoing.getvalue().decode("utf-8")
         self.assertIn("world", text)
         self.assertIn("hi", text)
-
-    def test_a_truncated_body_ends_the_session(self):
-        outgoing = io.BytesIO()
-        self.slim.speak(io.BytesIO(b"000010:short"), outgoing)
-        self.assertEqual(b"Slim -- V0.5\n", outgoing.getvalue())
 
 
 def connect(port):
