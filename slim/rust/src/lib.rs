@@ -2,11 +2,12 @@
 //! socket on 127.0.0.1. A lanes instruction runs each lane on its own thread
 //! against that connection's instances.
 //!
-//! String symbols support $Name with Unicode letters, $`backtick names`,
-//! shorter-prefix fallback, undefined text left as written, $name= as an empty
-//! argument, and nested lists. Stored values are strings, so a whole-cell
-//! symbol still passes text. There is no reflection, so typed cell conversion
-//! is not applied on the call path.
+//! Symbols follow the Java forms. A whole-cell symbol passes the stored value.
+//! A non-string class symbol becomes the instance. SlimHelperLibrary pushes,
+//! pops, and clones the script actor. SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS skips
+//! replacement, and an invalid pattern is ignored. plus, wide, scale, flag,
+//! initial, day, shade, join, and label convert arguments from a signature
+//! table, because a fixture method has no reflected parameter types.
 
 use std::collections::HashMap;
 use std::io::{Read, Write};
@@ -32,11 +33,23 @@ struct Seat {
 
 struct Shared {
     instances: HashMap<String, Arc<Mutex<Seat>>>,
+    stack: Vec<Option<Arc<Mutex<Seat>>>>,
+}
+
+#[derive(Clone)]
+enum Stored {
+    Text(String),
+    Int(i64),
+    Float(f64),
+    Bool(bool),
+    Char(char),
+    List(Vec<Stored>),
+    Seat(Arc<Mutex<Seat>>),
 }
 
 impl Shared {
     fn fresh() -> Self {
-        Self { instances: HashMap::new() }
+        Self { instances: HashMap::new(), stack: Vec::new() }
     }
 }
 
@@ -129,7 +142,7 @@ fn read_exact<R: Read>(input: &mut R, length: usize) -> Option<String> {
 
 pub struct Gate {
     shared: Arc<Mutex<Shared>>,
-    symbols: Mutex<HashMap<String, String>>,
+    symbols: Mutex<HashMap<String, Stored>>,
 }
 
 impl Gate {
@@ -145,7 +158,7 @@ impl Gate {
     }
 }
 
-fn answer(instructions: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, String>) -> Value {
+fn answer(instructions: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, Stored>) -> Value {
     let mut results = Vec::new();
     for item in instructions {
         let Value::List(row) = item else { continue };
@@ -158,14 +171,14 @@ pub fn drive(input: &mut impl Read, output: &mut impl Write) {
     speak(input, output, Arc::new(Mutex::new(Shared::fresh())));
 }
 
-fn effect(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, String>) -> Value {
+fn effect(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, Stored>) -> Value {
     if text_of(&text_at(row, 1)) == "lanes" {
         return run_lanes(row, shared, symbols);
     }
-    Value::Text(reply(row, shared, symbols))
+    wire(&reply(row, shared, symbols))
 }
 
-fn run_lanes(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, String>) -> Value {
+fn run_lanes(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, Stored>) -> Value {
     if row.len() <= 2 {
         return Value::Text("lanes".into());
     }
@@ -199,7 +212,7 @@ fn run_lanes(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<S
                     text_at(&instruction, 0),
                     Value::Text(started.to_string()),
                     Value::Text(finished.to_string()),
-                    Value::Text(value),
+                    wire(&value),
                 ]));
             }
         }));
@@ -212,64 +225,111 @@ fn run_lanes(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<S
     Value::List(finished)
 }
 
-fn reply(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, String>) -> String {
+fn reply(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &mut HashMap<String, Stored>) -> Stored {
     match text_of(&text_at(row, 1)).as_str() {
-        "make" => made(row, shared),
+        "make" => Stored::Text(made(row, shared, symbols)),
         "call" => call(row, 2, 3, shared, symbols),
         "callAndAssign" => {
             let value = call(row, 3, 4, shared, symbols);
-            remember(symbols, &text_of(&text_at(row, 2)), &value);
+            remember(symbols, &text_of(&text_at(row, 2)), value.clone());
             value
         }
-        _ => "OK".into(),
+        "assign" => {
+            remember(symbols, &text_of(&text_at(row, 2)), Stored::Text(text_of(&text_at(row, 3))));
+            Stored::Text("OK".into())
+        }
+        _ => Stored::Text("OK".into()),
     }
 }
 
-fn remember(symbols: &mut HashMap<String, String>, name: &str, value: &str) {
+fn remember(symbols: &mut HashMap<String, Stored>, name: &str, value: Stored) {
     if name.is_empty() {
         return;
     }
-    symbols.insert(name.into(), value.into());
+    symbols.insert(name.into(), value);
 }
 
-fn call(row: &[Value], instance_at: usize, method_at: usize, shared: &Arc<Mutex<Shared>>, symbols: &HashMap<String, String>) -> String {
+fn call(row: &[Value], instance_at: usize, method_at: usize, shared: &Arc<Mutex<Shared>>, symbols: &HashMap<String, Stored>) -> Stored {
     let method = text_of(&text_at(row, method_at));
-    let args = expand_all(&args_from(row, method_at + 1), symbols);
     let name = text_of(&text_at(row, instance_at));
+    let raw = args_from(row, method_at + 1);
+    let args = if skips(symbols, &name, &method) {
+        raw.iter().map(stored_of).collect()
+    } else {
+        expand_all(&raw, symbols)
+    };
+    let args = convert_args(&method, args);
+    if name == "SlimHelperLibrary" {
+        return helper(shared, &method, &args);
+    }
     let seat = find(shared, &name);
     if method == "echo" {
-        return echo_of(seat.as_ref(), &args);
+        return Stored::Text(echo_of(seat.as_ref(), &args));
+    }
+    if method == "self" {
+        if let Some(seat) = seat {
+            return Stored::Seat(seat);
+        }
     }
     if let Some(value) = plain(&method, &args) {
-        return value;
+        return Stored::Text(value);
     }
-    on_seat(&method, &name, &first_text(&args), args.len(), seat.as_ref())
+    Stored::Text(on_seat(&method, &name, &first_text(&args), args.len(), seat.as_ref()))
 }
 
-fn plain(method: &str, args: &[Value]) -> Option<String> {
+fn plain(method: &str, args: &[Stored]) -> Option<String> {
+    numbers(method, args).or_else(|| words(method, args))
+}
+
+fn numbers(method: &str, args: &[Stored]) -> Option<String> {
     match method {
-        "hello" => Some("world".into()),
-        "endIsAfterStart" => Some(ordered(args)),
-        "kind" => Some(kind_of(args)),
+        "plus" => Some(plus(args)),
+        "wide" => Some(wide(args)),
+        "scale" => Some(scale(args)),
+        "flag" => Some(flag(args)),
         _ => None,
     }
 }
 
-fn echo_of(seat: Option<&Arc<Mutex<Seat>>>, args: &[Value]) -> String {
+fn words(method: &str, args: &[Stored]) -> Option<String> {
+    greetings(method, args).or_else(|| shaped(method, args))
+}
+
+fn greetings(method: &str, args: &[Stored]) -> Option<String> {
+    match method {
+        "hello" => Some("world".into()),
+        "endIsAfterStart" => Some(ordered(args)),
+        "kind" => Some(kind_of(args)),
+        "initial" => Some(initial(args)),
+        _ => None,
+    }
+}
+
+fn shaped(method: &str, args: &[Stored]) -> Option<String> {
+    match method {
+        "day" => Some(day(args)),
+        "shade" => Some(shade(args)),
+        "join" => Some(join(args)),
+        "label" => Some(label(args)),
+        _ => None,
+    }
+}
+
+fn echo_of(seat: Option<&Arc<Mutex<Seat>>>, args: &[Stored]) -> String {
     if args.is_empty() {
         return word_of(seat);
     }
     match &args[0] {
-        Value::Text(text) => text.clone(),
-        Value::List(_) => "OK".into(),
+        Stored::Text(text) => text.clone(),
+        _ => "OK".into(),
     }
 }
 
-fn ordered(args: &[Value]) -> String {
+fn ordered(args: &[Stored]) -> String {
     if args.len() < 2 {
         return "no".into();
     }
-    match (whole(&args[0]), whole(&args[1])) {
+    match (whole_text(&arg_text(args, 0)), whole_text(&arg_text(args, 1))) {
         (Some(left), Some(right)) if right > left => "yes".into(),
         _ => "no".into(),
     }
@@ -280,18 +340,24 @@ pub fn whole(value: &Value) -> Option<i32> {
     text.parse().ok()
 }
 
-fn kind_of(args: &[Value]) -> String {
-    if first_text(args).contains("\"kind\":\"id\"") { "id".into() } else { "no".into() }
+fn kind_of(args: &[Stored]) -> String {
+    if arg_text(args, 0).contains("\"kind\":\"id\"") { "id".into() } else { "no".into() }
 }
 
-fn first_text(args: &[Value]) -> String {
-    if args.is_empty() {
-        return String::new();
+fn first_text(args: &[Stored]) -> String {
+    arg_text(args, 0)
+}
+
+fn arg_text(args: &[Stored], index: usize) -> String {
+    match args.get(index) {
+        Some(Stored::Text(text)) => text.clone(),
+        Some(other) => display(other),
+        None => String::new(),
     }
-    match &args[0] {
-        Value::Text(text) => text.clone(),
-        Value::List(_) => String::new(),
-    }
+}
+
+fn whole_text(text: &str) -> Option<i32> {
+    text.parse().ok()
 }
 
 fn on_seat(method: &str, name: &str, arg: &str, count: usize, seat: Option<&Arc<Mutex<Seat>>>) -> String {
@@ -331,7 +397,8 @@ fn unknown(method: &str, name: &str, count: usize, seat: Option<&Arc<Mutex<Seat>
 }
 
 fn no_method(method: &str, count: usize, class_name: &str) -> String {
-    format!("__EXCEPTION__:message:<<NO_METHOD_IN_CLASS No Method {method}[{count}] in class {class_name}.\n Available methods:\n{CATALOG}>>")
+    let list = if class_name == "SlimHelperLibrary" { HELPER } else { CATALOG };
+    format!("__EXCEPTION__:message:<<NO_METHOD_IN_CLASS No Method {method}[{count}] in class {class_name}.\n Available methods:\n{list}>>")
 }
 
 fn book(seat: Option<&Arc<Mutex<Seat>>>, name: &str) -> String {
@@ -377,13 +444,30 @@ fn word_of(seat: Option<&Arc<Mutex<Seat>>>) -> String {
     if word.is_empty() { "OK".into() } else { word }
 }
 
-fn made(row: &[Value], shared: &Arc<Mutex<Shared>>) -> String {
+fn made(row: &[Value], shared: &Arc<Mutex<Shared>>, symbols: &HashMap<String, Stored>) -> String {
     let name = text_of(&text_at(row, 2));
     if name.is_empty() {
         return "OK".into();
     }
-    shared.lock().unwrap().instances.insert(name, Arc::new(Mutex::new(opened(&text_of(&text_at(row, 3)), &text_of(&text_at(row, 4))))));
+    if let Some(seat) = actor_from(&text_at(row, 3), symbols) {
+        shared.lock().unwrap().instances.insert(name, seat);
+        return "OK".into();
+    }
+    let class_name = display(&expand_cell(&text_of(&text_at(row, 3)), symbols));
+    shared.lock().unwrap().instances.insert(name, Arc::new(Mutex::new(opened(&class_name, &text_of(&text_at(row, 4))))));
     "OK".into()
+}
+
+fn actor_from(raw: &Value, symbols: &HashMap<String, Stored>) -> Option<Arc<Mutex<Seat>>> {
+    let Value::Text(text) = raw else { return None };
+    let name = text.strip_prefix('$')?;
+    if name.is_empty() {
+        return None;
+    }
+    match symbols.get(name) {
+        Some(Stored::Seat(seat)) => Some(Arc::clone(seat)),
+        _ => None,
+    }
 }
 
 fn opened(class_name: &str, mark: &str) -> Seat {
@@ -394,7 +478,8 @@ fn opened(class_name: &str, mark: &str) -> Seat {
     Seat { phase: "new".into(), seats: None, race: String::new(), word: String::new(), class_name }
 }
 
-const CATALOG: &str = "beginTable() -> string\nblock() -> string\nbook() -> string\necho(string) -> string\nendIsAfterStart(string, string) -> string\nendTable() -> string\nexecute() -> string\nhello() -> string\nkind(string) -> string\nopen() -> string\nphase() -> string\nrelease() -> string\nreleased() -> string\nreset() -> string\nsetWord(string) -> string\ntable(list) -> string";
+const CATALOG: &str = "beginTable() -> string\nblock() -> string\nbook() -> string\nday(date) -> string\necho(string) -> string\nendIsAfterStart(string, string) -> string\nendTable() -> string\nexecute() -> string\nflag(boolean) -> string\nhello() -> string\ninitial(char) -> string\njoin(list) -> string\nkind(string) -> string\nlabel(map) -> string\nopen() -> string\nphase() -> string\nplus(int, int) -> string\nrelease() -> string\nreleased() -> string\nreset() -> string\nscale(double) -> string\nsetWord(string) -> string\nshade(enum) -> string\ntable(list) -> string\nwide(long) -> string";
+const HELPER: &str = "cloneSymbol(object) -> object\npopFixture() -> string\npushFixture() -> string";
 
 fn race_book(seat: &Arc<Mutex<Seat>>) -> String {
     let seen = match seat.lock().unwrap().seats {
@@ -441,28 +526,44 @@ fn args_from(row: &[Value], index: usize) -> Vec<Value> {
     row.get(index..).unwrap_or(&[]).to_vec()
 }
 
-fn expand_all(args: &[Value], symbols: &HashMap<String, String>) -> Vec<Value> {
+fn expand_all(args: &[Value], symbols: &HashMap<String, Stored>) -> Vec<Stored> {
     args.iter().map(|arg| expand(arg, symbols)).collect()
 }
 
-fn expand(value: &Value, symbols: &HashMap<String, String>) -> Value {
+fn expand(value: &Value, symbols: &HashMap<String, Stored>) -> Stored {
     match value {
-        Value::Text(text) => Value::Text(expand_string(text, symbols)),
-        Value::List(items) => Value::List(expand_all(items, symbols)),
+        Value::Text(text) => expand_cell(text, symbols),
+        Value::List(items) => Stored::List(expand_all(items, symbols)),
     }
 }
 
 pub fn expand_string(text: &str, symbols: &HashMap<String, String>) -> String {
-    if assignment(text) {
-        return String::new();
+    let stored = symbols.iter().map(|(key, value)| (key.clone(), Stored::Text(value.clone()))).collect();
+    display(&expand_cell(text, &stored))
+}
+
+fn expand_cell(text: &str, symbols: &HashMap<String, Stored>) -> Stored {
+    if let Some(name) = text.strip_prefix('$') {
+        if !name.is_empty() {
+            if let Some(value) = symbols.get(name) {
+                return value.clone();
+            }
+        }
     }
+    if assignment(text) {
+        return Stored::Text(String::new());
+    }
+    Stored::Text(substitute(text, symbols))
+}
+
+fn substitute(text: &str, symbols: &HashMap<String, Stored>) -> String {
     let mut out = String::new();
     let mut index = 0;
     while index < text.len() {
         if let Some(found) = symbol_at(text, index) {
             match resolve(&found.name, symbols) {
                 Some((used, value)) => {
-                    out.push_str(value);
+                    out.push_str(&display(value));
                     index = found.start + 1 + used.len();
                 }
                 None => {
@@ -521,7 +622,7 @@ fn word_symbol(after: &str, start_char: char, index: usize) -> Option<Found> {
     Some(Found { start: index, end: index + 1 + end, name: after[..end].to_string() })
 }
 
-fn resolve<'a>(name: &str, symbols: &'a HashMap<String, String>) -> Option<(String, &'a str)> {
+fn resolve<'a>(name: &str, symbols: &'a HashMap<String, Stored>) -> Option<(String, &'a Stored)> {
     if let Some(value) = symbols.get(name) {
         return Some((name.to_string(), value));
     }
@@ -578,6 +679,258 @@ pub fn read_length(text: &str, index: usize) -> (usize, usize) {
         return (0, index + end + 1);
     };
     (number, index + end + 1)
+}
+
+fn wire(value: &Stored) -> Value {
+    match value {
+        Stored::List(items) => Value::List(items.iter().map(wire).collect()),
+        other => Value::Text(display(other)),
+    }
+}
+
+fn display(value: &Stored) -> String {
+    match value {
+        Stored::Text(text) => text.clone(),
+        Stored::Int(number) => number.to_string(),
+        Stored::Float(number) => number.to_string(),
+        Stored::Bool(flag) => flag.to_string(),
+        Stored::Char(ch) => ch.to_string(),
+        Stored::List(items) => listed(items),
+        Stored::Seat(_) => "seat".into(),
+    }
+}
+
+fn listed(items: &[Stored]) -> String {
+    let parts: Vec<String> = items.iter().map(display).collect();
+    format!("[{}]", parts.join(" "))
+}
+
+fn stored_of(value: &Value) -> Stored {
+    match value {
+        Value::Text(text) => Stored::Text(text.clone()),
+        Value::List(items) => Stored::List(items.iter().map(stored_of).collect()),
+    }
+}
+
+fn helper(shared: &Arc<Mutex<Shared>>, method: &str, args: &[Stored]) -> Stored {
+    match method {
+        "pushFixture" => {
+            let mut shared = shared.lock().unwrap();
+            let actor = shared.instances.get("scriptTableActor").cloned();
+            shared.stack.push(actor);
+            Stored::Text("OK".into())
+        }
+        "popFixture" => pop_fixture(shared),
+        "cloneSymbol" => args.first().cloned().unwrap_or(Stored::Text(String::new())),
+        _ => Stored::Text(no_method(method, args.len(), "SlimHelperLibrary")),
+    }
+}
+
+fn pop_fixture(shared: &Arc<Mutex<Shared>>) -> Stored {
+    let mut shared = shared.lock().unwrap();
+    let Some(actor) = shared.stack.pop() else {
+        return Stored::Text(missing_instance("scriptTableActor"));
+    };
+    match actor {
+        Some(seat) => { shared.instances.insert("scriptTableActor".into(), seat); }
+        None => { shared.instances.remove("scriptTableActor"); }
+    }
+    Stored::Text("OK".into())
+}
+
+enum Atom { Char(char), Any }
+
+fn pieces(pattern: &str) -> Option<Vec<(Atom, bool)>> {
+    let mut out = Vec::new();
+    let mut chars = pattern.chars().peekable();
+    while let Some(ch) = chars.next() {
+        let atom = atom_of(ch, &mut chars)?;
+        let star = chars.peek() == Some(&'*');
+        if star { chars.next(); }
+        out.push((atom, star));
+    }
+    Some(out)
+}
+
+fn atom_of(ch: char, chars: &mut std::iter::Peekable<std::str::Chars>) -> Option<Atom> {
+    match ch {
+        '.' => Some(Atom::Any),
+        '\\' => chars.next().map(Atom::Char),
+        '[' => skip_class(chars),
+        _ => Some(Atom::Char(ch)),
+    }
+}
+
+fn skip_class(chars: &mut std::iter::Peekable<std::str::Chars>) -> Option<Atom> {
+    while let Some(ch) = chars.next() {
+        if ch == ']' { return Some(Atom::Any); }
+    }
+    None
+}
+
+fn matches_all(pieces: &[(Atom, bool)], text: &str) -> bool {
+    match_from(pieces, text.chars().collect::<Vec<_>>().as_slice(), 0)
+}
+
+fn match_from(pieces: &[(Atom, bool)], chars: &[char], at: usize) -> bool {
+    let Some((atom, star)) = pieces.first() else { return at == chars.len() };
+    let rest = &pieces[1..];
+    if *star {
+        return match_from(rest, chars, at) || (at < chars.len() && accepts(atom, chars[at]) && match_from(pieces, chars, at + 1));
+    }
+    at < chars.len() && accepts(atom, chars[at]) && match_from(rest, chars, at + 1)
+}
+
+fn accepts(atom: &Atom, ch: char) -> bool {
+    match atom {
+        Atom::Any => true,
+        Atom::Char(expected) => *expected == ch,
+    }
+}
+
+fn skips(symbols: &HashMap<String, Stored>, instance: &str, method: &str) -> bool {
+    let Some(Stored::Text(pattern)) = symbols.get("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS") else { return false };
+    let Some(pieces) = pieces(pattern) else { return false };
+    matches_all(&pieces, &format!("{instance}.{method}"))
+}
+
+fn convert_args(method: &str, args: Vec<Stored>) -> Vec<Stored> {
+    let Some(kinds) = signature(method) else { return args };
+    args.into_iter().enumerate().map(|(index, arg)| {
+        let kind = kinds.get(index).copied().unwrap_or("string");
+        convert(arg, kind)
+    }).collect()
+}
+
+fn signature(method: &str) -> Option<&'static [&'static str]> {
+    match method {
+        "plus" => Some(&["int", "int"]),
+        "wide" => Some(&["long"]),
+        "scale" => Some(&["double"]),
+        "flag" => Some(&["boolean"]),
+        "initial" => Some(&["char"]),
+        "day" => Some(&["date"]),
+        "shade" => Some(&["enum"]),
+        "join" => Some(&["list"]),
+        "label" => Some(&["map"]),
+        _ => None,
+    }
+}
+
+fn convert(value: Stored, kind: &str) -> Stored {
+    let Stored::Text(text) = value else { return value };
+    match kind {
+        "int" | "long" => parse_int(&text),
+        "double" => parse_float(&text),
+        "boolean" => Stored::Bool(text == "true"),
+        "char" => parse_char(&text),
+        "list" => parse_list(&text),
+        _ => Stored::Text(text),
+    }
+}
+
+fn parse_int(text: &str) -> Stored {
+    match text.parse::<i64>() {
+        Ok(number) => Stored::Int(number),
+        Err(_) => Stored::Text(text.into()),
+    }
+}
+
+fn parse_float(text: &str) -> Stored {
+    match text.parse::<f64>() {
+        Ok(number) => Stored::Float(number),
+        Err(_) => Stored::Text(text.into()),
+    }
+}
+
+fn parse_char(text: &str) -> Stored {
+    let mut chars = text.chars();
+    match (chars.next(), chars.next()) {
+        (Some(ch), None) => Stored::Char(ch),
+        _ => Stored::Text(text.into()),
+    }
+}
+
+fn parse_list(text: &str) -> Stored {
+    if !text.starts_with('[') || !text.ends_with(']') {
+        return Stored::Text(text.into());
+    }
+    let body = text[1..text.len() - 1].trim();
+    if body.is_empty() {
+        return Stored::List(Vec::new());
+    }
+    Stored::List(body.split(',').map(|part| Stored::Text(part.trim().into())).collect())
+}
+
+fn plus(args: &[Stored]) -> String {
+    match (args.first(), args.get(1)) {
+        (Some(Stored::Int(left)), Some(Stored::Int(right))) => (left + right).to_string(),
+        _ => "no".into(),
+    }
+}
+
+fn wide(args: &[Stored]) -> String {
+    match args.first() {
+        Some(Stored::Int(number)) => number.to_string(),
+        _ => "no".into(),
+    }
+}
+
+fn scale(args: &[Stored]) -> String {
+    match args.first() {
+        Some(Stored::Float(number)) => number.to_string(),
+        _ => "no".into(),
+    }
+}
+
+fn flag(args: &[Stored]) -> String {
+    if matches!(args.first(), Some(Stored::Bool(true))) { "yes".into() } else { "no".into() }
+}
+
+fn initial(args: &[Stored]) -> String {
+    match args.first() {
+        Some(Stored::Char(ch)) => ch.to_string(),
+        _ => "no".into(),
+    }
+}
+
+fn day(args: &[Stored]) -> String {
+    match args.first() {
+        Some(Stored::Text(text)) if valid_date(text) => text.clone(),
+        _ => "no".into(),
+    }
+}
+
+fn valid_date(text: &str) -> bool {
+    let mut parts = text.split('-');
+    let Some(year) = parts.next().and_then(|part| part.parse::<i32>().ok()) else { return false };
+    let Some(month) = parts.next().and_then(|part| part.parse::<u32>().ok()) else { return false };
+    let Some(day) = parts.next().and_then(|part| part.parse::<u32>().ok()) else { return false };
+    parts.next().is_none() && month >= 1 && month <= 12 && day >= 1 && day <= 31 && year > 0
+}
+
+fn shade(args: &[Stored]) -> String {
+    match arg_text(args, 0).as_str() {
+        "red" | "green" | "blue" => arg_text(args, 0),
+        _ => "no".into(),
+    }
+}
+
+fn join(args: &[Stored]) -> String {
+    let Some(Stored::List(items)) = args.first() else { return "no".into() };
+    items.iter().map(display).collect::<Vec<_>>().join(",")
+}
+
+fn label(args: &[Stored]) -> String {
+    let Some(Stored::List(rows)) = args.first() else { return "no".into() };
+    for row in rows {
+        if let Stored::List(pair) = row {
+            if pair.first().map(display).as_deref() == Some("name") {
+                return pair.get(1).map(display).unwrap_or_default();
+            }
+        }
+    }
+    "no".into()
 }
 
 pub fn serialize(value: &Value) -> String {

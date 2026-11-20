@@ -152,6 +152,31 @@ fn symbol_prefixes_unicode_backticks_and_assignments() {
 }
 
 #[test]
+fn objects_actors_opt_out_and_typed_arguments() {
+    let gate = Gate::new();
+    gate.answer(&[Value::List(vec![t("1"), t("make"), t("gate"), t("slim")])]);
+    gate.answer(&[Value::List(vec![t("2"), t("callAndAssign"), t("actor"), t("gate"), t("self")])]);
+    gate.answer(&[Value::List(vec![t("3"), t("make"), t("again"), t("$actor")])]);
+    gate.answer(&[Value::List(vec![t("4"), t("call"), t("gate"), t("open")])]);
+    assert_eq!(cell(&gate.answer(&[call("5", "again", "phase", &[])]), 0), "open");
+    gate.answer(&[Value::List(vec![t("6"), t("make"), t("scriptTableActor"), t("slim")])]);
+    gate.answer(&[call("7", "SlimHelperLibrary", "pushFixture", &[])]);
+    gate.answer(&[Value::List(vec![t("8"), t("make"), t("scriptTableActor"), t("slim"), t("safe")])]);
+    gate.answer(&[call("9", "SlimHelperLibrary", "popFixture", &[])]);
+    assert_eq!(cell(&gate.answer(&[call("10", "scriptTableActor", "phase", &[])]), 0), "new");
+    gate.answer(&[Value::List(vec![t("11"), t("assign"), t("ab"), t("YES")])]);
+    gate.answer(&[Value::List(vec![t("12"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("again\\.echo")])]);
+    assert_eq!(cell(&gate.answer(&[call("13", "again", "echo", &["$ab"])]), 0), "$ab");
+    gate.answer(&[Value::List(vec![t("14"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("[")])]);
+    assert_eq!(cell(&gate.answer(&[call("15", "again", "echo", &["$ab"])]), 0), "YES");
+    assert_eq!(cell(&gate.answer(&[call("16", "again", "plus", &["2", "3"])]), 0), "5");
+    assert_eq!(cell(&gate.answer(&[call("17", "again", "flag", &["true"])]), 0), "yes");
+    assert_eq!(cell(&gate.answer(&[call("18", "again", "join", &["[red, blue]"])]), 0), "red,blue");
+    assert_eq!(cell(&gate.answer(&[call("19", "again", "day", &["2020-01-02"])]), 0), "2020-01-02");
+    assert_eq!(cell(&gate.answer(&[call("20", "again", "shade", &["green"])]), 0), "green");
+}
+
+#[test]
 fn books_and_the_probe() {
     let gate = Gate::new();
     gate.answer(&[Value::List(vec![t("1"), t("make"), t("seat"), t("slim"), t("safe")])]);
