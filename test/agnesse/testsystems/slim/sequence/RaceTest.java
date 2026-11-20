@@ -252,6 +252,9 @@ public class RaceTest {
       public List<Lane.Stamp> runLanes(List<Lane.Group> groups) {
         List<Lane.Stamp> hits = new ArrayList<>();
         long clock = 1L;
+        for (int index = 0; index < groups.size(); index++) {
+          assertEquals("t" + (index + 1), groups.get(index).tag());
+        }
         for (Lane.Group group : groups) {
           for (Lane.Call call : group.calls()) {
             if (drop && "book".equals(call.method())) {

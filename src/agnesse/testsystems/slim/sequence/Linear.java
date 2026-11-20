@@ -31,7 +31,7 @@ public final class Linear {
     return walk(plan, branches, readings, played.candidates, bound);
   }
 
-  private static Advance play(Plan plan, Candidates cast, Trace trace, List<Reading> readings) {
+  static Advance play(Plan plan, Candidates cast, Trace trace, List<Reading> readings) {
     Advance last = Advance.ok(cast, -1);
     for (int index = 0; index < trace.steps.size(); index++) {
       last = cast.take(plan, trace.steps.get(index), readings.get(index));

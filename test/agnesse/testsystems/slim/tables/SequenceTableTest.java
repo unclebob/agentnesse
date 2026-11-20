@@ -22,13 +22,18 @@ import agnesse.wiki.fs.InMemoryPage;
 
 import agnesse.slim.JavaSlimFactory;
 import agnesse.slim.SlimFactory;
+import agnesse.slim.SlimServer;
 import agnesse.slim.SlimService;
+import agnesse.slim.instructions.Instruction;
+import agnesse.slim.instructions.LanesInstruction;
 import agnesse.socketservice.PlainClientSocketFactory;
 import agnesse.testsystems.CompositeExecutionLogListener;
 import agnesse.testsystems.MockCommandRunner;
 import agnesse.testsystems.slim.SlimCommandRunningClient;
 import agnesse.testsystems.slim.property.Seed;
+import agnesse.testsystems.slim.sequence.CallBroke;
 import agnesse.testsystems.slim.sequence.History;
+import agnesse.testsystems.slim.sequence.Lane;
 import agnesse.testsystems.slim.sequence.Race;
 import agnesse.testsystems.slim.sequence.Schedule;
 import agnesse.testsystems.slim.sequence.Trace;
@@ -38,7 +43,9 @@ import org.junit.Test;
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1318,6 +1325,59 @@ public class SequenceTableTest {
     private MarkdownTable table() {
       return (MarkdownTable) tables.get(tables.size() - 1).getTable();
     }
+  }
+
+  @Test
+  public void laneStampsKeepTheirTagAndABadMakeIsReported() {
+    SlimDesk desk = new SlimDesk(new Scripted(List.of(List.of("t1", "a", "1", "2", "world"))));
+    assertTrue(desk.lanes());
+    assertTrue(desk.probes());
+    List<Lane.Stamp> hits = desk.runLanes(List.of(new Lane.Group("t1", List.of())));
+    assertEquals("t1", hits.get(0).tag());
+    assertEquals("a", hits.get(0).id());
+    assertEquals(1L, hits.get(0).started());
+    assertEquals(2L, hits.get(0).finished());
+    assertEquals("world", hits.get(0).result());
+    assertEquals("world", new SlimDesk(new Scripted("world")).call(0, "seat", "hello", List.of()));
+    CallBroke broke = assertThrows(CallBroke.class,
+        () -> new SlimDesk(new Scripted("bad")).make("seat", "LastSeat", new String[0]));
+    assertEquals("bad", broke.getMessage());
+    assertThrows(CallBroke.class, () -> new SlimDesk(new Scripted(null)).make("seat", "LastSeat", new String[0]));
+    assertFalse(new SlimDesk(new Scripted("no")).probes());
+    assertFalse(new SlimDesk(new Scripted(null)).probes());
+    assertThrows(CallBroke.class,
+        () -> new SlimDesk(new Scripted(SlimServer.EXCEPTION_TAG + "down")).call(0, "seat", "hello", List.of()));
+    assertThrows(CallBroke.class, () -> new SlimDesk(new Scripted(null)).call(0, "seat", "hello", List.of()));
+    CallBroke missing = assertThrows(CallBroke.class, () -> new SlimDesk(new Scripted(null)).runLanes(List.of()));
+    assertEquals("no result", missing.getMessage());
+    CallBroke text = assertThrows(CallBroke.class, () -> new SlimDesk(new Scripted("nope")).runLanes(List.of()));
+    assertEquals("nope", text.getMessage());
+    assertThrows(CallBroke.class, () -> new SlimDesk(new Scripted(List.of("short"))).runLanes(List.of()));
+  }
+
+  private static final class Scripted implements SlimClient {
+    private final Object reply;
+
+    private Scripted(Object reply) {
+      this.reply = reply;
+    }
+
+    @Override
+    public Map<String, Object> invokeAndGetResponse(List<Instruction> statements) {
+      Instruction instruction = statements.get(0);
+      Map<String, Object> result = new HashMap<>();
+      if (instruction instanceof LanesInstruction lanes && lanes.statement().size() <= 2) {
+        result.put(instruction.getId(), reply instanceof List ? "lanes" : reply);
+        return result;
+      }
+      result.put(instruction.getId(), reply);
+      return result;
+    }
+
+    @Override public void start() { }
+    @Override public void connect() { }
+    @Override public void bye() { }
+    @Override public void kill() { }
   }
 
   private static final class Grab implements TestSystemListener, TableFinished {

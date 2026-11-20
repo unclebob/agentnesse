@@ -47,7 +47,26 @@ public class LinearTest {
     assertEquals(Linear.Outcome.BOUND, Linear.search(meter, new Trace(List.of()), List.of(), branches, readings, 1));
     assertEquals(Linear.Outcome.FAIL, Linear.search(meter, new Trace(List.of()), List.of(), branches, readings, 64));
     assertEquals(Linear.Outcome.PASS, Linear.search(desk(), new Trace(List.of()), List.of(), List.of(), List.of()));
+    assertEquals(Linear.Outcome.PASS, Linear.search(desk(), new Trace(List.of()), List.of(), List.of(), List.of(), 1));
     assertEquals(Linear.Outcome.BOUND, Linear.search(desk(), new Trace(List.of()), List.of(), List.of(), List.of(), 0));
+    Advance painted = Linear.play(desk(), Candidates.start(desk().initial), new Trace(List.of()), List.of());
+    assertEquals(-1, painted.shown);
+  }
+
+  @Test
+  public void aZeroStampDoesNotForceOrderAndAnEqualStampDoesNotPrecede() {
+    Plan desk = desk();
+    Trace held = once(0);
+    Trace full = once(1);
+    assertEquals(Linear.Outcome.PASS, Linear.search(desk, new Trace(List.of()), List.of(),
+        List.of(full, held),
+        List.of(List.of(new Reading("full", Map.of(), 0L, 0L)), List.of(new Reading("held", Map.of(), 5L, 6L)))));
+    assertEquals(Linear.Outcome.PASS, Linear.search(desk, new Trace(List.of()), List.of(),
+        List.of(full, held),
+        List.of(List.of(new Reading("full", Map.of(), 1L, 5L)), List.of(new Reading("held", Map.of(), 5L, 6L)))));
+    assertEquals(Linear.Outcome.FAIL, Linear.search(desk, new Trace(List.of()), List.of(),
+        List.of(full, held),
+        List.of(List.of(new Reading("full", Map.of(), 1L, 2L)), List.of(new Reading("held", Map.of(), 5L, 6L)))));
   }
 
   private static Plan desk() {
