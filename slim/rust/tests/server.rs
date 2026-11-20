@@ -172,8 +172,58 @@ fn objects_actors_opt_out_and_typed_arguments() {
     assert_eq!(cell(&gate.answer(&[call("16", "again", "plus", &["2", "3"])]), 0), "5");
     assert_eq!(cell(&gate.answer(&[call("17", "again", "flag", &["true"])]), 0), "yes");
     assert_eq!(cell(&gate.answer(&[call("18", "again", "join", &["[red, blue]"])]), 0), "red,blue");
-    assert_eq!(cell(&gate.answer(&[call("19", "again", "day", &["2020-01-02"])]), 0), "2020-01-02");
-    assert_eq!(cell(&gate.answer(&[call("20", "again", "shade", &["green"])]), 0), "green");
+    assert_eq!(cell(&gate.answer(&[call("19", "again", "day", &["2020-01-01"])]), 0), "2020-01-01");
+    assert_eq!(cell(&gate.answer(&[call("21", "again", "day", &["2020-01-31"])]), 0), "2020-01-31");
+    assert_eq!(cell(&gate.answer(&[call("22", "again", "day", &["2020-01-32"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("23", "again", "day", &["2020-04-30"])]), 0), "2020-04-30");
+    assert_eq!(cell(&gate.answer(&[call("24", "again", "day", &["2020-04-31"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("25", "again", "day", &["2020-02-28"])]), 0), "2020-02-28");
+    assert_eq!(cell(&gate.answer(&[call("26", "again", "day", &["2020-02-29"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("27", "again", "day", &["2020-13-01"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("28", "again", "day", &["2020-00-01"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("29", "again", "day", &["202001-01"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("30", "again", "shade", &["green"])]), 0), "green");
+    assert_eq!(cell(&gate.answer(&[call("31", "again", "shade", &["pink"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("32", "again", "wide", &["4"])]), 0), "4");
+    assert_eq!(cell(&gate.answer(&[call("33", "again", "scale", &["1.25"])]), 0), "1.25");
+    assert_eq!(cell(&gate.answer(&[call("34", "again", "initial", &["Q"])]), 0), "Q");
+    assert_eq!(cell(&gate.answer(&[call("35", "again", "initial", &["QQ"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("36", "again", "label", &[])]), 0), "no");
+    let rows = Value::List(vec![Value::List(vec![t("name"), t("Ada")])]);
+    assert_eq!(cell(&gate.answer(&[Value::List(vec![t("37"), t("call"), t("again"), t("label"), rows])]), 0), "Ada");
+    gate.answer(&[Value::List(vec![t("38"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("again\\..*")])]);
+    assert_eq!(cell(&gate.answer(&[call("39", "again", "echo", &["$ab"])]), 0), "$ab");
+    assert_eq!(cell(&gate.answer(&[call("40", "again", "phase", &[])]), 0), "open");
+    assert_eq!(expand_string("$", &std::collections::HashMap::from([("".into(), "EMPTY".into())])), "$");
+    assert_eq!(expand_string("$q", &std::collections::HashMap::from([("".into(), "EMPTY".into())])), "$q");
+    assert_eq!(expand_string("$`not stored`x", &std::collections::HashMap::new()), "$`not stored`x");
+    assert_eq!(cell(&gate.answer(&[call("44", "again", "day", &["2020-01-00"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("45", "again", "day", &["2020-ab-01"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("46", "again", "day", &["2020-01-ab"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("47", "again", "day", &["2020/01-02"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("48", "again", "day", &["2020-01/02"])]), 0), "no");
+    assert_eq!(expand_string("$a-=", &std::collections::HashMap::new()), "$a-=");
+    let mut only = std::collections::HashMap::new();
+    only.insert("a_b".into(), "YES".into());
+    assert_eq!(expand_string("$a_b", &only), "YES");
+    assert_eq!(cell(&gate.answer(&[call("41", "again", "join", &["[a"])]), 0), "no");
+    assert_eq!(cell(&gate.answer(&[call("42", "again", "join", &["a]"])]), 0), "no");
+    let lanes = gate.answer(&[Value::List(vec![
+        t("43"), t("lanes"), t("bad"),
+        Value::List(vec![t("only")]),
+        Value::List(vec![t("t1"), Value::List(vec![
+            call("a", "again", "hello", &[]),
+            call("b", "again", "hello", &[]),
+        ])]),
+    ])]);
+    let rows = list_cell(&lanes);
+    let Value::List(row) = &rows[0] else { panic!("row") };
+    assert_eq!(text(&row[0]), "t1");
+    assert_eq!(text(&row[1]), "a");
+    assert_eq!(text(&row[2]), "1");
+    assert_eq!(text(&row[3]), "2");
+    let Value::List(second) = &rows[1] else { panic!("second") };
+    assert_eq!(text(&second[2]), "3");
 }
 
 #[test]

@@ -564,7 +564,7 @@ fn substitute(text: &str, symbols: &HashMap<String, Stored>) -> String {
             match resolve(&found.name, symbols) {
                 Some((used, value)) => {
                     out.push_str(&display(value));
-                    index = found.start + 1 + used.len();
+                    index = if used == found.name { found.end } else { found.start + 1 + used.len() };
                 }
                 None => {
                     out.push_str(&text[found.start..found.end]);
@@ -626,13 +626,18 @@ fn resolve<'a>(name: &str, symbols: &'a HashMap<String, Stored>) -> Option<(Stri
     if let Some(value) = symbols.get(name) {
         return Some((name.to_string(), value));
     }
-    let mut shorter = name.to_string();
-    while shorter.pop().is_some() && !shorter.is_empty() {
-        if let Some(value) = symbols.get(&shorter) {
-            return Some((shorter, value));
-        }
+    shorter(name, symbols)
+}
+
+fn shorter<'a>(name: &str, symbols: &'a HashMap<String, Stored>) -> Option<(String, &'a Stored)> {
+    if name.len() <= 1 {
+        return None;
     }
-    None
+    let cut = &name[..name.len() - 1];
+    if let Some(value) = symbols.get(cut) {
+        return Some((cut.to_string(), value));
+    }
+    shorter(cut, symbols)
 }
 
 fn name_part(ch: char) -> bool {
@@ -738,60 +743,30 @@ fn pop_fixture(shared: &Arc<Mutex<Shared>>) -> Stored {
     Stored::Text("OK".into())
 }
 
-enum Atom { Char(char), Any }
-
-fn pieces(pattern: &str) -> Option<Vec<(Atom, bool)>> {
-    let mut out = Vec::new();
-    let mut chars = pattern.chars().peekable();
-    while let Some(ch) = chars.next() {
-        let atom = atom_of(ch, &mut chars)?;
-        let star = chars.peek() == Some(&'*');
-        if star { chars.next(); }
-        out.push((atom, star));
-    }
-    Some(out)
-}
-
-fn atom_of(ch: char, chars: &mut std::iter::Peekable<std::str::Chars>) -> Option<Atom> {
-    match ch {
-        '.' => Some(Atom::Any),
-        '\\' => chars.next().map(Atom::Char),
-        '[' => skip_class(chars),
-        _ => Some(Atom::Char(ch)),
-    }
-}
-
-fn skip_class(chars: &mut std::iter::Peekable<std::str::Chars>) -> Option<Atom> {
-    while let Some(ch) = chars.next() {
-        if ch == ']' { return Some(Atom::Any); }
-    }
-    None
-}
-
-fn matches_all(pieces: &[(Atom, bool)], text: &str) -> bool {
-    match_from(pieces, text.chars().collect::<Vec<_>>().as_slice(), 0)
-}
-
-fn match_from(pieces: &[(Atom, bool)], chars: &[char], at: usize) -> bool {
-    let Some((atom, star)) = pieces.first() else { return at == chars.len() };
-    let rest = &pieces[1..];
-    if *star {
-        return match_from(rest, chars, at) || (at < chars.len() && accepts(atom, chars[at]) && match_from(pieces, chars, at + 1));
-    }
-    at < chars.len() && accepts(atom, chars[at]) && match_from(rest, chars, at + 1)
-}
-
-fn accepts(atom: &Atom, ch: char) -> bool {
-    match atom {
-        Atom::Any => true,
-        Atom::Char(expected) => *expected == ch,
-    }
-}
-
 fn skips(symbols: &HashMap<String, Stored>, instance: &str, method: &str) -> bool {
     let Some(Stored::Text(pattern)) = symbols.get("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS") else { return false };
-    let Some(pieces) = pieces(pattern) else { return false };
-    matches_all(&pieces, &format!("{instance}.{method}"))
+    let Some(literal) = unescape(pattern) else { return false };
+    let target = format!("{instance}.{method}");
+    if let Some(prefix) = literal.strip_suffix(".*") {
+        return target.starts_with(prefix);
+    }
+    target == literal
+}
+
+fn unescape(pattern: &str) -> Option<String> {
+    if pattern.contains('[') {
+        return None;
+    }
+    let mut out = String::new();
+    let mut chars = pattern.chars();
+    while let Some(ch) = chars.next() {
+        if ch == '\\' {
+            out.push(chars.next()?);
+        } else {
+            out.push(ch);
+        }
+    }
+    Some(out)
 }
 
 fn convert_args(method: &str, args: Vec<Stored>) -> Vec<Stored> {
@@ -902,11 +877,29 @@ fn day(args: &[Stored]) -> String {
 }
 
 fn valid_date(text: &str) -> bool {
-    let mut parts = text.split('-');
-    let Some(year) = parts.next().and_then(|part| part.parse::<i32>().ok()) else { return false };
-    let Some(month) = parts.next().and_then(|part| part.parse::<u32>().ok()) else { return false };
-    let Some(day) = parts.next().and_then(|part| part.parse::<u32>().ok()) else { return false };
-    parts.next().is_none() && month >= 1 && month <= 12 && day >= 1 && day <= 31 && year > 0
+    let bytes = text.as_bytes();
+    if bytes.len() != 10 {
+        return false;
+    }
+    if bytes[4] != b'-' {
+        return false;
+    }
+    if bytes[7] != b'-' {
+        return false;
+    }
+    let Ok(month) = text[5..7].parse::<u8>() else { return false };
+    let Ok(day) = text[8..10].parse::<u8>() else { return false };
+    let Some(limit) = month_limit(month) else { return false };
+    day >= 1 && day <= limit
+}
+
+fn month_limit(month: u8) -> Option<u8> {
+    match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => Some(31),
+        4 | 6 | 9 | 11 => Some(30),
+        2 => Some(28),
+        _ => None,
+    }
 }
 
 fn shade(args: &[Stored]) -> String {
