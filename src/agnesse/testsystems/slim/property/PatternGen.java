@@ -9,6 +9,10 @@ import java.util.Random;
  * Not a regular expression.
  */
 final class PatternGen extends Generator {
+  @Override
+  String family() {
+    return "pattern";
+  }
   static final int MAX_LENGTH = 64;
   static final int MAX_RUN = 32;
 
@@ -22,7 +26,7 @@ final class PatternGen extends Generator {
   }
 
   @Override
-  public Value draw(Random random) {
+  public Value draw(Random random, Row row) {
     StringBuilder out = new StringBuilder(slots.size());
     for (Slot slot : slots) {
       out.append(slot.draw(random));
@@ -31,7 +35,7 @@ final class PatternGen extends Generator {
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     char[] current = matched(value.cell());
     List<Value> out = new ArrayList<>();
     offer(out, current, base());

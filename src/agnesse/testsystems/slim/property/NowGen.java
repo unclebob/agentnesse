@@ -17,12 +17,17 @@ final class NowGen extends Generator {
   }
 
   @Override
-  public Value draw(Random random) {
+  String family() {
+    return "now";
+  }
+
+  @Override
+  public Value draw(Random random, Row row) {
     return new TextValue(text);
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     return List.of();
   }
 }

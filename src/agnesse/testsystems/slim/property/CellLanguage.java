@@ -5,30 +5,38 @@ package agnesse.testsystems.slim.property;
  *
  * <pre>
  * spec    = int | boolean | string | list | oneof | decimal | money | pattern | allof
- *         | date | time | datetime | period | now
- * int     = "int" filter? (":" range)?
+ *         | date | time | datetime | period | now | span | partition | monotonic | record
+ * int     = "int" relation? filter? (":" range)?
  * filter  = ("!=" | "&gt;=" | "&lt;=" | "&gt;" | "&lt;") integer
  * range   = integer ".." integer
  * boolean = "boolean"
  * string  = "string" (":" ("ascii" | "adversarial"))? ("length" range)?
- * list    = "list" "of" spec ("size" range)?
+ * list    = "list" "of" spec ("size" range)? ("unique" | "sorted")*
  * oneof   = "one" "of" ":" choice (weight)? ("," choice (weight)?)*
  * allof   = "all" "of" ":" group ("x" group)*
  * group   = choice ("," choice)*
- * decimal = "decimal" ":" fixed ".." fixed "scale" integer
- * money   = "money" ":" fixed ".." fixed
  * pattern = "pattern" ":" (literal | class "{" integer "}")+
  * class   = "[0-9]" | "[A-Z]" | "[a-z]"
- * date    = "date" zone? (":" bound ".." bound)?
- * time    = "time" zone? (":" bound ".." bound)?
- * datetime= "datetime" zone? (":" bound ".." bound)?
+ * date    = "date" relation? zone? (":" bound ".." bound)?
+ * time    = "time" relation? zone? (":" bound ".." bound)?
+ * datetime= "datetime" relation? zone? (":" bound ".." bound)?
+ * decimal = "decimal" relation? ":" fixed ".." fixed "scale" integer
+ * money   = "money" relation? ":" fixed ".." fixed
  * period  = "period" ":" ("day" | "week" | "month") zone?
  * now     = "now"
+ * span    = "span" ":" range "length" range
+ * partition = "partition" ":" fixed "into" integer
+ * monotonic = "monotonic" ":" range ("size" range)? "reset"?
+ * record  = "record" ":" recordFields | "record" ":" "(" recordFields ")"
+ * recordFields = field (";" field)*
+ * field   = name spec
+ * relation= ("after" | "before") name
  * zone    = "zone" ":" zoneId
  * bound   = iso | "now" offset*
  * offset  = ("+" | "-") (number unit)+
  * unit    = "d" | "h" | "m" | "s"
- * choice  = characters other than comma or whitespace
+ * choice  = characters other than comma, semicolon, or whitespace
+ * name    = letter then letters, digits, or "_"
  * weight  = digits, at least 1
  * fixed   = "-"? digits ("." digits)?
  * integer = "-"? digits, in the 32-bit signed range
@@ -54,6 +62,16 @@ package agnesse.testsystems.slim.property;
  * before, at, or one second after a boundary in that date window. Weeks
  * start on Sunday. Half the draws are boundaries when the range contains
  * any: DST transitions in the zone, month ends, year ends, and leap days.
+ *
+ * <p>{@code after} and {@code before} name an earlier column or, inside a
+ * record, an earlier field. The value stays one unit strictly on that side
+ * of the named cell and inside the written range. {@code span} is
+ * {@code start+length}, half-open. {@code partition} splits a total into
+ * 1 through 8 non-negative parts. {@code monotonic} is a non-decreasing
+ * list, and {@code reset} keeps the running total while shrinking.
+ * {@code unique} and {@code sorted} modify the list just closed.
+ * A record cell is compact JSON. A nested record is parenthesized.
+ * Inside one, a choice or a bound ends at {@code )}.
  */
 public final class CellLanguage {
   private CellLanguage() {

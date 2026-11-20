@@ -33,13 +33,45 @@ final class DecimalGen extends Generator {
     return scale;
   }
 
+  long low() {
+    return low;
+  }
+
+  long high() {
+    return high;
+  }
+
+  long units(String cell) {
+    return unscaled(cell);
+  }
+
+  DecimalGen narrowed(long nextLow, long nextHigh) {
+    return new DecimalGen(BigDecimal.valueOf(nextLow, scale), BigDecimal.valueOf(nextHigh, scale), scale);
+  }
+
   @Override
-  public Value draw(Random random) {
+  String family() {
+    return "decimal scale " + scale;
+  }
+
+  @Override
+  int variety() {
+    long count = width();
+    return count > Integer.MAX_VALUE ? -1 : (int) count;
+  }
+
+  @Override
+  int compare(Value left, Value right) {
+    return Long.compare(units(left.cell()), units(right.cell()));
+  }
+
+  @Override
+  public Value draw(Random random, Row row) {
     return text(low + random.nextLong(width()));
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     long current = unscaled(value.cell());
     List<Value> out = new ArrayList<>();
     offer(out, current, 0L);

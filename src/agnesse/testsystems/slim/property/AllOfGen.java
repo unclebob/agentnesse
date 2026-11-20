@@ -11,6 +11,10 @@ import java.util.Set;
  * The rightmost group varies fastest. This generator is enumerated, not sampled.
  */
 final class AllOfGen extends Generator {
+  @Override
+  String family() {
+    return "all of";
+  }
   private final List<List<String>> groups;
   private final List<Value> domain;
 
@@ -34,12 +38,12 @@ final class AllOfGen extends Generator {
   }
 
   @Override
-  public Value draw(Random random) {
+  public Value draw(Random random, Row row) {
     throw new IllegalStateException("all of is enumerated, not sampled");
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     int[] index = indexes(value.cell());
     List<Value> out = new ArrayList<>();
     offer(out, index, new int[index.length]);

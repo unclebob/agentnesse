@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 final class StringGen extends Generator {
+  @Override
+  String family() {
+    return "string";
+  }
   /** Printable ASCII, without {@code |}, so a draw can sit in a markdown cell. */
   static final String ASCII = ascii();
 
@@ -29,7 +33,7 @@ final class StringGen extends Generator {
   }
 
   @Override
-  public Value draw(Random random) {
+  public Value draw(Random random, Row row) {
     if (adversarial && random.nextBoolean()) {
       List<String> catalog = Adversarial.fitting(length);
       if (!catalog.isEmpty()) {
@@ -49,7 +53,7 @@ final class StringGen extends Generator {
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     String text = ((TextValue) value).text();
     List<Value> out = new ArrayList<>();
     for (int size : Numbers.shorter(text.length(), length.min)) {

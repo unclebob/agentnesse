@@ -25,13 +25,39 @@ final class IntGen extends Generator {
     return filter.highest(span);
   }
 
+  IntGen narrowed(int low, int high) {
+    return new IntGen(new Span(low, high), IntFilter.ANY);
+  }
+
   @Override
-  public Value draw(Random random) {
+  String family() {
+    return "int";
+  }
+
+  @Override
+  int variety() {
+    long count = (long) highest() - lowest() + 1L;
+    if (filter.hole(span)) {
+      count -= 1;
+    }
+    if (count > Integer.MAX_VALUE) {
+      return -1;
+    }
+    return (int) count;
+  }
+
+  @Override
+  int compare(Value left, Value right) {
+    return Integer.compare(Integer.parseInt(left.cell()), Integer.parseInt(right.cell()));
+  }
+
+  @Override
+  public Value draw(Random random, Row row) {
     return text(filter.draw(random, span));
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     int n = Integer.parseInt(value.cell());
     List<Value> out = new ArrayList<>();
     for (int candidate : Numbers.closerToZero(n)) {

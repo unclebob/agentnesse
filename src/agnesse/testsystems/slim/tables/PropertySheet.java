@@ -5,6 +5,8 @@ import agnesse.testsystems.slim.Table;
 import agnesse.testsystems.slim.property.CellLanguage;
 import agnesse.testsystems.slim.property.Clock;
 import agnesse.testsystems.slim.property.Generator;
+import agnesse.testsystems.slim.property.Links;
+import agnesse.testsystems.slim.property.Row;
 import agnesse.testsystems.slim.property.Seed;
 import agnesse.testsystems.slim.property.Value;
 
@@ -178,9 +180,11 @@ final class PropertySheet {
   private Drawn drawRow(Random random) {
     List<String> cells = new ArrayList<>();
     List<Value> values = new ArrayList<>();
+    Row row = Row.EMPTY;
     for (Column column : columns) {
       if (column.kind == Kind.INPUT) {
-        Value value = column.generator.draw(random);
+        Value value = column.generator.draw(random, row);
+        row = row.with(column.name, value);
         values.add(value);
         cells.add(value.cell());
       } else {
@@ -249,7 +253,25 @@ final class PropertySheet {
     if (timed && clock.zone() == null) {
       throw new SyntaxError("zone is not configured");
     }
+    bind(columns);
     return new PropertySheet(name, config, columns, scenario, seed, clock, timed);
+  }
+
+  private static void bind(List<Column> columns) throws SyntaxError {
+    List<String> names = new ArrayList<>();
+    List<Generator> generators = new ArrayList<>();
+    for (Column column : columns) {
+      if (column.kind != Kind.INPUT) {
+        continue;
+      }
+      names.add(column.name);
+      generators.add(column.generator);
+    }
+    try {
+      Links.bind(names, generators);
+    } catch (IllegalArgumentException bad) {
+      throw new SyntaxError(bad.getMessage());
+    }
   }
 
   private static boolean anyTimed(List<Column> columns) {

@@ -16,6 +16,7 @@ import agnesse.testsystems.slim.SlimVersionMismatch;
 import agnesse.testsystems.slim.SlimTestContextImpl;
 import agnesse.testsystems.slim.TableFinished;
 import agnesse.testsystems.slim.property.CellLanguage;
+import agnesse.testsystems.slim.property.Clock;
 import agnesse.testsystems.slim.property.Seed;
 import agnesse.testsystems.slim.results.CellRecord;
 import agnesse.testsystems.slim.results.SlimExceptionResult;
@@ -26,6 +27,9 @@ import agnesse.wiki.fs.InMemoryPage;
 
 import org.junit.Test;
 
+import java.lang.reflect.Constructor;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -534,6 +538,159 @@ public class PropertyTableTest {
   }
 
   @Test
+  public void anEndAfterTheStartShrinksWithoutCrossingIt() throws Exception {
+    Ran passing = slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | order | start | stays after | end |
+      | check | echo string | @end | @end |
+
+      | property | order stays after |
+      | trials | 5 |
+      | seed | 1 |
+      | start | int:0..5 |
+      | end | int after start:0..9 |
+      """);
+    assertEquals(1, passing.summary.getRight());
+    assertEquals(0, passing.summary.getWrong());
+
+    Ran ran = slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | order | start | stays after | end |
+      | check | echo string | @end | same |
+
+      | property | order stays after |
+      | trials | 1 |
+      | seed | 1 |
+      | start | int:0..5 |
+      | end | int after start:0..6 |
+      """);
+    assertEquals(1, ran.summary.getWrong());
+    int row = ran.table.getRowCount() - 1;
+    assertEquals("0", ran.table.originalCell(0, row));
+    assertEquals("1", ran.table.originalCell(1, row));
+    assertTrue(fact(ran, "trials").contains("shrunk"));
+    settled(ran);
+  }
+
+  @Test
+  public void shrinkingALimitStopsBeforeItMeetsTheEnd() throws Exception {
+    Ran ran = slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | order | limit | stays before | end |
+      | check | echo string | @end | same |
+
+      | property | order stays before |
+      | trials | 1 |
+      | seed | 1 |
+      | limit | int:0..10 |
+      | end | int before limit:0..10 |
+      """);
+    assertEquals(1, ran.summary.getWrong());
+    int limit = Integer.parseInt(last(ran, 0));
+    int end = Integer.parseInt(last(ran, 1));
+    assertTrue(end < limit);
+    assertTrue(fact(ran, "trials").contains("shrunk"));
+  }
+
+  @Test
+  public void aBlankScenarioGeneratorIsRefused() {
+    assertMessage("a generator spec is missing", """
+      | scenario | echo back | word |
+      | check | echo string | @word | @word |
+
+      | property | echo back |
+      | word | |
+      """);
+  }
+
+  @Test
+  public void anOutputBeforeTheInputStillDraws() throws Exception {
+    Ran ran = slim("""
+      | property:agnesse.slim.test.TestSlim |
+      | trials | 1 |
+      | seed | 1 |
+      | return int? | string |
+      | 7 | one of:a |
+      """);
+    assertEquals(1, ran.summary.getRight());
+    assertEquals(0, ran.summary.getWrong());
+  }
+
+  @Test
+  public void aSheetWithNoInputCannotDraw() throws Exception {
+    Class<?> config = Class.forName("agnesse.testsystems.slim.tables.PropertySheet$Config");
+    Constructor<?> configCtor = config.getDeclaredConstructor();
+    configCtor.setAccessible(true);
+    Constructor<?> ctor = PropertySheet.class.getDeclaredConstructor(String.class, config, List.class,
+      ScenarioTable.class, Seed.class, Clock.class, boolean.class);
+    ctor.setAccessible(true);
+    Clock clock = new Clock(ZoneId.of("UTC"), Instant.parse("2024-06-01T00:00:00Z"));
+    PropertySheet sheet = (PropertySheet) ctor.newInstance("name", configCtor.newInstance(),
+      List.of(), null, new Seed(1L), clock, false);
+    IllegalStateException error = assertThrows(IllegalStateException.class, sheet::draw);
+    assertEquals("a property needs an input", error.getMessage());
+  }
+
+  @Test
+  public void aReferenceToALaterOrUnknownColumnIsRefused() {
+    assertMessage("refers to later column", """
+      | property:agnesse.slim.test.TestSlim |
+      | end | start | return int? |
+      | int after start | int:0..3 | 7 |
+      """);
+    assertMessage("cycle in column", """
+      | property:agnesse.slim.test.TestSlim |
+      | end | return int? |
+      | int after end | 7 |
+      """);
+    assertMessage("nope is not a column", """
+      | property:agnesse.slim.test.TestSlim |
+      | end | return int? |
+      | int after nope | 7 |
+      """);
+    assertMessage("already a column", """
+      | property:agnesse.slim.test.TestSlim |
+      | start | start | end | return int? |
+      | int:0..1 | int:0..1 | int after start | 7 |
+      """);
+  }
+
+  @Test
+  public void aSpanAPartitionAndAMeterShrinkToTheSmallestFailure() throws Exception {
+    Ran span = failingValue("span:0..5 length 1..4");
+    assertEquals("0+1", last(span, 0));
+    assertTrue(fact(span, "trials").contains("shrunk"));
+
+    Ran parts = failingValue("partition:10 into 3");
+    assertEquals("[10, 0, 0]", last(parts, 0));
+    assertTrue(fact(parts, "trials").contains("shrunk"));
+
+    Ran meter = failingValue("monotonic:0..100 size 4..4 reset");
+    assertEquals("[100, 0, 69, 69]", last(meter, 0));
+    assertTrue(fact(meter, "trials").contains("shrunk"));
+    assertFalse(fact(meter, "trials").contains("shrink cap"));
+
+    Ran plain = failingValue("monotonic:0..20 size 2..4");
+    assertEquals("[0, 0]", last(plain, 0));
+    assertTrue(fact(plain, "trials").contains("shrunk"));
+
+    Ran record = failingValue("record:n int:1..5");
+    assertEquals("{\"n\":\"1\"}", last(record, 0));
+    assertTrue(fact(record, "trials").contains("shrunk"));
+
+    Ran ids = failingValue("list of int:0..9 size 3..3 unique sorted");
+    assertEquals("[0, 1, 2]", last(ids, 0));
+    assertTrue(fact(ids, "trials").contains("shrunk"));
+
+    Ran set = failingValue("list of span:0..5 length 1..3 size 2..2");
+    assertEquals("[0+1, 0+1]", last(set, 0));
+    assertTrue(fact(set, "trials").contains("shrunk"));
+  }
+
+  @Test
   public void anIntShrinksToTheSmallestFailure() throws Exception {
     Ran ran = slim("""
       | property:agnesse.slim.test.Bound |
@@ -1010,6 +1167,24 @@ public class PropertyTableTest {
 
   private static String trialCell(Ran ran) {
     return fact(ran, "trials");
+  }
+
+  private static Ran failingValue(String spec) throws Exception {
+    return slim("""
+      | script | agnesse.slim.test.TestSlim |
+
+      | scenario | round trip | value |
+      | check | echo string | @value | same |
+
+      | property | round trip |
+      | trials | 1 |
+      | seed | 1 |
+      | value | %s |
+      """.formatted(spec));
+  }
+
+  private static String last(Ran ran, int column) {
+    return ran.table.originalCell(column, ran.table.getRowCount() - 1);
   }
 
   private static String fact(Ran ran, String label) {

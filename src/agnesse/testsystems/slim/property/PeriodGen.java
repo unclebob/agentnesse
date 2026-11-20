@@ -32,13 +32,18 @@ final class PeriodGen extends Generator {
   }
 
   @Override
-  public Value draw(Random random) {
+  String family() {
+    return "period";
+  }
+
+  @Override
+  public Value draw(Random random, Row row) {
     Instant boundary = TimeText.startOfDay(boundary(random), zone);
     return new TextValue(TimeText.offset(boundary.plusSeconds(random.nextInt(3) - 1L), zone));
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     Instant instant = OffsetDateTime.parse(value.cell(), TimeText.OFFSET).toInstant();
     Instant boundary = oneSecondOff(instant);
     if (boundary == null) {

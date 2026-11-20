@@ -7,14 +7,22 @@ import java.util.List;
  * One generated input, already in the form a Slim fixture reads from a cell.
  * Lists use the same text Java's list converter accepts: {@code [1, 2]}.
  */
-public sealed interface Value permits TextValue, ListValue {
+public sealed interface Value permits TextValue, ListValue, RecordValue {
   String cell();
+
+  /** Compact JSON. Text is a JSON string. Lists and records stay structured. */
+  String json();
 }
 
 record TextValue(String text) implements Value {
   @Override
   public String cell() {
     return text;
+  }
+
+  @Override
+  public String json() {
+    return JsonText.quote(text);
   }
 }
 
@@ -34,6 +42,11 @@ record ListValue(List<Value> items) implements Value {
     }
     out.append(']');
     return out.toString();
+  }
+
+  @Override
+  public String json() {
+    return JsonText.array(items);
   }
 
   ListValue replace(int index, Value candidate) {

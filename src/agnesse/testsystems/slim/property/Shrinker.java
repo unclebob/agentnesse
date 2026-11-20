@@ -11,7 +11,11 @@ import java.util.function.Predicate;
 public final class Shrinker {
   /** The simpler values of {@code current}, most aggressive first. One shrink round. */
   public List<Value> candidates(Generator generator, Value current) {
-    return List.copyOf(generator.simpler(current));
+    return candidates(generator, current, Row.EMPTY);
+  }
+
+  public List<Value> candidates(Generator generator, Value current, Row row) {
+    return List.copyOf(generator.simpler(current, row));
   }
 
   public Value shrink(Generator generator, Value start, Predicate<Value> stillFails, int stepCap) {

@@ -5,6 +5,15 @@ import java.util.List;
 import java.util.Random;
 
 final class OneOfGen extends Generator {
+  @Override
+  String family() {
+    return "one of";
+  }
+
+  @Override
+  int variety() {
+    return choices.size();
+  }
   private final List<String> choices;
   private final int[] weights;
   private final long total;
@@ -40,7 +49,7 @@ final class OneOfGen extends Generator {
   }
 
   @Override
-  public Value draw(Random random) {
+  public Value draw(Random random, Row row) {
     if (weights == null) {
       return new TextValue(choices.get(random.nextInt(choices.size())));
     }
@@ -79,7 +88,7 @@ final class OneOfGen extends Generator {
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     int index = choices.indexOf(value.cell());
     if (index < 0) {
       throw new IllegalArgumentException("not a choice: " + value.cell());

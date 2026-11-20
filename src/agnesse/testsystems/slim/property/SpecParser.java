@@ -13,6 +13,7 @@ final class SpecParser {
   private final String text;
   private final Clock clock;
   private int at;
+  private int records;
 
   SpecParser(String text, Clock clock) {
     this.text = text;
@@ -38,6 +39,9 @@ final class SpecParser {
     }
     if (take("one")) {
       return oneOf();
+    }
+    if (take("record")) {
+      return record();
     }
     return scalar();
   }
@@ -70,6 +74,14 @@ final class SpecParser {
   }
 
   private Generator numbered() {
+    Generator plain = plain();
+    if (plain != null) {
+      return plain;
+    }
+    return compound();
+  }
+
+  private Generator plain() {
     if (take("boolean")) {
       return new BoolGen();
     }
@@ -85,14 +97,33 @@ final class SpecParser {
     if (take("money")) {
       return decimal(true);
     }
+    return null;
+  }
+
+  private Generator compound() {
     if (take("int")) {
       return integerSpec();
     }
-    throw error("expected int, boolean, string, list of, one of, decimal, money, pattern, all of, date, time, datetime, period, or now");
+    if (take("span")) {
+      return spanSpec();
+    }
+    if (take("partition")) {
+      return partition();
+    }
+    if (take("monotonic")) {
+      return monotonic();
+    }
+    throw error("expected int, boolean, string, list of, one of, decimal, money, pattern, all of, date, time, datetime, period, now, span, partition, monotonic, or record");
   }
 
   private Generator moment(MomentGen.Kind kind) {
+    Relation relation = relation();
     ZoneId zone = resolve(optionalZone());
+    MomentGen moment = ranged(kind, zone);
+    return relation == null ? moment : new Limit(moment, relation);
+  }
+
+  private MomentGen ranged(MomentGen.Kind kind, ZoneId zone) {
     if (!takeSymbol(":")) {
       return MomentGen.open(kind, zone, clock().now());
     }
@@ -103,7 +134,38 @@ final class SpecParser {
     return closed(kind, zone, low, bound(kind, zone));
   }
 
-  private Generator closed(MomentGen.Kind kind, ZoneId zone, long low, long high) {
+  private Relation relation() {
+    if (take("after")) {
+      return new Relation(ident(), true);
+    }
+    if (take("before")) {
+      return new Relation(ident(), false);
+    }
+    return null;
+  }
+
+  private String ident() {
+    return name("column");
+  }
+
+  private String name(String kind) {
+    skip();
+    if (at >= text.length() || !Character.isLetter(text.charAt(at))) {
+      throw error("expected a " + kind);
+    }
+    int start = at;
+    at++;
+    while (at < text.length() && identChar(text.charAt(at))) {
+      at++;
+    }
+    return text.substring(start, at);
+  }
+
+  private static boolean identChar(char c) {
+    return Character.isLetterOrDigit(c) || c == '_';
+  }
+
+  private MomentGen closed(MomentGen.Kind kind, ZoneId zone, long low, long high) {
     try {
       return MomentGen.of(kind, zone, low, high, clock().now());
     } catch (IllegalArgumentException bad) {
@@ -159,7 +221,7 @@ final class SpecParser {
   private String rawToken() {
     skip();
     int start = at;
-    while (at < text.length() && !Character.isWhitespace(text.charAt(at)) && !text.startsWith("..", at)) {
+    while (at < text.length() && tokenChar(text.charAt(at)) && !text.startsWith("..", at)) {
       at++;
     }
     if (start == at) {
@@ -323,6 +385,7 @@ final class SpecParser {
   }
 
   private Generator decimal(boolean money) {
+    Relation relation = relation();
     if (!takeSymbol(":")) {
       throw error("expected :");
     }
@@ -333,7 +396,8 @@ final class SpecParser {
     BigDecimal high = fixed();
     int scale = money ? 2 : scale();
     try {
-      return new DecimalGen(low, high, scale);
+      DecimalGen decimal = new DecimalGen(low, high, scale);
+      return relation == null ? decimal : new Limit(decimal, relation);
     } catch (IllegalArgumentException bad) {
       throw error(bad.getMessage());
     }
@@ -382,12 +446,14 @@ final class SpecParser {
   }
 
   private Generator integerSpec() {
+    Relation relation = relation();
     IntFilter filter = IntFilter.ANY;
-    if (filterNext()) {
+    if (relation == null && filterNext()) {
       filter = readFilter();
     }
     Span span = takeSymbol(":") ? readSpan() : Span.INTS;
-    return checked(span, filter);
+    IntGen ints = checked(span, filter);
+    return relation == null ? ints : new Limit(ints, relation);
   }
 
   private IntGen checked(Span span, IntFilter filter) {
@@ -455,7 +521,111 @@ final class SpecParser {
       throw error("all of is enumerated, not sampled");
     }
     Span size = take("size") ? readSpan() : Span.LISTS;
-    return new ListGen(element, size);
+    Flags flags = flags();
+    try {
+      return new ListGen(element, size, flags.unique, flags.sorted);
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private Flags flags() {
+    boolean unique = false;
+    boolean sorted = false;
+    while (!(unique && sorted)) {
+      if (!unique && take("unique")) {
+        unique = true;
+      } else if (!sorted && take("sorted")) {
+        sorted = true;
+      } else {
+        break;
+      }
+    }
+    return new Flags(unique, sorted);
+  }
+
+  private record Flags(boolean unique, boolean sorted) {
+  }
+
+  private Generator spanSpec() {
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    Span starts = readSpan();
+    if (!take("length")) {
+      throw error("expected length");
+    }
+    try {
+      return new SpanGen(starts, readSpan());
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private Generator partition() {
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    BigDecimal total = fixed();
+    if (!take("into")) {
+      throw error("expected into");
+    }
+    try {
+      return new PartitionGen(total, integer());
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private Generator monotonic() {
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    Span range = readSpan();
+    Span size = take("size") ? readSpan() : Span.LISTS;
+    try {
+      return new MonotonicGen(range, size, take("reset"));
+    } catch (IllegalArgumentException bad) {
+      throw error(bad.getMessage());
+    }
+  }
+
+  private Generator record() {
+    if (!takeSymbol(":")) {
+      throw error("expected :");
+    }
+    boolean grouped = takeSymbol("(");
+    if (records > 0 && !grouped) {
+      throw error("expected (");
+    }
+    records++;
+    try {
+      List<String> names = new ArrayList<>();
+      List<Generator> fields = new ArrayList<>();
+      field(names, fields);
+      while (takeSymbol(";")) {
+        field(names, fields);
+      }
+      if (grouped && !takeSymbol(")")) {
+        throw error("expected )");
+      }
+      return new RecordGen(names, fields);
+    } finally {
+      records--;
+    }
+  }
+
+  private void field(List<String> names, List<Generator> fields) {
+    String name = name("field");
+    if (names.contains(name)) {
+      throw error(name + " is already a field");
+    }
+    Generator generator = spec();
+    if (generator.domain() != null) {
+      throw error("all of is enumerated, not sampled");
+    }
+    names.add(name);
+    fields.add(generator);
   }
 
   private Generator oneOf() {
@@ -497,13 +667,27 @@ final class SpecParser {
   private String choice() {
     skip();
     int start = at;
-    while (at < text.length() && text.charAt(at) != ',' && !Character.isWhitespace(text.charAt(at))) {
+    while (at < text.length() && choiceChar(text.charAt(at))) {
       at++;
     }
     if (start == at) {
       throw error("empty choice");
     }
     return text.substring(start, at);
+  }
+
+  private boolean choiceChar(char c) {
+    if (c == ',' || c == ';' || Character.isWhitespace(c)) {
+      return false;
+    }
+    return c != ')' || records == 0;
+  }
+
+  private boolean tokenChar(char c) {
+    if (Character.isWhitespace(c) || c == ';') {
+      return false;
+    }
+    return c != ')' || records == 0;
   }
 
   private void requireUnique(List<String> choices) {

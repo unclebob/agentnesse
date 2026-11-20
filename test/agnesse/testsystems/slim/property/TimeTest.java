@@ -288,6 +288,15 @@ public class TimeTest {
       cells(times, "10:30:45"));
     Generator morning = CellLanguage.parse("time:10:00:00..14:00:00", clock(Instant.parse("2024-06-02T08:00:00Z")));
     assertEquals(List.of("10:00:00", "12:00:00", "11:00:15", "12:00:29"), cells(morning, "12:00:30"));
+    Generator atStart = CellLanguage.parse("date:2020-01-01..2020-01-10", clock(Instant.parse("2020-01-01T00:00:00Z")));
+    assertEquals("2020-01-01", atStart.simpler(new TextValue("2020-01-05")).get(0).cell());
+    Generator atEnd = CellLanguage.parse("date:2020-01-01..2020-01-10", clock(Instant.parse("2020-01-10T12:00:00Z")));
+    assertEquals("2020-01-10", atEnd.simpler(new TextValue("2020-01-05")).get(0).cell());
+    Generator past = CellLanguage.parse("date:2020-01-01..2020-01-10", clock(Instant.parse("2020-02-01T00:00:00Z")));
+    assertEquals("2020-01-01", past.simpler(new TextValue("2020-01-05")).get(0).cell());
+    assertEquals(86_400, CellLanguage.parse("time", clock(NOON)).variety());
+    assertEquals(Integer.MAX_VALUE,
+      MomentGen.of(MomentGen.Kind.DATETIME, UTC, 0, Integer.MAX_VALUE - 1L, NOON).variety());
   }
 
   @Test

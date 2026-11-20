@@ -24,14 +24,16 @@ final class MomentGen extends Generator {
   private final long high;
   private final long target;
   private final long[] bias;
+  private final Instant now;
 
-  private MomentGen(Kind kind, ZoneId zone, long low, long high, long target, long[] bias) {
+  private MomentGen(Kind kind, ZoneId zone, long low, long high, long target, long[] bias, Instant now) {
     this.kind = kind;
     this.zone = zone;
     this.low = low;
     this.high = high;
     this.target = target;
     this.bias = bias;
+    this.now = now;
   }
 
   static MomentGen open(Kind kind, ZoneId zone, Instant now) {
@@ -46,7 +48,42 @@ final class MomentGen extends Generator {
     if (low > high) {
       throw new IllegalArgumentException("inverted range");
     }
-    return new MomentGen(kind, zone, low, high, target(kind, zone, low, high, now), bias(kind, zone, low, high));
+    return new MomentGen(kind, zone, low, high, target(kind, zone, low, high, now), bias(kind, zone, low, high), now);
+  }
+
+  MomentGen narrowed(long nextLow, long nextHigh) {
+    return of(kind, zone, nextLow, nextHigh, now);
+  }
+
+  long low() {
+    return low;
+  }
+
+  long high() {
+    return high;
+  }
+
+  long position(String cell) {
+    return read(cell);
+  }
+
+  @Override
+  String family() {
+    return kind.name().toLowerCase(java.util.Locale.ROOT);
+  }
+
+  @Override
+  int variety() {
+    long count = high - low + 1;
+    if (count > Integer.MAX_VALUE) {
+      return -1;
+    }
+    return (int) count;
+  }
+
+  @Override
+  int compare(Value left, Value right) {
+    return Long.compare(position(left.cell()), position(right.cell()));
   }
 
   @Override
@@ -55,12 +92,12 @@ final class MomentGen extends Generator {
   }
 
   @Override
-  public Value draw(Random random) {
+  public Value draw(Random random, Row row) {
     return new TextValue(render(pick(random)));
   }
 
   @Override
-  List<Value> simpler(Value value) {
+  List<Value> simpler(Value value, Row row) {
     List<Value> out = new ArrayList<>();
     for (long candidate : steps(read(value.cell()))) {
       out.add(new TextValue(render(candidate)));
@@ -85,8 +122,8 @@ final class MomentGen extends Generator {
 
   private static long target(Kind kind, ZoneId zone, long low, long high, Instant now) {
     long value = placed(kind, zone, now);
-    if (value >= low && value <= high) {
-      return value;
+    if (value <= high) {
+      return Math.max(value, low);
     }
     return low;
   }
