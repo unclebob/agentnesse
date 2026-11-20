@@ -94,6 +94,24 @@ test("comparisons, kind, and symbol edges", async () => {
   }
 })
 
+test("java symbol forms", async () => {
+  const symbols = new Map<string, unknown>([["ab", "YES"], ["Äpfel", "fruit"], ["`hello world`", "hi"]])
+  assert.equal(expandString("$abc", symbols), "YESc")
+  assert.equal(expandString("$Äpfel!", symbols), "fruit!")
+  assert.equal(expandString("$`hello world`!", symbols), "hi!")
+  assert.equal(expandString("$missing", symbols), "$missing")
+  assert.equal(expandString("  $name=  ", symbols), "")
+  const instances = new Map()
+  assert.equal(cell(await answer([["1", "call", "again", "plus", "2", "3"]], instances, symbols), 0), "5")
+  assert.equal(cell(await answer([["2", "call", "again", "flag", "true"]], instances, symbols), 0), "yes")
+  assert.equal(cell(await answer([["3", "call", "again", "join", "[red, blue]"]], instances, symbols), 0), "red,blue")
+  await answer([["4", "assign", "SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS", "again\\.echo"]], instances, symbols)
+  await answer([["5", "make", "again", "slim"]], instances, symbols)
+  assert.equal(cell(await answer([["6", "call", "again", "echo", "$ab"]], instances, symbols), 0), "$ab")
+  await answer([["7", "assign", "SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS", "["]], instances, symbols)
+  assert.equal(cell(await answer([["8", "call", "again", "echo", "$ab"]], instances, symbols), 0), "YES")
+})
+
 test("a gate, a word, and a booking", async () => {
   const instances = new Map()
   const symbols = new Map<string, string>()

@@ -1,6 +1,12 @@
 //! A Slim 0.5 server. Port 1 is stdin and stdout. Any other port accepts one
 //! socket on 127.0.0.1. A lanes instruction runs each lane on its own thread
 //! against that connection's instances.
+//!
+//! String symbols support $Name with Unicode letters, $`backtick names`,
+//! shorter-prefix fallback, undefined text left as written, $name= as an empty
+//! argument, and nested lists. Stored values are strings, so a whole-cell
+//! symbol still passes text. There is no reflection, so typed cell conversion
+//! is not applied on the call path.
 
 use std::collections::HashMap;
 use std::io::{Read, Write};
@@ -447,42 +453,81 @@ fn expand(value: &Value, symbols: &HashMap<String, String>) -> Value {
 }
 
 pub fn expand_string(text: &str, symbols: &HashMap<String, String>) -> String {
-    let bytes = text.as_bytes();
+    if assignment(text) {
+        return String::new();
+    }
     let mut out = String::new();
-    let mut i = 0;
-    while i < bytes.len() {
-        if let Some((name, next)) = symbol_at(bytes, i) {
-            if let Some(value) = symbols.get(name) {
-                out.push_str(value);
-            } else {
-                out.push_str(&text[i..next]);
+    let mut index = 0;
+    while index < text.len() {
+        if let Some(found) = symbol_at(text, index) {
+            match resolve(&found.name, symbols) {
+                Some((used, value)) => {
+                    out.push_str(value);
+                    index = found.start + 1 + used.len();
+                }
+                None => {
+                    out.push_str(&text[found.start..found.end]);
+                    index = found.end;
+                }
             }
-            i = next;
             continue;
         }
-        out.push(bytes[i] as char);
-        i += 1;
+        let ch = text[index..].chars().next().unwrap_or('\u{0}');
+        out.push(ch);
+        index += ch.len_utf8();
     }
     out
 }
 
-fn symbol_at(text: &[u8], i: usize) -> Option<(&str, usize)> {
-    if text[i] != b'$' || i + 1 >= text.len() || !name_start(text[i + 1]) {
+struct Found { start: usize, end: usize, name: String }
+
+fn assignment(text: &str) -> bool {
+    let trimmed = text.trim();
+    let Some(body) = trimmed.strip_prefix('$') else { return false };
+    let Some(name) = body.strip_suffix('=') else { return false };
+    let name = name.trim();
+    let mut chars = name.chars();
+    matches!(chars.next(), Some(ch) if ch.is_alphabetic()) && chars.all(name_part)
+}
+
+fn symbol_at(text: &str, index: usize) -> Option<Found> {
+    let rest = text.get(index..)?;
+    if !rest.starts_with('$') {
         return None;
     }
-    let mut j = i + 2;
-    while j < text.len() && name_part(text[j]) {
-        j += 1;
+    let after = rest.get(1..)?;
+    let start_char = after.chars().next()?;
+    if start_char == '`' {
+        let close = after[1..].find('`')?;
+        let name = after[..=close + 1].to_string();
+        return Some(Found { start: index, end: index + 1 + name.len(), name });
     }
-    Some((std::str::from_utf8(&text[i + 1..j]).unwrap_or(""), j))
+    if !start_char.is_alphabetic() {
+        return None;
+    }
+    let mut end = start_char.len_utf8();
+    for ch in after[end..].chars() {
+        if !name_part(ch) { break }
+        end += ch.len_utf8();
+    }
+    Some(Found { start: index, end: index + 1 + end, name: after[..end].to_string() })
 }
 
-fn name_start(c: u8) -> bool {
-    c.is_ascii_uppercase() || c.is_ascii_lowercase()
+fn resolve<'a>(name: &str, symbols: &'a HashMap<String, String>) -> Option<(String, &'a str)> {
+    if let Some(value) = symbols.get(name) {
+        return Some((name.to_string(), value));
+    }
+    let mut shorter = name.to_string();
+    while shorter.pop().is_some() && !shorter.is_empty() {
+        if let Some(value) = symbols.get(&shorter) {
+            return Some((shorter, value));
+        }
+    }
+    None
 }
 
-fn name_part(c: u8) -> bool {
-    name_start(c) || c.is_ascii_digit() || c == b'_'
+fn name_part(ch: char) -> bool {
+    ch.is_alphanumeric() || ch == '_'
 }
 
 pub fn parse(text: &str) -> Vec<Value> {

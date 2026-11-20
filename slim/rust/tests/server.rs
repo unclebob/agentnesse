@@ -139,6 +139,19 @@ fn text(value: &Value) -> String {
 }
 
 #[test]
+fn symbol_prefixes_unicode_backticks_and_assignments() {
+    let mut symbols = std::collections::HashMap::new();
+    symbols.insert("ab".into(), "YES".into());
+    symbols.insert("Äpfel".into(), "fruit".into());
+    symbols.insert("`hello world`".into(), "hi".into());
+    assert_eq!(expand_string("$abc", &symbols), "YESc");
+    assert_eq!(expand_string("$Äpfel!", &symbols), "fruit!");
+    assert_eq!(expand_string("$`hello world`!", &symbols), "hi!");
+    assert_eq!(expand_string("$missing", &symbols), "$missing");
+    assert_eq!(expand_string("  $name=  ", &symbols), "");
+}
+
+#[test]
 fn books_and_the_probe() {
     let gate = Gate::new();
     gate.answer(&[Value::List(vec![t("1"), t("make"), t("seat"), t("slim"), t("safe")])]);

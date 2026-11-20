@@ -13,9 +13,9 @@ import (
 )
 
 func TestHelloEchoAndAStoredSymbol(t *testing.T) {
-	shared := map[string]*seat{}
+	shared := map[string]any{}
 	mu := &sync.Mutex{}
-	symbols := map[string]string{}
+	symbols := map[string]any{}
 	hello := []any{"1", "call", "actor", "hello"}
 	if answer([]any{hello}, shared, mu, symbols)[0].([]any)[1] != "world" {
 		t.Fatal("hello")
@@ -52,9 +52,9 @@ func TestHelloEchoAndAStoredSymbol(t *testing.T) {
 }
 
 func TestComparisonsAndKind(t *testing.T) {
-	shared := map[string]*seat{}
+	shared := map[string]any{}
 	mu := &sync.Mutex{}
-	symbols := map[string]string{}
+	symbols := map[string]any{}
 	cases := []struct {
 		row  []any
 		want string
@@ -119,10 +119,95 @@ func TestComparisonsAndKind(t *testing.T) {
 	}
 }
 
-func TestAGateAndADecisionWord(t *testing.T) {
-	shared := map[string]*seat{}
+func TestJavaSymbolForms(t *testing.T) {
+	symbols := map[string]any{"ab": "YES", "Äpfel": "fruit", "`hello world`": "hi"}
+	if expandString("$abc", symbols) != "YESc" {
+		t.Fatal(expandString("$abc", symbols))
+	}
+	if expandString("$Äpfel!", symbols) != "fruit!" {
+		t.Fatal("unicode")
+	}
+	if expandString("$`hello world`!", symbols) != "hi!" {
+		t.Fatal("backtick")
+	}
+	if expandString("$missing", symbols) != "$missing" {
+		t.Fatal("undefined")
+	}
+	symbols["box"] = []any{"a", "b"}
+	if got := expandCell("$box", symbols); fmt.Sprint(got) != "[a b]" {
+		t.Fatal(got)
+	}
+	if expandString("see $box", symbols) != "see [a b]" {
+		t.Fatal("embedded object")
+	}
+	if expandCell("  $name=  ", symbols) != "" {
+		t.Fatal("assignment")
+	}
+	if expand([]any{"$ab"}, symbols).([]any)[0] != "YES" {
+		t.Fatal("nested")
+	}
+	shared := map[string]any{}
 	mu := &sync.Mutex{}
-	symbols := map[string]string{}
+	answer([]any{[]any{"1", "make", "gate", "slim"}}, shared, mu, symbols)
+	symbols["actor"] = shared["gate"]
+	if answer([]any{[]any{"3", "callAndAssign", "copy", "SlimHelperLibrary", "cloneSymbol", "$actor"}}, shared, mu, symbols)[0].([]any)[1] == nil {
+		t.Fatal("clone")
+	}
+	if _, ok := symbols["copy"].(*seat); !ok {
+		t.Fatal(symbols["copy"])
+	}
+	answer([]any{[]any{"4", "make", "again", "$copy"}}, shared, mu, symbols)
+	if answer([]any{[]any{"5", "call", "again", "phase"}}, shared, mu, symbols)[0].([]any)[1] != "new" {
+		t.Fatal("actor")
+	}
+	answer([]any{[]any{"6", "make", "scriptTableActor", "slim"}}, shared, mu, symbols)
+	answer([]any{[]any{"7", "call", "SlimHelperLibrary", "pushFixture"}}, shared, mu, symbols)
+	answer([]any{[]any{"8", "make", "scriptTableActor", "slim", "safe"}}, shared, mu, symbols)
+	answer([]any{[]any{"8b", "call", "SlimHelperLibrary", "popFixture"}}, shared, mu, symbols)
+	if answer([]any{[]any{"9", "call", "scriptTableActor", "phase"}}, shared, mu, symbols)[0].([]any)[1] != "new" {
+		t.Fatal("pop")
+	}
+	answer([]any{[]any{"10", "assign", "SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS", `again\.echo`}}, shared, mu, symbols)
+	if answer([]any{[]any{"11", "call", "again", "echo", "$ab"}}, shared, mu, symbols)[0].([]any)[1] != "$ab" {
+		t.Fatal("opt out")
+	}
+	answer([]any{[]any{"12", "assign", "SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS", "["}}, shared, mu, symbols)
+	if answer([]any{[]any{"13", "call", "again", "echo", "$ab"}}, shared, mu, symbols)[0].([]any)[1] != "YES" {
+		t.Fatal("bad regex")
+	}
+	if answer([]any{[]any{"14", "call", "again", "plus", "2", "3"}}, shared, mu, symbols)[0].([]any)[1] != "5" {
+		t.Fatal("int")
+	}
+	if answer([]any{[]any{"15", "call", "again", "wide", "4"}}, shared, mu, symbols)[0].([]any)[1] != "4" {
+		t.Fatal("long")
+	}
+	if answer([]any{[]any{"16", "call", "again", "scale", "1.5"}}, shared, mu, symbols)[0].([]any)[1] != "1.5" {
+		t.Fatal("double")
+	}
+	if answer([]any{[]any{"17", "call", "again", "flag", "true"}}, shared, mu, symbols)[0].([]any)[1] != "yes" {
+		t.Fatal("bool")
+	}
+	if answer([]any{[]any{"18", "call", "again", "initial", "Q"}}, shared, mu, symbols)[0].([]any)[1] != "Q" {
+		t.Fatal("char")
+	}
+	if answer([]any{[]any{"19", "call", "again", "day", "2020-01-02"}}, shared, mu, symbols)[0].([]any)[1] != "2020-01-02" {
+		t.Fatal("date")
+	}
+	if answer([]any{[]any{"20", "call", "again", "shade", "green"}}, shared, mu, symbols)[0].([]any)[1] != "green" {
+		t.Fatal("enum")
+	}
+	if answer([]any{[]any{"21", "call", "again", "join", "[red, blue]"}}, shared, mu, symbols)[0].([]any)[1] != "red,blue" {
+		t.Fatal("list")
+	}
+	if answer([]any{[]any{"22", "call", "again", "label", []any{[]any{"name", "Ada"}}}}, shared, mu, symbols)[0].([]any)[1] != "Ada" {
+		t.Fatal("map")
+	}
+}
+
+func TestAGateAndADecisionWord(t *testing.T) {
+	shared := map[string]any{}
+	mu := &sync.Mutex{}
+	symbols := map[string]any{}
 	batch := []any{
 		[]any{"1", "make", "gate", "slim"},
 		[]any{"2", "call", "gate", "open"},
@@ -136,7 +221,7 @@ func TestAGateAndADecisionWord(t *testing.T) {
 		[]any{"10", "call", "gate", "echo"},
 		[]any{"11", "call", "gate", "hello"},
 	}
-	got := map[string]string{}
+	got := map[string]any{}
 	for _, row := range answer(batch, shared, mu, symbols) {
 		pair := row.([]any)
 		got[pair[0].(string)] = pair[1].(string)
@@ -153,17 +238,17 @@ func TestAGateAndADecisionWord(t *testing.T) {
 	if answer([]any{[]any{"12", "call", "gate", "open"}}, shared, mu, symbols)[0].([]any)[1] != "refused" {
 		t.Fatal("reopen")
 	}
-	opened := map[string]*seat{}
+	opened := map[string]any{}
 	openMu := &sync.Mutex{}
-	answer([]any{[]any{"1", "make", "gate", "slim"}}, opened, openMu, map[string]string{})
-	answer([]any{[]any{"2", "call", "gate", "open"}}, opened, openMu, map[string]string{})
-	if answer([]any{[]any{"3", "call", "gate", "release"}}, opened, openMu, map[string]string{})[0].([]any)[1] != "ok" {
+	answer([]any{[]any{"1", "make", "gate", "slim"}}, opened, openMu, map[string]any{})
+	answer([]any{[]any{"2", "call", "gate", "open"}}, opened, openMu, map[string]any{})
+	if answer([]any{[]any{"3", "call", "gate", "release"}}, opened, openMu, map[string]any{})[0].([]any)[1] != "ok" {
 		t.Fatal("release")
 	}
-	if answer([]any{[]any{"4", "call", "gate", "phase"}}, opened, openMu, map[string]string{})[0].([]any)[1] != "released" {
+	if answer([]any{[]any{"4", "call", "gate", "phase"}}, opened, openMu, map[string]any{})[0].([]any)[1] != "released" {
 		t.Fatal("phase")
 	}
-	if answer([]any{[]any{"5", "call", "gate", "released"}}, opened, openMu, map[string]string{})[0].([]any)[1] != "true" {
+	if answer([]any{[]any{"5", "call", "gate", "released"}}, opened, openMu, map[string]any{})[0].([]any)[1] != "true" {
 		t.Fatal("flag")
 	}
 	if answer([]any{[]any{"6", "call", "missing", "open"}}, shared, mu, symbols)[0].([]any)[1] != "refused" {
@@ -214,9 +299,9 @@ func TestAGateAndADecisionWord(t *testing.T) {
 }
 
 func TestBooksAndTheProbe(t *testing.T) {
-	shared := map[string]*seat{}
+	shared := map[string]any{}
 	mu := &sync.Mutex{}
-	symbols := map[string]string{}
+	symbols := map[string]any{}
 	answer([]any{[]any{"1", "make", "seat", "slim", "safe"}}, shared, mu, symbols)
 	if answer([]any{[]any{"2", "call", "seat", "book"}}, shared, mu, symbols)[0].([]any)[1] != "booked" {
 		t.Fatal("first")
@@ -232,11 +317,11 @@ func TestBooksAndTheProbe(t *testing.T) {
 	if !strings.Contains(missing, "NO_INSTANCE other") {
 		t.Fatal(missing)
 	}
-	bare := answer([]any{[]any{"6", "lanes", "not-a-group"}}, map[string]*seat{}, &sync.Mutex{}, symbols)[0].([]any)[1].([]any)
+	bare := answer([]any{[]any{"6", "lanes", "not-a-group"}}, map[string]any{}, &sync.Mutex{}, symbols)[0].([]any)[1].([]any)
 	if len(bare) != 0 {
 		t.Fatal(bare)
 	}
-	raced := map[string]*seat{}
+	raced := map[string]any{}
 	answer([]any{[]any{"1", "make", "seat", "slim", "racy"}}, raced, mu, symbols)
 	if answer([]any{[]any{"2", "call", "seat", "book"}}, raced, mu, symbols)[0].([]any)[1] != "booked" {
 		t.Fatal("racy")
@@ -244,7 +329,7 @@ func TestBooksAndTheProbe(t *testing.T) {
 	if answer([]any{[]any{"3", "call", "seat", "book"}}, raced, mu, symbols)[0].([]any)[1] != "full" {
 		t.Fatal("racy full")
 	}
-	gate := map[string]*seat{}
+	gate := map[string]any{}
 	answer([]any{[]any{"1", "make", "gate", "slim"}}, gate, mu, symbols)
 	booked := answer([]any{[]any{"2", "call", "gate", "book"}}, gate, mu, symbols)[0].([]any)[1].(string)
 	if !strings.Contains(booked, "NO_INSTANCE") {
@@ -269,13 +354,13 @@ type laneHit struct {
 }
 
 func both(mark string) laneHit {
-	shared := map[string]*seat{}
+	shared := map[string]any{}
 	mu := &sync.Mutex{}
-	answer([]any{[]any{"1", "make", "seat", "slim", mark}}, shared, mu, map[string]string{})
+	answer([]any{[]any{"1", "make", "seat", "slim", mark}}, shared, mu, map[string]any{})
 	got := answer([]any{[]any{"9", "lanes",
 		[]any{"t1", []any{[]any{"a", "call", "seat", "book"}}},
 		[]any{"t2", []any{[]any{"b", "call", "seat", "book"}}},
-	}}, shared, mu, map[string]string{})
+	}}, shared, mu, map[string]any{})
 	rows := got[0].([]any)[1].([]any)
 	return laneHit{[]string{cell(rows[0]), cell(rows[1])}, overlaps(rows)}
 }
