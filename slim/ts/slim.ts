@@ -147,7 +147,8 @@ async function runLanes(row: Cell[], instances: Map<string, Seat>, symbols: Map<
   }
   const rows: Cell[] = []
   await Promise.all(row.slice(2).map(async (item) => {
-    if (!Array.isArray(item) || item.length < 2) return
+    if (!Array.isArray(item)) return
+    if (item.length < 2) return
     const calls = item[1]
     if (!Array.isArray(calls)) return
     const tag = textAt(item, 0)
@@ -268,7 +269,11 @@ function noteOptOut(symbols: Map<string, unknown>): void {
     return
   }
   const value = symbols.get("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS")
-  if (value === undefined || value === null) {
+  if (value === undefined) {
+    symbols.delete("\u0000opt")
+    return
+  }
+  if (value === null) {
     symbols.delete("\u0000opt")
     return
   }
@@ -282,7 +287,7 @@ function noteOptOut(symbols: Map<string, unknown>): void {
 function convertArgs(method: string, args: unknown[]): unknown[] {
   const kinds = signatures[method]
   if (kinds === undefined) return args
-  return args.map((arg, index) => convert(arg, kinds[index] ?? "string"))
+  return args.map((arg, index) => convert(arg, kinds[index] === undefined ? "string" : kinds[index]))
 }
 
 function convert(value: unknown, kind: string): unknown {
@@ -306,28 +311,34 @@ function parsedLong(text: string): unknown {
 }
 
 function parsedDouble(text: string): unknown {
+  if (text.trim() === "") return text
   const number = Number(text)
-  return Number.isFinite(number) && text.trim() !== "" ? number : text
+  if (!Number.isFinite(number)) return text
+  return number
 }
 
 function parsedChar(text: string): unknown {
-  return [...text].length === 1 ? text : text
+  return text
 }
 
 function parsedDate(text: string): unknown {
-  return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : text
+  return text
 }
 
 function parsedList(text: string): unknown {
-  if (!text.startsWith("[") || !text.endsWith("]")) return text
+  if (!text.startsWith("[")) return text
+  if (!text.endsWith("]")) return text
   const body = text.slice(1, -1).trim()
   if (body === "") return []
   return body.split(",").map((part) => part.trim())
 }
 
 function plus(args: unknown[]): string {
-  if (typeof args[0] !== "number" || typeof args[1] !== "number") return "no"
-  return String(args[0] + args[1])
+  const left = args[0]
+  const right = args[1]
+  if (typeof left !== "number") return "no"
+  if (typeof right !== "number") return "no"
+  return String(left + right)
 }
 
 function wide(args: unknown[]): string {
@@ -349,7 +360,18 @@ function initial(args: unknown[]): string {
 
 function day(args: unknown[]): string {
   const text = typeof args[0] === "string" ? args[0] : ""
-  return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : "no"
+  return dated(text) ? text : "no"
+}
+
+function dated(text: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return false
+  const month = Number(text.slice(5, 7))
+  const dayOfMonth = Number(text.slice(8, 10))
+  if (month < 1) return false
+  if (month > 12) return false
+  if (dayOfMonth < 1) return false
+  if (dayOfMonth > 31) return false
+  return true
 }
 
 function shade(args: unknown[]): string {
@@ -362,21 +384,27 @@ function join(args: unknown[]): string {
 }
 
 function label(args: unknown[]): string {
-  if (!Array.isArray(args[0])) return "no"
-  for (const row of args[0]) {
-    if (Array.isArray(row) && asText(row[0]) === "name") return asText(row[1])
+  const rows = args[0]
+  if (!Array.isArray(rows)) return "no"
+  for (const row of rows) {
+    if (!Array.isArray(row)) continue
+    if (asText(row[0]) !== "name") continue
+    return asText(row[1])
   }
   return "no"
 }
 
 function helperCall(seat: Seat, method: string, args: unknown[], instances: Map<string, Seat>): unknown {
+  const helper = seat.helper as { stack: unknown[] }
   if (method === "pushFixture") {
-    seat.helper?.stack.push(instances.get("scriptTableActor"))
+    helper.stack.push(instances.get("scriptTableActor"))
     return "OK"
   }
   if (method === "popFixture") {
-    const last = seat.helper?.stack.pop()
-    if (last instanceof Object && "phase" in (last as Seat)) instances.set("scriptTableActor", last as Seat)
+    const last = helper.stack.pop()
+    if (!(last instanceof Object)) return "OK"
+    if (!("phase" in last)) return "OK"
+    instances.set("scriptTableActor", last as Seat)
     return "OK"
   }
   if (method === "cloneSymbol") return args[0]
@@ -446,8 +474,7 @@ function seatValueOf(method: string, name: string, arg: string, seat: Seat | und
 
 function unknown(method: string, name: string, count: number, seat: Seat | undefined): string {
   if (seat === undefined) return missingInstance(name)
-  const className = seat.className === "" ? "slim" : seat.className
-  return noMethod(method, count, className)
+  return noMethod(method, count, seat.className)
 }
 
 function noMethod(method: string, count: number, className: string): string {
@@ -503,11 +530,14 @@ function made(row: Cell[], instances: Map<string, Seat>, symbols: Map<string, un
 }
 
 function actorFrom(raw: Cell | undefined, symbols: Map<string, unknown>): Seat | undefined {
-  if (typeof raw !== "string" || !raw.startsWith("$")) return undefined
-  const value = symbols.get(raw.slice(1))
-  if (value === undefined || typeof value === "string") return undefined
-  if (typeof value === "object" && value !== null && "phase" in value) return value as Seat
-  return undefined
+  if (typeof raw !== "string") return undefined
+  if (raw.length < 2) return undefined
+  if (!raw.startsWith("$")) return undefined
+  const key = raw.slice(1)
+  if (!symbols.has(key)) return undefined
+  const value = symbols.get(key)
+  if (typeof value === "string") return undefined
+  return value as Seat
 }
 
 function ensureHelper(instances: Map<string, Seat>): void {
@@ -605,6 +635,7 @@ function expandAll(args: Cell[], symbols: Map<string, unknown>): unknown[] {
 
 function expand(value: Cell, symbols: Map<string, unknown>): unknown {
   if (typeof value === "string") return expandCell(value, symbols)
+  if (!Array.isArray(value)) return value
   return value.map((item) => expand(item, symbols))
 }
 
@@ -620,42 +651,36 @@ function expandCell(text: string, symbols: Map<string, unknown>): unknown {
 }
 
 function wholeStored(text: string, symbols: Map<string, unknown>): { found: boolean, value: unknown } {
-  if (!text.startsWith("$") || text.length < 2) return { found: false, value: undefined }
+  if (!text.startsWith("$")) return { found: false, value: undefined }
+  if (text.length < 2) return { found: false, value: undefined }
   if (!symbols.has(text.slice(1))) return { found: false, value: undefined }
   return { found: true, value: symbols.get(text.slice(1)) }
 }
 
 function substitute(text: string, symbols: Map<string, unknown>): string {
-  let out = ""
-  let offset = 0
-  while (offset <= text.length) {
-    const found = symbolAt(text, offset)
-    if (found === undefined) return out + text.slice(offset)
-    out += text.slice(offset, found.start)
-    const resolved = resolveName(found.name, symbols)
-    if (!resolved.found) {
-      out += text.slice(found.start, found.next)
-      offset = found.next
-      continue
-    }
-    out += asText(resolved.value)
-    offset = found.start + 1 + resolved.name.length
-  }
-  return out
+  const found = symbolAt(text, 0)
+  if (found === undefined) return text
+  const resolved = resolveName(found.name, symbols)
+  if (!resolved.found) return text.slice(0, found.next) + substitute(text.slice(found.next), symbols)
+  const end = resolved.name === found.name ? found.next : found.start + 1 + resolved.name.length
+  return text.slice(0, found.start) + asText(resolved.value) + substitute(text.slice(end), symbols)
 }
 
 function resolveName(name: string, symbols: Map<string, unknown>): { found: boolean, name: string, value: unknown } {
   if (symbols.has(name)) return { found: true, name, value: symbols.get(name) }
-  for (let i = name.length - 1; i > 0; i--) {
-    const shorter = name.slice(0, i)
-    if (symbols.has(shorter)) return { found: true, name: shorter, value: symbols.get(shorter) }
-  }
-  return { found: false, name: "", value: undefined }
+  return shorterName(name, symbols)
+}
+
+function shorterName(name: string, symbols: Map<string, unknown>): { found: boolean, name: string, value: unknown } {
+  if (name.length <= 1) return { found: false, name: "", value: undefined }
+  const next = name.slice(0, name.length - 1)
+  if (symbols.has(next)) return { found: true, name: next, value: symbols.get(next) }
+  return shorterName(next, symbols)
 }
 
 function asText(value: unknown): string {
-  if (typeof value === "string") return value
-  if (value === undefined || value === null) return "null"
+  if (value === undefined) return "null"
+  if (value === null) return "null"
   return String(value)
 }
 
@@ -663,7 +688,7 @@ function symbolAt(text: string, index: number): { name: string, start: number, n
   const match = symbolPattern.exec(text.slice(index))
   if (match === null) return undefined
   const start = index + match.index
-  return { name: match[1] ?? "", start, next: start + match[0].length }
+  return { name: match[1], start, next: start + match[0].length }
 }
 
 export function parse(text: string): Cell[] {

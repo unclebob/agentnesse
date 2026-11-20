@@ -4,6 +4,6 @@
   "type": "module",
   "scripts": {
     "test": "node --experimental-strip-types --test slim.test.ts",
-    "coverage": "mkdir -p coverage && node --experimental-strip-types --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info slim.test.ts"
+    "coverage": "mkdir -p coverage && node --experimental-strip-types --test --experimental-test-coverage --test-coverage-include=slim.ts --test-reporter=lcov --test-reporter-destination=coverage/lcov.info slim.test.ts"
   }
 }
