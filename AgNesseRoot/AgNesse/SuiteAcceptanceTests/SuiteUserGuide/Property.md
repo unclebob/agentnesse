@@ -383,4 +383,4 @@ A fixture exception counts as a failing candidate, so the walk continues, and th
 
 When the property calls a scenario, a failure renders that scenario's steps for the shrunk input as a child table, the same way a scenario call already does. The round-trip tables above pass, so they have no child table.
 
-A sequence of commands, with preconditions and invariants, is a [sequence table](>Sequence).
+A sequence of commands, with preconditions and invariants, is a [sequence table](.AgNesse.SuiteAcceptanceTests.SuiteUserGuide.Sequence).

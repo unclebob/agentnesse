@@ -6,7 +6,7 @@
 }
 # Sequence
 
-A sequence table lists commands. AgNesse draws a sequence for each trial, runs it on a fresh fixture, and checks the model. One sequence is one assertion, however many trials and steps run.
+A sequence table lists commands. `AgNesse` draws a sequence for each trial, runs it on a fresh fixture, and checks the model. One sequence is one assertion, however many trials and steps run.
 
 Name the fixture the way a decision table does. The class can also sit in the next cell, and cells after that are constructor arguments. Optional `trials`, `steps`, `seed`, and `state` rows come next, then the commands, then the invariants. The whole specification is one Markdown table. A blank line starts a new table, so do not leave one inside this table.
 
@@ -53,7 +53,7 @@ A record can be set while it is open. Once it is locked, a plain set or a tweak 
 | invariant | when | model | query | expect |
 | | phase=locked; audited=no | value=@lockedValue | value? | @lockedValue |
 
-Each trial builds a new fixture. The model is checked in AgNesse, and the cells are ordinary strings, so the same table runs on any Slim server. This Python process keeps one gate per instance. Release from blocked is refused.
+Each trial builds a new fixture. The model is checked in `AgNesse`, and the cells are ordinary strings, so the same table runs on any Slim server. This Python process keeps one gate per instance. Release from blocked is refused.
 
 | script | page driver |
 | --- |
