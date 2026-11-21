@@ -36,7 +36,7 @@ public final class BlockJson {
     for (int column = 0; column < table.getColumnCountInRow(row); column++) {
       CellRecord record = table.cellRecord(row, column);
       outcome.note(record);
-      cells.put(cellJson(record, row + 1, column + 1));
+      cells.put(cellJson(record, keptText(table, column, row), row + 1, column + 1));
     }
     return new JSONObject().put("cells", cells);
   }
@@ -54,7 +54,7 @@ public final class BlockJson {
     return record.status();
   }
 
-  static JSONObject cellJson(CellRecord record, int row, int column) {
+  static JSONObject cellJson(CellRecord record, String original, int row, int column) {
     JSONObject cell = new JSONObject();
     cell.put("row", row);
     cell.put("column", column);
@@ -62,11 +62,7 @@ public final class BlockJson {
     put(cell, "actual", record.actual());
     put(cell, "expected", record.expected());
     put(cell, "symbol", record.symbol());
-    String value = record.value();
-    if (record.symbol() != null && record.symbol().startsWith("SECRET_")) {
-      value = "*****";
-    }
-    put(cell, "value", value);
+    put(cell, "value", shownValue(record, original));
     cell.put("error", record.failure() == null ? JSONObject.NULL : errorJson(record.failure()));
     return cell;
   }
@@ -82,6 +78,38 @@ public final class BlockJson {
     error.put("row", failure.row() == null ? JSONObject.NULL : failure.row());
     error.put("cell", failure.cell() == null ? JSONObject.NULL : failure.cell());
     return error;
+  }
+
+  /**
+   * Property tables keep the words that were not results, so the generator and
+   * the shrunk row can both be read. A rendered result is kept wherever it is
+   * shown. Other cells stay out of the document, so a script cell is not a
+   * second copy of its output.
+   */
+  private static String keptText(MarkdownTable table, int column, int row) {
+    String original = table.originalCell(column, row);
+    if (original != null && original.startsWith("<div class=\"rendered-test\"")) {
+      return original;
+    }
+    if (propertyTable(table) && original != null && !original.isEmpty()) {
+      return original;
+    }
+    return null;
+  }
+
+  private static boolean propertyTable(MarkdownTable table) {
+    return table.originalCell(0, 0).startsWith("property");
+  }
+
+  /** A result keeps its actual text. A kept cell that was never written keeps its words. */
+  private static String shownValue(CellRecord record, String original) {
+    if (record.symbol() != null && record.symbol().startsWith("SECRET_")) {
+      return "*****";
+    }
+    if (record.value() != null || record.actual() != null || record.symbol() != null) {
+      return record.value();
+    }
+    return original;
   }
 
   private static void put(JSONObject cell, String name, String value) {

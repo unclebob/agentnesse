@@ -195,6 +195,23 @@ const wireDisclosures = function (scope) {
     return body;
   }
 
+  function shownHtml(value) {
+    if (typeof value !== "string" || value.charAt(0) !== "<") return false;
+    var pattern = "^<(p|hr|pre|ul|ol|dl|div|h[1-6]|hgroup|address|blockquote|ins|del|object|map|"
+      + "video|audio|figure|table|fieldset|canvas|a|em|strong|small|mark|abbr|dfn|i|b|s|u|code|var|"
+      + "samp|kbd|sup|sub|q|cite|span|br|img|embed|label|output|datalist|progress|command|time|meter)"
+      + "([ >][\\s\\S]*</\\1>|[^>]*/>)$";
+    return new RegExp(pattern, "i").test(value);
+  }
+
+  function paint(node, value) {
+    if (shownHtml(value)) {
+      node.innerHTML = value;
+      return;
+    }
+    if (value != null) node.textContent = value;
+  }
+
   function el(name, className, textValue) {
     var node = document.createElement(name);
     if (className) node.className = className;
@@ -209,7 +226,9 @@ const wireDisclosures = function (scope) {
       var tr = document.createElement("tr");
       (row.cells || []).forEach(function (cell) {
         var status = cell.status || (cell.error ? "error" : "");
-        tr.appendChild(el("td", status, text(cell)));
+        var td = el("td", status, null);
+        paint(td, text(cell));
+        tr.appendChild(td);
       });
       table.appendChild(tr);
     });

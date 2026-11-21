@@ -31,6 +31,10 @@ public final class JsonBody {
     return text != null;
   }
 
+  public String text() {
+    return text;
+  }
+
   public boolean contains(String fragment) {
     return text != null && fragment != null && text.contains(fragment);
   }

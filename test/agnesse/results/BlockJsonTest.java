@@ -86,6 +86,44 @@ public class BlockJsonTest {
   }
 
   @Test
+  public void aPropertyTableKeepsWordsThatAreNotResults() {
+    MarkdownTable table = MarkdownTable.parse("| property |\n| price | true |\n");
+    table.updateContent(1, 1, SlimTestResult.fail("false", "true"));
+    table.addColumnToRow(0, "<div class=\"rendered-test\">1.00</div>");
+
+    JSONObject block = BlockJson.from(table);
+
+    assertEquals("price", cell(block, 1, 0).getString("value"));
+    assertTrue(cell(block, 1, 1).isNull("value"));
+    assertEquals("false", cell(block, 1, 1).getString("actual"));
+    assertEquals("property", cell(block, 0, 0).getString("value"));
+    assertTrue(block.toString(), block.toString().contains("rendered-test"));
+  }
+
+  @Test
+  public void aScriptCellIsNotCopiedIntoTheResult() {
+    MarkdownTable table = MarkdownTable.parse("| script |\n| write | hello |\n");
+    table.addColumnToRow(1, "<div class=\"rendered-test\">1.00</div>");
+
+    JSONObject block = BlockJson.from(table);
+
+    assertTrue(cell(block, 1, 0).isNull("value"));
+    assertTrue(cell(block, 1, 1).isNull("value"));
+    assertTrue(block.toString(), block.toString().contains("rendered-test"));
+  }
+
+  @Test
+  public void aSymbolThatOnlyStartsWithSecretKeepsItsValue() {
+    MarkdownTable table = MarkdownTable.parse("| script | SECRETx |\n");
+    table.updateContent(1, 0, SlimTestResult.pass("$SECRETx<-[shown]"));
+
+    JSONObject symbol = cell(BlockJson.from(table), 0, 1);
+
+    assertEquals("SECRETx", symbol.getString("symbol"));
+    assertEquals("shown", symbol.getString("value"));
+  }
+
+  @Test
   public void anEmptyTableHasNoName() {
     JSONObject block = BlockJson.from(MarkdownTable.parse(""));
     assertEquals("", block.getString("name"));

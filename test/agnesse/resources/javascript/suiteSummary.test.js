@@ -627,6 +627,32 @@ test("a page name is kept whole when the run has no suite root", () => {
   assert.equal(view.summaries.querySelector("a").href, "/.Hidden");
 });
 
+test("a rendered result is html and ordinary text stays text", () => {
+  const view = render([
+    { event: "page-started", path: "Suite.Page" },
+    {
+      event: "table-done",
+      path: "Suite.Page",
+      block: {
+        name: "script",
+        rows: [{ cells: [
+          { value: "<div class=\"rendered-test\"><table class=\"agnesse-table\"><tr><td class=\"fail\">1.00</td></tr></table></div>" },
+          { value: "1 < 0" },
+          { value: "<script>alert(1)</script>" },
+        ] }],
+      },
+    },
+  ]);
+  const cells = view.results.querySelectorAll("td");
+  assert.equal(cells[0].innerHTML.includes("class=\"fail\""), true);
+  assert.equal(cells[0].innerHTML.includes(">1.00<"), true);
+  assert.equal(cells[0].textContent, "");
+  assert.equal(cells[1].textContent, "1 < 0");
+  assert.equal(cells[1].innerHTML, undefined);
+  assert.equal(cells[2].textContent, "<script>alert(1)</script>");
+  assert.equal(cells[2].innerHTML, undefined);
+});
+
 test("a symbol cell masks a secret and shows an ordinary value", () => {
   const view = render([
     { event: "page-started", path: "Suite.Child" },
