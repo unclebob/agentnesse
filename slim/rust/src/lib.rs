@@ -4,13 +4,16 @@
 //!
 //! Symbols follow the Java forms. A whole-cell symbol passes the stored value.
 //! A non-string class symbol becomes the instance. SlimHelperLibrary pushes,
-//! pops, and clones the script actor. SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS skips
-//! replacement, and an invalid pattern is ignored. plus, wide, scale, flag,
+//! pops, and clones the script actor. SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS is a
+//! regular expression matched against the whole instance.method name, and an
+//! invalid pattern is ignored. plus, wide, scale, flag,
 //! initial, day, shade, join, and label convert arguments from a signature
 //! table, because a fixture method has no reflected parameter types.
 
 use std::collections::HashMap;
 use std::io::{Read, Write};
+
+use regex::Regex;
 use std::net::TcpListener;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
@@ -744,29 +747,13 @@ fn pop_fixture(shared: &Arc<Mutex<Shared>>) -> Stored {
 }
 
 fn skips(symbols: &HashMap<String, Stored>, instance: &str, method: &str) -> bool {
-    let Some(Stored::Text(pattern)) = symbols.get("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS") else { return false };
-    let Some(literal) = unescape(pattern) else { return false };
-    let target = format!("{instance}.{method}");
-    if let Some(prefix) = literal.strip_suffix(".*") {
-        return target.starts_with(prefix);
-    }
-    target == literal
+    let Some(pattern) = symbols.get("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS") else { return false };
+    let Ok(compiled) = Regex::new(&anchored(&display(pattern))) else { return false };
+    compiled.is_match(&format!("{instance}.{method}"))
 }
 
-fn unescape(pattern: &str) -> Option<String> {
-    if pattern.contains('[') {
-        return None;
-    }
-    let mut out = String::new();
-    let mut chars = pattern.chars();
-    while let Some(ch) = chars.next() {
-        if ch == '\\' {
-            out.push(chars.next()?);
-        } else {
-            out.push(ch);
-        }
-    }
-    Some(out)
+fn anchored(pattern: &str) -> String {
+    format!(r"\A(?:{pattern})\z")
 }
 
 fn convert_args(method: &str, args: Vec<Stored>) -> Vec<Stored> {

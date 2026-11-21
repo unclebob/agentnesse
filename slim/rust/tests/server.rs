@@ -169,6 +169,13 @@ fn objects_actors_opt_out_and_typed_arguments() {
     assert_eq!(cell(&gate.answer(&[call("13", "again", "echo", &["$ab"])]), 0), "$ab");
     gate.answer(&[Value::List(vec![t("14"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("[")])]);
     assert_eq!(cell(&gate.answer(&[call("15", "again", "echo", &["$ab"])]), 0), "YES");
+    gate.answer(&[Value::List(vec![t("15b"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("again\\.e[a-z]+")])]);
+    assert_eq!(cell(&gate.answer(&[call("15c", "again", "echo", &["$ab"])]), 0), "$ab");
+    gate.answer(&[Value::List(vec![t("15d"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("echo")])]);
+    assert_eq!(cell(&gate.answer(&[call("15e", "again", "echo", &["$ab"])]), 0), "YES");
+    gate.answer(&[Value::List(vec![t("15f"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("again\\.echo|gate\\.echo")])]);
+    assert_eq!(cell(&gate.answer(&[call("15g", "again", "echo", &["$ab"])]), 0), "$ab");
+    gate.answer(&[Value::List(vec![t("15h"), t("assign"), t("SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS"), t("[")])]);
     assert_eq!(cell(&gate.answer(&[call("16", "again", "plus", &["2", "3"])]), 0), "5");
     assert_eq!(cell(&gate.answer(&[call("17", "again", "flag", &["true"])]), 0), "yes");
     assert_eq!(cell(&gate.answer(&[call("18", "again", "join", &["[red, blue]"])]), 0), "red,blue");
