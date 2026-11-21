@@ -1,8 +1,11 @@
 (ns agnesse.slim
   "A Slim 0.5 server. Port 1 is stdin and stdout. Any other port accepts one
-  socket on 127.0.0.1. A lanes instruction runs each lane on its own thread."
+  socket on 127.0.0.1. A lanes instruction runs each lane on its own thread.
+  Symbols follow the Java forms, and call arguments convert through a signature
+  table because a fixture method has no reflected parameter types."
   (:import [java.io InputStream OutputStream]
-           [java.net InetAddress ServerSocket Socket]))
+           [java.net InetAddress ServerSocket Socket]
+           [java.util.regex Pattern]))
 
 (def catalog
   (str "beginTable() -> string\n"
@@ -12,15 +15,27 @@
        "endIsAfterStart(string, string) -> string\n"
        "endTable() -> string\n"
        "execute() -> string\n"
+       "day(date) -> string\n"
+       "flag(boolean) -> string\n"
        "hello() -> string\n"
+       "initial(char) -> string\n"
+       "join(list) -> string\n"
        "kind(string) -> string\n"
+       "label(map) -> string\n"
        "open() -> string\n"
        "phase() -> string\n"
+       "plus(int, int) -> string\n"
        "release() -> string\n"
        "released() -> string\n"
        "reset() -> string\n"
+       "scale(double) -> string\n"
        "setWord(string) -> string\n"
-       "table(list) -> string"))
+       "shade(enum) -> string\n"
+       "table(list) -> string\n"
+       "wide(long) -> string"))
+
+(def helper-catalog
+  "cloneSymbol(object) -> object\npopFixture() -> string\npushFixture() -> string")
 
 (def book-lock (Object.))
 
@@ -55,42 +70,65 @@
     {:phase "" :seats 1 :race mark :word "" :class (class-name klass)}
     {:phase "new" :seats nil :race "" :word "" :class (class-name klass)}))
 
-(defn made [row instances]
+(declare as-text expand-cell label-row)
+
+(defn actor-from [raw symbols]
+  (when (string? raw)
+    (when (.startsWith raw "$")
+      (when (> (count raw) 1)
+        (let [key (subs raw 1)]
+          (when (contains? symbols key)
+            (let [value (get symbols key)]
+              (when-not (string? value) value))))))))
+
+(defn made [row instances symbols]
   (let [name (text row 2)]
-    (when-not (= "" name)
-      (swap! instances assoc name (atom (opened (text row 3) (text row 4)))))
-    "OK"))
+    (if (= "" name)
+      "OK"
+      (if-let [actor (actor-from (nth row 3 nil) symbols)]
+        (do (swap! instances assoc name actor) "OK")
+        (let [class-name (as-text (expand-cell (text row 3) symbols))]
+          (swap! instances assoc name (atom (opened class-name (text row 4))))
+          "OK")))))
 
 (defn missing-instance [name]
   (str "__EXCEPTION__:message:<<NO_INSTANCE " name ">>"))
 
+(defn seat? [value]
+  (and (instance? clojure.lang.IAtom value)
+       (map? @value)
+       (contains? @value :class)))
+
 (defn no-method [method args klass]
   (str "__EXCEPTION__:message:<<NO_METHOD_IN_CLASS No Method "
        method "[" args "] in class " (class-name klass)
-       ".\n Available methods:\n" catalog ">>"))
+       ".\n Available methods:\n"
+       (if (= "SlimHelperLibrary" klass) helper-catalog catalog) ">>"))
 
 (defn unknown [method name args seat]
-  (if (nil? seat)
-    (missing-instance name)
-    (no-method method args (:class @seat))))
+  (if (seat? seat)
+    (no-method method args (:class @seat))
+    (missing-instance name)))
 
 (defn move [seat needed next]
-  (if (or (nil? seat) (not= needed (:phase @seat)))
+  (if (not (seat? seat))
     "refused"
-    (do (swap! seat assoc :phase next) "ok")))
+    (if (not= needed (:phase @seat))
+      "refused"
+      (do (swap! seat assoc :phase next) "ok"))))
 
 (defn phase-of [seat]
-  (if (nil? seat) "" (:phase @seat)))
+  (if (seat? seat) (:phase @seat) ""))
 
 (defn released-of [seat]
-  (if (and seat (= "released" (:phase @seat))) "true" "false"))
+  (if (and (seat? seat) (= "released" (:phase @seat))) "true" "false"))
 
 (defn store-word [seat word]
-  (when seat (swap! seat assoc :word word))
+  (when (seat? seat) (swap! seat assoc :word word))
   "OK")
 
 (defn word-of [seat]
-  (if (or (nil? seat) (= "" (:word @seat))) "OK" (:word @seat)))
+  (if (or (not (seat? seat)) (= "" (:word @seat))) "OK" (:word @seat)))
 
 (defn whole [value]
   (when (and (string? value) (re-matches #"-?\d+" value))
@@ -124,16 +162,89 @@
 
 (defn book [seat name]
   (cond
-    (or (nil? seat) (= "" (:race @seat))) (missing-instance name)
+    (not (seat? seat)) (missing-instance name)
+    (= "" (:race @seat)) (missing-instance name)
     (= "racy" (:race @seat)) (race-book seat)
     :else (safe-book seat)))
 
-(defn plain [method args]
+(defn plus [args]
+  (let [left (first args)
+        right (second args)]
+    (if (not (int? left))
+      "no"
+      (if (not (int? right))
+        "no"
+        (str (+ left right))))))
+
+(defn wide [args]
+  (if (instance? Long (first args)) (str (first args)) "no"))
+
+(defn scale [args]
+  (if (instance? Double (first args)) (str (first args)) "no"))
+
+(defn flag [args]
+  (if (true? (first args)) "yes" "no"))
+
+(defn initial [args]
+  (let [text (first args)]
+    (if (and (string? text) (= 1 (count text))) text "no")))
+
+(defn dated? [text]
+  (some? (try (java.time.LocalDate/parse text) (catch Exception _ nil))))
+
+(defn day [args]
+  (let [text (first args)]
+    (if (and (string? text) (dated? text)) text "no")))
+
+(defn shade [args]
+  (let [text (first args)]
+    (if (contains? #{"red" "green" "blue"} text) text "no")))
+
+(defn join [args]
+  (let [items (first args)]
+    (if (sequential? items) (clojure.string/join "," (map as-text items)) "no")))
+
+(defn label [args]
+  (let [rows (first args)]
+    (if (sequential? rows) (label-row rows) "no")))
+
+(defn label-row [rows]
+  (if (empty? rows)
+    "no"
+    (let [row (first rows)]
+      (if (and (sequential? row) (= "name" (as-text (first row))))
+        (as-text (second row))
+        (let [tail (rest rows)]
+          (if (seq? tail)
+            (if (empty? tail) "no" (label-row tail))
+            "broken"))))))
+
+(defn numbers [method args]
+  (case method
+    "plus" (plus args)
+    "wide" (wide args)
+    "scale" (scale args)
+    "flag" (flag args)
+    nil))
+
+(defn greetings [method args]
   (case method
     "hello" "world"
     "endIsAfterStart" (ordered args)
     "kind" (kind-of args)
+    "initial" (initial args)
     nil))
+
+(defn shaped [method args]
+  (case method
+    "day" (day args)
+    "shade" (shade args)
+    "join" (join args)
+    "label" (label args)
+    nil))
+
+(defn plain [method args]
+  (or (numbers method args) (greetings method args) (shaped method args)))
 
 (defn lifecycle? [method]
   (contains? #{"table" "beginTable" "reset" "execute" "endTable"} method))
@@ -158,55 +269,172 @@
   (let [moved (transition method seat)]
     (if (some? moved) moved (asked method name arg args seat))))
 
-(defn name-start? [ch]
-  (or (and ch (<= (int \A) (int ch) (int \Z)))
-      (and ch (<= (int \a) (int ch) (int \z)))))
+(def symbol-pattern
+  (Pattern/compile "\\$(([A-Za-z\\p{L}][\\w\\p{L}]*)|`([^`]+)`)"))
 
-(defn name-part? [ch]
-  (or (name-start? ch)
-      (and ch (<= (int \0) (int ch) (int \9)))
-      (= \_ ch)))
+(def assignment-pattern
+  (Pattern/compile "\\A\\s*\\$([A-Za-z\\p{L}][\\w\\p{L}]*)\\s*=\\s*\\z"))
 
-(defn symbol-end [text index]
-  (loop [at index]
-    (if (name-part? (nth text at nil))
-      (recur (inc at))
-      at)))
+(def signatures
+  {"plus" ["int" "int"]
+   "wide" ["long"]
+   "scale" ["double"]
+   "flag" ["boolean"]
+   "initial" ["char"]
+   "day" ["date"]
+   "shade" ["enum"]
+   "join" ["list"]
+   "label" ["map"]})
 
-(defn symbol-at [text index]
-  (let [start (nth text index nil)
-        next-ch (nth text (inc index) nil)]
-    (when (and (= \$ start) (name-start? next-ch))
-      (let [end (symbol-end text (+ index 2))]
-        [(subs text (inc index) end) end]))))
+(defn as-text [value]
+  (cond
+    (string? value) value
+    (nil? value) "null"
+    (sequential? value) (str "[" (clojure.string/join ", " (map as-text value)) "]")
+    :else (str value)))
+
+(defn assignment? [text]
+  (boolean (and (string? text) (.matches (.matcher assignment-pattern text)))))
+
+(defn shorter-name [name symbols]
+  (if (<= (count name) 1)
+    nil
+    (let [next-name (subs name 0 (dec (count name)))]
+      (if (contains? symbols next-name)
+        [next-name (get symbols next-name)]
+        (shorter-name next-name symbols)))))
+
+(defn resolve-name [name symbols]
+  (if (contains? symbols name)
+    [name (get symbols name)]
+    (shorter-name name symbols)))
+
+(defn substitute [text symbols]
+  (let [matcher (.matcher symbol-pattern text)]
+    (if-not (.find matcher)
+      text
+      (let [found (resolve-name (.group matcher 1) symbols)]
+        (if (nil? found)
+          (str (subs text 0 (.end matcher)) (substitute (subs text (.end matcher)) symbols))
+          (let [[used value] found
+                end (+ (.start matcher) 1 (count used))]
+            (str (subs text 0 (.start matcher)) (as-text value) (substitute (subs text end) symbols))))))))
+
+(defn whole-stored [text symbols]
+  (if-not (string? text)
+    ::miss
+    (if-not (.startsWith text "$")
+      ::miss
+      (if-not (> (count text) 1)
+        ::miss
+        (if (contains? symbols (subs text 1))
+          (get symbols (subs text 1))
+          ::miss)))))
+
+(defn expand-cell [text symbols]
+  (let [stored (whole-stored text symbols)]
+    (if (not= stored ::miss)
+      stored
+      (if (assignment? text)
+        ""
+        (substitute text symbols)))))
 
 (defn expand-string [text symbols]
-  (loop [index 0 out ""]
-    (if (>= index (count text))
-      out
-      (if-let [[name end] (symbol-at text index)]
-        (recur end (str out (get symbols name (subs text index end))))
-        (recur (inc index) (str out (subs text index (inc index))))))))
+  (as-text (expand-cell text symbols)))
 
 (defn expand [value symbols]
   (cond
-    (string? value) (expand-string value symbols)
+    (string? value) (expand-cell value symbols)
     (sequential? value) (mapv #(expand % symbols) value)
     :else value))
 
 (defn args-from [row index]
   (vec (drop index row)))
 
+(defn parsed-int [text]
+  (try (Integer/parseInt text) (catch Exception _ text)))
+
+(defn parsed-long [text]
+  (try (Long/parseLong text) (catch Exception _ text)))
+
+(defn parsed-double [text]
+  (try (Double/parseDouble text) (catch Exception _ text)))
+
+(defn parsed-list [text]
+  (if (and (string? text) (.startsWith text "[") (.endsWith text "]"))
+    (let [body (.trim (subs text 1 (dec (count text))))]
+      (if (= "" body) [] (mapv #(.trim %) (.split body ","))))
+    text))
+
+(defn convert [value kind]
+  (if (string? value)
+    (case kind
+      "int" (parsed-int value)
+      "long" (parsed-long value)
+      "double" (parsed-double value)
+      "boolean" (= "true" value)
+      "list" (parsed-list value)
+      value)
+    value))
+
+(defn kind-at [kinds index]
+  (if (< index (count kinds)) (nth kinds index) "string"))
+
+(defn convert-args [method args]
+  (if-let [kinds (get signatures method)]
+    (mapv (fn [index arg] (convert arg (kind-at kinds index))) (range) args)
+    args))
+
+(defn opt-pattern [value]
+  (try (Pattern/compile (str value)) (catch Exception _ nil)))
+
+(defn skips? [symbols instance method]
+  (boolean
+    (when-let [value (get symbols "SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS")]
+      (when-let [pattern (opt-pattern value)]
+        (.matches (.matcher pattern (str instance "." method)))))))
+
+(defn helper? [value]
+  (and (map? value) (:helper value)))
+
+(defn ensure-helper [instances]
+  (when-not (contains? @instances "SlimHelperLibrary")
+    (swap! instances assoc "SlimHelperLibrary" {:helper true :stack (atom [])})))
+
+(defn pop-fixture [helper instances]
+  (let [stack (:stack helper)]
+    (if (empty? @stack)
+      "OK"
+      (let [actor (peek @stack)]
+        (swap! stack pop)
+        (when (some? actor) (swap! instances assoc "scriptTableActor" actor))
+        "OK"))))
+
+(defn helper-call [helper method args instances]
+  (case method
+    "pushFixture" (do (swap! (:stack helper) conj (get @instances "scriptTableActor")) "OK")
+    "popFixture" (pop-fixture helper instances)
+    "cloneSymbol" (first args)
+    (no-method method (count args) "SlimHelperLibrary")))
+
+(defn first-text [args]
+  (let [value (first args)]
+    (if (string? value) value "")))
+
 (defn call [row instance-at method-at instances symbols]
   (let [method (text row method-at)
-        args (mapv #(expand % @symbols) (args-from row (inc method-at)))
         name (text row instance-at)
-        seat (get @instances name)]
-    (if (= "echo" method)
-      (echo-of seat args)
-      (if-let [value (plain method args)]
-        value
-        (on-seat method name (if (string? (first args)) (first args) "") args seat)))))
+        raw (args-from row (inc method-at))
+        table @symbols
+        args (convert-args method (if (skips? table name method) raw (mapv #(expand % table) raw)))
+        target (get @instances name)]
+    (cond
+      (helper? target) (helper-call target method args instances)
+      (= "echo" method) (echo-of target args)
+      (and (= "self" method) (seat? target)) target
+      :else (if-let [value (plain method args)]
+              value
+              (on-seat method name (first-text args) args target)))))
 
 (defn remember [symbols name value]
   (when-not (= "" name) (swap! symbols assoc name value))
@@ -246,13 +474,15 @@
 
 (defn reply [row instances symbols]
   (case (text row 1)
-    "make" (made row instances)
+    "make" (made row instances @symbols)
     "call" (call row 2 3 instances symbols)
     "callAndAssign" (remember symbols (text row 2) (call row 3 4 instances symbols))
+    "assign" (do (remember symbols (text row 2) (nth row 3 nil)) "OK")
     "lanes" (run-lanes row instances symbols)
     "OK"))
 
 (defn answer [instructions instances symbols]
+  (ensure-helper instances)
   (into []
         (keep (fn [row]
                 (when (sequential? row)
