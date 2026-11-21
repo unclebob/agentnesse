@@ -229,7 +229,7 @@ task rustSlimTest(type: Exec) {
   group = 'verification'
   description = 'Run the Rust Slim server tests.'
   workingDir = 'slim/rust'
-  commandLine 'cargo', 'test', '--offline', '--quiet'
+  commandLine 'cargo', 'test', '--quiet'
 }
 
 task tsSlimTest(type: Exec) {
