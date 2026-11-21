@@ -8,7 +8,9 @@
 //! regular expression matched against the whole instance.method name, and an
 //! invalid pattern is ignored. plus, wide, scale, flag,
 //! initial, day, shade, join, and label convert arguments from a signature
-//! table, because a fixture method has no reflected parameter types.
+//! table, because a fixture method has no reflected parameter types. day uses
+//! Java's calendar: real month lengths, and leap years when the year is
+//! divisible by 4, except centuries, which must be divisible by 400.
 
 use std::collections::HashMap;
 use std::io::{Read, Write};
@@ -877,19 +879,65 @@ fn valid_date(text: &str) -> bool {
     if bytes[7] != b'-' {
         return false;
     }
+    let Ok(year) = text[0..4].parse::<u16>() else { return false };
     let Ok(month) = text[5..7].parse::<u8>() else { return false };
     let Ok(day) = text[8..10].parse::<u8>() else { return false };
-    let Some(limit) = month_limit(month) else { return false };
-    day >= 1 && day <= limit
+    let Some(limit) = month_limit(year, month) else { return false };
+    in_month(day, limit)
 }
 
-fn month_limit(month: u8) -> Option<u8> {
-    match month {
-        1 | 3 | 5 | 7 | 8 | 10 | 12 => Some(31),
-        4 | 6 | 9 | 11 => Some(30),
-        2 => Some(28),
-        _ => None,
+fn in_month(day: u8, limit: u8) -> bool {
+    if day < 1 {
+        return false;
     }
+    day <= limit
+}
+
+fn month_limit(year: u16, month: u8) -> Option<u8> {
+    if month == 2 {
+        return Some(february(year));
+    }
+    if thirty(month) {
+        return Some(30);
+    }
+    if month < 1 {
+        return None;
+    }
+    if month > 12 {
+        return None;
+    }
+    Some(31)
+}
+
+fn february(year: u16) -> u8 {
+    if leap(year) { 29 } else { 28 }
+}
+
+fn thirty(month: u8) -> bool {
+    if month == 4 {
+        return true;
+    }
+    if month == 6 {
+        return true;
+    }
+    if month == 9 {
+        return true;
+    }
+    month == 11
+}
+
+fn leap(year: u16) -> bool {
+    if !divides(year, 4) {
+        return false;
+    }
+    if !divides(year, 100) {
+        return true;
+    }
+    divides(year, 400)
+}
+
+fn divides(year: u16, by: u16) -> bool {
+    year % by == 0
 }
 
 fn shade(args: &[Stored]) -> String {
