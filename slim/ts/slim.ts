@@ -12,7 +12,9 @@
 // make class name, nested lists, and SLIM_AGENT_FIXTURE_HANDLES_SYMBOLS.
 // There are no runtime parameter types, so plus, wide, scale, flag, initial,
 // day, shade, join, and label convert arguments through the signature table
-// above those names. wide uses bigint. day checks an ISO date string.
+// above those names. wide uses bigint. day uses Java's calendar: real month
+// lengths, and leap years when the year is divisible by 4, except centuries,
+// which must be divisible by 400.
 import net from "node:net"
 import process from "node:process"
 
@@ -365,12 +367,36 @@ function day(args: unknown[]): string {
 
 function dated(text: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return false
+  const year = Number(text.slice(0, 4))
   const month = Number(text.slice(5, 7))
   const dayOfMonth = Number(text.slice(8, 10))
-  if (month < 1) return false
-  if (month > 12) return false
-  if (dayOfMonth < 1) return false
-  if (dayOfMonth > 31) return false
+  return fits(dayOfMonth, monthDays(year, month))
+}
+
+function fits(day: number, limit: number): boolean {
+  if (day < 1) return false
+  return day <= limit
+}
+
+function monthDays(year: number, month: number): number {
+  if (month === 2) return leapYear(year) ? 29 : 28
+  if (thirtyDay(month)) return 30
+  if (month < 1) return 0
+  if (month > 12) return 0
+  return 31
+}
+
+function thirtyDay(month: number): boolean {
+  if (month === 4) return true
+  if (month === 6) return true
+  if (month === 9) return true
+  if (month === 11) return true
+  return false
+}
+
+function leapYear(year: number): boolean {
+  if (year % 4 !== 0) return false
+  if (year % 100 === 0) return year % 400 === 0
   return true
 }
 
