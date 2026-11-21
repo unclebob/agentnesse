@@ -44,6 +44,25 @@ public class ReferenceIndexTest {
   }
 
   @Test
+  public void sigilsFencesAndAWordAtTheStartAreRewritten() {
+    assertEquals("Gone", gone("FrontPage"));
+    assertEquals("See Gone.", gone("See FrontPage."));
+    assertEquals("Gone Gone Gone Gone", gone("<FrontPage >FrontPage ^FrontPage .FrontPage"));
+    assertEquals("trailing <", gone("trailing <"));
+    assertEquals("```\nkeep FrontPage\n```\nGone", gone("```\nkeep FrontPage\n```\nFrontPage"));
+    assertEquals("```agnesse\ninclude Gone\n```", gone("```agnesse\ninclude .FrontPage\n```"));
+    assertEquals("[go](Gone#top)", gone("[go](FrontPage#top)"));
+    assertEquals("[go](Gone", gone("[go](FrontPage"));
+    assertEquals("`FrontPage` Gone", gone("`FrontPage` FrontPage"));
+    assertEquals("<!-- FrontPage --> Gone", gone("<!-- FrontPage --> FrontPage"));
+    assertEquals("http://x/FrontPage Gone", gone("http://x/FrontPage FrontPage"));
+  }
+
+  private static String gone(String content) {
+    return MarkdownReferences.replace(null, content, reference -> java.util.Optional.of("Gone"));
+  }
+
+  @Test
   public void leavesRemoteLinksAlone() {
     String content = "[web](http://example.com/PageTwo) and [spaced](not a path)";
     String rewritten = MarkdownReferences.replace(null, content, reference -> java.util.Optional.of("Gone"));

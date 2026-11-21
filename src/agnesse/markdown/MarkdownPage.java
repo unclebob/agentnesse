@@ -239,13 +239,37 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
   }
 
   private static boolean tableLine(String content, int at) {
-    int line = content.lastIndexOf('\n', at) + 1;
-    int end = content.indexOf('\n', at);
-    if (end < 0) {
-      end = content.length();
+    return rowStart(content, lineStart(content, at));
+  }
+
+  private static int lineStart(String content, int at) {
+    int line = 0;
+    int i = 0;
+    while (i != at) {
+      if (content.charAt(i) == '\n') {
+        line = i + 1;
+      }
+      i++;
     }
-    String trimmed = content.substring(line, end).trim();
-    return trimmed.startsWith("|") || trimmed.startsWith("!|");
+    return line;
+  }
+
+  private static boolean rowStart(String content, int line) {
+    int i = line;
+    while (i != content.length() && content.charAt(i) == ' ') {
+      i++;
+    }
+    if (content.charAt(i) == '|') {
+      return true;
+    }
+    return bangRow(content, i);
+  }
+
+  private static boolean bangRow(String content, int i) {
+    if (content.charAt(i) != '!') {
+      return false;
+    }
+    return content.charAt(i + 1) == '|';
   }
 
   private static boolean plainLine(boolean fence, String trimmed) {

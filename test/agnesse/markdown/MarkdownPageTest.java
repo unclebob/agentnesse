@@ -474,6 +474,39 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void aRowOnTheFirstLineAndARowAfterALeadingBreak() {
+    put("First.md", "| cell | ${CELL} |\n```agnesse\ndefine CELL\n`\n```\n");
+    put("Second.md", "\n| cell | ${CELL} |\n```agnesse\ndefine CELL\n`\n```\n");
+
+    assertTrue(slimOf("First"), slimOf("First").contains("&#96;"));
+    assertTrue(slimOf("Second"), slimOf("Second").contains("&#96;"));
+  }
+
+  private String slimOf(String name) {
+    return ((MarkdownPage) page(name)).expandedForSlim(null);
+  }
+
+  @Test
+  public void onlyARowMarkKeepsBackticksInsideTheCell() {
+    put("Host.md", """
+      ```agnesse
+      define CELL
+      `
+      ```
+      prose
+      | cell | ${CELL} |
+       | indented | ${CELL} |
+      !| bang | ${CELL} |
+      a|${CELL}
+      !${CELL}
+      """);
+    String slim = ((MarkdownPage) page("Host")).expandedForSlim(null);
+    assertEquals(slim, 3, count(slim, "&#96;"));
+    assertTrue(slim, slim.contains("a|`"));
+    assertTrue(slim, slim.contains("!`"));
+  }
+
+  @Test
   public void slimEscapesPipesOutsideATableAndLeavesBackticks() {
     put("Host.md", """
       ```agnesse

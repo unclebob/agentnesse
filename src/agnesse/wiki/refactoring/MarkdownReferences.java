@@ -50,8 +50,8 @@ final class MarkdownReferences {
   private static int word(String content, int index, StringBuilder out,
                           Function<String, Optional<String>> changeReference) {
     int pathLength = leadingPath(content, index);
-    int length = pathLength > 0 ? pathLength : WikiWords.findWikiWordLength(content.substring(index));
-    if (length > 0 && !insideUrl(content, index) && WikiWords.startsAtBoundary(content, index)) {
+    int length = pathLength != 0 ? pathLength : WikiWords.findWikiWordLength(content.substring(index));
+    if (length != 0 && !insideUrl(content, index) && WikiWords.startsAtBoundary(content, index)) {
       String token = content.substring(index, index + length);
       out.append(changeReference.apply(token).orElse(token));
       return index + length;
@@ -98,7 +98,7 @@ final class MarkdownReferences {
                                Function<String, Optional<String>> changeReference) {
     int opener = tickRun(content, index);
     int close = closingFence(content, index + opener, opener);
-    if (close < 0) {
+    if (missing(close)) {
       out.append(content.substring(index));
       return content.length();
     }
@@ -109,11 +109,11 @@ final class MarkdownReferences {
   }
 
   private static int tickRun(String content, int index) {
-    int count = 0;
-    while (index + count < content.length() && content.charAt(index + count) == '`') {
-      count++;
+    int cursor = index;
+    while (cursor != content.length() && content.charAt(cursor) == '`') {
+      cursor++;
     }
-    return count;
+    return cursor - index;
   }
 
   /** A closer is its own line of at least {@code opener} backticks and nothing else. */
@@ -121,7 +121,7 @@ final class MarkdownReferences {
     int index = from;
     while (index < content.length()) {
       int lineEnd = content.indexOf('\n', index);
-      if (lineEnd < 0) {
+      if (missing(lineEnd)) {
         lineEnd = content.length();
       }
       int lineStart = content.lastIndexOf('\n', index - 1) + 1;
@@ -138,17 +138,23 @@ final class MarkdownReferences {
 
   private static boolean closes(String line, int opener) {
     String trimmed = line.trim();
-    int ticks = 0;
-    while (ticks < trimmed.length() && trimmed.charAt(ticks) == '`') {
-      ticks++;
+    if (trimmed.length() < opener) {
+      return false;
     }
-    return ticks >= opener && ticks == trimmed.length();
+    int i = 0;
+    while (i != trimmed.length()) {
+      if (trimmed.charAt(i) != '`') {
+        return false;
+      }
+      i++;
+    }
+    return true;
   }
 
   private static boolean includeFence(String fence) {
     String inner = fence.substring(3, fence.length() - 3);
     int newline = inner.indexOf('\n');
-    if (newline < 0 || !inner.substring(0, newline).trim().equals("agnesse")) {
+    if (missing(newline) || !inner.substring(0, newline).trim().equals("agnesse")) {
       return false;
     }
     String body = inner.substring(newline + 1).stripLeading();
@@ -162,17 +168,17 @@ final class MarkdownReferences {
   private static int link(String content, int index, StringBuilder out,
                           Function<String, Optional<String>> changeReference) {
     int labelEnd = content.indexOf("](", index);
-    if (labelEnd < 0) {
+    if (missing(labelEnd)) {
       return index;
     }
     int destEnd = content.indexOf(')', labelEnd + 2);
-    if (destEnd < 0) {
+    if (missing(destEnd)) {
       return index;
     }
     String destination = content.substring(labelEnd + 2, destEnd);
     int cut = WikiPaths.suffixAt(destination);
-    String path = cut < 0 ? destination : destination.substring(0, cut);
-    String suffix = cut < 0 ? "" : destination.substring(cut);
+    String path = missing(cut) ? destination : destination.substring(0, cut);
+    String suffix = missing(cut) ? "" : destination.substring(cut);
     if (!WikiPaths.isPage(path)) {
       return index;
     }
@@ -192,7 +198,7 @@ final class MarkdownReferences {
     int start = index;
     int from = index + (closer.equals("`") ? 1 : closer.length());
     int end = content.indexOf(closer, from);
-    if (end < 0) {
+    if (missing(end)) {
       out.append(content.substring(start));
       return content.length();
     }
@@ -202,5 +208,9 @@ final class MarkdownReferences {
 
   private static boolean startsWith(String content, int index, String token) {
     return content.startsWith(token, index);
+  }
+
+  private static boolean missing(int at) {
+    return at == -1;
   }
 }
