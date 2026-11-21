@@ -96,15 +96,53 @@ final class MarkdownReferences {
 
   private static int copyFence(String content, int index, StringBuilder out,
                                Function<String, Optional<String>> changeReference) {
-    int end = content.indexOf("```", index + 3);
-    if (end < 0) {
+    int opener = tickRun(content, index);
+    int close = closingFence(content, index + opener, opener);
+    if (close < 0) {
       out.append(content.substring(index));
       return content.length();
     }
-    int close = end + 3;
-    String fence = content.substring(index, close);
-    out.append(includeFence(fence) ? rewriteInclude(fence, changeReference) : fence);
-    return close;
+    int end = close + tickRun(content, close);
+    String fence = content.substring(index, end);
+    out.append(opener == 3 && includeFence(fence) ? rewriteInclude(fence, changeReference) : fence);
+    return end;
+  }
+
+  private static int tickRun(String content, int index) {
+    int count = 0;
+    while (index + count < content.length() && content.charAt(index + count) == '`') {
+      count++;
+    }
+    return count;
+  }
+
+  /** A closer is its own line of at least {@code opener} backticks and nothing else. */
+  private static int closingFence(String content, int from, int opener) {
+    int index = from;
+    while (index < content.length()) {
+      int lineEnd = content.indexOf('\n', index);
+      if (lineEnd < 0) {
+        lineEnd = content.length();
+      }
+      int lineStart = content.lastIndexOf('\n', index - 1) + 1;
+      if (lineStart >= from && closes(content.substring(lineStart, lineEnd), opener)) {
+        return lineStart + content.substring(lineStart, lineEnd).indexOf('`');
+      }
+      if (lineEnd == content.length()) {
+        return -1;
+      }
+      index = lineEnd + 1;
+    }
+    return -1;
+  }
+
+  private static boolean closes(String line, int opener) {
+    String trimmed = line.trim();
+    int ticks = 0;
+    while (ticks < trimmed.length() && trimmed.charAt(ticks) == '`') {
+      ticks++;
+    }
+    return ticks >= opener && ticks == trimmed.length();
   }
 
   private static boolean includeFence(String fence) {

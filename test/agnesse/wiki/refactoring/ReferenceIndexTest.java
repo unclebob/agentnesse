@@ -15,9 +15,34 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ReferenceIndexTest {
+  @Test
+  public void aLongerFenceKeepsThePageWrittenInsideIt() {
+    String content = """
+      ````agnesse
+      define PAGE
+      ```agnesse
+      define COMMAND_PATTERN
+      python3 AgNesseRoot/files/agnesse/tiny_slim.py
+      ```
+      ````
+      See FrontPage
+      ```
+      AgNesseRoot
+      ```
+      """;
+    String rewritten = MarkdownReferences.replace(null, content, reference -> java.util.Optional.of("Gone"));
+    assertTrue(rewritten, rewritten.contains("AgNesseRoot/files"));
+    assertTrue(rewritten, rewritten.contains("\nAgNesseRoot\n"));
+    assertTrue(rewritten, rewritten.contains("See Gone"));
+    assertFalse(rewritten.contains("GoneRoot"));
+    assertEquals("```\nAgNesseRoot", MarkdownReferences.replace(null, "```\nAgNesseRoot", reference -> java.util.Optional.of("Gone")));
+    assertEquals("```\nAgNesseRoot\n", MarkdownReferences.replace(null, "```\nAgNesseRoot\n", reference -> java.util.Optional.of("Gone")));
+  }
+
   @Test
   public void leavesRemoteLinksAlone() {
     String content = "[web](http://example.com/PageTwo) and [spaced](not a path)";

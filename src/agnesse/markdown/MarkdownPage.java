@@ -218,15 +218,34 @@ public class MarkdownPage extends BaseWikiPage implements FileBasedWikiPage {
     while (matcher.find()) {
       String value = getVariable(matcher.group(1));
       if (value != null) {
-        if (escapePipes) {
-          value = value.replace("|", "\\|");
-        }
-        value = value.replace("\n", "<br>");
+        value = inserted(value, escapePipes, tableLine(content, matcher.start()));
       }
       matcher.appendReplacement(expanded, Matcher.quoteReplacement(value == null ? matcher.group() : value));
     }
     matcher.appendTail(expanded);
     return expanded.toString();
+  }
+
+  /** A pipe or a backtick inside a table cell stays in that cell. */
+  private static String inserted(String value, boolean escapePipes, boolean table) {
+    String text = value;
+    if (escapePipes || table) {
+      text = text.replace("|", "\\|");
+    }
+    if (table) {
+      text = text.replace("`", "&#96;");
+    }
+    return text.replace("\n", "<br>");
+  }
+
+  private static boolean tableLine(String content, int at) {
+    int line = content.lastIndexOf('\n', at) + 1;
+    int end = content.indexOf('\n', at);
+    if (end < 0) {
+      end = content.length();
+    }
+    String trimmed = content.substring(line, end).trim();
+    return trimmed.startsWith("|") || trimmed.startsWith("!|");
   }
 
   private static boolean plainLine(boolean fence, String trimmed) {

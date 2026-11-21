@@ -8,9 +8,32 @@
 
 `monotonic:0..100 size 4..4 reset` may fall, and the running total counts each rise from the floor. Seed 1 draws `[89, 44, 52, 80]`, which totals 169, and shrinks to `[100, 0, 69, 69]`. A list without `reset` only rises, and `monotonic:0..20 size 2..4` shrinks to `[0, 0]`. Both claims expect `same`, so both fail.
 
+````agnesse
+define PropertyRise
+```agnesse
+define SLIM_PORT
+1
+```
+
+| script | agnesse.slim.test.TestSlim |
+
+| scenario | echo back | value |
+| check | echo string | @value | same |
+
+| property | echo back |
+| trials | 1 |
+| seed | 1 |
+| value | monotonic:0..100 size 4..4 reset |
+
+| property | echo back |
+| trials | 1 |
+| seed | 1 |
+| value | monotonic:0..20 size 2..4 |
+````
+
 | script | page driver |
 | --- | --- |
-| given page | PropertyRise | with content | &#96;&#96;&#96;agnesse<br>define SLIM_PORT<br>1<br>&#96;&#96;&#96;<br><br>\| script \| agnesse.slim.test.TestSlim \|<br><br>\| scenario \| echo back \| value \|<br>\| check \| echo string \| @value \| same \|<br><br>\| property \| echo back \|<br>\| trials \| 1 \|<br>\| seed \| 1 \|<br>\| value \| monotonic:0..100 size 4..4 reset \|<br><br>\| property \| echo back \|<br>\| trials \| 1 \|<br>\| seed \| 1 \|<br>\| value \| monotonic:0..20 size 2..4 \| |
+| given page | PropertyRise | with content | ${PropertyRise} |
 | make | PropertyRise | a test page |
 | check | request page | PropertyRise?test&format=json | 200 |
 | ensure | content contains | "wrong":2 |
@@ -25,3 +48,7 @@
 | ensure | source contains; | PropertyRise | monotonic:0..20 size 2..4 |
 | reject | source contains; | PropertyRise | [100, 0, 69, 69] |
 | reject | source contains; | PropertyRise | [89, 44, 52, 80] |
+
+| script | result view |
+| --- | --- |
+| show | rendered result |

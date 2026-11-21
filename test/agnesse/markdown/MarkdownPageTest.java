@@ -1,6 +1,8 @@
 package agnesse.markdown;
 
 import agnesse.components.TraversalListener;
+import agnesse.testsystems.slim.MarkdownTable;
+import agnesse.testsystems.slim.MarkdownTableScanner;
 import agnesse.wiki.PageData;
 import agnesse.wiki.search.FrontMatterFinder;
 import agnesse.wiki.PathParser;
@@ -443,6 +445,49 @@ public class MarkdownPageTest {
   }
 
   @Test
+  public void aTableCellKeepsADefinedPage() {
+    String source = """
+      ````agnesse
+      define PAGE
+      ```agnesse
+      define SLIM_PORT
+      1
+      ```
+
+      | property:Amount |
+      | money:0..5 | true |
+      ````
+      !| given page | Name | with content | ${PAGE} |
+      """;
+    String html = html("Notes", source);
+    assertEquals(html, 4, count(html, "<th>"));
+    assertTrue(html, html.contains("money:0..5"));
+    assertTrue(html, html.contains("define SLIM_PORT"));
+
+    MarkdownPage notes = (MarkdownPage) page("Notes");
+    MarkdownTableScanner scanner = new MarkdownTableScanner(notes.expandedForSlim(null));
+    assertEquals(1, scanner.getTableCount());
+    String cell = scanner.getTable(0).getCellContents(3, 0);
+    assertTrue(cell, cell.contains("```agnesse"));
+    assertTrue(cell, cell.contains("| property:Amount |"));
+    assertTrue(cell, cell.contains("money:0..5"));
+  }
+
+  @Test
+  public void slimEscapesPipesOutsideATableAndLeavesBackticks() {
+    put("Host.md", """
+      ```agnesse
+      define CELL
+      a|b`
+      ```
+      ${CELL}
+      """);
+    String slim = ((MarkdownPage) page("Host")).expandedForSlim(null);
+    assertTrue(slim, slim.contains("a\\|b`"));
+    assertFalse(slim, slim.contains("&#96;"));
+  }
+
+  @Test
   public void htmlKeepsAPipeInsideACodeSpan() {
     String html = html("Notes", """
       ```agnesse
@@ -685,6 +730,16 @@ public class MarkdownPageTest {
       define ONLY_NAME
       ```
       """).getVariable("ONLY_NAME"));
+  }
+
+  private static int count(String text, String piece) {
+    int found = 0;
+    int at = 0;
+    while ((at = text.indexOf(piece, at)) >= 0) {
+      found++;
+      at += piece.length();
+    }
+    return found;
   }
 
   private void put(String relative, String content) {
